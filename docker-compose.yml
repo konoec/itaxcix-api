@@ -1,0 +1,28 @@
+version: '3'
+services:
+  php:
+    build: .
+    container_name: iTaxCix-php
+    ports:
+      - "9000:9000"
+    volumes:
+      - .:/var/www/html
+    working_dir: /var/www/html
+    command: php -S 0.0.0.0:9000
+    depends_on:
+      - db
+
+  db:
+    image: postgres:14
+    container_name: iTaxCix-db
+    environment:
+      POSTGRES_USER: itaxcix_user
+      POSTGRES_PASSWORD: itaxcix
+      POSTGRES_DB: db_itaxcix
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+volumes:
+  postgres_data:
