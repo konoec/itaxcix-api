@@ -3,6 +3,7 @@
 namespace iTaxCix\models\infraction;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use iTaxCix\models\auth\TbConductor;
 
 class TbInfraccion extends Model
@@ -16,17 +17,17 @@ class TbInfraccion extends Model
     ];
 
     // Relaciones
-    public function conductor()
+    public function conductor(): BelongsTo
     {
         return $this->belongsTo(TbConductor::class, 'infr_conductor_id');
     }
 
-    public function gravedadInfraccion()
+    public function gravedadInfraccion(): BelongsTo
     {
         return $this->belongsTo(TbGravedadInfraccion::class, 'infr_gravedad_id');
     }
 
-    public function estadoInfraccion()
+    public function estadoInfraccion(): BelongsTo
     {
         return $this->belongsTo(TbEstadoInfraccion::class, 'infr_estado_id');
     }

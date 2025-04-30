@@ -3,6 +3,7 @@
 namespace iTaxCix\models\travel;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use iTaxCix\models\auth\TbUsuario;
 
 class TbIncidencia extends Model
@@ -16,12 +17,12 @@ class TbIncidencia extends Model
     ];
 
     // Relaciones
-    public function viaje()
+    public function viaje(): BelongsTo
     {
         return $this->belongsTo(TbViaje::class, 'inci_viaje_id');
     }
 
-    public function usuario()
+    public function usuario(): BelongsTo
     {
         return $this->belongsTo(TbUsuario::class, 'inci_usuario_id');
     }

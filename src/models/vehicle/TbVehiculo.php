@@ -3,6 +3,7 @@
 namespace iTaxCix\models\vehicle;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TbVehiculo extends Model
 {
@@ -17,17 +18,17 @@ class TbVehiculo extends Model
     ];
 
     // Relaciones
-    public function tipoCombustible()
+    public function tipoCombustible(): BelongsTo
     {
         return $this->belongsTo(TbTipoCombustible::class, 'vehi_tipo_combustible_id');
     }
 
-    public function clase()
+    public function clase(): BelongsTo
     {
         return $this->belongsTo(TbClaseVehiculo::class, 'vehi_clase_id');
     }
 
-    public function categoria()
+    public function categoria(): BelongsTo
     {
         return $this->belongsTo(TbCategoriaVehiculo::class, 'vehi_categoria_id');
     }

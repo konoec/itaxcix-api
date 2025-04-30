@@ -3,6 +3,7 @@
 namespace iTaxCix\models\vehicle;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use iTaxCix\models\auth\TbConductor;
 
 class TbTarjetaCirculacion extends Model
@@ -17,12 +18,12 @@ class TbTarjetaCirculacion extends Model
     ];
 
     // Relaciones
-    public function vehiculo()
+    public function vehiculo(): BelongsTo
     {
         return $this->belongsTo(TbVehiculo::class, 'tarj_vehiculo_id');
     }
 
-    public function conductor()
+    public function conductor(): BelongsTo
     {
         return $this->belongsTo(TbConductor::class, 'tarj_conductor_id');
     }

@@ -3,6 +3,7 @@
 namespace iTaxCix\models\auth;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use iTaxCix\models\common\TbTipoConfirmacion;
 
 class TbConfirmacion extends Model
@@ -16,12 +17,12 @@ class TbConfirmacion extends Model
     ];
 
     // Relaciones
-    public function usuario()
+    public function usuario(): BelongsTo
     {
         return $this->belongsTo(TbUsuario::class, 'conf_usuario_id');
     }
 
-    public function tipoConfirmacion()
+    public function tipoConfirmacion(): BelongsTo
     {
         return $this->belongsTo(TbTipoConfirmacion::class, 'conf_tipo_id');
     }

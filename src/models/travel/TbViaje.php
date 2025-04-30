@@ -3,6 +3,8 @@
 namespace iTaxCix\models\travel;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use iTaxCix\models\auth\TbCiudadano;
 use iTaxCix\models\auth\TbConductor;
 
@@ -18,27 +20,27 @@ class TbViaje extends Model
     ];
 
     // Relaciones
-    public function ciudadano()
+    public function ciudadano(): BelongsTo
     {
         return $this->belongsTo(TbCiudadano::class, 'viaj_ciudadano_id');
     }
 
-    public function conductor()
+    public function conductor(): BelongsTo
     {
         return $this->belongsTo(TbConductor::class, 'viaj_conductor_id');
     }
 
-    public function estadoViaje()
+    public function estadoViaje(): BelongsTo
     {
         return $this->belongsTo(TbEstadoViaje::class, 'viaj_estado_id');
     }
 
-    public function calificaciones()
+    public function calificaciones(): HasMany
     {
         return $this->hasMany(TbCalificacion::class, 'cali_viaje_id');
     }
 
-    public function incidencias()
+    public function incidencias(): HasMany
     {
         return $this->hasMany(TbIncidencia::class, 'inci_viaje_id');
     }

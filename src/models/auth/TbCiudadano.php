@@ -3,6 +3,7 @@
 namespace iTaxCix\models\auth;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TbCiudadano extends Model
 {
@@ -14,7 +15,7 @@ class TbCiudadano extends Model
     ];
 
     // Relaciones
-    public function usuario()
+    public function usuario(): BelongsTo
     {
         return $this->belongsTo(TbUsuario::class, 'ciud_usuario_id');
     }

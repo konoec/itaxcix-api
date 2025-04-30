@@ -3,6 +3,7 @@
 namespace iTaxCix\models\travel;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use iTaxCix\models\auth\TbUsuario;
 
 class TbCalificacion extends Model
@@ -16,17 +17,17 @@ class TbCalificacion extends Model
     ];
 
     // Relaciones
-    public function viaje()
+    public function viaje(): BelongsTo
     {
         return $this->belongsTo(TbViaje::class, 'cali_viaje_id');
     }
 
-    public function calificador()
+    public function calificador(): BelongsTo
     {
         return $this->belongsTo(TbUsuario::class, 'cali_calificador_id');
     }
 
-    public function calificado()
+    public function calificado(): BelongsTo
     {
         return $this->belongsTo(TbUsuario::class, 'cali_calificado_id');
     }
