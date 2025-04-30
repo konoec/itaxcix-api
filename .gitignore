@@ -1,0 +1,23 @@
+# Archivos sensibles
+.env
+
+# Carpetas generadas automáticamente
+/vendor/
+
+# Archivos temporales o caché
+*.log
+*.tmp
+
+# Entornos virtuales o dependencias instaladas
+/node_modules/  # En caso de usar npm o yarn
+/__pycache__/   # En caso de usar Python
+
+# Directorios específicos
+/public/build/  # Ejemplo: si compila archivos estáticos
+
+# Archivos de IDEs o editores
+.idea/
+.vscode/
+
+# Otros archivos específicos
+*.local.php  # Ejemplo: configuración local

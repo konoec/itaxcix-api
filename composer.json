@@ -1,0 +1,23 @@
+{
+    "name": "itaxcix/api",
+    "description": "API del proyecto iTaxCix",
+    "type": "project",
+    "version": "1.0.0",
+    "require": {
+        "php": "^8.0",
+        "nikic/fast-route": "^1.7",
+        "firebase/php-jwt": "^6.0",
+        "respect/validation": "^2.0",
+        "monolog/monolog": "^2.0",
+        "php-di/php-di": "^6.0",
+        "illuminate/database": "^9.0",
+        "vlucas/phpdotenv": "^5.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "iTaxCix\\": "src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
