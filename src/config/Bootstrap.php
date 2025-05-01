@@ -1,23 +1,29 @@
 <?php
 
-// Carga autoload de Composer
+use Doctrine\DBAL\DriverManager;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\ORMSetup;
+use Dotenv\Dotenv;
+
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-// Carga las variables de entorno (.env)
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../');
+$dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
 $dotenv->load();
 
-// Carga la configuración de la base de datos
-$config = require __DIR__ . '/Database.php';
+$config = ORMSetup::createAttributeMetadataConfiguration(
+    paths: [__DIR__ . "/../../src/entity"],
+    isDevMode: true,
+);
 
-// Inicializa Eloquent
-use Illuminate\Database\Capsule\Manager as Capsule;
+$connectionParams = [
+    'driver'   => 'pdo_pgsql',
+    'host'     => $_ENV['DB_HOST'],
+    'port'     => $_ENV['DB_PORT'],
+    'dbname'   => $_ENV['DB_DATABASE'],
+    'user'     => $_ENV['DB_USERNAME'],
+    'password' => $_ENV['DB_PASSWORD'],
+];
 
-$capsule = new Capsule;
-if (!isset($config['connections'][$config['default']])) {
-    die("Error: Conexión predeterminada '{$config['default']}' no configurada.");
-}
+$conn = DriverManager::getConnection($connectionParams, $config);
 
-$capsule->addConnection($config['connections'][$config['default']]);
-$capsule->setAsGlobal();
-$capsule->bootEloquent();
+$entityManager = new EntityManager($conn, $config);

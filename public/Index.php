@@ -1,7 +1,7 @@
 <?php
 
 // Incluye el archivo de inicialización
-require_once __DIR__ . '/../src/config/bootstrap.php';
+require_once __DIR__ . '/../src/config/Bootstrap.php';
 
 use Illuminate\Database\Capsule\Manager;
 use iTaxCix\models\common\TbTipoDocumento;

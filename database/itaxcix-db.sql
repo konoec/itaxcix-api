@@ -1,0 +1,291 @@
+CREATE TABLE "tb_tipo_documento" (
+  "tipo_id" serial PRIMARY KEY,
+  "tipo_nombre" varchar(50) NOT NULL,
+  "tipo_activo" boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE "tb_persona" (
+  "pers_id" serial PRIMARY KEY,
+  "pers_nombre" varchar(100),
+  "pers_apellido" varchar(100),
+  "pers_tipo_documento_id" int,
+  "pers_documento" varchar(20),
+  "pers_telefono" varchar(15),
+  "pers_correo" varchar(100),
+  "pers_imagen" varchar(255),
+  "pers_activo" boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE "tb_usuario" (
+  "usua_id" serial PRIMARY KEY,
+  "usua_alias" varchar(50),
+  "usua_clave" varchar(255),
+  "usua_persona_id" int,
+  "usua_activo" boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE "tb_tipo_codigo_usuario" (
+  "tipo_id" serial PRIMARY KEY,
+  "tipo_nombre" varchar(50) NOT NULL,
+  "tipo_activo" boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE "tb_codigo_usuario" (
+  "codi_id" serial PRIMARY KEY,
+  "codi_usuario_id" int,
+  "codi_tipo_id" int,
+  "codi_codigo" varchar(8) NOT NULL,
+  "codi_fecha_expiracion" timestamp NOT NULL,
+  "codi_fecha_uso" timestamp,
+  "codi_usado" boolean NOT NULL DEFAULT false
+);
+
+CREATE TABLE "tb_administrador" (
+  "admi_id" serial PRIMARY KEY,
+  "admi_usuario_id" int,
+  "admi_area" varchar(100),
+  "admi_cargo" varchar(100),
+  "admi_activo" boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE "tb_ciudadano" (
+  "ciud_id" serial PRIMARY KEY,
+  "ciud_usuario_id" int,
+  "esta_activo" boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE "tb_conductor" (
+  "cond_id" serial PRIMARY KEY,
+  "cond_usuario_id" int,
+  "cond_disponible" boolean NOT NULL DEFAULT false,
+  "cond_activo" boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE "tb_ubicacion" (
+  "ubic_id" serial PRIMARY KEY,
+  "ubic_nombre" varchar(100) NOT NULL,
+  "ubic_latitud" varchar(20) NOT NULL,
+  "ubic_longitud" varchar(20) NOT NULL
+);
+
+CREATE TABLE "tb_estado_viaje" (
+  "esta_id" serial PRIMARY KEY,
+  "esta_nombre" varchar(50) NOT NULL,
+  "esta_activo" boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE "tb_viaje" (
+  "viaj_id" serial PRIMARY KEY,
+  "viaj_ciudadano_id" int,
+  "viaj_conductor_id" int,
+  "viaj_origen_id" int,
+  "viaj_destino_id" int,
+  "viaj_fecha_inicio" timestamp,
+  "viaj_fecha_fin" timestamp,
+  "viaj_fecha_creacion" timestamp,
+  "viaj_estado_id" int
+);
+
+CREATE TABLE "tb_calificacion" (
+  "cali_id" serial PRIMARY KEY,
+  "cali_calificador_id" int,
+  "cali_calificado_id" int,
+  "cali_viaje_id" int,
+  "cali_puntaje" int NOT NULL,
+  "cali_comentario" varchar(255)
+);
+
+CREATE TABLE "tb_tipo_incidencia" (
+  "tipo_id" serial PRIMARY KEY,
+  "tipo_nombre" varchar(100) NOT NULL,
+  "tipo_activo" boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE "tb_incidencia" (
+  "inci_id" serial PRIMARY KEY,
+  "inci_usuario_id" int,
+  "inci_viaje_id" int,
+  "inci_tipo_id" int,
+  "inci_comentario" varchar(255),
+  "inci_activo" boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE "tb_ubicacion_geografica" (
+  "ubic_id" serial PRIMARY KEY,
+  "ubic_ubigeo" varchar(6),
+  "ubic_departamento" varchar(50),
+  "ubic_provincia" varchar(50),
+  "ubic_distrito" varchar(50)
+);
+
+CREATE TABLE "tb_tipo_combustible" (
+  "tipo_id" serial PRIMARY KEY,
+  "tipo_nombre" varchar(50) NOT NULL,
+  "tipo_activo" boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE "tb_marca" (
+  "marc_id" serial PRIMARY KEY,
+  "marc_nombre" varchar(50) NOT NULL,
+  "marc_activo" boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE "tb_clase_vehiculo" (
+  "clas_id" serial PRIMARY KEY,
+  "clas_nombre" varchar(50) NOT NULL,
+  "clas_activo" boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE "tb_categoria_vehiculo" (
+  "cate_id" serial PRIMARY KEY,
+  "cate_nombre" varchar(50) NOT NULL,
+  "cate_activo" boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE "tb_vehiculo" (
+  "vehi_id" serial PRIMARY KEY,
+  "vehi_placa" varchar(10) UNIQUE NOT NULL,
+  "vehi_marca_id" int,
+  "vehi_modelo" varchar(50),
+  "vehi_color" varchar(30),
+  "vehi_anio_fabric" int,
+  "vehi_num_asientos" int,
+  "vehi_num_pasajeros" int,
+  "vehi_tipo_combustible_id" int,
+  "vehi_clase_id" int,
+  "vehi_categoria_id" int,
+  "vehi_activo" boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE "tb_especificacion_tecnica" (
+  "espe_id" serial PRIMARY KEY,
+  "espe_vehiculo_id" int,
+  "espe_peso_seco" numeric,
+  "espe_peso_bruto" numeric,
+  "espe_longitud" numeric,
+  "espe_altura" numeric,
+  "espe_anchura" numeric,
+  "espe_carga_util" numeric
+);
+
+CREATE TABLE "tb_estado_tuc" (
+  "esta_id" serial PRIMARY KEY,
+  "esta_nombre" varchar(50) NOT NULL,
+  "esta_activo" boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE "tb_empresa" (
+  "empr_id" serial PRIMARY KEY,
+  "empr_ruc" varchar(11),
+  "empr_nombre" varchar(100),
+  "empr_propietario" varchar(100),
+  "empr_gob_local" varchar(100),
+  "empr_activo" boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE "tb_tramite_tuc" (
+  "tram_id" serial PRIMARY KEY,
+  "tram_codigo" varchar(8),
+  "tran_conductor_id" int,
+  "tram_vehiculo_id" int,
+  "tram_empresa_id" int,
+  "tram_ubic_id" int,
+  "tram_estado_id" int,
+  "tram_tipo" varchar(50),
+  "tram_fecha_tramite" date,
+  "tram_fecha_emision" date,
+  "tram_fecha_caducidad" date,
+  "tram_modalidad" varchar(50)
+);
+
+CREATE TABLE "tb_configuracion" (
+  "conf_id" serial PRIMARY KEY,
+  "conf_clave" varchar(50),
+  "conf_valor" varchar(255),
+  "conf_activo" boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE "tb_auditoria" (
+  "audi_id" serial PRIMARY KEY,
+  "audi_tabla_afectada" text,
+  "audi_operacion" text,
+  "audi_usuario_sistema" varchar(100),
+  "audi_fecha" timestamp DEFAULT CURRENT_TIMESTAMP,
+  "audi_dato_anterior" jsonb,
+  "audi_dato_nuevo" jsonb
+);
+
+CREATE TABLE "tb_ruta_servicio" (
+  "ruta_id" serial PRIMARY KEY,
+  "ruta_tram_id" int,
+  "ruta_tipo_servicio" varchar(50),
+  "ruta_texto" text,
+  "ruta_activo" boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE "tb_gravedad_infraccion" (
+  "grav_id" serial PRIMARY KEY,
+  "grav_nombre" varchar(100) UNIQUE,
+  "grav_activo" boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE "tb_estado_infraccion" (
+  "esta_id" serial PRIMARY KEY,
+  "esta_nombre" varchar(100) UNIQUE,
+  "esta_activo" boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE "tb_infraccion" (
+  "infr_id" serial PRIMARY KEY,
+  "infr_conductor_id" int,
+  "infr_gravedad_id" int,
+  "infr_fecha" timestamp DEFAULT CURRENT_TIMESTAMP,
+  "infr_descripcion" text,
+  "infr_estado_id" int
+);
+
+ALTER TABLE "tb_persona" ADD FOREIGN KEY ("pers_tipo_documento_id") REFERENCES "tb_tipo_documento" ("tipo_id");
+
+ALTER TABLE "tb_usuario" ADD FOREIGN KEY ("usua_persona_id") REFERENCES "tb_persona" ("pers_id");
+
+ALTER TABLE "tb_codigo_usuario" ADD FOREIGN KEY ("codi_usuario_id") REFERENCES "tb_usuario" ("usua_id");
+ALTER TABLE "tb_codigo_usuario" ADD FOREIGN KEY ("codi_tipo_id") REFERENCES "tb_tipo_codigo_usuario" ("tipo_id");
+
+ALTER TABLE "tb_administrador" ADD FOREIGN KEY ("admi_usuario_id") REFERENCES "tb_usuario" ("usua_id");
+
+ALTER TABLE "tb_ciudadano" ADD FOREIGN KEY ("ciud_usuario_id") REFERENCES "tb_usuario" ("usua_id");
+
+ALTER TABLE "tb_conductor" ADD FOREIGN KEY ("cond_usuario_id") REFERENCES "tb_usuario" ("usua_id");
+
+ALTER TABLE "tb_viaje" ADD FOREIGN KEY ("viaj_ciudadano_id") REFERENCES "tb_ciudadano" ("ciud_id");
+ALTER TABLE "tb_viaje" ADD FOREIGN KEY ("viaj_conductor_id") REFERENCES "tb_conductor" ("cond_id");
+ALTER TABLE "tb_viaje" ADD FOREIGN KEY ("viaj_origen_id") REFERENCES "tb_ubicacion" ("ubic_id");
+ALTER TABLE "tb_viaje" ADD FOREIGN KEY ("viaj_destino_id") REFERENCES "tb_ubicacion" ("ubic_id");
+ALTER TABLE "tb_viaje" ADD FOREIGN KEY ("viaj_estado_id") REFERENCES "tb_estado_viaje" ("esta_id");
+
+ALTER TABLE "tb_calificacion" ADD FOREIGN KEY ("cali_calificador_id") REFERENCES "tb_usuario" ("usua_id");
+ALTER TABLE "tb_calificacion" ADD FOREIGN KEY ("cali_calificado_id") REFERENCES "tb_usuario" ("usua_id");
+ALTER TABLE "tb_calificacion" ADD FOREIGN KEY ("cali_viaje_id") REFERENCES "tb_viaje" ("viaj_id");
+
+ALTER TABLE "tb_incidencia" ADD FOREIGN KEY ("inci_usuario_id") REFERENCES "tb_usuario" ("usua_id");
+ALTER TABLE "tb_incidencia" ADD FOREIGN KEY ("inci_viaje_id") REFERENCES "tb_viaje" ("viaj_id");
+ALTER TABLE "tb_incidencia" ADD FOREIGN KEY ("inci_tipo_id") REFERENCES "tb_tipo_incidencia" ("tipo_id");
+
+ALTER TABLE "tb_vehiculo" ADD FOREIGN KEY ("vehi_marca_id") REFERENCES "tb_marca" ("marc_id");
+ALTER TABLE "tb_vehiculo" ADD FOREIGN KEY ("vehi_tipo_combustible_id") REFERENCES "tb_tipo_combustible" ("tipo_id");
+ALTER TABLE "tb_vehiculo" ADD FOREIGN KEY ("vehi_clase_id") REFERENCES "tb_clase_vehiculo" ("clas_id");
+ALTER TABLE "tb_vehiculo" ADD FOREIGN KEY ("vehi_categoria_id") REFERENCES "tb_categoria_vehiculo" ("cate_id");
+
+ALTER TABLE "tb_especificacion_tecnica" ADD FOREIGN KEY ("espe_vehiculo_id") REFERENCES "tb_vehiculo" ("vehi_id");
+
+ALTER TABLE "tb_tramite_tuc" ADD FOREIGN KEY ("tran_conductor_id") REFERENCES "tb_conductor" ("cond_id");
+ALTER TABLE "tb_tramite_tuc" ADD FOREIGN KEY ("tram_vehiculo_id") REFERENCES "tb_vehiculo" ("vehi_id");
+ALTER TABLE "tb_tramite_tuc" ADD FOREIGN KEY ("tram_empresa_id") REFERENCES "tb_empresa" ("empr_id");
+ALTER TABLE "tb_tramite_tuc" ADD FOREIGN KEY ("tram_ubic_id") REFERENCES "tb_ubicacion_geografica" ("ubic_id");
+ALTER TABLE "tb_tramite_tuc" ADD FOREIGN KEY ("tram_estado_id") REFERENCES "tb_estado_tuc" ("esta_id");
+
+ALTER TABLE "tb_ruta_servicio" ADD FOREIGN KEY ("ruta_tram_id") REFERENCES "tb_tramite_tuc" ("tram_id");
+
+ALTER TABLE "tb_infraccion" ADD FOREIGN KEY ("infr_conductor_id") REFERENCES "tb_conductor" ("cond_id");
+ALTER TABLE "tb_infraccion" ADD FOREIGN KEY ("infr_gravedad_id") REFERENCES "tb_gravedad_infraccion" ("grav_id");
+ALTER TABLE "tb_infraccion" ADD FOREIGN KEY ("infr_estado_id") REFERENCES "tb_estado_infraccion" ("esta_id");
