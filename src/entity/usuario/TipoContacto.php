@@ -1,12 +1,12 @@
 <?php
 
-namespace itaxcix\entity\vehiculo;
+namespace itaxcix\entity\usuario;
 
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'tb_tipo_combustible')]
-class TipoCombustible {
+#[ORM\Table(name: 'tb_tipo_contacto')]
+class TipoContacto {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'tipo_id', type: 'integer')]

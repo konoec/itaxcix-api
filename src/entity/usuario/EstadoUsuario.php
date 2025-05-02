@@ -1,12 +1,13 @@
 <?php
 
-namespace itaxcix\entity\tuc;
+namespace itaxcix\entity\usuario;
 
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'tb_estado_tuc')]
-class EstadoTuc {
+#[ORM\Table(name: 'tb_estado_usuario')]
+class EstadoUsuario
+{
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'esta_id', type: 'integer')]

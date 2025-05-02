@@ -1,56 +1,49 @@
 <?php
 
+namespace itaxcix\entity\vehiculo;
 
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\Table(name: "tb_vehiculo")]
-class Vehiculo
-{
+#[ORM\Table(name: 'tb_vehiculo')]
+class Vehiculo {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(name: "vehi_id", type: "integer")]
-    private int $id;
+    #[ORM\Column(name: 'vehi_id', type: 'integer')]
+    private ?int $id = null;
 
-    #[ORM\Column(name: "vehi_placa", type: "string", length: 10, unique: true)]
+    #[ORM\Column(name: 'vehi_placa', type: 'string', length: 10, unique: true)]
     private string $placa;
 
-    #[ORM\Column(name: "vehi_modelo", type: "string", length: 50, nullable: true)]
-    private ?string $modelo = null;
+    #[ORM\ManyToOne(targetEntity: Modelo::class)]
+    #[ORM\JoinColumn(name: 'vehi_modelo_id', referencedColumnName: 'mode_id')]
+    private ?Modelo $modelo = null;
 
-    #[ORM\Column(name: "vehi_color", type: "string", length: 30, nullable: true)]
-    private ?string $color = null;
+    #[ORM\ManyToOne(targetEntity: Color::class)]
+    #[ORM\JoinColumn(name: 'vehi_color_id', referencedColumnName: 'colo_id')]
+    private ?Color $color = null;
 
-    #[ORM\Column(name: "vehi_anio_fabric", type: "integer", nullable: true)]
+    #[ORM\Column(name: 'vehi_anio_fabric', type: 'integer', nullable: true)]
     private ?int $anioFabricacion = null;
 
-    #[ORM\Column(name: "vehi_num_asientos", type: "integer", nullable: true)]
-    private ?int $numAsientos = null;
+    #[ORM\Column(name: 'vehi_num_asientos', type: 'integer', nullable: true)]
+    private ?int $numeroAsientos = null;
 
-    #[ORM\Column(name: "vehi_num_pasajeros", type: "integer", nullable: true)]
-    private ?int $numPasajeros = null;
-
-    #[ORM\Column(name: "vehi_activo", type: "boolean")]
-    private bool $activo = true;
-
-    #[ORM\OneToOne(targetEntity: \EspecificacionTecnica::class, mappedBy: "vehiculo")]
-    private ?\EspecificacionTecnica $especificacion = null;
-
-    #[ORM\ManyToOne(targetEntity: Marca::class)]
-    #[ORM\JoinColumn(name: "vehi_marca_id", referencedColumnName: "marc_id")]
-    private Marca $marca;
+    #[ORM\Column(name: 'vehi_num_pasajeros', type: 'integer', nullable: true)]
+    private ?int $numeroPasajeros = null;
 
     #[ORM\ManyToOne(targetEntity: TipoCombustible::class)]
-    #[ORM\JoinColumn(name: "vehi_tipo_combustible_id", referencedColumnName: "tipo_id")]
-    private TipoCombustible $tipoCombustible;
+    #[ORM\JoinColumn(name: 'vehi_tipo_combustible_id', referencedColumnName: 'tipo_id')]
+    private ?TipoCombustible $tipoCombustible = null;
 
     #[ORM\ManyToOne(targetEntity: ClaseVehiculo::class)]
-    #[ORM\JoinColumn(name: "vehi_clase_id", referencedColumnName: "clas_id")]
-    private ClaseVehiculo $clase;
+    #[ORM\JoinColumn(name: 'vehi_clase_id', referencedColumnName: 'clas_id')]
+    private ?ClaseVehiculo $clase = null;
 
     #[ORM\ManyToOne(targetEntity: CategoriaVehiculo::class)]
-    #[ORM\JoinColumn(name: "vehi_categoria_id", referencedColumnName: "cate_id")]
-    private CategoriaVehiculo $categoria;
+    #[ORM\JoinColumn(name: 'vehi_categoria_id', referencedColumnName: 'cate_id')]
+    private ?CategoriaVehiculo $categoria = null;
 
-    // Getters y setters
+    #[ORM\Column(type: 'boolean', name: 'vehi_activo', options: ['default' => true])]
+    private bool $activo = true;
 }
