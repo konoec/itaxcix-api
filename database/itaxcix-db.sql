@@ -60,27 +60,6 @@ CREATE TABLE "tb_codigo_usuario" (
   "codi_usado" boolean NOT NULL DEFAULT false
 );
 
-CREATE TABLE "tb_administrador" (
-  "admi_id" serial PRIMARY KEY,
-  "admi_usuario_id" int,
-  "admi_area" varchar(100),
-  "admi_cargo" varchar(100),
-  "admi_activo" boolean NOT NULL DEFAULT true
-);
-
-CREATE TABLE "tb_ciudadano" (
-  "ciud_id" serial PRIMARY KEY,
-  "ciud_usuario_id" int,
-  "esta_activo" boolean NOT NULL DEFAULT true
-);
-
-CREATE TABLE "tb_conductor" (
-  "cond_id" serial PRIMARY KEY,
-  "cond_usuario_id" int,
-  "cond_disponible" boolean NOT NULL DEFAULT false,
-  "cond_activo" boolean NOT NULL DEFAULT true
-);
-
 CREATE TABLE "tb_coordenadas" (
   "coor_id" serial PRIMARY KEY,
   "coor_nombre" varchar(100) NOT NULL,
@@ -97,8 +76,8 @@ CREATE TABLE "tb_estado_viaje" (
 
 CREATE TABLE "tb_viaje" (
   "viaj_id" serial PRIMARY KEY,
-  "viaj_ciudadano_id" int,
-  "viaj_conductor_id" int,
+  "viaj_usuario_ciudadano_id" int,
+  "viaj_usuario_conductor_id" int,
   "viaj_origen_id" int,
   "viaj_destino_id" int,
   "viaj_fecha_inicio" timestamp,
@@ -235,16 +214,22 @@ CREATE TABLE "tb_tipo_tramite" (
 CREATE TABLE "tb_tramite_tuc" (
   "tram_id" serial PRIMARY KEY,
   "tram_codigo" varchar(8),
-  "tran_conductor_id" int,
+  "tram_usuario_id" int,
   "tram_vehiculo_id" int,
   "tram_empresa_id" int,
   "tram_distrito_id" int,
   "tram_estado_id" int,
   "tram_tipo_id" int,
+  "tram_modalidad_id" int,
   "tram_fecha_tramite" date,
   "tram_fecha_emision" date,
-  "tram_fecha_caducidad" date,
-  "tram_modalidad" varchar(50)
+  "tram_fecha_caducidad" date
+);
+
+CREATE TABLE "tb_modalidad_tuc" (
+  "moda_id" serial PRIMARY KEY,
+  "moda_nombre" varchar(50) UNIQUE,
+  "moda_activo" boolean NOT NULL DEFAULT true
 );
 
 CREATE TABLE "tb_configuracion" (
@@ -286,45 +271,90 @@ CREATE TABLE "tb_estado_infraccion" (
 
 CREATE TABLE "tb_infraccion" (
   "infr_id" serial PRIMARY KEY,
-  "infr_conductor_id" int,
+  "infr_usuario_id" int,
   "infr_gravedad_id" int,
   "infr_fecha" timestamp DEFAULT CURRENT_TIMESTAMP,
   "infr_descripcion" text,
   "infr_estado_id" int
 );
 
+CREATE TABLE "tb_rol" (
+  "rol_id" serial PRIMARY KEY,
+  "rol_nombre" varchar(50) UNIQUE NOT NULL,
+  "rol_activo" boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE "tb_permiso" (
+  "perm_id" serial PRIMARY KEY,
+  "perm_nombre" varchar(100) UNIQUE NOT NULL,
+  "perm_activo" boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE "tb_rol_usuario" (
+  "rolu_id" serial PRIMARY KEY,
+  "rolu_usuario_id" int,
+  "rolu_rol_id" int,
+  "rolu_activo" boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE "tb_rol_permiso" (
+  "rolp_id" serial PRIMARY KEY,
+  "rolp_rol_id" int,
+  "rolp_permiso_id" int,
+  "rolp_activo" boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE "tb_perfil_administrador" (
+  "perf_id" serial PRIMARY KEY,
+  "perf_usuario_id" int UNIQUE,
+  "perf_area" varchar(100),
+  "perf_cargo" varchar(100)
+);
+
+CREATE TABLE "tb_perfil_conductor" (
+  "perf_id" serial PRIMARY KEY,
+  "perf_usuario_id" int UNIQUE,
+  "perf_disponible" boolean DEFAULT false
+);
+
 ALTER TABLE "tb_persona" ADD FOREIGN KEY ("pers_tipo_documento_id") REFERENCES "tb_tipo_documento" ("tipo_id");
 
 ALTER TABLE "tb_usuario" ADD FOREIGN KEY ("usua_persona_id") REFERENCES "tb_persona" ("pers_id");
+
 ALTER TABLE "tb_usuario" ADD FOREIGN KEY ("usua_estado_id") REFERENCES "tb_estado_usuario" ("esta_id");
 
 ALTER TABLE "tb_contacto_usuario" ADD FOREIGN KEY ("cont_usuario_id") REFERENCES "tb_usuario" ("usua_id");
+
 ALTER TABLE "tb_contacto_usuario" ADD FOREIGN KEY ("cont_tipo_id") REFERENCES "tb_tipo_contacto" ("tipo_id");
 
 ALTER TABLE "tb_codigo_usuario" ADD FOREIGN KEY ("codi_usuario_id") REFERENCES "tb_usuario" ("usua_id");
+
 ALTER TABLE "tb_codigo_usuario" ADD FOREIGN KEY ("codi_tipo_id") REFERENCES "tb_tipo_codigo_usuario" ("tipo_id");
+
 ALTER TABLE "tb_codigo_usuario" ADD FOREIGN KEY ("codi_contacto_id") REFERENCES "tb_contacto_usuario" ("cont_id");
-
-ALTER TABLE "tb_administrador" ADD FOREIGN KEY ("admi_usuario_id") REFERENCES "tb_usuario" ("usua_id");
-
-ALTER TABLE "tb_ciudadano" ADD FOREIGN KEY ("ciud_usuario_id") REFERENCES "tb_usuario" ("usua_id");
-
-ALTER TABLE "tb_conductor" ADD FOREIGN KEY ("cond_usuario_id") REFERENCES "tb_usuario" ("usua_id");
 
 ALTER TABLE "tb_coordenadas" ADD FOREIGN KEY ("coor_distrito_id") REFERENCES "tb_distrito" ("dist_id");
 
-ALTER TABLE "tb_viaje" ADD FOREIGN KEY ("viaj_ciudadano_id") REFERENCES "tb_ciudadano" ("ciud_id");
-ALTER TABLE "tb_viaje" ADD FOREIGN KEY ("viaj_conductor_id") REFERENCES "tb_conductor" ("cond_id");
+ALTER TABLE "tb_viaje" ADD FOREIGN KEY ("viaj_usuario_ciudadano_id") REFERENCES "tb_usuario" ("usua_id");
+
+ALTER TABLE "tb_viaje" ADD FOREIGN KEY ("viaj_usuario_conductor_id") REFERENCES "tb_usuario" ("usua_id");
+
 ALTER TABLE "tb_viaje" ADD FOREIGN KEY ("viaj_origen_id") REFERENCES "tb_coordenadas" ("coor_id");
+
 ALTER TABLE "tb_viaje" ADD FOREIGN KEY ("viaj_destino_id") REFERENCES "tb_coordenadas" ("coor_id");
+
 ALTER TABLE "tb_viaje" ADD FOREIGN KEY ("viaj_estado_id") REFERENCES "tb_estado_viaje" ("esta_id");
 
 ALTER TABLE "tb_calificacion" ADD FOREIGN KEY ("cali_calificador_id") REFERENCES "tb_usuario" ("usua_id");
+
 ALTER TABLE "tb_calificacion" ADD FOREIGN KEY ("cali_calificado_id") REFERENCES "tb_usuario" ("usua_id");
+
 ALTER TABLE "tb_calificacion" ADD FOREIGN KEY ("cali_viaje_id") REFERENCES "tb_viaje" ("viaj_id");
 
 ALTER TABLE "tb_incidencia" ADD FOREIGN KEY ("inci_usuario_id") REFERENCES "tb_usuario" ("usua_id");
+
 ALTER TABLE "tb_incidencia" ADD FOREIGN KEY ("inci_viaje_id") REFERENCES "tb_viaje" ("viaj_id");
+
 ALTER TABLE "tb_incidencia" ADD FOREIGN KEY ("inci_tipo_id") REFERENCES "tb_tipo_incidencia" ("tipo_id");
 
 ALTER TABLE "tb_provincia" ADD FOREIGN KEY ("prov_departamento_id") REFERENCES "tb_departamento" ("depa_id");
@@ -332,24 +362,49 @@ ALTER TABLE "tb_provincia" ADD FOREIGN KEY ("prov_departamento_id") REFERENCES "
 ALTER TABLE "tb_distrito" ADD FOREIGN KEY ("dist_provincia_id") REFERENCES "tb_provincia" ("prov_id");
 
 ALTER TABLE "tb_vehiculo" ADD FOREIGN KEY ("vehi_modelo_id") REFERENCES "tb_modelo" ("mode_id");
+
 ALTER TABLE "tb_vehiculo" ADD FOREIGN KEY ("vehi_color_id") REFERENCES "tb_color" ("colo_id");
+
 ALTER TABLE "tb_vehiculo" ADD FOREIGN KEY ("vehi_tipo_combustible_id") REFERENCES "tb_tipo_combustible" ("tipo_id");
+
 ALTER TABLE "tb_vehiculo" ADD FOREIGN KEY ("vehi_clase_id") REFERENCES "tb_clase_vehiculo" ("clas_id");
+
 ALTER TABLE "tb_vehiculo" ADD FOREIGN KEY ("vehi_categoria_id") REFERENCES "tb_categoria_vehiculo" ("cate_id");
 
 ALTER TABLE "tb_modelo" ADD FOREIGN KEY ("mode_marca_id") REFERENCES "tb_marca" ("marc_id");
 
 ALTER TABLE "tb_especificacion_tecnica" ADD FOREIGN KEY ("espe_vehiculo_id") REFERENCES "tb_vehiculo" ("vehi_id");
 
-ALTER TABLE "tb_tramite_tuc" ADD FOREIGN KEY ("tran_conductor_id") REFERENCES "tb_conductor" ("cond_id");
+ALTER TABLE "tb_tramite_tuc" ADD FOREIGN KEY ("tram_usuario_id") REFERENCES "tb_usuario" ("usua_id");
+
 ALTER TABLE "tb_tramite_tuc" ADD FOREIGN KEY ("tram_vehiculo_id") REFERENCES "tb_vehiculo" ("vehi_id");
+
 ALTER TABLE "tb_tramite_tuc" ADD FOREIGN KEY ("tram_empresa_id") REFERENCES "tb_empresa" ("empr_id");
+
 ALTER TABLE "tb_tramite_tuc" ADD FOREIGN KEY ("tram_distrito_id") REFERENCES "tb_distrito" ("dist_id");
+
 ALTER TABLE "tb_tramite_tuc" ADD FOREIGN KEY ("tram_estado_id") REFERENCES "tb_estado_tuc" ("esta_id");
+
 ALTER TABLE "tb_tramite_tuc" ADD FOREIGN KEY ("tram_tipo_id") REFERENCES "tb_tipo_tramite" ("tipo_id");
+
+ALTER TABLE "tb_tramite_tuc" ADD FOREIGN KEY ("tram_modalidad_id") REFERENCES "tb_modalidad_tuc" ("moda_id");
 
 ALTER TABLE "tb_ruta_servicio" ADD FOREIGN KEY ("ruta_tram_id") REFERENCES "tb_tramite_tuc" ("tram_id");
 
-ALTER TABLE "tb_infraccion" ADD FOREIGN KEY ("infr_conductor_id") REFERENCES "tb_conductor" ("cond_id");
+ALTER TABLE "tb_infraccion" ADD FOREIGN KEY ("infr_usuario_id") REFERENCES "tb_usuario" ("usua_id");
+
 ALTER TABLE "tb_infraccion" ADD FOREIGN KEY ("infr_gravedad_id") REFERENCES "tb_gravedad_infraccion" ("grav_id");
+
 ALTER TABLE "tb_infraccion" ADD FOREIGN KEY ("infr_estado_id") REFERENCES "tb_estado_infraccion" ("esta_id");
+
+ALTER TABLE "tb_rol_usuario" ADD FOREIGN KEY ("rolu_usuario_id") REFERENCES "tb_usuario" ("usua_id");
+
+ALTER TABLE "tb_rol_usuario" ADD FOREIGN KEY ("rolu_rol_id") REFERENCES "tb_rol" ("rol_id");
+
+ALTER TABLE "tb_rol_permiso" ADD FOREIGN KEY ("rolp_rol_id") REFERENCES "tb_rol" ("rol_id");
+
+ALTER TABLE "tb_rol_permiso" ADD FOREIGN KEY ("rolp_permiso_id") REFERENCES "tb_permiso" ("perm_id");
+
+ALTER TABLE "tb_perfil_administrador" ADD FOREIGN KEY ("perf_usuario_id") REFERENCES "tb_usuario" ("usua_id");
+
+ALTER TABLE "tb_perfil_conductor" ADD FOREIGN KEY ("perf_usuario_id") REFERENCES "tb_usuario" ("usua_id");

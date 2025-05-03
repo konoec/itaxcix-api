@@ -27,3 +27,5 @@ $connectionParams = [
 $conn = DriverManager::getConnection($connectionParams, $config);
 
 $entityManager = new EntityManager($conn, $config);
+
+$GLOBALS['entityManager'] = $entityManager;
