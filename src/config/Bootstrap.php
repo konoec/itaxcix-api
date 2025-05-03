@@ -11,7 +11,7 @@ $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
 $dotenv->load();
 
 $config = ORMSetup::createAttributeMetadataConfiguration(
-    paths: [__DIR__ . "/../../src/entity"],
+    paths: [__DIR__ . "/../../src/models/entities"],
     isDevMode: true,
 );
 
