@@ -1,6 +1,6 @@
 <?php
 
-namespace itaxcix\model\entities\incidencia;
+namespace itaxcix\models\entities\incidencia;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -10,12 +10,12 @@ class TipoIncidencia
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer', name: 'tipo_id')]
+    #[ORM\Column(name: 'tipo_id', type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 100, name: 'tipo_nombre')]
+    #[ORM\Column(name: 'tipo_nombre', type: 'string', length: 100)]
     private string $nombre;
 
-    #[ORM\Column(type: 'boolean', name: 'tipo_activo', options: ['default' => true])]
+    #[ORM\Column(name: 'tipo_activo', type: 'boolean', options: ['default' => true])]
     private bool $activo = true;
 }
