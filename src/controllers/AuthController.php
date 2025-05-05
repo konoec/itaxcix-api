@@ -2,11 +2,22 @@
 
 namespace itaxcix\controllers;
 
+use Exception;
+use itaxcix\models\dtos\RegisterCitizenRequest;
+use itaxcix\services\usuario\UsuarioService;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\ResponseInterface as Response;
 use OpenApi\Attributes as OA;
 
 #[OA\Tag(name: "Auth", description: "Operaciones relacionadas con autenticación de usuarios")]
-class AuthController
-{
+class AuthController {
+
+    private UsuarioService $usuarioService;
+
+    public function __construct(UsuarioService $usuarioService) {
+        $this->usuarioService = $usuarioService;
+    }
+
     #[OA\Post(
         path: "/api/v1/auth/login",
         summary: "Iniciar sesión con alias y contraseña",
@@ -54,14 +65,84 @@ class AuthController
         ),
         tags: ["Auth"],
         responses: [
-            new OA\Response(
-                response: 201,
-                description: "Usuario registrado correctamente"
-            ),
+            new OA\Response(response: 201, description: "Usuario registrado correctamente"),
             new OA\Response(response: 400, description: "Datos inválidos o duplicados")
         ]
     )]
-    public function registerCitizen(): void {}
+    public function registerCitizen(Request $request, Response $response): Response
+    {
+        try {
+            // Leer cuerpo del request directamente
+            $body = $request->getBody()->getContents();
+            if (empty(trim($body))) {
+                throw new Exception("Cuerpo de solicitud vacío", 400);
+            }
+
+            $data = json_decode($body, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new Exception("Formato JSON inválido: " . json_last_error_msg(), 400);
+            }
+
+            if (!is_array($data)) {
+                throw new Exception("El cuerpo debe ser un objeto JSON", 400);
+            }
+
+            // Campos requeridos en el JSON
+            $requiredFields = ['documentType', 'documentNumber', 'alias', 'password', 'contactMethod'];
+
+            foreach ($requiredFields as $field) {
+                if (!array_key_exists($field, $data)) {
+                    throw new Exception("Campo '$field' es obligatorio", 400);
+                }
+            }
+
+            // Validar que contactMethod sea un array
+            if (!is_array($data['contactMethod'])) {
+                throw new Exception("El campo 'contactMethod' debe ser un objeto", 400);
+            }
+
+            // Ahora sí puedes crear el DTO sin riesgo de error fatal
+            $dto = new RegisterCitizenRequest(
+                documentType: $data['documentType'],
+                documentNumber: $data['documentNumber'],
+                alias: $data['alias'],
+                password: $data['password'],
+                contactMethod: $data['contactMethod']
+            );
+
+            // Registrar ciudadano
+            $result = $this->usuarioService->registerCitizen($dto);
+
+            $payload = json_encode($result);
+            $response->getBody()->write($payload);
+            return $response
+                ->withStatus(201)
+                ->withHeader('Content-Type', 'application/json');
+
+        } catch (Exception $e) {
+            // Validar código HTTP
+            $code = $e->getCode();
+            if (!is_int($code) || $code < 100 || $code > 599) {
+                $code = 500;
+            }
+
+            $errorResponse = [
+                'error' => [
+                    'message' => $e->getMessage(),
+                    'code' => $code,
+                    'status' => $code,
+                    'timestamp' => date('c'),
+                    'path' => $request->getUri()->getPath(),
+                ]
+            ];
+
+            $response->getBody()->write(json_encode($errorResponse));
+            return $response
+                ->withStatus($code)
+                ->withHeader('Content-Type', 'application/json');
+        }
+    }
 
     #[OA\Post(
         path: "/api/v1/auth/register/driver",

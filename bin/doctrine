@@ -4,8 +4,10 @@
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 
+// Ruta correcta a tu bootstrap.php
 require __DIR__ . '/../src/config/Bootstrap.php';
 
-global $entityManager;
+// El bootstrap.php devuelve directamente el $entityManager
+$entityManager = require __DIR__ . '/../src/config/Bootstrap.php';
 
 ConsoleRunner::run(new SingleManagerProvider($entityManager));

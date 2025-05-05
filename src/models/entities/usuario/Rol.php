@@ -3,8 +3,9 @@
 namespace itaxcix\models\entities\usuario;
 
 use Doctrine\ORM\Mapping as ORM;
+use itaxcix\models\repositories\usuario\RolRepository;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: RolRepository::class)]
 #[ORM\Table(name: 'tb_rol')]
 class Rol {
     #[ORM\Id]
@@ -17,4 +18,34 @@ class Rol {
 
     #[ORM\Column(name: 'rol_activo', type: 'boolean', options: ['default' => true])]
     private bool $activo = true;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getNombre(): string
+    {
+        return $this->nombre;
+    }
+
+    public function setNombre(string $nombre): void
+    {
+        $this->nombre = $nombre;
+    }
+
+    public function isActivo(): bool
+    {
+        return $this->activo;
+    }
+
+    public function setActivo(bool $activo): void
+    {
+        $this->activo = $activo;
+    }
 }

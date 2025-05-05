@@ -3,8 +3,9 @@
 namespace itaxcix\models\entities\persona;
 
 use Doctrine\ORM\Mapping as ORM;
+use itaxcix\models\repositories\persona\TipoDocumentoRepository;
 
-#[ORM\Entity(repositoryClass: "itaxcix/repository/persona/TipoDocumentoRepository")]
+#[ORM\Entity(repositoryClass: TipoDocumentoRepository::class)]
 #[ORM\Table(name: 'tb_tipo_documento')]
 class TipoDocumento
 {
@@ -48,6 +49,4 @@ class TipoDocumento
     {
         $this->activo = $activo;
     }
-
-
 }
