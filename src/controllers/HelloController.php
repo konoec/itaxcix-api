@@ -4,6 +4,9 @@ namespace itaxcix\controllers;
 
 use OpenApi\Attributes as OA;
 
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\ResponseInterface as Response;
+
 #[OA\Get(
     path: "/api/v1/hello/{name}",
     summary: "Saludar a un usuario",
@@ -21,10 +24,25 @@ use OpenApi\Attributes as OA;
         )
     ]
 )]
-class HelloController {
-    public function sayHello(array $vars): void
+class HelloController
+{
+    public function sayHello(Request $request, Response $response): Response
     {
-        $name = htmlspecialchars($vars['name'] ?? 'World');
-        echo json_encode(['message' => "Hola, $name"]);
+        // Obtener los parámetros de la ruta inyectados previamente
+        $routeParams = $request->getAttribute('route_params');
+
+        // Extraer 'name'
+        $name = $routeParams['name'] ?? 'World';
+
+        // Sanitizar nombre
+        $name = htmlspecialchars($name);
+
+        // Preparar respuesta JSON
+        $payload = json_encode(['message' => "Hola, $name"]);
+        $response->getBody()->write($payload);
+
+        return $response
+            ->withStatus(200)
+            ->withHeader('Content-Type', 'application/json');
     }
 }
