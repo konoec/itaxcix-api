@@ -4,7 +4,7 @@ namespace itaxcix\models\entities\usuario;
 
 use Doctrine\ORM\Mapping as ORM;
 use itaxcix\models\entities\persona\Persona;
-use itaxcix\models\repositories\usuario\UsuarioRepository;
+use itaxcix\repositories\usuario\UsuarioRepository;
 
 #[ORM\Entity(repositoryClass: UsuarioRepository::class)]
 #[ORM\Table(name: 'tb_usuario')]

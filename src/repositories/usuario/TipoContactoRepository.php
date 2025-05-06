@@ -1,6 +1,6 @@
 <?php
 
-namespace itaxcix\models\repositories\usuario;
+namespace itaxcix\repositories\usuario;
 
 use Doctrine\ORM\EntityRepository;
 use itaxcix\models\entities\usuario\TipoContacto;

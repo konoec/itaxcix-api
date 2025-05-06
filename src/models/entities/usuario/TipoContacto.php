@@ -3,7 +3,7 @@
 namespace itaxcix\models\entities\usuario;
 
 use Doctrine\ORM\Mapping as ORM;
-use itaxcix\models\repositories\usuario\TipoContactoRepository;
+use itaxcix\repositories\usuario\TipoContactoRepository;
 
 #[ORM\Entity(repositoryClass: TipoContactoRepository::class)]
 #[ORM\Table(name: 'tb_tipo_contacto')]

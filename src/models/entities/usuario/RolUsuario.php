@@ -3,7 +3,7 @@
 namespace itaxcix\models\entities\usuario;
 
 use Doctrine\ORM\Mapping as ORM;
-use itaxcix\models\repositories\usuario\RolUsuarioRepository;
+use itaxcix\repositories\usuario\RolUsuarioRepository;
 
 #[ORM\Entity(repositoryClass: RolUsuarioRepository::class)]
 #[ORM\Table(name: 'tb_rol_usuario')]

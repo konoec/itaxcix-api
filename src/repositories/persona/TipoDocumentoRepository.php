@@ -1,6 +1,6 @@
 <?php
 
-namespace itaxcix\models\repositories\persona;
+namespace itaxcix\repositories\persona;
 
 use Doctrine\ORM\EntityRepository;
 use itaxcix\models\entities\persona\TipoDocumento;

@@ -3,7 +3,7 @@
 namespace itaxcix\models\entities\usuario;
 
 use Doctrine\ORM\Mapping as ORM;
-use itaxcix\models\repositories\usuario\EstadoUsuarioRepository;
+use itaxcix\repositories\usuario\EstadoUsuarioRepository;
 
 #[ORM\Entity(repositoryClass: EstadoUsuarioRepository::class)]
 #[ORM\Table(name: 'tb_estado_usuario')]

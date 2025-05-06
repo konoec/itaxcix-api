@@ -3,7 +3,7 @@
 namespace itaxcix\models\entities\persona;
 
 use Doctrine\ORM\Mapping as ORM;
-use itaxcix\models\repositories\persona\PersonaRepository;
+use itaxcix\repositories\persona\PersonaRepository;
 
 #[ORM\Entity(repositoryClass: PersonaRepository::class)]
 #[ORM\Table(name: 'tb_persona')]
