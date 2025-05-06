@@ -3,8 +3,9 @@
 namespace itaxcix\models\entities\tuc;
 
 use Doctrine\ORM\Mapping as ORM;
+use itaxcix\repositories\tuc\TipoTramiteRepository;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: TipoTramiteRepository::class)]
 #[ORM\Table(name: 'tb_tipo_tramite')]
 class TipoTramite {
     #[ORM\Id]
@@ -17,4 +18,34 @@ class TipoTramite {
 
     #[ORM\Column(name: 'tipo_activo', type: 'boolean', options: ['default' => true])]
     private bool $activo = true;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getNombre(): ?string
+    {
+        return $this->nombre;
+    }
+
+    public function setNombre(?string $nombre): void
+    {
+        $this->nombre = $nombre;
+    }
+
+    public function isActivo(): bool
+    {
+        return $this->activo;
+    }
+
+    public function setActivo(bool $activo): void
+    {
+        $this->activo = $activo;
+    }
 }

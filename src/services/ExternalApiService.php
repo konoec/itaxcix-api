@@ -1,6 +1,6 @@
 <?php
 
-namespace itaxcix\services\utils;
+namespace itaxcix\services;
 
 class ExternalApiService {
     public function getPerson(string $documentType, string $documentNumber): ?array
@@ -19,6 +19,21 @@ class ExternalApiService {
                 'fecha_nacimiento' => '1990-05-15',
                 'direccion' => 'Av. Javier Prado 123',
                 'telefono' => '+51987654321',
+                'email' => 'juan.perez@example.com'
+            ];
+        }
+
+        // Caso exitoso: RUC
+        if ($documentType === '4') {
+            return [
+                'nombre' => 'Juan',
+                'apellido' => 'Pérez',
+                'documento' => $documentNumber,
+                'tipo_documento' => 'RUC',
+                'nacionalidad' => 'Peruana',
+                'fecha_nacimiento' => '1985-03-22',
+                'direccion' => 'Av. Los Incas 456',
+                'telefono' => '999888777',
                 'email' => 'juan.perez@example.com'
             ];
         }

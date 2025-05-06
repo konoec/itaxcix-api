@@ -16,6 +16,9 @@ class PerfilAdministrador {
     #[ORM\JoinColumn(name: 'perf_usuario_id', referencedColumnName: 'usua_id')]
     private ?Usuario $usuario = null;
 
-    #[ORM\Column(name: 'perf_disponible', type: 'boolean', options: ['default' => false])]
-    private bool $disponible = false;
+    #[ORM\Column(name: 'perf_area', type: 'string', length: 100)]
+    private ?string $area = null;
+
+    #[ORM\Column(name: 'perf_cargo', type: 'string', length: 100)]
+    private ?string $cargo = null;
 }

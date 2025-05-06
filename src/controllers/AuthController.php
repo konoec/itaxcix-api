@@ -4,17 +4,18 @@ namespace itaxcix\controllers;
 
 use Exception;
 use itaxcix\models\dtos\RegisterCitizenRequest;
-use itaxcix\services\usuario\UsuarioService;
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
+use itaxcix\models\dtos\RegisterDriverRequest;
+use itaxcix\services\AuthService;
 use OpenApi\Attributes as OA;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
 #[OA\Tag(name: "Auth", description: "Operaciones relacionadas con autenticación de usuarios")]
 class AuthController {
 
-    private UsuarioService $usuarioService;
+    private AuthService $usuarioService;
 
-    public function __construct(UsuarioService $usuarioService) {
+    public function __construct(AuthService $usuarioService) {
         $this->usuarioService = $usuarioService;
     }
 
@@ -170,7 +171,74 @@ class AuthController {
             new OA\Response(response: 400, description: "Datos inválidos o duplicados")
         ]
     )]
-    public function registerDriver(): void {}
+    public function registerDriver(Request $request, Response $response): Response
+    {
+        try {
+            $body = $request->getBody()->getContents();
+            if (empty(trim($body))) {
+                throw new Exception("Cuerpo de solicitud vacío", 400);
+            }
+
+            $data = json_decode($body, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new Exception("Formato JSON inválido: " . json_last_error_msg(), 400);
+            }
+
+            if (!is_array($data)) {
+                throw new Exception("El cuerpo debe ser un objeto JSON", 400);
+            }
+
+            $requiredFields = ['documentType', 'documentNumber', 'alias', 'password', 'contactMethod', 'licensePlate'];
+            foreach ($requiredFields as $field) {
+                if (!array_key_exists($field, $data)) {
+                    throw new Exception("Campo '$field' es obligatorio", 400);
+                }
+            }
+
+            if (!is_array($data['contactMethod'])) {
+                throw new Exception("El campo 'contactMethod' debe ser un objeto", 400);
+            }
+
+            $dto = new RegisterDriverRequest(
+                documentType: $data['documentType'],
+                documentNumber: $data['documentNumber'],
+                alias: $data['alias'],
+                password: $data['password'],
+                contactMethod: $data['contactMethod'],
+                licensePlate: $data['licensePlate']
+            );
+
+            $result = $this->usuarioService->registerDriver($dto);
+
+            $payload = json_encode($result);
+            $response->getBody()->write($payload);
+            return $response
+                ->withStatus(201)
+                ->withHeader('Content-Type', 'application/json');
+
+        } catch (Exception $e) {
+            $code = $e->getCode();
+            if (!is_int($code) || $code < 100 || $code > 599) {
+                $code = 500;
+            }
+
+            $errorResponse = [
+                'error' => [
+                    'message' => $e->getMessage(),
+                    'code' => $code,
+                    'status' => $code,
+                    'timestamp' => date('c'),
+                    'path' => $request->getUri()->getPath(),
+                ]
+            ];
+
+            $response->getBody()->write(json_encode($errorResponse));
+            return $response
+                ->withStatus($code)
+                ->withHeader('Content-Type', 'application/json');
+        }
+    }
 
     #[OA\Post(
         path: "/api/v1/auth/recover/email",

@@ -3,8 +3,9 @@
 namespace itaxcix\models\entities\ubicacion;
 
 use Doctrine\ORM\Mapping as ORM;
+use itaxcix\repositories\ubicacion\DistritoRepository;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: DistritoRepository::class)]
 #[ORM\Table(name: 'tb_distrito')]
 class Distrito {
     #[ORM\Id]
@@ -21,4 +22,44 @@ class Distrito {
 
     #[ORM\Column(name: 'dist_ubigeo', type: 'string', length: 6, nullable: true)]
     private ?string $ubigeo = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getNombre(): ?string
+    {
+        return $this->nombre;
+    }
+
+    public function setNombre(?string $nombre): void
+    {
+        $this->nombre = $nombre;
+    }
+
+    public function getProvincia(): ?Provincia
+    {
+        return $this->provincia;
+    }
+
+    public function setProvincia(?Provincia $provincia): void
+    {
+        $this->provincia = $provincia;
+    }
+
+    public function getUbigeo(): ?string
+    {
+        return $this->ubigeo;
+    }
+
+    public function setUbigeo(?string $ubigeo): void
+    {
+        $this->ubigeo = $ubigeo;
+    }
 }

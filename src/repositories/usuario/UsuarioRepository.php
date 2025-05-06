@@ -17,10 +17,4 @@ class UsuarioRepository extends EntityRepository
     {
         return $this->findOneBy(['persona' => $persona]);
     }
-
-    public function save(Usuario $usuario): void
-    {
-        $this->_em->persist($usuario);
-        $this->_em->flush();
-    }
 }

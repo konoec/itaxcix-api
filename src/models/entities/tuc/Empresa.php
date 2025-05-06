@@ -3,8 +3,9 @@
 namespace itaxcix\models\entities\tuc;
 
 use Doctrine\ORM\Mapping as ORM;
+use itaxcix\repositories\tuc\EmpresaRepository;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: EmpresaRepository::class)]
 #[ORM\Table(name: 'tb_empresa')]
 class Empresa {
     #[ORM\Id]
@@ -20,4 +21,44 @@ class Empresa {
 
     #[ORM\Column(name: 'empr_activo', type: 'boolean', options: ['default' => true])]
     private bool $activo = true;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getRuc(): ?string
+    {
+        return $this->ruc;
+    }
+
+    public function setRuc(?string $ruc): void
+    {
+        $this->ruc = $ruc;
+    }
+
+    public function getNombre(): string
+    {
+        return $this->nombre;
+    }
+
+    public function setNombre(string $nombre): void
+    {
+        $this->nombre = $nombre;
+    }
+
+    public function isActivo(): bool
+    {
+        return $this->activo;
+    }
+
+    public function setActivo(bool $activo): void
+    {
+        $this->activo = $activo;
+    }
 }

@@ -3,8 +3,9 @@
 namespace itaxcix\models\entities\ubicacion;
 
 use Doctrine\ORM\Mapping as ORM;
+use itaxcix\repositories\ubicacion\DepartamentoRepository;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: DepartamentoRepository::class)]
 #[ORM\Table(name: 'tb_departamento')]
 class Departamento {
     #[ORM\Id]
@@ -17,4 +18,34 @@ class Departamento {
 
     #[ORM\Column(name: 'depa_ubigeo', type: 'string', length: 6, nullable: true)]
     private ?string $ubigeo = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getNombre(): ?string
+    {
+        return $this->nombre;
+    }
+
+    public function setNombre(?string $nombre): void
+    {
+        $this->nombre = $nombre;
+    }
+
+    public function getUbigeo(): ?string
+    {
+        return $this->ubigeo;
+    }
+
+    public function setUbigeo(?string $ubigeo): void
+    {
+        $this->ubigeo = $ubigeo;
+    }
 }

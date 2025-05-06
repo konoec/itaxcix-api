@@ -24,7 +24,7 @@ class RegisterCitizenRequest
         array $contactMethod
     ): void {
         // Validación del tipo de documento
-        if (!in_array($documentType, [1, 2, 3])) {
+        if (!in_array($documentType, [1, 2, 3, 4])) {
             throw new Exception("Tipo de documento inválido.", 400);
         }
 
@@ -45,6 +45,12 @@ class RegisterCitizenRequest
             case 2: // Pasaporte - 8 o 9 caracteres alfanuméricos
                 if (!preg_match('/^[A-Za-z0-9]{8,9}$/', $documentNumber)) {
                     throw new Exception("Número de pasaporte inválido. Debe tener entre 8 y 9 caracteres alfanuméricos.", 400);
+                }
+                break;
+
+            case 4: // RUC - 11 dígitos y debe iniciar con 10, 15, 16, 17 o 20
+                if (!preg_match('/^(10|15|16|17|20)\d{9}$/', $documentNumber)) {
+                    throw new Exception("Número de RUC inválido. Debe tener 11 dígitos y empezar con 10, 15, 16, 17 o 20.", 400);
                 }
                 break;
         }

@@ -3,8 +3,9 @@
 namespace itaxcix\models\entities\vehiculo;
 
 use Doctrine\ORM\Mapping as ORM;
+use itaxcix\repositories\vehiculo\CategoriaVehiculoRepository;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: CategoriaVehiculoRepository::class)]
 #[ORM\Table(name: 'tb_categoria_vehiculo')]
 class CategoriaVehiculo {
     #[ORM\Id]
@@ -17,4 +18,34 @@ class CategoriaVehiculo {
 
     #[ORM\Column(name: 'cate_activo', type: 'boolean', options: ['default' => true])]
     private bool $activo = true;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getNombre(): string
+    {
+        return $this->nombre;
+    }
+
+    public function setNombre(string $nombre): void
+    {
+        $this->nombre = $nombre;
+    }
+
+    public function isActivo(): bool
+    {
+        return $this->activo;
+    }
+
+    public function setActivo(bool $activo): void
+    {
+        $this->activo = $activo;
+    }
 }

@@ -32,30 +32,14 @@ class RegisterDriverRequest
         array $contactMethod,
         string $licensePlate
     ): void {
-        // Validación del tipo de documento
-        if (!in_array($documentType, ['1', '2', '3'])) {
-            throw new Exception("Tipo de documento inválido.", 400);
+        // Validación del tipo de documento: solo se permite RUC
+        if ($documentType !== '4') {
+            throw new Exception("Solo se permite RUC como tipo de documento.", 400);
         }
 
-        // Validación del número de documento según tipo
-        switch ($documentType) {
-            case '1': // DNI - 8 dígitos
-                if (!preg_match('/^\d{8}$/', $documentNumber)) {
-                    throw new Exception("Número de DNI inválido. Debe tener 8 dígitos.", 400);
-                }
-                break;
-
-            case '3': // Carné de Extranjería - E + 8 números o C + 8 números
-                if (!preg_match('/^[EC]\d{8}$/i', $documentNumber)) {
-                    throw new Exception("Número de Carné de Extranjería inválido. Ejemplo: E12345678", 400);
-                }
-                break;
-
-            case '2': // Pasaporte - 8 o 9 caracteres alfanuméricos
-                if (!preg_match('/^[A-Za-z0-9]{8,9}$/', $documentNumber)) {
-                    throw new Exception("Número de pasaporte inválido. Debe tener entre 8 y 9 caracteres alfanuméricos.", 400);
-                }
-                break;
+        // Validación del RUC - 11 dígitos y debe empezar con 10, 15, 16, 17 o 20
+        if (!preg_match('/^(10|15|16|17|20)\d{9}$/', $documentNumber)) {
+            throw new Exception("Número de RUC inválido. Debe tener 11 dígitos y empezar con 10, 15, 16, 17 o 20.", 400);
         }
 
         // Validación del alias
@@ -71,17 +55,15 @@ class RegisterDriverRequest
             throw new Exception("Debe proporcionar un email o teléfono.", 400);
         }
 
-        // Validación del email (si se proporciona)
         if (isset($contactMethod['email']) && !filter_var($contactMethod['email'], FILTER_VALIDATE_EMAIL)) {
             throw new Exception("Correo electrónico no válido.", 400);
         }
 
-        // Validación del teléfono (si se proporciona)
         if (isset($contactMethod['phone']) && !preg_match('/^\+?[0-9]{8,15}$/', $contactMethod['phone'])) {
             throw new Exception("Número de teléfono no válido. Debe tener entre 8 y 15 dígitos.", 400);
         }
 
-        // Validación de la placa del vehículo (formato básico: 6 caracteres alfanuméricos)
+        // Validación de la placa del vehículo
         if (!preg_match('/^[A-Z0-9]{6}$/', $licensePlate)) {
             throw new Exception("Placa del vehículo no válida. Debe tener 6 caracteres alfanuméricos mayúsculos.", 400);
         }

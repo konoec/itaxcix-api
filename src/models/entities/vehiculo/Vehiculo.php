@@ -3,8 +3,9 @@
 namespace itaxcix\models\entities\vehiculo;
 
 use Doctrine\ORM\Mapping as ORM;
+use itaxcix\repositories\vehiculo\VehiculoRepository;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: VehiculoRepository::class)]
 #[ORM\Table(name: 'tb_vehiculo')]
 class Vehiculo {
     #[ORM\Id]
@@ -46,4 +47,114 @@ class Vehiculo {
 
     #[ORM\Column(type: 'boolean', name: 'vehi_activo', options: ['default' => true])]
     private bool $activo = true;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getPlaca(): string
+    {
+        return $this->placa;
+    }
+
+    public function setPlaca(string $placa): void
+    {
+        $this->placa = $placa;
+    }
+
+    public function getModelo(): ?Modelo
+    {
+        return $this->modelo;
+    }
+
+    public function setModelo(?Modelo $modelo): void
+    {
+        $this->modelo = $modelo;
+    }
+
+    public function getColor(): ?Color
+    {
+        return $this->color;
+    }
+
+    public function setColor(?Color $color): void
+    {
+        $this->color = $color;
+    }
+
+    public function getAnioFabricacion(): ?int
+    {
+        return $this->anioFabricacion;
+    }
+
+    public function setAnioFabricacion(?int $anioFabricacion): void
+    {
+        $this->anioFabricacion = $anioFabricacion;
+    }
+
+    public function getNumeroAsientos(): ?int
+    {
+        return $this->numeroAsientos;
+    }
+
+    public function setNumeroAsientos(?int $numeroAsientos): void
+    {
+        $this->numeroAsientos = $numeroAsientos;
+    }
+
+    public function getNumeroPasajeros(): ?int
+    {
+        return $this->numeroPasajeros;
+    }
+
+    public function setNumeroPasajeros(?int $numeroPasajeros): void
+    {
+        $this->numeroPasajeros = $numeroPasajeros;
+    }
+
+    public function getTipoCombustible(): ?TipoCombustible
+    {
+        return $this->tipoCombustible;
+    }
+
+    public function setTipoCombustible(?TipoCombustible $tipoCombustible): void
+    {
+        $this->tipoCombustible = $tipoCombustible;
+    }
+
+    public function getClase(): ?ClaseVehiculo
+    {
+        return $this->clase;
+    }
+
+    public function setClase(?ClaseVehiculo $clase): void
+    {
+        $this->clase = $clase;
+    }
+
+    public function getCategoria(): ?CategoriaVehiculo
+    {
+        return $this->categoria;
+    }
+
+    public function setCategoria(?CategoriaVehiculo $categoria): void
+    {
+        $this->categoria = $categoria;
+    }
+
+    public function isActivo(): bool
+    {
+        return $this->activo;
+    }
+
+    public function setActivo(bool $activo): void
+    {
+        $this->activo = $activo;
+    }
 }

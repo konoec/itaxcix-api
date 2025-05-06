@@ -3,8 +3,9 @@
 namespace itaxcix\models\entities\usuario;
 
 use Doctrine\ORM\Mapping as ORM;
+use itaxcix\repositories\usuario\ContactoUsuarioRepository;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: ContactoUsuarioRepository::class)]
 #[ORM\Table(name: 'tb_contacto_usuario')]
 class ContactoUsuario
 {

@@ -6,8 +6,9 @@ use Doctrine\ORM\Mapping as ORM;
 use itaxcix\models\entities\ubicacion\Distrito;
 use itaxcix\models\entities\usuario\Usuario;
 use itaxcix\models\entities\vehiculo\Vehiculo;
+use itaxcix\repositories\tuc\TramiteTucRepository;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: TramiteTucRepository::class)]
 #[ORM\Table(name: 'tb_tramite_tuc')]
 class TramiteTuc {
     #[ORM\Id]
@@ -54,4 +55,124 @@ class TramiteTuc {
 
     #[ORM\Column(name: 'tram_fecha_caducidad', type: 'date', nullable: true)]
     private ?\DateTime $fechaCaducidad = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getCodigo(): ?string
+    {
+        return $this->codigo;
+    }
+
+    public function setCodigo(?string $codigo): void
+    {
+        $this->codigo = $codigo;
+    }
+
+    public function getUsuario(): ?Usuario
+    {
+        return $this->usuario;
+    }
+
+    public function setUsuario(?Usuario $usuario): void
+    {
+        $this->usuario = $usuario;
+    }
+
+    public function getVehiculo(): ?Vehiculo
+    {
+        return $this->vehiculo;
+    }
+
+    public function setVehiculo(?Vehiculo $vehiculo): void
+    {
+        $this->vehiculo = $vehiculo;
+    }
+
+    public function getEmpresa(): ?Empresa
+    {
+        return $this->empresa;
+    }
+
+    public function setEmpresa(?Empresa $empresa): void
+    {
+        $this->empresa = $empresa;
+    }
+
+    public function getDistrito(): ?Distrito
+    {
+        return $this->distrito;
+    }
+
+    public function setDistrito(?Distrito $distrito): void
+    {
+        $this->distrito = $distrito;
+    }
+
+    public function getEstado(): ?EstadoTuc
+    {
+        return $this->estado;
+    }
+
+    public function setEstado(?EstadoTuc $estado): void
+    {
+        $this->estado = $estado;
+    }
+
+    public function getTipo(): ?TipoTramite
+    {
+        return $this->tipo;
+    }
+
+    public function setTipo(?TipoTramite $tipo): void
+    {
+        $this->tipo = $tipo;
+    }
+
+    public function getModalidad(): ?ModalidadTuc
+    {
+        return $this->modalidad;
+    }
+
+    public function setModalidad(?ModalidadTuc $modalidad): void
+    {
+        $this->modalidad = $modalidad;
+    }
+
+    public function getFechaTramite(): ?\DateTime
+    {
+        return $this->fechaTramite;
+    }
+
+    public function setFechaTramite(?\DateTime $fechaTramite): void
+    {
+        $this->fechaTramite = $fechaTramite;
+    }
+
+    public function getFechaEmision(): ?\DateTime
+    {
+        return $this->fechaEmision;
+    }
+
+    public function setFechaEmision(?\DateTime $fechaEmision): void
+    {
+        $this->fechaEmision = $fechaEmision;
+    }
+
+    public function getFechaCaducidad(): ?\DateTime
+    {
+        return $this->fechaCaducidad;
+    }
+
+    public function setFechaCaducidad(?\DateTime $fechaCaducidad): void
+    {
+        $this->fechaCaducidad = $fechaCaducidad;
+    }
 }

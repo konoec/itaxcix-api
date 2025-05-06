@@ -3,8 +3,9 @@
 namespace itaxcix\models\entities\vehiculo;
 
 use Doctrine\ORM\Mapping as ORM;
+use itaxcix\repositories\vehiculo\ModeloRepository;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: ModeloRepository::class)]
 #[ORM\Table(name: 'tb_modelo')]
 class Modelo {
     #[ORM\Id]
@@ -21,4 +22,44 @@ class Modelo {
 
     #[ORM\Column(name: 'mode_activo', type: 'boolean', options: ['default' => true])]
     private bool $activo = true;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getNombre(): string
+    {
+        return $this->nombre;
+    }
+
+    public function setNombre(string $nombre): void
+    {
+        $this->nombre = $nombre;
+    }
+
+    public function getMarca(): ?Marca
+    {
+        return $this->marca;
+    }
+
+    public function setMarca(?Marca $marca): void
+    {
+        $this->marca = $marca;
+    }
+
+    public function isActivo(): bool
+    {
+        return $this->activo;
+    }
+
+    public function setActivo(bool $activo): void
+    {
+        $this->activo = $activo;
+    }
 }
