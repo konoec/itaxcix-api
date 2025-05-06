@@ -35,4 +35,84 @@ class CodigoUsuario {
 
     #[ORM\Column(name: 'codi_usado', type: 'boolean', options: ['default' => false])]
     private bool $usado = false;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getUsuario(): ?Usuario
+    {
+        return $this->usuario;
+    }
+
+    public function setUsuario(?Usuario $usuario): void
+    {
+        $this->usuario = $usuario;
+    }
+
+    public function getTipo(): ?TipoCodigoUsuario
+    {
+        return $this->tipo;
+    }
+
+    public function setTipo(?TipoCodigoUsuario $tipo): void
+    {
+        $this->tipo = $tipo;
+    }
+
+    public function getContacto(): ?ContactoUsuario
+    {
+        return $this->contacto;
+    }
+
+    public function setContacto(?ContactoUsuario $contacto): void
+    {
+        $this->contacto = $contacto;
+    }
+
+    public function getCodigo(): string
+    {
+        return $this->codigo;
+    }
+
+    public function setCodigo(string $codigo): void
+    {
+        $this->codigo = $codigo;
+    }
+
+    public function getFechaExpiracion(): \DateTime
+    {
+        return $this->fechaExpiracion;
+    }
+
+    public function setFechaExpiracion(\DateTime $fechaExpiracion): void
+    {
+        $this->fechaExpiracion = $fechaExpiracion;
+    }
+
+    public function getFechaUso(): ?\DateTime
+    {
+        return $this->fechaUso;
+    }
+
+    public function setFechaUso(?\DateTime $fechaUso): void
+    {
+        $this->fechaUso = $fechaUso;
+    }
+
+    public function isUsado(): bool
+    {
+        return $this->usado;
+    }
+
+    public function setUsado(bool $usado): void
+    {
+        $this->usado = $usado;
+    }
 }

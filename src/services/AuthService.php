@@ -2,9 +2,12 @@
 
 namespace itaxcix\services;
 
+use DateTime;
+use DateTimeZone;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Exception;
+use itaxcix\models\dtos\LoginRequest;
 use itaxcix\models\dtos\RegisterCitizenRequest;
 use itaxcix\models\dtos\RegisterDriverRequest;
 use itaxcix\models\entities\persona\Persona;
@@ -18,11 +21,13 @@ use itaxcix\models\entities\tuc\TramiteTuc;
 use itaxcix\models\entities\ubicacion\Departamento;
 use itaxcix\models\entities\ubicacion\Distrito;
 use itaxcix\models\entities\ubicacion\Provincia;
+use itaxcix\models\entities\usuario\CodigoUsuario;
 use itaxcix\models\entities\usuario\ContactoUsuario;
 use itaxcix\models\entities\usuario\EstadoUsuario;
 use itaxcix\models\entities\usuario\PerfilConductor;
 use itaxcix\models\entities\usuario\Rol;
 use itaxcix\models\entities\usuario\RolUsuario;
+use itaxcix\models\entities\usuario\TipoCodigoUsuario;
 use itaxcix\models\entities\usuario\TipoContacto;
 use itaxcix\models\entities\usuario\Usuario;
 use itaxcix\models\entities\vehiculo\CategoriaVehiculo;
@@ -37,8 +42,11 @@ class AuthService {
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly ExternalApiService $externalApiService
-    ) {}
+        private readonly ExternalApiService $externalApiService,
+        private readonly JwtService $jwtService
+    ) {
+
+    }
 
     private function getPersonaRepository(): EntityRepository {
         return $this->entityManager->getRepository(Persona::class);
@@ -111,7 +119,7 @@ class AuthService {
             }
 
             // Obtener estado por defecto
-            $estadoUsuario = $this->getEstadoUsuarioRepository()->findByName('Pendiente de Confirmación')
+            $estadoUsuario = $this->getEstadoUsuarioRepository()->findByName('Activo')
                 ?? $this->getEstadoUsuarioRepository()->getDefault();
 
             if (!$estadoUsuario) {
@@ -368,11 +376,11 @@ class AuthService {
 
             $estadoTuc = $estadoTucRepo->findOneBy(['nombre' => 'Activo']);
             if (!$estadoTuc) {
-                throw new \Exception("No existe el estado TUC 'Activo'", 500);
+                throw new Exception("No existe el estado TUC 'Activo'", 500);
             }
 
             // 6. Registrar usuario
-            $estadoUsuario = $this->getEstadoUsuarioRepository()->findByName('Pendiente de Confirmación')
+            $estadoUsuario = $this->getEstadoUsuarioRepository()->findByName('Activo')
                 ?? $this->getEstadoUsuarioRepository()->getDefault();
             if (!$estadoUsuario) {
                 throw new Exception('No hay estados de usuario configurados.', 500);
@@ -405,9 +413,9 @@ class AuthService {
             $this->entityManager->flush();
 
             // 8. Registrar tramite TUC
-            $fechaTram = isset($tucData['FECHA_TRAM']) ? \DateTime::createFromFormat('Ymd', $tucData['FECHA_TRAM']) : null;
-            $fechaEmi = isset($tucData['FECHA_EMI']) ? \DateTime::createFromFormat('Ymd', $tucData['FECHA_EMI']) : null;
-            $fechaCaduc = isset($tucData['FECHA_CADUC']) ? \DateTime::createFromFormat('Ymd', $tucData['FECHA_CADUC']) : null;
+            $fechaTram = isset($tucData['FECHA_TRAM']) ? DateTime::createFromFormat('Ymd', $tucData['FECHA_TRAM']) : null;
+            $fechaEmi = isset($tucData['FECHA_EMI']) ? DateTime::createFromFormat('Ymd', $tucData['FECHA_EMI']) : null;
+            $fechaCaduc = isset($tucData['FECHA_CADUC']) ? DateTime::createFromFormat('Ymd', $tucData['FECHA_CADUC']) : null;
 
             $tramiteTuc = new TramiteTuc();
             $tramiteTuc->setUsuario($usuario);
@@ -471,5 +479,270 @@ class AuthService {
             $this->entityManager->rollback();
             throw $e;
         }
+    }
+
+    public function login(LoginRequest $request): array
+    {
+        // 1. Buscar usuario por alias
+        $usuario = $this->getUsuarioRepository()->findByAlias($request->alias);
+        if (!$usuario) {
+            throw new Exception('Credenciales inválidas.', 401);
+        }
+
+        // 2. Verificar contraseña
+        if (!password_verify($request->password, $usuario->getClave())) {
+            throw new Exception('Credenciales inválidas.', 401);
+        }
+
+        // 3. Verificar estado (opcional)
+        if (method_exists($usuario, 'getEstado') && $usuario->getEstado() && method_exists($usuario->getEstado(), 'getNombre')) {
+            $estado = $usuario->getEstado()->getNombre();
+            if ($estado !== 'Activo') {
+                throw new Exception('El usuario no está activo.', 403);
+            }
+        }
+
+        // 4. Generar token JWT
+        $token = $this->jwtService->generateToken([
+            'id' => $usuario->getId(),
+            'alias' => $usuario->getAlias(),
+            'role' => $this->getRoleFromUser($usuario), // Método auxiliar opcional
+        ]);
+
+        $token = $this->jwtService->generateToken([
+            'id' => $usuario->getId(),
+            'alias' => $usuario->getAlias(),
+            'role' => $this->getRoleFromUser($usuario),
+        ]);
+
+        // 5. Retornar token y datos del usuario
+        return [
+            'token' => $token,
+            'user' => [
+                'id' => $usuario->getId(),
+                'alias' => $usuario->getAlias(),
+                'role' => $this->getRoleFromUser($usuario),
+                // Puedes agregar más campos si lo necesitas
+            ],
+        ];
+    }
+
+    private function getRoleFromUser($usuario): string
+    {
+        // Aseguramos que el usuario tenga el método getRol()
+        if (!method_exists($usuario, 'getRol') || !$usuario->getRol()) {
+            return 'user'; // Rol por defecto si no existe o es null
+        }
+
+        // Obtenemos el objeto rol
+        $rol = $usuario->getRol();
+
+        // Aseguramos que el rol tenga el método getNombre()
+        if (!method_exists($rol, 'getNombre')) {
+            return 'user';
+        }
+
+        // Obtenemos el nombre del rol
+        $rolNombre = $rol->getNombre(); // Esto debería devolver "Ciudadano", "Conductor" o "Administrador"
+
+        // Validamos que sea uno de los 3 roles permitidos
+        $allowedRoles = ['Ciudadano', 'Conductor', 'Administrador'];
+        if (!in_array($rolNombre, $allowedRoles)) {
+            return 'user'; // Rol desconocido, fallback
+        }
+
+        return $rolNombre;
+    }
+
+    public function requestRecoveryByEmail(string $email): void
+    {
+        $contacto = $this->findContacto($email); // Usa el nuevo método
+
+        // 2. Generar código aleatorio
+        $codigo = $this->generateVerificationCode(); // Ej: "ABC123"
+
+        // 3. Guardar código en tb_codigo_usuario
+        $codigoEntity = new CodigoUsuario();
+        $codigoEntity->setUsuario($contacto->getUsuario());
+        $codigoEntity->setCodigo($codigo);
+        $codigoEntity->setFechaExpiracion((new DateTime())->modify('+15 minutes'));
+        $codigoEntity->setTipo($this->getCodigoTipo('Recuperación'));
+        $codigoEntity->setContacto($contacto);
+
+        $this->entityManager->persist($codigoEntity);
+        $this->entityManager->flush();
+
+        // 4. Simular envío del código por correo
+        $this->sendRecoveryEmail($email, $codigo);
+    }
+
+    private function generateVerificationCode(): string
+    {
+        return strtoupper(substr(md5(random_bytes(10)), 0, 6));
+    }
+
+    private function sendRecoveryEmail(string $email, string $codigo): void
+    {
+        // Aquí iría el envío real del correo
+        error_log("Enviando código de recuperación a $email: $codigo");
+    }
+
+    public function verifyCode(string $code, ?string $email = null, ?string $phone = null): array
+    {
+        try {
+            $contacto = $this->findContacto($email, $phone);
+
+            // Este método ahora hace toda la validación
+            $codigo = $this->findCodigo($code, $contacto);
+
+            // Marcar como usado
+            $codigo->setUsado(true);
+            $this->entityManager->flush();
+
+            return [
+                'userId' => $contacto->getUsuario()->getId()
+            ];
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    public function resetPassword(int $userId, string $newPassword): void
+    {
+        $usuario = $this->entityManager->find(Usuario::class, $userId);
+
+        if (!$usuario) {
+            throw new Exception("Usuario no encontrado", 404);
+        }
+
+        // Validar contraseña
+        $this->validatePassword($newPassword);
+
+        // Actualizar contraseña
+        $usuario->setClave(password_hash($newPassword, PASSWORD_DEFAULT));
+        $this->entityManager->flush();
+    }
+
+    private function validatePassword(string $password): void
+    {
+        if (strlen($password) < 8) {
+            throw new Exception("La contraseña debe tener al menos 8 caracteres.", 400);
+        }
+
+        if (!preg_match('/[A-Z]/', $password)) {
+            throw new Exception("La contraseña debe contener al menos una letra mayúscula.", 400);
+        }
+
+        if (!preg_match('/[a-z]/', $password)) {
+            throw new Exception("La contraseña debe contener al menos una letra minúscula.", 400);
+        }
+
+        if (!preg_match('/[0-9]/', $password)) {
+            throw new Exception("La contraseña debe contener al menos un número.", 400);
+        }
+
+        if (!preg_match('/[\W_]/', $password)) {
+            throw new Exception("La contraseña debe contener al menos un carácter especial.", 400);
+        }
+    }
+
+    public function requestRecoveryByPhone(string $phone): void
+    {
+        $contacto = $this->findContacto(null, $phone); // Usa el nuevo método
+
+        // Generar código
+        $codigo = strtoupper(substr(md5(random_bytes(10)), 0, 6));
+        $now = new DateTime();
+
+        // Crear entidad
+        $codigoEntity = new CodigoUsuario();
+        $codigoEntity->setUsuario($contacto->getUsuario());
+        $codigoEntity->setCodigo($codigo);
+        $codigoEntity->setFechaExpiracion((new DateTime())->modify('+15 minutes'));
+        $codigoEntity->setUsado(false);
+        $codigoEntity->setContacto($contacto);
+        $codigoEntity->setTipo($this->getCodigoTipo('Recuperación'));
+
+        $this->entityManager->persist($codigoEntity);
+        $this->entityManager->flush();
+
+        // Aquí iría el envío real del SMS
+        error_log("Enviando código de recuperación al teléfono $phone: $codigo");
+    }
+
+    private function getCodigoTipo(string $nombre): TipoCodigoUsuario
+    {
+        $repo = $this->entityManager->getRepository(TipoCodigoUsuario::class);
+        $tipo = $repo->findOneBy(['nombre' => $nombre]);
+
+        if (!$tipo) {
+            throw new Exception("Tipo de código '$nombre' no encontrado", 400);
+        }
+
+        return $tipo;
+    }
+
+    private function findContacto(?string $email = null, ?string $phone = null, bool $activoOnly = true): ?ContactoUsuario
+    {
+        if (!$email && !$phone) {
+            throw new Exception("Se requiere al menos un email o número de teléfono.", 400);
+        }
+
+        $contactoRepo = $this->entityManager->getRepository(ContactoUsuario::class);
+
+        $criteria = [];
+
+        if ($email) {
+            $criteria['valor'] = $email;
+        } elseif ($phone) {
+            $criteria['valor'] = $phone;
+        }
+
+        if ($activoOnly) {
+            $criteria['activo'] = true;
+        }
+
+        $contacto = $contactoRepo->findOneBy($criteria);
+
+        if (!$contacto) {
+            $tipo = $email ? 'correo electrónico' : 'teléfono';
+            throw new Exception("No se encontró ningún contacto con ese $tipo.", 404);
+        }
+
+        return $contacto;
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function findCodigo(string $code, ContactoUsuario $contacto): ?CodigoUsuario
+    {
+        if (empty(trim($code))) {
+            throw new Exception("El código es obligatorio.", 400);
+        }
+
+        $codigoRepo = $this->entityManager->getRepository(CodigoUsuario::class);
+        $codigo = $codigoRepo->findOneBy([
+            'contacto' => $contacto,
+            'codigo' => $code
+        ]);
+
+        if (!$codigo) {
+            throw new Exception("Código inválido o no encontrado", 400);
+        }
+
+        if ($codigo->isUsado()) {
+            throw new Exception("Este código ya fue utilizado", 400);
+        }
+
+        if ($codigo->getFechaExpiracion() === null) {
+            throw new Exception("Código sin fecha de expiración", 400);
+        }
+
+        $now = new \DateTime('now', new \DateTimeZone('America/Caracas'));
+        $expiracion = clone $now;
+        $expiracion->modify('+15 minutes');
+
+        return $codigo;
     }
 }

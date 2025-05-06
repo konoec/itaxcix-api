@@ -3,26 +3,36 @@
 use DI\ContainerBuilder;
 use Doctrine\ORM\EntityManagerInterface;
 use FastRoute\Dispatcher;
+use itaxcix\middleware\JwtMiddleware;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use Nyholm\Psr7\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use function DI\autowire;
 use function FastRoute\simpleDispatcher;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-// Cargar el EntityManager desde Bootstrap
+// Cargar EntityManager
 $entityManager = require __DIR__ . '/../src/config/Bootstrap.php';
 
 // Configurar PHP-DI
 $containerBuilder = new ContainerBuilder();
 $containerBuilder->addDefinitions([
     EntityManagerInterface::class => fn() => $entityManager,
+    JwtMiddleware::class => \DI\autowire()
+        ->constructor($_ENV['JWT_SECRET']),
 ]);
+
 $container = $containerBuilder->build();
 
 // Cargar rutas
 $routeDefinitionCallback = require __DIR__ . '/../src/config/Api.php';
 $dispatcher = simpleDispatcher($routeDefinitionCallback);
 
-// Procesar la solicitud
+// Procesar URI
 $httpMethod = $_SERVER['REQUEST_METHOD'];
 $uri = $_SERVER['REQUEST_URI'];
 
@@ -49,51 +59,83 @@ switch ($routeInfo[0]) {
         $handler = $routeInfo[1];
         $vars = $routeInfo[2];
 
-        // ✅ Crear PSR-17 Factory
+        // PSR-17 Factory
         $psr17Factory = new Psr17Factory();
 
-        // ✅ Crear ServerRequest desde globales
+        // Procesar URI
         $uri = $_SERVER['REQUEST_URI'];
-        $method = $_SERVER['REQUEST_METHOD'];
-        $serverParams = $_SERVER;
+        if (false !== ($pos = strpos($uri, '?'))) {
+            $uri = substr($uri, 0, $pos);
+        }
+        $uri = rawurldecode($uri);
 
+        // Body
         $bodyContent = file_get_contents('php://input');
-
         $stream = $psr17Factory->createStream($bodyContent);
 
-        $request = $psr17Factory->createServerRequest($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI'], $_SERVER)
-            ->withBody($stream);
+        // Request
+        $request = $psr17Factory->createServerRequest($_SERVER['REQUEST_METHOD'], $uri, $_SERVER)
+            ->withBody($stream)
+            ->withAttribute('route_params', $vars);
 
-        // ✅ Agregar headers al request
+        // Headers
         foreach (getallheaders() as $name => $value) {
             $request = $request->withHeader($name, $value);
         }
 
-        // ✅ Añadir parámetros de ruta como atributo del request
-        $request = $request->withAttribute('route_params', $vars);
+        // Verificar si es una ruta protegida con middleware
+        if (
+            is_array($handler) &&
+            count($handler) === 2 &&
+            class_exists($handler[0]) &&
+            is_subclass_of($handler[0], MiddlewareInterface::class) &&
+            is_string($handler[1])
+        ) {
 
-        // ✅ Crear respuesta
-        $response = $psr17Factory->createResponse();
+            [$middlewareClass, $target] = $handler;
+            [$controllerClass, $controllerMethod] = explode('@', $target);
 
-        // ✅ Inyectar dependencias y ejecutar controlador
-        [$class, $method] = $handler;
-        $controller = $container->get($class);
-        $response = $controller->$method($request, $response);
+            // Cargar middleware desde DI
+            $middleware = $container->get($middlewareClass);
 
-        // ✅ Enviar respuesta usando funciones nativas de PHP
-        // (en lugar de ResponseSender, que no existe en nyholm/psr7 v3+)
+            // Handler final
+            $handlerFn = function (ServerRequestInterface $request) use ($container, $controllerClass, $controllerMethod) {
+                $controller = $container->get($controllerClass);
+                return $controller->$controllerMethod($request, new Response());
+            };
 
-        // Enviar código de estado
+            // Ejecutar middleware
+            $response = $middleware->process(
+                $request,
+                new class($handlerFn) implements RequestHandlerInterface {
+                    private $handler;
+
+                    public function __construct(callable $handler) {
+                        $this->handler = $handler;
+                    }
+
+                    public function handle(ServerRequestInterface $request): ResponseInterface {
+                        return ($this->handler)($request);
+                    }
+                }
+            );
+
+        } else {
+            // Ruta pública sin middleware
+            [$controllerClass, $controllerMethod] = $handler;
+            $controller = $container->get($controllerClass);
+            $response = $controller->$controllerMethod($request, new Response());
+        }
+
+        // Enviar respuesta
         http_response_code($response->getStatusCode());
 
-        // Enviar encabezados
         foreach ($response->getHeaders() as $name => $values) {
             foreach ($values as $value) {
                 header(sprintf('%s: %s', $name, $value));
             }
         }
 
-        // Enviar cuerpo de la respuesta
         echo $response->getBody();
         break;
 }

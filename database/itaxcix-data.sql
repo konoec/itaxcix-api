@@ -3,8 +3,7 @@ VALUES ('DNI'),('Pasaporte'),('Carné de Extranjería'),
        ('RUC');
 
 INSERT INTO tb_estado_usuario (esta_nombre)
-VALUES ('Activo'),('Inactivo'),('Bloqueado'),
-       ('Pendiente de Confirmación');
+VALUES ('Activo'),('Inactivo'),('Bloqueado');
 
 INSERT INTO tb_tipo_contacto (tipo_nombre)
 VALUES ('Correo Electrónico'), ('Teléfono Móvil');

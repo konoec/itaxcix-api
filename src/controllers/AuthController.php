@@ -3,12 +3,17 @@
 namespace itaxcix\controllers;
 
 use Exception;
+use itaxcix\models\dtos\LoginRequest;
 use itaxcix\models\dtos\RegisterCitizenRequest;
 use itaxcix\models\dtos\RegisterDriverRequest;
+use itaxcix\models\dtos\ResetPasswordRequest;
+use itaxcix\models\dtos\VerifyCodeRequest;
 use itaxcix\services\AuthService;
+use Nyholm\Psr7\Stream;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\StreamInterface;
 
 #[OA\Tag(name: "Auth", description: "Operaciones relacionadas con autenticación de usuarios")]
 class AuthController {
@@ -39,14 +44,83 @@ class AuthController {
                 description: "Inicio de sesión exitoso",
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: "token", type: "string", example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.xxxxx")
+                        new OA\Property(property: "message", type: "string", example: "Login successful")
                     ]
                 )
             ),
             new OA\Response(response: 401, description: "Credenciales inválidas")
         ]
     )]
-    public function login(): void {}
+    public function login(Request $request, Response $response): Response
+    {
+        try {
+            // 1. Leer y validar cuerpo de la solicitud
+            $body = $request->getBody()->getContents();
+            if (empty(trim($body))) {
+                throw new Exception("Cuerpo de solicitud vacío", 400);
+            }
+
+            $data = json_decode($body, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new Exception("Formato JSON inválido: " . json_last_error_msg(), 400);
+            }
+
+            // 2. Validar campos requeridos
+            if (!isset($data['alias']) || !isset($data['password'])) {
+                throw new Exception("Faltan campos requeridos (alias y password)", 400);
+            }
+
+            // 3. Crear DTO (ya incluye validación)
+            $dto = new LoginRequest($data['alias'], $data['password']);
+
+            // 4. Llamar al servicio de autenticación
+            $result = $this->usuarioService->login($dto);
+
+            // 5. Enviar respuesta exitosa
+            $payload = json_encode([
+                'message' => 'Login successful',
+                'user' => $result
+            ]);
+
+            return $response
+                ->withStatus(200)
+                ->withHeader('Content-Type', 'application/json')
+                ->withBody($this->createStream($payload));
+
+        } catch (Exception $e) {
+            // Manejar errores
+            $code = $this->getStatusCodeFromException($e);
+            $errorResponse = [
+                'error' => [
+                    'message' => $e->getMessage(),
+                    'code' => $code,
+                    'status' => $code,
+                    'timestamp' => date('c'),
+                    'path' => $request->getUri()->getPath(),
+                ]
+            ];
+
+            return $response
+                ->withStatus($code)
+                ->withHeader('Content-Type', 'application/json')
+                ->withBody($this->createStream(json_encode($errorResponse)));
+        }
+    }
+
+    // Método auxiliar para crear stream
+    private function createStream(string $content): StreamInterface
+    {
+        $stream = new Stream(fopen('php://memory', 'r+'));
+        $stream->write($content);
+        $stream->rewind();
+        return $stream;
+    }
+
+    private function getStatusCodeFromException(Exception $e): int
+    {
+        $code = $e->getCode();
+        return is_int($code) && $code >= 100 && $code <= 599 ? $code : 500;
+    }
 
     #[OA\Post(
         path: "/api/v1/auth/register/citizen",
@@ -254,14 +328,43 @@ class AuthController {
         ),
         tags: ["Auth"],
         responses: [
-            new OA\Response(
-                response: 200,
-                description: "Correo de recuperación enviado"
-            ),
+            new OA\Response(response: 200, description: "Correo de recuperación enviado"),
             new OA\Response(response: 404, description: "Usuario no encontrado")
         ]
     )]
-    public function recoverByEmail(): void {}
+    public function recoverByEmail(Request $request, Response $response): Response
+    {
+        try {
+            $body = json_decode($request->getBody()->getContents(), true);
+            if (!isset($body['email']) || !filter_var($body['email'], FILTER_VALIDATE_EMAIL)) {
+                throw new Exception("Correo electrónico inválido.", 400);
+            }
+
+            $this->usuarioService->requestRecoveryByEmail($body['email']);
+
+            $payload = json_encode(['message' => 'Correo de recuperación enviado']);
+            return $response
+                ->withStatus(200)
+                ->withHeader('Content-Type', 'application/json')
+                ->withBody($this->createStream($payload));
+
+        } catch (Exception $e) {
+            $code = $this->getStatusCodeFromException($e);
+            $errorResponse = [
+                'error' => [
+                    'message' => $e->getMessage(),
+                    'code' => $code,
+                    'status' => $code,
+                    'timestamp' => date('c'),
+                    'path' => $request->getUri()->getPath()
+                ]
+            ];
+            return $response
+                ->withStatus($code)
+                ->withHeader('Content-Type', 'application/json')
+                ->withBody($this->createStream(json_encode($errorResponse)));
+        }
+    }
 
     #[OA\Post(
         path: "/api/v1/auth/recover/phone",
@@ -277,14 +380,54 @@ class AuthController {
         ),
         tags: ["Auth"],
         responses: [
-            new OA\Response(
-                response: 200,
-                description: "Código SMS enviado para recuperación"
-            ),
+            new OA\Response(response: 200, description: "Código SMS enviado"),
             new OA\Response(response: 404, description: "Usuario no encontrado")
         ]
     )]
-    public function recoverByPhone(): void {}
+    public function recoverByPhone(Request $request, Response $response): Response
+    {
+        try {
+            // 1. Leer cuerpo del request
+            $body = json_decode($request->getBody()->getContents(), true);
+            if (!isset($body['phone'])) {
+                throw new Exception("Número de teléfono requerido", 400);
+            }
+
+            $phone = trim($body['phone']);
+
+            // 2. Validar formato del teléfono (ajusta según tu país)
+            if (!preg_match('/^\+?[0-9]{8,15}$/', $phone)) {
+                throw new Exception("Número de teléfono inválido. Debe tener entre 8 y 15 dígitos.", 400);
+            }
+
+            // 3. Llamar al servicio para solicitar recuperación por teléfono
+            $this->usuarioService->requestRecoveryByPhone($phone);
+
+            // 4. Responder exitosamente
+            $payload = json_encode(['message' => 'Código SMS enviado']);
+            return $response
+                ->withStatus(200)
+                ->withHeader('Content-Type', 'application/json')
+                ->withBody($this->createStream($payload));
+
+        } catch (Exception $e) {
+            // Manejar errores
+            $code = $this->getStatusCodeFromException($e);
+            $errorResponse = [
+                'error' => [
+                    'message' => $e->getMessage(),
+                    'code' => $code,
+                    'status' => $code,
+                    'timestamp' => date('c'),
+                    'path' => $request->getUri()->getPath()
+                ]
+            ];
+            return $response
+                ->withStatus($code)
+                ->withHeader('Content-Type', 'application/json')
+                ->withBody($this->createStream(json_encode($errorResponse)));
+        }
+    }
 
     #[OA\Post(
         path: "/api/v1/auth/verify-code",
@@ -305,14 +448,68 @@ class AuthController {
         ),
         tags: ["Auth"],
         responses: [
-            new OA\Response(
-                response: 200,
-                description: "Código verificado correctamente"
-            ),
-            new OA\Response(response: 400, description: "Código inválido o expirado")
+            new OA\Response(response: 200, description: "Código verificado correctamente"),
+            new OA\Response(response: 400, description: "Código inválido o expirado"),
+            new OA\Response(response: 500, description: "Error interno del servidor")
         ]
     )]
-    public function verifyCode(): void {}
+    public function verifyCode(Request $request, Response $response): Response
+    {
+        try {
+            // Leer cuerpo de la solicitud
+            $body = $request->getBody()->getContents();
+            if (empty(trim($body))) {
+                throw new \Exception("Cuerpo de la solicitud vacío", 400);
+            }
+
+            $data = json_decode($body, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new \Exception("Formato JSON inválido: " . json_last_error_msg(), 400);
+            }
+
+            // Validar datos con DTO
+            $dto = new VerifyCodeRequest(
+                code: $data['code'] ?? '',
+                email: $data['email'] ?? null,
+                phone: $data['phone'] ?? null
+            );
+
+            // Llamar al servicio
+            $result = $this->usuarioService->verifyCode($dto->code, $dto->email, $dto->phone);
+
+            // Responder exitosamente
+            $payload = json_encode([
+                'message' => 'Código verificado exitosamente',
+                'userId' => $result['userId']
+            ]);
+
+            return $response
+                ->withStatus(200)
+                ->withHeader('Content-Type', 'application/json')
+                ->withBody($this->createStream($payload));
+
+        } catch (\Throwable $th) {
+            // Capturar cualquier error inesperado
+            $code = $th instanceof \Exception ? $this->getStatusCodeFromException($th) : 500;
+            $errorMessage = $th->getMessage();
+
+            // Crear respuesta de error genérica
+            $errorResponse = [
+                'error' => [
+                    'message' => $errorMessage,
+                    'code' => $code,
+                    'status' => $code,
+                    'timestamp' => date('c'),
+                    'path' => $request->getUri()->getPath()
+                ]
+            ];
+
+            return $response
+                ->withStatus($code)
+                ->withHeader('Content-Type', 'application/json')
+                ->withBody($this->createStream(json_encode($errorResponse)));
+        }
+    }
 
     #[OA\Post(
         path: "/api/v1/auth/reset-password",
@@ -329,12 +526,51 @@ class AuthController {
         ),
         tags: ["Auth"],
         responses: [
-            new OA\Response(
-                response: 200,
-                description: "Contraseña actualizada correctamente"
-            ),
+            new OA\Response(response: 200, description: "Contraseña restablecida correctamente"),
             new OA\Response(response: 400, description: "Datos inválidos o token expirado")
         ]
     )]
-    public function resetPassword(): void {}
+    public function resetPassword(Request $request, Response $response): Response
+    {
+        try {
+            // Decodificar cuerpo de la solicitud
+            $body = json_decode($request->getBody()->getContents(), true);
+
+            if (!isset($body['userId']) || !is_int($body['userId'])) {
+                throw new \Exception("ID de usuario inválido", 400);
+            }
+
+            if (!isset($body['newPassword']) || !is_string($body['newPassword'])) {
+                throw new \Exception("Contraseña inválida", 400);
+            }
+
+            // Llamar al servicio
+            $this->usuarioService->resetPassword($body['userId'], $body['newPassword']);
+
+            // Devolver éxito
+            $payload = json_encode(['message' => 'Contraseña restablecida correctamente']);
+            return $response
+                ->withStatus(200)
+                ->withHeader('Content-Type', 'application/json')
+                ->withBody($this->createStream($payload));
+
+        } catch (\Throwable $th) {
+            // Manejar errores y siempre devolver una respuesta válida
+            $code = $this->getStatusCodeFromException($th);
+            $errorResponse = [
+                'error' => [
+                    'message' => $th->getMessage(),
+                    'code' => $code,
+                    'status' => $code,
+                    'timestamp' => date('c'),
+                    'path' => $request->getUri()->getPath()
+                ]
+            ];
+
+            return $response
+                ->withStatus($code)
+                ->withHeader('Content-Type', 'application/json')
+                ->withBody($this->createStream(json_encode($errorResponse)));
+        }
+    }
 }

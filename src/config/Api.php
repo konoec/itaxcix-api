@@ -3,11 +3,13 @@
 use FastRoute\RouteCollector;
 use itaxcix\controllers\AuthController;
 use itaxcix\controllers\HelloController;
+use itaxcix\middleware\JwtMiddleware;
 
 return function (RouteCollector $r) {
     $r->addGroup('/api/v1', function (RouteCollector $r) {
 
-        $r->get('/hello/{name}', [HelloController::class, 'sayHello']);
+        $r->get('/hello/{name}', [JwtMiddleware::class, HelloController::class . '@sayHello']);
+
 
         $r->post('/auth/login', [AuthController::class, 'login']);
         $r->post('/auth/register/citizen', [AuthController::class, 'registerCitizen']);

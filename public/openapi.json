@@ -1,17 +1,17 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Mi API RESTful",
-        "description": "Documentación automática generada con zircote/swagger-php",
+        "title": "API iTaxCix",
+        "description": "Documentación de la API RESTful del aplicativo iTaxCix",
         "contact": {
-            "name": "Soporte Técnico",
-            "email": "soporte@example.com"
+            "name": "Desarrollador",
+            "email": "antoniopaiva2608@gmail.com"
         },
         "license": {
             "name": "MIT",
             "url": "https://opensource.org/licenses/MIT"
         },
-        "version": "1.0.0"
+        "version": "1.0.1"
     },
     "servers": [
         {
@@ -59,9 +59,9 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "token": {
+                                        "message": {
                                             "type": "string",
-                                            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.xxxxx"
+                                            "example": "Login successful"
                                         }
                                     },
                                     "type": "object"
@@ -375,13 +375,16 @@
                     "Hello"
                 ],
                 "summary": "Saludar a un usuario",
-                "operationId": "4540cecc414c94d578d8c88e7c6e486c",
+                "operationId": "736a7539351d2125f3d7ccab6d8c809a",
                 "parameters": [
                     {
                         "name": "name",
                         "in": "path",
                         "description": "Nombre del usuario",
-                        "required": true
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -392,7 +395,74 @@
                                 "schema": {
                                     "properties": {
                                         "message": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "example": "Hola, Juan"
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 15
+                                                },
+                                                "alias": {
+                                                    "type": "string",
+                                                    "example": "juanperez211"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "user"
+                                                },
+                                                "iss": {
+                                                    "type": "string",
+                                                    "example": "itaxcix-api"
+                                                },
+                                                "iat": {
+                                                    "type": "integer",
+                                                    "example": 1746521578
+                                                },
+                                                "exp": {
+                                                    "type": "integer",
+                                                    "example": 1746525178
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado - Token inválido o expirado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Token no proporcionado"
+                                                },
+                                                "code": {
+                                                    "type": "integer",
+                                                    "example": 401
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "example": 401
+                                                },
+                                                "timestamp": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "path": {
+                                                    "type": "string",
+                                                    "example": "/api/v1/hello/Juan"
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -400,7 +470,21 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
             }
         }
     },
