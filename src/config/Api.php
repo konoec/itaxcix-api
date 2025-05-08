@@ -10,12 +10,10 @@ return function (RouteCollector $r) {
 
         $r->get('/hello/{name}', [JwtMiddleware::class, HelloController::class . '@sayHello']);
 
-
         $r->post('/auth/login', [AuthController::class, 'login']);
         $r->post('/auth/register/citizen', [AuthController::class, 'registerCitizen']);
         $r->post('/auth/register/driver', [AuthController::class, 'registerDriver']);
-        $r->post('/auth/recover/email', [AuthController::class, 'recoverByEmail']);
-        $r->post('/auth/recover/phone', [AuthController::class, 'recoverByPhone']);
+        $r->post('/auth/recovery', [AuthController::class, 'requestRecovery']);
         $r->post('/auth/verify-code', [AuthController::class, 'verifyCode']);
         $r->post('/auth/reset-password', [AuthController::class, 'resetPassword']);
     });

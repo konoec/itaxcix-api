@@ -3,18 +3,42 @@
 namespace itaxcix\repositories\usuario;
 
 use Doctrine\ORM\EntityRepository;
-use itaxcix\models\entities\persona\Persona;
 use itaxcix\models\entities\usuario\Usuario;
 
-class UsuarioRepository extends EntityRepository
-{
-    public function findByAlias(string $alias): ?Usuario
-    {
+class UsuarioRepository extends EntityRepository {
+
+    /**
+     * Busca un usuario por su alias.
+     *
+     * @param string $alias
+     * @return Usuario|null
+     */
+    public function findByAlias(string $alias): ?Usuario {
         return $this->findOneBy(['alias' => $alias]);
     }
 
-    public function findByPerson(Persona $persona): ?Usuario
-    {
-        return $this->findOneBy(['persona' => $persona]);
+    /**
+     * Válida si el usuario existe, tiene estado activo y la contraseña coincide.
+     *
+     * @param string $alias
+     * @param string $password Contraseña sin encriptar (para comparar)
+     * @return Usuario|null Retorna el usuario si las credenciales son válidas, null en caso contrario
+     */
+    public function validateCredentials(string $alias, string $password): ?Usuario {
+        $usuario = $this->findByAlias($alias);
+
+        if (!$usuario) {
+            return null;
+        }
+
+        if ($usuario->getEstado()?->getNombre() !== 'Activo') {
+            return null;
+        }
+
+        if (!password_verify($password, $usuario->getClave())) {
+            return null;
+        }
+
+        return $usuario;
     }
 }

@@ -23,13 +23,13 @@ VALUES
     ('Administrador', TRUE);
 
 INSERT INTO tb_departamento (depa_id, depa_nombre, depa_ubigeo)
-VALUES (1, 'LAMBAYEQUE', '140000');
+VALUES (1, 'Lambayeque', '140000');
 
 INSERT INTO tb_provincia (prov_id, prov_nombre, prov_departamento_id, prov_ubigeo)
-VALUES (1, 'CHICLAYO', 1, '140100');
+VALUES (1, 'Chiclayo', 1, '140100');
 
 INSERT INTO tb_distrito (dist_id, dist_nombre, dist_provincia_id, dist_ubigeo)
-VALUES (1, 'CHICLAYO', 1, '140101');
+VALUES (1, 'Chiclayo', 1, '140101');
 
 INSERT INTO tb_estado_tuc (esta_nombre)
 VALUES ('Activo'),('Anulado'),('Vencido');

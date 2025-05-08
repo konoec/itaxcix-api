@@ -22,7 +22,7 @@ $entityManager = require __DIR__ . '/../src/config/Bootstrap.php';
 $containerBuilder = new ContainerBuilder();
 $containerBuilder->addDefinitions([
     EntityManagerInterface::class => fn() => $entityManager,
-    JwtMiddleware::class => \DI\autowire()
+    JwtMiddleware::class => autowire()
         ->constructor($_ENV['JWT_SECRET']),
 ]);
 

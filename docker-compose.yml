@@ -4,8 +4,10 @@ services:
     container_name: itaxcix-nginx
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./:/var/www/html
+      - ./certs:/etc/nginx/ssl
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - php

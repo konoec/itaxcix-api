@@ -14,14 +14,14 @@ class RolUsuario {
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: Rol::class)]
-    #[ORM\JoinColumn(name: 'rolu_rol_id', referencedColumnName: 'rol_id')]
+    #[ORM\JoinColumn(name: 'rolu_rol_id', referencedColumnName: 'rol_id', nullable: false)]
     private ?Rol $rol = null;
 
     #[ORM\ManyToOne(targetEntity: Usuario::class)]
-    #[ORM\JoinColumn(name: 'rolu_usuario_id', referencedColumnName: 'usua_id')]
+    #[ORM\JoinColumn(name: 'rolu_usuario_id', referencedColumnName: 'usua_id', nullable: false)]
     private ?Usuario $usuario = null;
 
-    #[ORM\Column(name: 'rolu_activo', type: 'boolean', options: ['default' => true])]
+    #[ORM\Column(name: 'rolu_activo', type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $activo = true;
 
     public function getId(): ?int
@@ -63,6 +63,4 @@ class RolUsuario {
     {
         $this->activo = $activo;
     }
-
-
 }

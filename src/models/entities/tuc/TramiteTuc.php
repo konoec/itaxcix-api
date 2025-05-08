@@ -19,10 +19,6 @@ class TramiteTuc {
     #[ORM\Column(name: 'tram_codigo', type: 'string', length: 8, nullable: true)]
     private ?string $codigo = null;
 
-    #[ORM\ManyToOne(targetEntity: Usuario::class)]
-    #[ORM\JoinColumn(name: 'tram_usuario_id', referencedColumnName: 'usua_id')]
-    private ?Usuario $usuario = null;
-
     #[ORM\ManyToOne(targetEntity: Vehiculo::class)]
     #[ORM\JoinColumn(name: 'tram_vehiculo_id', referencedColumnName: 'vehi_id')]
     private ?Vehiculo $vehiculo = null;
@@ -74,16 +70,6 @@ class TramiteTuc {
     public function setCodigo(?string $codigo): void
     {
         $this->codigo = $codigo;
-    }
-
-    public function getUsuario(): ?Usuario
-    {
-        return $this->usuario;
-    }
-
-    public function setUsuario(?Usuario $usuario): void
-    {
-        $this->usuario = $usuario;
     }
 
     public function getVehiculo(): ?Vehiculo

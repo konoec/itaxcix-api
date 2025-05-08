@@ -2,6 +2,7 @@
 
 namespace itaxcix\middleware;
 
+use Exception;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Firebase\JWT\ExpiredException;
@@ -11,17 +12,14 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface as Handler;
 
-class JwtMiddleware implements MiddlewareInterface
-{
+class JwtMiddleware implements MiddlewareInterface {
     private string $secretKey;
 
-    public function __construct(string $secretKey)
-    {
+    public function __construct(string $secretKey) {
         $this->secretKey = $secretKey;
     }
 
-    public function process(Request $request, Handler $handler): Response
-    {
+    public function process(Request $request, Handler $handler): Response {
         // Obtener encabezado Authorization
         $authHeader = $request->getHeaderLine('Authorization');
 
@@ -49,13 +47,12 @@ class JwtMiddleware implements MiddlewareInterface
             return $this->unauthorized($request, "Token expirado", 401);
         } catch (SignatureInvalidException $e) {
             return $this->unauthorized($request, "Firma del token inválida", 401);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->unauthorized($request, "Token inválido", 401);
         }
     }
 
-    private function unauthorized(Request $request, string $message, int $code): Response
-    {
+    private function unauthorized(Request $request, string $message, int $code): Response {
         $responseBody = [
             'error' => [
                 'message' => $message,

@@ -14,13 +14,13 @@ class Usuario {
     #[ORM\Column(name: 'usua_id', type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'usua_alias', type: 'string', length: 50, nullable: false, unique: true)]
+    #[ORM\Column(name: 'usua_alias', type: 'string', length: 50, unique: true, nullable: false)]
     private string $alias;
 
     #[ORM\Column(name: 'usua_clave', type: 'string', length: 255, nullable: false)]
     private string $clave;
 
-    #[ORM\ManyToOne(targetEntity: Persona::class)]
+    #[ORM\OneToOne(targetEntity: Persona::class)]
     #[ORM\JoinColumn(name: 'usua_persona_id', referencedColumnName: 'pers_id', nullable: false)]
     private ?Persona $persona = null;
 
@@ -38,12 +38,12 @@ class Usuario {
         $this->id = $id;
     }
 
-    public function getAlias(): ?string
+    public function getAlias(): string
     {
         return $this->alias;
     }
 
-    public function setAlias(?string $alias): void
+    public function setAlias(string $alias): void
     {
         $this->alias = $alias;
     }

@@ -3,47 +3,28 @@
 namespace itaxcix\models\dtos;
 
 use Exception;
+use itaxcix\validators\dtos\AliasValidator;
+use itaxcix\validators\dtos\PasswordValidator;
+use OpenApi\Attributes as OA;
 
-class LoginRequest
-{
-    public function __construct(
-        public readonly string $alias,
-        public readonly string $password
-    ) {
-        self::validate($this->alias, $this->password);
-    }
+#[OA\Schema(schema: "LoginRequest", description: "Datos para iniciar sesión")]
+class LoginRequest {
+    #[OA\Property(property: "username", type: "string", example: "juan.perez")]
+    public readonly string $username;
+    #[OA\Property(property: "password", type: "string", format: "password", example: "securePassword123")]
+    public readonly string $password;
 
-    private static function validate(string $alias, string $password): void
-    {
-        // Validación del alias
-        if (!preg_match('/^[a-zA-Z0-9_]{3,20}$/', $alias)) {
-            throw new Exception("Alias inválido. Debe tener entre 3 y 20 caracteres alfanuméricos o guiones bajos.", 400);
-        }
+    /**
+     * Constructor de la clase LoginRequest.
+     *
+     * @param array $data Datos del request.
+     * @throws Exception Si los datos no son válidos.
+     */
+    public function __construct(array $data) {
+        $this->username = $data['username'] ?? throw new Exception("El campo 'username' es requerido.", 400);
+        $this->password = $data['password'] ?? throw new Exception("El campo 'password' es requerido.", 400);
 
-        // Validación avanzada de la contraseña
-        self::validatePassword($password);
-    }
-
-    private static function validatePassword(string $password): void
-    {
-        if (strlen($password) < 8) {
-            throw new Exception("La contraseña debe tener al menos 8 caracteres.", 400);
-        }
-
-        if (!preg_match('/[A-Z]/', $password)) {
-            throw new Exception("La contraseña debe contener al menos una letra mayúscula.", 400);
-        }
-
-        if (!preg_match('/[a-z]/', $password)) {
-            throw new Exception("La contraseña debe contener al menos una letra minúscula.", 400);
-        }
-
-        if (!preg_match('/[0-9]/', $password)) {
-            throw new Exception("La contraseña debe contener al menos un número.", 400);
-        }
-
-        if (!preg_match('/[\W_]/', $password)) {
-            throw new Exception("La contraseña debe contener al menos un carácter especial (ej: !, @, #).", 400);
-        }
+        AliasValidator::validate($this->username);
+        PasswordValidator::validate($this->password);
     }
 }

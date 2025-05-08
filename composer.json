@@ -23,6 +23,12 @@
             "itaxcix\\": "src/"
         }
     },
+    "scripts": {
+        "db:create": "php bin/doctrine dbal:database:create",
+        "db:drop": "php bin/doctrine dbal:database:drop --force",
+        "db:update": "php bin/doctrine orm:schema-tool:update --force",
+        "generate-swagger": "openapi src -o public/openapi.json"
+    },
     "minimum-stability": "stable",
     "prefer-stable": true,
     "license": "MIT"

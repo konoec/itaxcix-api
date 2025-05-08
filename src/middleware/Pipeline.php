@@ -8,17 +8,14 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class Pipeline implements RequestHandlerInterface
-{
+class Pipeline implements RequestHandlerInterface {
     private array $middlewares = [];
 
-    public function pipe(MiddlewareInterface $middleware): void
-    {
+    public function pipe(MiddlewareInterface $middleware): void {
         $this->middlewares[] = $middleware;
     }
 
-    public function handle(ServerRequestInterface $request): ResponseInterface
-    {
+    public function handle(ServerRequestInterface $request): ResponseInterface {
         $stack = array_reduce(
             array_reverse($this->middlewares),
             fn(?callable $next, MiddlewareInterface $middleware) => fn() => $middleware->process($request, $next),
@@ -28,8 +25,7 @@ class Pipeline implements RequestHandlerInterface
         return $stack();
     }
 
-    private function runController(ServerRequestInterface $request): ResponseInterface
-    {
+    private function runController(ServerRequestInterface $request): ResponseInterface {
         [$class, $method] = $request->getAttribute('route_handler');
         $container = $request->getAttribute('container');
 

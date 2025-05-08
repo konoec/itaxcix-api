@@ -1,53 +1,38 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "API iTaxCix",
-        "description": "Documentación de la API RESTful del aplicativo iTaxCix",
+        "title": "iTaxcix API",
+        "description": "Documentación de la API de autenticación y usuarios de iTaxcix",
         "contact": {
-            "name": "Desarrollador",
-            "email": "antoniopaiva2608@gmail.com"
+            "email": "soporte@itaxcix.com"
         },
-        "license": {
-            "name": "MIT",
-            "url": "https://opensource.org/licenses/MIT"
-        },
-        "version": "1.0.1"
+        "version": "1.0.0"
     },
     "servers": [
         {
-            "url": "http://localhost:80",
-            "description": "Servidor local de desarrollo"
+            "url": "https://api.itaxcix.com",
+            "description": "Servidor de producción"
+        },
+        {
+            "url": "http://localhost:8080",
+            "description": "Entorno local de desarrollo"
         }
     ],
     "paths": {
-        "/api/v1/auth/login": {
+        "/auth/login": {
             "post": {
                 "tags": [
-                    "Auth"
+                    "Authentication"
                 ],
-                "summary": "Iniciar sesión con alias y contraseña",
-                "operationId": "9267e007a78e9ef6d1fa6de2d0df5697",
+                "summary": "Iniciar sesión",
+                "description": "Inicia sesión en la aplicación.",
+                "operationId": "login",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": [
-                                    "alias",
-                                    "password"
-                                ],
-                                "properties": {
-                                    "alias": {
-                                        "type": "string",
-                                        "example": "juanperez"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "format": "password",
-                                        "example": "123456"
-                                    }
-                                },
-                                "type": "object"
+                                "$ref": "#/components/schemas/LoginRequest"
                             }
                         }
                     }
@@ -60,371 +45,9 @@
                                 "schema": {
                                     "properties": {
                                         "message": {
-                                            "type": "string",
-                                            "example": "Login successful"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Credenciales inválidas"
-                    }
-                }
-            }
-        },
-        "/api/v1/auth/register/citizen": {
-            "post": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Registrarse como ciudadano",
-                "operationId": "d49b68e08135d296fca8bd831a94377f",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "documentType",
-                                    "documentNumber",
-                                    "alias",
-                                    "password",
-                                    "contactMethod"
-                                ],
-                                "properties": {
-                                    "documentType": {
-                                        "description": "tb_tipo_documento.tipo_id",
-                                        "type": "integer",
-                                        "example": 1
-                                    },
-                                    "documentNumber": {
-                                        "description": "Número del documento",
-                                        "type": "string",
-                                        "example": "V12345678"
-                                    },
-                                    "alias": {
-                                        "type": "string",
-                                        "example": "juanperez"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "format": "password",
-                                        "example": "123456"
-                                    },
-                                    "contactMethod": {
-                                        "type": "object",
-                                        "example": {
-                                            "email": "juan@example.com"
-                                        }
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Usuario registrado correctamente"
-                    },
-                    "400": {
-                        "description": "Datos inválidos o duplicados"
-                    }
-                }
-            }
-        },
-        "/api/v1/auth/register/driver": {
-            "post": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Registrarse como conductor",
-                "operationId": "d04603a624c3fa1eb190522a224950f5",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "documentType",
-                                    "documentNumber",
-                                    "alias",
-                                    "password",
-                                    "contactMethod",
-                                    "licensePlate"
-                                ],
-                                "properties": {
-                                    "documentType": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
-                                    "documentNumber": {
-                                        "type": "string",
-                                        "example": "V12345678"
-                                    },
-                                    "alias": {
-                                        "type": "string",
-                                        "example": "carlosdriver"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "format": "password",
-                                        "example": "123456"
-                                    },
-                                    "contactMethod": {
-                                        "type": "object",
-                                        "example": {
-                                            "email": "carlos@example.com"
-                                        }
-                                    },
-                                    "licensePlate": {
-                                        "type": "string",
-                                        "example": "A1B-234D"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Conductor registrado correctamente"
-                    },
-                    "400": {
-                        "description": "Datos inválidos o duplicados"
-                    }
-                }
-            }
-        },
-        "/api/v1/auth/recover/email": {
-            "post": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Solicitar recuperación de contraseña por correo",
-                "operationId": "06e2268addba22ba10f26ea05f78fb12",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "email"
-                                ],
-                                "properties": {
-                                    "email": {
-                                        "type": "string",
-                                        "example": "user@example.com"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Correo de recuperación enviado"
-                    },
-                    "404": {
-                        "description": "Usuario no encontrado"
-                    }
-                }
-            }
-        },
-        "/api/v1/auth/recover/phone": {
-            "post": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Solicitar recuperación de contraseña por teléfono",
-                "operationId": "75ac2128b09ff7a57f2c262c0931b82c",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "phone"
-                                ],
-                                "properties": {
-                                    "phone": {
-                                        "type": "string",
-                                        "example": "+584121234567"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Código SMS enviado para recuperación"
-                    },
-                    "404": {
-                        "description": "Usuario no encontrado"
-                    }
-                }
-            }
-        },
-        "/api/v1/auth/verify-code": {
-            "post": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Verificar código de recuperación",
-                "operationId": "b018ff90c8618e9516c18a289eb4322a",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "code": {
-                                        "type": "string",
-                                        "example": "123456"
-                                    },
-                                    "email": {
-                                        "type": "string",
-                                        "example": "user@example.com"
-                                    },
-                                    "phone": {
-                                        "type": "string",
-                                        "example": "+584121234567"
-                                    }
-                                },
-                                "type": "object",
-                                "oneOf": [
-                                    {
-                                        "required": [
-                                            "email",
-                                            "code"
-                                        ]
-                                    },
-                                    {
-                                        "required": [
-                                            "phone",
-                                            "code"
-                                        ]
-                                    }
-                                ]
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Código verificado correctamente"
-                    },
-                    "400": {
-                        "description": "Código inválido o expirado"
-                    }
-                }
-            }
-        },
-        "/api/v1/auth/reset-password": {
-            "post": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Restablecer contraseña tras verificar código",
-                "operationId": "8edaf090bd06616058c0173695ad40ae",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "userId",
-                                    "newPassword"
-                                ],
-                                "properties": {
-                                    "userId": {
-                                        "type": "integer",
-                                        "example": 123
-                                    },
-                                    "newPassword": {
-                                        "type": "string",
-                                        "format": "password",
-                                        "example": "nueva_contrasena_123"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Contraseña actualizada correctamente"
-                    },
-                    "400": {
-                        "description": "Datos inválidos o token expirado"
-                    }
-                }
-            }
-        },
-        "/api/v1/hello/{name}": {
-            "get": {
-                "tags": [
-                    "Hello"
-                ],
-                "summary": "Saludar a un usuario",
-                "operationId": "736a7539351d2125f3d7ccab6d8c809a",
-                "parameters": [
-                    {
-                        "name": "name",
-                        "in": "path",
-                        "description": "Nombre del usuario",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Mensaje de saludo exitoso",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Hola, Juan"
+                                            "type": "string"
                                         },
                                         "user": {
-                                            "properties": {
-                                                "id": {
-                                                    "type": "integer",
-                                                    "example": 15
-                                                },
-                                                "alias": {
-                                                    "type": "string",
-                                                    "example": "juanperez211"
-                                                },
-                                                "role": {
-                                                    "type": "string",
-                                                    "example": "user"
-                                                },
-                                                "iss": {
-                                                    "type": "string",
-                                                    "example": "itaxcix-api"
-                                                },
-                                                "iat": {
-                                                    "type": "integer",
-                                                    "example": 1746521578
-                                                },
-                                                "exp": {
-                                                    "type": "integer",
-                                                    "example": 1746525178
-                                                }
-                                            },
                                             "type": "object"
                                         }
                                     },
@@ -434,34 +57,291 @@
                         }
                     },
                     "401": {
-                        "description": "No autorizado - Token inválido o expirado",
+                        "description": "Credenciales inválidas"
+                    },
+                    "400": {
+                        "description": "Datos inválidos"
+                    }
+                }
+            }
+        },
+        "/auth/register/citizen": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Registrar un ciudadano",
+                "description": "Registra un nuevo ciudadano en la aplicación.",
+                "operationId": "registerCitizen",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterCitizenRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Registro exitoso",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "error": {
-                                            "properties": {
-                                                "message": {
-                                                    "type": "string",
-                                                    "example": "Token no proporcionado"
-                                                },
-                                                "code": {
-                                                    "type": "integer",
-                                                    "example": 401
-                                                },
-                                                "status": {
-                                                    "type": "integer",
-                                                    "example": 401
-                                                },
-                                                "timestamp": {
-                                                    "type": "string",
-                                                    "format": "date-time"
-                                                },
-                                                "path": {
-                                                    "type": "string",
-                                                    "example": "/api/v1/hello/Juan"
-                                                }
-                                            },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "userId": {
+                                            "type": "integer"
+                                        },
+                                        "personId": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Datos inválidos"
+                    },
+                    "422": {
+                        "description": "No se encontraron datos en la API externa"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                }
+            }
+        },
+        "/auth/register/driver": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Registrar un conductor",
+                "description": "Registra un nuevo conductor en la aplicación.",
+                "operationId": "registerDriver",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterDriverRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Registro exitoso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "userId": {
+                                            "type": "integer"
+                                        },
+                                        "personId": {
+                                            "type": "integer"
+                                        },
+                                        "vehicleId": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Datos inválidos"
+                    },
+                    "422": {
+                        "description": "No se encontraron datos en la API externa"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                }
+            }
+        },
+        "/auth/recovery": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Solicitar recuperación de contraseña",
+                "description": "Solicita la recuperación de la contraseña.",
+                "operationId": "requestRecovery",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RecoveryRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Solicitud de recuperación procesada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Datos inválidos"
+                    },
+                    "404": {
+                        "description": "Contacto no encontrado"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                }
+            }
+        },
+        "/auth/verify-code": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Verificar el código de recuperación",
+                "description": "Verifica el código de recuperación de contraseña.",
+                "operationId": "verifyCode",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/VerifyCodeRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Código verificado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "userId": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Código inválido o datos incorrectos"
+                    },
+                    "404": {
+                        "description": "Contacto no encontrado"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                }
+            }
+        },
+        "/auth/reset-password": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Restablecer la contraseña",
+                "description": "Restablece la contraseña del usuario.",
+                "operationId": "resetPassword",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ResetPasswordRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Contraseña restablecida correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Datos inválidos"
+                    },
+                    "404": {
+                        "description": "Usuario no encontrado"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                }
+            }
+        },
+        "/hello/{name}": {
+            "get": {
+                "tags": [
+                    "General"
+                ],
+                "summary": "Saludar al usuario",
+                "description": "Saluda al usuario autenticado.",
+                "operationId": "sayHello",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Respuesta exitosa",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "user": {
                                             "type": "object"
                                         }
                                     },
@@ -480,6 +360,136 @@
         }
     },
     "components": {
+        "schemas": {
+            "LoginRequest": {
+                "description": "Datos para iniciar sesión",
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "example": "juan.perez"
+                    },
+                    "password": {
+                        "type": "string",
+                        "format": "password",
+                        "example": "securePassword123"
+                    }
+                },
+                "type": "object"
+            },
+            "RecoveryRequest": {
+                "description": "Datos para recuperar contraseña",
+                "properties": {
+                    "contactTypeId": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "contact": {
+                        "type": "string",
+                        "example": "antonio@gmail.com"
+                    }
+                },
+                "type": "object"
+            },
+            "RegisterCitizenRequest": {
+                "description": "Datos para registrar un ciudadano",
+                "properties": {
+                    "documentTypeId": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "document": {
+                        "type": "string",
+                        "example": "123456789"
+                    },
+                    "alias": {
+                        "type": "string",
+                        "example": "antonio.perez"
+                    },
+                    "password": {
+                        "type": "string",
+                        "format": "password",
+                        "example": "securePassword123"
+                    },
+                    "contactTypeId": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "contact": {
+                        "type": "string",
+                        "example": "antonio@gmail.com"
+                    }
+                },
+                "type": "object"
+            },
+            "RegisterDriverRequest": {
+                "description": "Datos para registrar un conductor",
+                "properties": {
+                    "documentTypeId": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "document": {
+                        "type": "string",
+                        "example": "123456789"
+                    },
+                    "alias": {
+                        "type": "string",
+                        "example": "antonio.perez"
+                    },
+                    "password": {
+                        "type": "string",
+                        "format": "password",
+                        "example": "securePassword123"
+                    },
+                    "contactTypeId": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "contact": {
+                        "type": "string",
+                        "example": "antonio@gmail.com"
+                    },
+                    "licensePlate": {
+                        "type": "string",
+                        "example": "ABC-123"
+                    }
+                },
+                "type": "object"
+            },
+            "ResetPasswordRequest": {
+                "description": "Datos para restablecer la contraseña",
+                "properties": {
+                    "userId": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "newPassword": {
+                        "type": "string",
+                        "format": "password",
+                        "example": "secureNewPassword123"
+                    }
+                },
+                "type": "object"
+            },
+            "VerifyCodeRequest": {
+                "description": "Datos para verificar el código de recuperación",
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "example": "123456"
+                    },
+                    "contactTypeId": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "contact": {
+                        "type": "string",
+                        "example": "antonio@gmail.com"
+                    }
+                },
+                "type": "object"
+            }
+        },
         "securitySchemes": {
             "bearerAuth": {
                 "type": "http",
@@ -490,12 +500,12 @@
     },
     "tags": [
         {
-            "name": "Auth",
-            "description": "Operaciones relacionadas con autenticación de usuarios"
+            "name": "Authentication",
+            "description": "Endpoints relacionados con autenticación"
         },
         {
-            "name": "Hello",
-            "description": "Hello"
+            "name": "General",
+            "description": "Endpoints relacionados con utilidades y pruebas"
         }
     ]
 }

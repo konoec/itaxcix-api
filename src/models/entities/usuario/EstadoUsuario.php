@@ -13,10 +13,10 @@ class EstadoUsuario {
     #[ORM\Column(name: 'esta_id', type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'esta_nombre', type: 'string', length: 50)]
+    #[ORM\Column(name: 'esta_nombre', type: 'string', length: 50, unique: true, nullable: false)]
     private string $nombre;
 
-    #[ORM\Column(name: 'esta_activo', type: 'boolean', options: ['default' => true])]
+    #[ORM\Column(name: 'esta_activo', type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $activo = true;
 
     public function getId(): ?int
@@ -48,6 +48,4 @@ class EstadoUsuario {
     {
         $this->activo = $activo;
     }
-
-
 }

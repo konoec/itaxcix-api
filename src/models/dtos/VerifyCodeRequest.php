@@ -3,47 +3,33 @@
 namespace itaxcix\models\dtos;
 
 use Exception;
+use itaxcix\validators\dtos\CodeValidator;
+use itaxcix\validators\dtos\ContactTypeValidator;
+use itaxcix\validators\dtos\ContactValidator;
+use OpenApi\Attributes as OA;
 
-class VerifyCodeRequest
-{
-    public function __construct(
-        public readonly string $code,
-        public readonly ?string $email = null,
-        public readonly ?string $phone = null
-    ) {
-        self::validate($this->code, $this->email, $this->phone);
-    }
+#[OA\Schema(schema: "VerifyCodeRequest", description: "Datos para verificar el código de recuperación")]
+class VerifyCodeRequest {
+    #[OA\Property(property: "code", type: "string", example: "123456")]
+    public readonly string $code;
+    #[OA\Property(property: "contactTypeId", type: "integer", example: 1)]
+    public readonly int $contactTypeId;
+    #[OA\Property(property: "contact", type: "string", example: "antonio@gmail.com")]
+    public readonly string $contact;
 
-    private static function validate(string $code, ?string $email, ?string $phone): void
-    {
-        // Validar que se haya proporcionado al menos un medio de contacto
-        if (!$email && !$phone) {
-            throw new Exception("Se requiere al menos un email o número de teléfono.", 400);
-        }
+    /**
+     * Constructor de la clase VerifyCodeRequest.
+     *
+     * @param array $data Datos del request.
+     * @throws Exception Si los datos no son válidos.
+     */
+    public function __construct(array $data) {
+        $this->code = $data['code'] ?? throw new Exception("El campo 'code' es requerido.", 400);
+        $this->contactTypeId = $data['contactTypeId'] ?? throw new Exception("El campo 'contactTypeId' es requerido.", 400);
+        $this->contact = $data['contact'] ?? throw new Exception("El campo 'contact' es requerido.", 400);
 
-        // Validar que el código no esté vacío
-        if (empty(trim($code))) {
-            throw new Exception("El código es obligatorio.", 400);
-        }
-
-        // Opcional: validar longitud del código (por ejemplo, 6 caracteres)
-        if (strlen($code) !== 6) {
-            throw new Exception("El código debe tener exactamente 6 caracteres.", 400);
-        }
-
-        // Opcional: validar que el código sea solo números o alfanumérico
-        if (!preg_match('/^[A-Za-z0-9]{6}$/', $code)) {
-            throw new Exception("El código debe ser alfanumérico y tener 6 caracteres.", 400);
-        }
-
-        // Validar formato del email, si se proporciona
-        if ($email !== null && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new Exception("Correo electrónico no válido.", 400);
-        }
-
-        // Validar formato del teléfono, si se proporciona
-        if ($phone !== null && !preg_match('/^\+?[0-9]{8,15}$/', $phone)) {
-            throw new Exception("Número de teléfono no válido. Debe tener entre 8 y 15 dígitos.", 400);
-        }
+        CodeValidator::validate($this->code);
+        ContactTypeValidator::validate($this->contactTypeId);
+        ContactValidator::validate($this->contact, $this->contactTypeId);
     }
 }

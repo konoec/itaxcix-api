@@ -3,7 +3,6 @@
 namespace itaxcix\services;
 
 use DateTime;
-use DateTimeZone;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Exception;
@@ -37,43 +36,66 @@ use itaxcix\models\entities\vehiculo\Marca;
 use itaxcix\models\entities\vehiculo\Modelo;
 use itaxcix\models\entities\vehiculo\TipoCombustible;
 use itaxcix\models\entities\vehiculo\Vehiculo;
+use itaxcix\validators\services\LoginValidator;
 
 class AuthService {
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly ExternalApiService $externalApiService,
-        private readonly JwtService $jwtService
-    ) {
-
-    }
+        private readonly JwtService $jwtService,
+        private readonly LoginValidator $loginValidator
+    ) {}
 
     private function getPersonaRepository(): EntityRepository {
         return $this->entityManager->getRepository(Persona::class);
     }
-
     private function getTipoDocumentoRepository(): EntityRepository {
         return $this->entityManager->getRepository(TipoDocumento::class);
     }
-
     private function getUsuarioRepository(): EntityRepository {
         return $this->entityManager->getRepository(Usuario::class);
     }
-
     private function getEstadoUsuarioRepository(): EntityRepository {
         return $this->entityManager->getRepository(EstadoUsuario::class);
     }
-
     private function getTipoContactoRepository(): EntityRepository {
         return $this->entityManager->getRepository(TipoContacto::class);
     }
-
     private function getRolRepository(): EntityRepository {
         return $this->entityManager->getRepository(Rol::class);
     }
-
     private function getRolUsuarioRepository(): EntityRepository {
         return $this->entityManager->getRepository(RolUsuario::class);
+    }
+
+    /**
+     * Login method to authenticate a user.
+     *
+     * @param LoginRequest $request
+     * @return array
+     * @throws Exception
+     */
+    public function login(LoginRequest $request): array {
+        $usuario = $this->getUsuarioRepository()->validateCredentials($request->username, $request->password);
+        $this->loginValidator->validateCredentials($usuario, $request->password);
+        $roles = $this->getRolUsuarioRepository()->findActiveRolesByUsuario($usuario);
+        $this->loginValidator->validateRoles($roles);
+        $payload = [
+            'id' => $usuario->getId(),
+            'alias' => $usuario->getAlias(),
+            'roles' => $roles,
+        ];
+        $token = $this->jwtService->generateToken($payload);
+
+        return [
+            'token' => $token,
+            'user' => [
+                'id' => $usuario->getId(),
+                'alias' => $usuario->getAlias(),
+                'roles' => $roles,
+            ],
+        ];
     }
 
     public function registerCitizen(RegisterCitizenRequest $request): array
@@ -479,79 +501,6 @@ class AuthService {
             $this->entityManager->rollback();
             throw $e;
         }
-    }
-
-    public function login(LoginRequest $request): array
-    {
-        // 1. Buscar usuario por alias
-        $usuario = $this->getUsuarioRepository()->findByAlias($request->alias);
-        if (!$usuario) {
-            throw new Exception('Credenciales inválidas.', 401);
-        }
-
-        // 2. Verificar contraseña
-        if (!password_verify($request->password, $usuario->getClave())) {
-            throw new Exception('Credenciales inválidas.', 401);
-        }
-
-        // 3. Verificar estado (opcional)
-        if (method_exists($usuario, 'getEstado') && $usuario->getEstado() && method_exists($usuario->getEstado(), 'getNombre')) {
-            $estado = $usuario->getEstado()->getNombre();
-            if ($estado !== 'Activo') {
-                throw new Exception('El usuario no está activo.', 403);
-            }
-        }
-
-        // 4. Generar token JWT
-        $token = $this->jwtService->generateToken([
-            'id' => $usuario->getId(),
-            'alias' => $usuario->getAlias(),
-            'role' => $this->getRoleFromUser($usuario), // Método auxiliar opcional
-        ]);
-
-        $token = $this->jwtService->generateToken([
-            'id' => $usuario->getId(),
-            'alias' => $usuario->getAlias(),
-            'role' => $this->getRoleFromUser($usuario),
-        ]);
-
-        // 5. Retornar token y datos del usuario
-        return [
-            'token' => $token,
-            'user' => [
-                'id' => $usuario->getId(),
-                'alias' => $usuario->getAlias(),
-                'role' => $this->getRoleFromUser($usuario),
-                // Puedes agregar más campos si lo necesitas
-            ],
-        ];
-    }
-
-    private function getRoleFromUser($usuario): string
-    {
-        // Aseguramos que el usuario tenga el método getRol()
-        if (!method_exists($usuario, 'getRol') || !$usuario->getRol()) {
-            return 'user'; // Rol por defecto si no existe o es null
-        }
-
-        // Obtenemos el objeto rol
-        $rol = $usuario->getRol();
-
-        // Aseguramos que el rol tenga el método getNombre()
-        if (!method_exists($rol, 'getNombre')) {
-            return 'user';
-        }
-
-        // Obtenemos el nombre del rol
-        $rolNombre = $rol->getNombre(); // Esto debería devolver "Ciudadano", "Conductor" o "Administrador"
-
-        // Validamos que sea uno de los 3 roles permitidos
-        $allowedRoles = ['Ciudadano', 'Conductor', 'Administrador'];
-        if (!in_array($rolNombre, $allowedRoles)) {
-            return 'user'; // Rol desconocido, fallback
-        }
-
-        return $rolNombre;
     }
 
     public function requestRecoveryByEmail(string $email): void
