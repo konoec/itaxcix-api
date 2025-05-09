@@ -3,8 +3,9 @@
 namespace itaxcix\models\entities\usuario;
 
 use Doctrine\ORM\Mapping as ORM;
+use itaxcix\repositories\usuario\TipoCodigoUsuarioRepository;
 
-#[ORM\Entity]
+#[ORM\Entity (repositoryClass: TipoCodigoUsuarioRepository::class)]
 #[ORM\Table(name: 'tb_tipo_codigo_usuario')]
 class TipoCodigoUsuario {
     #[ORM\Id]

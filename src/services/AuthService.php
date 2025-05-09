@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Exception;
 use itaxcix\models\dtos\LoginRequest;
+use itaxcix\models\dtos\RecoveryRequest;
 use itaxcix\models\dtos\RegisterCitizenRequest;
 use itaxcix\models\dtos\RegisterDriverRequest;
 use itaxcix\models\entities\persona\Persona;
@@ -134,6 +135,12 @@ class AuthService {
     }
     private function getEspecificacionTecnicaRepository(): EntityRepository {
         return $this->entityManager->getRepository(EspecificacionTecnica::class);
+    }
+    private function getCodigoUsuarioRepository(): EntityRepository {
+        return $this->entityManager->getRepository(CodigoUsuario::class);
+    }
+    private function getTipoCodigoUsuarioRepository(): EntityRepository {
+        return $this->entityManager->getRepository(TipoCodigoUsuario::class);
     }
 
     /**
@@ -588,192 +595,116 @@ class AuthService {
         }
     }
 
-    public function requestRecoveryByEmail(string $email): void
-    {
-        $contacto = $this->findContacto($email); // Usa el nuevo método
-
-        // 2. Generar código aleatorio
-        $codigo = $this->generateVerificationCode(); // Ej: "ABC123"
-
-        // 3. Guardar código en tb_codigo_usuario
-        $codigoEntity = new CodigoUsuario();
-        $codigoEntity->setUsuario($contacto->getUsuario());
-        $codigoEntity->setCodigo($codigo);
-        $codigoEntity->setFechaExpiracion((new DateTime())->modify('+15 minutes'));
-        $codigoEntity->setTipo($this->getCodigoTipo('Recuperación'));
-        $codigoEntity->setContacto($contacto);
-
-        $this->entityManager->persist($codigoEntity);
-        $this->entityManager->flush();
-
-        // 4. Simular envío del código por correo
-        $this->sendRecoveryEmail($email, $codigo);
-    }
-
-    private function generateVerificationCode(): string
-    {
-        return strtoupper(substr(md5(random_bytes(10)), 0, 6));
-    }
-
-    private function sendRecoveryEmail(string $email, string $codigo): void
-    {
-        // Aquí iría el envío real del correo
-        error_log("Enviando código de recuperación a $email: $codigo");
-    }
-
-    public function verifyCode(string $code, ?string $email = null, ?string $phone = null): array
-    {
-        try {
-            $contacto = $this->findContacto($email, $phone);
-
-            // Este método ahora hace toda la validación
-            $codigo = $this->findCodigo($code, $contacto);
-
-            // Marcar como usado
-            $codigo->setUsado(true);
-            $this->entityManager->flush();
-
-            return [
-                'userId' => $contacto->getUsuario()->getId()
-            ];
-        } catch (Exception $e) {
-            throw $e;
-        }
-    }
-
-    public function resetPassword(int $userId, string $newPassword): void
-    {
-        $usuario = $this->entityManager->find(Usuario::class, $userId);
-
-        if (!$usuario) {
-            throw new Exception("Usuario no encontrado", 404);
-        }
-
-        // Validar contraseña
-        $this->validatePassword($newPassword);
-
-        // Actualizar contraseña
-        $usuario->setClave(password_hash($newPassword, PASSWORD_DEFAULT));
-        $this->entityManager->flush();
-    }
-
-    private function validatePassword(string $password): void
-    {
-        if (strlen($password) < 8) {
-            throw new Exception("La contraseña debe tener al menos 8 caracteres.", 400);
-        }
-
-        if (!preg_match('/[A-Z]/', $password)) {
-            throw new Exception("La contraseña debe contener al menos una letra mayúscula.", 400);
-        }
-
-        if (!preg_match('/[a-z]/', $password)) {
-            throw new Exception("La contraseña debe contener al menos una letra minúscula.", 400);
-        }
-
-        if (!preg_match('/[0-9]/', $password)) {
-            throw new Exception("La contraseña debe contener al menos un número.", 400);
-        }
-
-        if (!preg_match('/[\W_]/', $password)) {
-            throw new Exception("La contraseña debe contener al menos un carácter especial.", 400);
-        }
-    }
-
-    public function requestRecoveryByPhone(string $phone): void
-    {
-        $contacto = $this->findContacto(null, $phone); // Usa el nuevo método
-
-        // Generar código
-        $codigo = strtoupper(substr(md5(random_bytes(10)), 0, 6));
-        $now = new DateTime();
-
-        // Crear entidad
-        $codigoEntity = new CodigoUsuario();
-        $codigoEntity->setUsuario($contacto->getUsuario());
-        $codigoEntity->setCodigo($codigo);
-        $codigoEntity->setFechaExpiracion((new DateTime())->modify('+15 minutes'));
-        $codigoEntity->setUsado(false);
-        $codigoEntity->setContacto($contacto);
-        $codigoEntity->setTipo($this->getCodigoTipo('Recuperación'));
-
-        $this->entityManager->persist($codigoEntity);
-        $this->entityManager->flush();
-
-        // Aquí iría el envío real del SMS
-        error_log("Enviando código de recuperación al teléfono $phone: $codigo");
-    }
-
-    private function getCodigoTipo(string $nombre): TipoCodigoUsuario
-    {
-        $repo = $this->entityManager->getRepository(TipoCodigoUsuario::class);
-        $tipo = $repo->findOneBy(['nombre' => $nombre]);
-
-        if (!$tipo) {
-            throw new Exception("Tipo de código '$nombre' no encontrado", 400);
-        }
-
-        return $tipo;
-    }
-
-    private function findContacto(?string $email = null, ?string $phone = null, bool $activoOnly = true): ?ContactoUsuario
-    {
-        if (!$email && !$phone) {
-            throw new Exception("Se requiere al menos un email o número de teléfono.", 400);
-        }
-
-        $contactoRepo = $this->entityManager->getRepository(ContactoUsuario::class);
-
-        $criteria = [];
-
-        if ($email) {
-            $criteria['valor'] = $email;
-        } elseif ($phone) {
-            $criteria['valor'] = $phone;
-        }
-
-        if ($activoOnly) {
-            $criteria['activo'] = true;
-        }
-
-        $contacto = $contactoRepo->findOneBy($criteria);
+    /**
+     * Solicita un código de recuperación para el usuario.
+     *
+     * @param RecoveryRequest $dto
+     * @throws Exception
+     */
+    public function requestRecovery(RecoveryRequest $dto): void {
+        // Buscar contacto
+        $contacto = $this->getContactoUsuarioRepository()->findByTypeAndValue(
+            $dto->contactTypeId,
+            $dto->contact
+        );
 
         if (!$contacto) {
-            $tipo = $email ? 'correo electrónico' : 'teléfono';
-            throw new Exception("No se encontró ningún contacto con ese $tipo.", 404);
+            throw new Exception("Contacto no encontrado.", 404);
         }
 
-        return $contacto;
+        // Validar que el contacto haya sido confirmado
+        if (!$contacto->isConfirmado()) {
+            throw new Exception("El contacto no está confirmado.", 400);
+        }
+
+        // Buscar usuario asociado al contacto
+        $usuario = $this->getUsuarioRepository()->findOneByContact($contacto);
+
+        if (!$usuario) {
+            throw new Exception("Usuario no encontrado.", 404);
+        }
+
+        // Buscar tipo "Recuperación"
+        $tipoRecuperacion = $this->getTipoCodigoUsuarioRepository()->findOneByName('Recuperación');
+
+        if (!$tipoRecuperacion) {
+            throw new Exception("Tipo de código no encontrado.", 500);
+        }
+
+        // Generar código
+        $this->getCodigoUsuarioRepository()->generateRecoveryCode($usuario, $contacto, $tipoRecuperacion);
     }
-    
-    private function findCodigo(string $code, ContactoUsuario $contacto): ?CodigoUsuario
-    {
-        if (empty(trim($code))) {
-            throw new Exception("El código es obligatorio.", 400);
+
+    /**
+     * Verifica el código de recuperación.
+     *
+     * @param string $code
+     * @param int $contactTypeId
+     * @param string $contactValue
+     * @return array
+     * @throws Exception
+     */
+    public function verifyCode(string $code, int $contactTypeId, string $contactValue): array {
+        // Buscar contacto
+        $contacto = $this->getContactoUsuarioRepository()->findByTypeAndValue($contactTypeId, $contactValue);
+
+        if (!$contacto) {
+            throw new Exception("Contacto no encontrado.", 404);
         }
 
-        $codigoRepo = $this->entityManager->getRepository(CodigoUsuario::class);
-        $codigo = $codigoRepo->findOneBy([
-            'contacto' => $contacto,
-            'codigo' => $code
-        ]);
+        // Buscar tipo "Recuperación"
+        $tipoRecuperacion = $this->getTipoCodigoUsuarioRepository()->findOneByName('Recuperación');
+
+        if (!$tipoRecuperacion) {
+            throw new Exception("Tipo de código no encontrado.", 500);
+        }
+
+        // Buscar código válido
+        $codigo = $this->getCodigoUsuarioRepository()->findValidCode($code, $contacto, $tipoRecuperacion->getId());
 
         if (!$codigo) {
-            throw new Exception("Código inválido o no encontrado", 400);
+            throw new Exception("Código inválido o expirado.", 400);
         }
 
-        if ($codigo->isUsado()) {
-            throw new Exception("Este código ya fue utilizado", 400);
+        // Marcar como usado
+        $this->getCodigoUsuarioRepository()->markAsUsed($codigo);
+
+        return ['userId' => $codigo->getUsuario()->getId()];
+    }
+
+    /**
+     * Restablece la contraseña del usuario.
+     *
+     * @param int $userId
+     * @param string $newPassword
+     * @throws Exception
+     */
+    public function resetPassword(int $userId, string $newPassword): void
+    {
+        // 1. Buscar usuario
+        $usuario = $this->getUsuarioRepository()->find($userId);
+        if (!$usuario) {
+            throw new Exception("Usuario no encontrado.", 404);
         }
 
-        if ($codigo->getFechaExpiracion() === null) {
-            throw new Exception("Código sin fecha de expiración", 400);
+        // 2. Obtener tipo "Recuperación"
+        $tipoRecuperacion = $this->getTipoCodigoUsuarioRepository()->findOneByName('Recuperación');
+        if (!$tipoRecuperacion) {
+            throw new Exception("Tipo de código no encontrado.", 500);
         }
 
-        $now = new DateTime('now', new \DateTimeZone('America/Caracas'));
-        $expiracion = clone $now;
-        $expiracion->modify('+15 minutes');
+        // 3. Validar código de recuperación
+        $codigoUsado = $this->getCodigoUsuarioRepository()->findValidRecoveryCodeByUserId(
+            $userId,
+            $tipoRecuperacion->getId()
+        );
 
-        return $codigo;
+        if (!$codigoUsado) {
+            throw new Exception("No se encontró un código válido para restablecer la contraseña.", 400);
+        }
+
+        // 4. Cambiar contraseña
+        $usuario->setClave(password_hash($newPassword, PASSWORD_DEFAULT));
+        $this->entityManager->flush();
     }
 }

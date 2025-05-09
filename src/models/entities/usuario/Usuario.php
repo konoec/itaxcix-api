@@ -2,6 +2,8 @@
 
 namespace itaxcix\models\entities\usuario;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use itaxcix\models\entities\persona\Persona;
 use itaxcix\repositories\usuario\UsuarioRepository;
@@ -27,6 +29,37 @@ class Usuario {
     #[ORM\ManyToOne(targetEntity: EstadoUsuario::class)]
     #[ORM\JoinColumn(name: 'usua_estado_id', referencedColumnName: 'esta_id', nullable: false)]
     private ?EstadoUsuario $estado = null;
+
+    #[ORM\OneToMany(
+        targetEntity: ContactoUsuario::class,
+        mappedBy: 'usuario',
+        orphanRemoval: true
+    )]
+    private Collection $contactos;
+
+    public function __construct() {
+        $this->contactos = new ArrayCollection();
+    }
+
+    public function getContactos(): Collection {
+        return $this->contactos;
+    }
+
+    public function addContacto(ContactoUsuario $contacto): void {
+        if (!$this->contactos->contains($contacto)) {
+            $this->contactos[] = $contacto;
+            $contacto->setUsuario($this);
+        }
+    }
+
+    public function removeContacto(ContactoUsuario $contacto): void {
+        if ($this->contactos->removeElement($contacto)) {
+            // set the owning side to null (unless already changed)
+            if ($contacto->getUsuario() === $this) {
+                $contacto->setUsuario(null);
+            }
+        }
+    }
 
     public function getId(): ?int {
         return $this->id;

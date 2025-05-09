@@ -19,8 +19,7 @@ class AuthController extends BaseController {
 
     private AuthService $usuarioService;
 
-    public function __construct(AuthService $usuarioService)
-    {
+    public function __construct(AuthService $usuarioService) {
         $this->usuarioService = $usuarioService;
     }
 
@@ -198,11 +197,7 @@ class AuthController extends BaseController {
             $data = $this->getJsonObject($request);
             $dto = new RecoveryRequest($data);
 
-            if ($dto->contactTypeId === 1) {
-                $this->usuarioService->requestRecoveryByEmail($dto->contact);
-            } else {
-                $this->usuarioService->requestRecoveryByPhone($dto->contact);
-            }
+            $this->usuarioService->requestRecovery($dto);
 
             return $this->respondWithJson($response, ['message' => 'Solicitud de recuperación procesada']);
         } catch (Exception $e) {

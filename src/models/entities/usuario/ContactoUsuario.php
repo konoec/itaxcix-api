@@ -13,7 +13,7 @@ class ContactoUsuario {
     #[ORM\Column(name: 'cont_id', type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Usuario::class)]
+    #[ORM\ManyToOne(targetEntity: Usuario::class, inversedBy: 'contactos')]
     #[ORM\JoinColumn(name: 'cont_usuario_id', referencedColumnName: 'usua_id', nullable: false)]
     private ?Usuario $usuario = null;
 

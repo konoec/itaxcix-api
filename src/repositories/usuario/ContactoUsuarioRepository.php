@@ -7,12 +7,16 @@ use itaxcix\models\entities\usuario\ContactoUsuario;
 
 class ContactoUsuarioRepository extends EntityRepository {
 
-    /**
-     * Verifica si existe un contacto por su valor.
-     *
-     * @param string $valor
-     * @return bool
-     */
+    public function findByTypeAndValue(int $contactTypeId, string $contactValue): ?ContactoUsuario {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.tipo = :typeId')
+            ->andWhere('c.valor = :valor')
+            ->setParameter('typeId', $contactTypeId)
+            ->setParameter('valor', $contactValue)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     public function existsByValor(string $valor): bool {
         $result = $this->createQueryBuilder('c')
             ->select('COUNT(c.id)')
