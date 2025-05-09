@@ -3,9 +3,9 @@
 namespace itaxcix\models\dtos;
 
 use Exception;
-use itaxcix\validators\dtos\CodeValidator;
-use itaxcix\validators\dtos\ContactTypeValidator;
-use itaxcix\validators\dtos\ContactValidator;
+use itaxcix\validators\CodeValidator;
+use itaxcix\validators\ContactTypeValidator;
+use itaxcix\validators\ContactValidator;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(schema: "VerifyCodeRequest", description: "Datos para verificar el código de recuperación")]

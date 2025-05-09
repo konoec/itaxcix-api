@@ -26,7 +26,7 @@ class Calificacion {
     #[ORM\JoinColumn(name: 'cali_viaje_id', referencedColumnName: 'viaj_id')]
     private ?Viaje $viaje = null;
 
-    #[ORM\Column(name: 'cali_puntaje', type: 'integer')]
+    #[ORM\Column(name: 'cali_puntaje', type: 'integer', nullable: false)]
     private int $puntaje;
 
     #[ORM\Column(name: 'cali_comentario', type: 'string', length: 255, nullable: true)]

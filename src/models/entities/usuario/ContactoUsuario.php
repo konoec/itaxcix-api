@@ -7,8 +7,7 @@ use itaxcix\repositories\usuario\ContactoUsuarioRepository;
 
 #[ORM\Entity(repositoryClass: ContactoUsuarioRepository::class)]
 #[ORM\Table(name: 'tb_contacto_usuario')]
-class ContactoUsuario
-{
+class ContactoUsuario {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'cont_id', type: 'integer')]
@@ -28,66 +27,54 @@ class ContactoUsuario
     #[ORM\Column(name: 'cont_confirmado', type: 'boolean', nullable: false)]
     private bool $confirmado;
 
-    #[ORM\Column(name: 'cont_activo', type: 'boolean', options: ['default' => true], nullable: false)]
+    #[ORM\Column(name: 'cont_activo', type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $activo = true;
 
-    public function getId(): ?int
-    {
+    public function getId(): ?int {
         return $this->id;
     }
 
-    public function setId(?int $id): void
-    {
+    public function setId(?int $id): void {
         $this->id = $id;
     }
 
-    public function getUsuario(): ?Usuario
-    {
+    public function getUsuario(): ?Usuario {
         return $this->usuario;
     }
 
-    public function setUsuario(?Usuario $usuario): void
-    {
+    public function setUsuario(?Usuario $usuario): void {
         $this->usuario = $usuario;
     }
 
-    public function getTipo(): ?TipoContacto
-    {
+    public function getTipo(): ?TipoContacto {
         return $this->tipo;
     }
 
-    public function setTipo(?TipoContacto $tipo): void
-    {
+    public function setTipo(?TipoContacto $tipo): void {
         $this->tipo = $tipo;
     }
 
-    public function getValor(): string
-    {
+    public function getValor(): string {
         return $this->valor;
     }
 
-    public function setValor(string $valor): void
-    {
+    public function setValor(string $valor): void {
         $this->valor = $valor;
     }
 
-    public function isConfirmado(): bool
-    {
+    public function isConfirmado(): bool {
         return $this->confirmado;
     }
 
-    public function setConfirmado(bool $confirmado): void
-    {
+    public function setConfirmado(bool $confirmado): void {
         $this->confirmado = $confirmado;
     }
 
-    public function isActivo(): bool
-    {
+    public function isActivo(): bool {
         return $this->activo;
     }
 
-    public function setActivo(bool $activo): void
-    {
+    public function setActivo(bool $activo): void {
         $this->activo = $activo;
     }
 }

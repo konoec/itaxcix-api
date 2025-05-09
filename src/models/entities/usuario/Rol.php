@@ -19,33 +19,27 @@ class Rol {
     #[ORM\Column(name: 'rol_activo', type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $activo = true;
 
-    public function getId(): ?int
-    {
+    public function getId(): ?int {
         return $this->id;
     }
 
-    public function setId(?int $id): void
-    {
+    public function setId(?int $id): void {
         $this->id = $id;
     }
 
-    public function getNombre(): string
-    {
+    public function getNombre(): string {
         return $this->nombre;
     }
 
-    public function setNombre(string $nombre): void
-    {
+    public function setNombre(string $nombre): void {
         $this->nombre = $nombre;
     }
 
-    public function isActivo(): bool
-    {
+    public function isActivo(): bool {
         return $this->activo;
     }
 
-    public function setActivo(bool $activo): void
-    {
+    public function setActivo(bool $activo): void {
         $this->activo = $activo;
     }
 }

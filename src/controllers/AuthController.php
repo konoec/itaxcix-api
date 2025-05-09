@@ -62,7 +62,7 @@ class AuthController extends BaseController {
             $result = $this->usuarioService->login($dto);
 
             return $this->respondWithJson($response, [
-                'message' => 'Login successful',
+                'message' => 'Login exitoso',
                 'user' => $result
             ]);
 

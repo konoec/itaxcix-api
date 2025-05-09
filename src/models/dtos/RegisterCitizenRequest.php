@@ -3,12 +3,12 @@
 namespace itaxcix\models\dtos;
 
 use Exception;
-use itaxcix\validators\dtos\AliasValidator;
-use itaxcix\validators\dtos\ContactTypeValidator;
-use itaxcix\validators\dtos\ContactValidator;
-use itaxcix\validators\dtos\DocumentTypeValidator;
-use itaxcix\validators\dtos\DocumentValidator;
-use itaxcix\validators\dtos\PasswordValidator;
+use itaxcix\validators\AliasValidator;
+use itaxcix\validators\ContactTypeValidator;
+use itaxcix\validators\ContactValidator;
+use itaxcix\validators\DocumentTypeValidator;
+use itaxcix\validators\DocumentValidator;
+use itaxcix\validators\PasswordValidator;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(schema: "RegisterCitizenRequest", description: "Datos para registrar un ciudadano")]

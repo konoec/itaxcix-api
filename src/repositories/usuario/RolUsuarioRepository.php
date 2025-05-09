@@ -3,6 +3,7 @@
 namespace itaxcix\repositories\usuario;
 
 use Doctrine\ORM\EntityRepository;
+use itaxcix\models\entities\usuario\RolUsuario;
 use itaxcix\models\entities\usuario\Usuario;
 
 class RolUsuarioRepository extends EntityRepository {
@@ -28,5 +29,23 @@ class RolUsuarioRepository extends EntityRepository {
             ->getScalarResult();
 
         return array_map(fn($item) => $item['nombre'], $roles);
+    }
+
+    public function save(RolUsuario $rolUsuario, bool $flush = true): void {
+        $entityManager = $this->getEntityManager();
+        $entityManager->persist($rolUsuario);
+
+        if ($flush) {
+            $entityManager->flush();
+        }
+    }
+
+    public function remove(RolUsuario $rolUsuario, bool $flush = true): void {
+        $entityManager = $this->getEntityManager();
+        $entityManager->remove($rolUsuario);
+
+        if ($flush) {
+            $entityManager->flush();
+        }
     }
 }

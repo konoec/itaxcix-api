@@ -1,6 +1,6 @@
 <?php
 
-namespace itaxcix\validators\dtos;
+namespace itaxcix\validators;
 
 use Exception;
 

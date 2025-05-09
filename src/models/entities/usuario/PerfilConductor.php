@@ -13,40 +13,34 @@ class PerfilConductor {
     #[ORM\Column(name: 'perf_id', type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Usuario::class)]
+    #[ORM\OneToOne(targetEntity: Usuario::class)]
     #[ORM\JoinColumn(name: 'perf_usuario_id', referencedColumnName: 'usua_id')]
     private ?Usuario $usuario = null;
 
-    #[ORM\Column(name: 'perf_disponible', type: 'boolean', options: ['default' => false])]
+    #[ORM\Column(name: 'perf_disponible', type: 'boolean', nullable: false, options: ['default' => false])]
     private bool $disponible = false;
 
-    public function getId(): ?int
-    {
+    public function getId(): ?int {
         return $this->id;
     }
 
-    public function setId(?int $id): void
-    {
+    public function setId(?int $id): void {
         $this->id = $id;
     }
 
-    public function getUsuario(): ?Usuario
-    {
+    public function getUsuario(): ?Usuario {
         return $this->usuario;
     }
 
-    public function setUsuario(?Usuario $usuario): void
-    {
+    public function setUsuario(?Usuario $usuario): void {
         $this->usuario = $usuario;
     }
 
-    public function isDisponible(): bool
-    {
+    public function isDisponible(): bool {
         return $this->disponible;
     }
 
-    public function setDisponible(bool $disponible): void
-    {
+    public function setDisponible(bool $disponible): void {
         $this->disponible = $disponible;
     }
 }

@@ -2,9 +2,9 @@
 
 namespace itaxcix\models\entities\tuc;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use itaxcix\models\entities\ubicacion\Distrito;
-use itaxcix\models\entities\usuario\Usuario;
 use itaxcix\models\entities\vehiculo\Vehiculo;
 use itaxcix\repositories\tuc\TramiteTucRepository;
 
@@ -16,7 +16,7 @@ class TramiteTuc {
     #[ORM\Column(name: 'tram_id', type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'tram_codigo', type: 'string', length: 8, nullable: true)]
+    #[ORM\Column(name: 'tram_codigo', type: 'string', length: 8, unique: true, nullable: false)]
     private ?string $codigo = null;
 
     #[ORM\ManyToOne(targetEntity: Vehiculo::class)]
@@ -44,121 +44,99 @@ class TramiteTuc {
     private ?ModalidadTuc $modalidad = null;
 
     #[ORM\Column(name: 'tram_fecha_tramite', type: 'date', nullable: true)]
-    private ?\DateTime $fechaTramite = null;
+    private ?DateTime $fechaTramite = null;
 
     #[ORM\Column(name: 'tram_fecha_emision', type: 'date', nullable: true)]
-    private ?\DateTime $fechaEmision = null;
+    private ?DateTime $fechaEmision = null;
 
     #[ORM\Column(name: 'tram_fecha_caducidad', type: 'date', nullable: true)]
-    private ?\DateTime $fechaCaducidad = null;
+    private ?DateTime $fechaCaducidad = null;
 
-    public function getId(): ?int
-    {
+    public function getId(): ?int {
         return $this->id;
     }
 
-    public function setId(?int $id): void
-    {
+    public function setId(?int $id): void {
         $this->id = $id;
     }
 
-    public function getCodigo(): ?string
-    {
+    public function getCodigo(): ?string {
         return $this->codigo;
     }
 
-    public function setCodigo(?string $codigo): void
-    {
+    public function setCodigo(?string $codigo): void {
         $this->codigo = $codigo;
     }
 
-    public function getVehiculo(): ?Vehiculo
-    {
+    public function getVehiculo(): ?Vehiculo {
         return $this->vehiculo;
     }
 
-    public function setVehiculo(?Vehiculo $vehiculo): void
-    {
+    public function setVehiculo(?Vehiculo $vehiculo): void {
         $this->vehiculo = $vehiculo;
     }
 
-    public function getEmpresa(): ?Empresa
-    {
+    public function getEmpresa(): ?Empresa {
         return $this->empresa;
     }
 
-    public function setEmpresa(?Empresa $empresa): void
-    {
+    public function setEmpresa(?Empresa $empresa): void {
         $this->empresa = $empresa;
     }
 
-    public function getDistrito(): ?Distrito
-    {
+    public function getDistrito(): ?Distrito {
         return $this->distrito;
     }
 
-    public function setDistrito(?Distrito $distrito): void
-    {
+    public function setDistrito(?Distrito $distrito): void {
         $this->distrito = $distrito;
     }
 
-    public function getEstado(): ?EstadoTuc
-    {
+    public function getEstado(): ?EstadoTuc {
         return $this->estado;
     }
 
-    public function setEstado(?EstadoTuc $estado): void
-    {
+    public function setEstado(?EstadoTuc $estado): void {
         $this->estado = $estado;
     }
 
-    public function getTipo(): ?TipoTramite
-    {
+    public function getTipo(): ?TipoTramite {
         return $this->tipo;
     }
 
-    public function setTipo(?TipoTramite $tipo): void
-    {
+    public function setTipo(?TipoTramite $tipo): void {
         $this->tipo = $tipo;
     }
 
-    public function getModalidad(): ?ModalidadTuc
-    {
+    public function getModalidad(): ?ModalidadTuc {
         return $this->modalidad;
     }
 
-    public function setModalidad(?ModalidadTuc $modalidad): void
-    {
+    public function setModalidad(?ModalidadTuc $modalidad): void {
         $this->modalidad = $modalidad;
     }
 
-    public function getFechaTramite(): ?\DateTime
-    {
+    public function getFechaTramite(): ?DateTime {
         return $this->fechaTramite;
     }
 
-    public function setFechaTramite(?\DateTime $fechaTramite): void
-    {
+    public function setFechaTramite(?DateTime $fechaTramite): void {
         $this->fechaTramite = $fechaTramite;
     }
 
-    public function getFechaEmision(): ?\DateTime
-    {
+    public function getFechaEmision(): ?DateTime {
         return $this->fechaEmision;
     }
 
-    public function setFechaEmision(?\DateTime $fechaEmision): void
-    {
+    public function setFechaEmision(?DateTime $fechaEmision): void {
         $this->fechaEmision = $fechaEmision;
     }
 
-    public function getFechaCaducidad(): ?\DateTime
-    {
+    public function getFechaCaducidad(): ?DateTime {
         return $this->fechaCaducidad;
     }
 
-    public function setFechaCaducidad(?\DateTime $fechaCaducidad): void
-    {
+    public function setFechaCaducidad(?DateTime $fechaCaducidad): void {
         $this->fechaCaducidad = $fechaCaducidad;
     }
 }

@@ -10,6 +10,10 @@ class JwtService {
     private string $secretKey;
     private int $tokenTtl;
 
+    /**
+     * Constructor de la clase JwtService.
+     * Inicializa la clave secreta y el tiempo de vida del token.
+     */
     public function __construct() {
         $this->secretKey = $_ENV['JWT_SECRET'];
         $this->tokenTtl = (int) ($_ENV['JWT_TTL']);

@@ -13,14 +13,14 @@ class Distrito {
     #[ORM\Column(name: 'dist_id', type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'dist_nombre', type: 'string', length: 50, nullable: true)]
+    #[ORM\Column(name: 'dist_nombre', type: 'string', length: 50, unique: true, nullable: true)]
     private ?string $nombre = null;
 
     #[ORM\ManyToOne(targetEntity: Provincia::class)]
     #[ORM\JoinColumn(name: 'dist_provincia_id', referencedColumnName: 'prov_id')]
     private ?Provincia $provincia = null;
 
-    #[ORM\Column(name: 'dist_ubigeo', type: 'string', length: 6, nullable: true)]
+    #[ORM\Column(name: 'dist_ubigeo', type: 'string', length: 6, unique: true, nullable: true)]
     private ?string $ubigeo = null;
 
     public function getId(): ?int

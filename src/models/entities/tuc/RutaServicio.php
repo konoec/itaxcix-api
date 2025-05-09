@@ -17,62 +17,53 @@ class RutaServicio {
     #[ORM\JoinColumn(name: 'ruta_tram_id', referencedColumnName: 'tram_id')]
     private ?TramiteTuc $tramite = null;
 
-    #[ORM\Column(name: 'ruta_tipo_servicio', type: 'string', length: 50, nullable: true)]
-    private ?string $tipoServicio = null;
+    #[ORM\ManyToOne(targetEntity: TipoServicio::class)]
+    #[ORM\JoinColumn(name: 'ruta_tipo_id', referencedColumnName: 'tipo_id')]
+    private ?TipoServicio $tipoServicio = null;
 
     #[ORM\Column(name: 'ruta_texto', type: 'text', nullable: true)]
     private ?string $texto = null;
 
-    #[ORM\Column(name: 'ruta_activo', type: 'boolean', options: ['default' => true])]
+    #[ORM\Column(name: 'ruta_activo', type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $activo = true;
 
-    public function getId(): ?int
-    {
+    public function getId(): ?int {
         return $this->id;
     }
 
-    public function setId(?int $id): void
-    {
+    public function setId(?int $id): void {
         $this->id = $id;
     }
 
-    public function getTramite(): ?TramiteTuc
-    {
+    public function getTramite(): ?TramiteTuc {
         return $this->tramite;
     }
 
-    public function setTramite(?TramiteTuc $tramite): void
-    {
+    public function setTramite(?TramiteTuc $tramite): void {
         $this->tramite = $tramite;
     }
 
-    public function getTipoServicio(): ?string
-    {
+    public function getTipoServicio(): ?TipoServicio {
         return $this->tipoServicio;
     }
 
-    public function setTipoServicio(?string $tipoServicio): void
-    {
+    public function setTipoServicio(?TipoServicio $tipoServicio): void {
         $this->tipoServicio = $tipoServicio;
     }
 
-    public function getTexto(): ?string
-    {
+    public function getTexto(): ?string {
         return $this->texto;
     }
 
-    public function setTexto(?string $texto): void
-    {
+    public function setTexto(?string $texto): void {
         $this->texto = $texto;
     }
 
-    public function isActivo(): bool
-    {
+    public function isActivo(): bool {
         return $this->activo;
     }
 
-    public function setActivo(bool $activo): void
-    {
+    public function setActivo(bool $activo): void {
         $this->activo = $activo;
     }
 }

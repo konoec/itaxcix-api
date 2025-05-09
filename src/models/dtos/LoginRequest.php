@@ -3,8 +3,9 @@
 namespace itaxcix\models\dtos;
 
 use Exception;
-use itaxcix\validators\dtos\AliasValidator;
-use itaxcix\validators\dtos\PasswordValidator;
+use itaxcix\utils\ValidationHelper;
+use itaxcix\validators\AliasValidator;
+use itaxcix\validators\PasswordValidator;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(schema: "LoginRequest", description: "Datos para iniciar sesión")]
@@ -24,7 +25,7 @@ class LoginRequest {
         $this->username = $data['username'] ?? throw new Exception("El campo 'username' es requerido.", 400);
         $this->password = $data['password'] ?? throw new Exception("El campo 'password' es requerido.", 400);
 
-        AliasValidator::validate($this->username);
-        PasswordValidator::validate($this->password);
+        ValidationHelper::handle(fn() => AliasValidator::validate($this->username));
+        ValidationHelper::handle(fn() => PasswordValidator::validate($this->password));
     }
 }

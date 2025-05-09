@@ -24,4 +24,46 @@ class VehiculoUsuario {
 
     #[ORM\Column(name: 'cont_activo', type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $activo = true;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getUsuario(): ?Usuario
+    {
+        return $this->usuario;
+    }
+
+    public function setUsuario(?Usuario $usuario): void
+    {
+        $this->usuario = $usuario;
+    }
+
+    public function getVehiculo(): ?Vehiculo
+    {
+        return $this->vehiculo;
+    }
+
+    public function setVehiculo(?Vehiculo $vehiculo): void
+    {
+        $this->vehiculo = $vehiculo;
+    }
+
+    public function isActivo(): bool
+    {
+        return $this->activo;
+    }
+
+    public function setActivo(bool $activo): void
+    {
+        $this->activo = $activo;
+    }
+
+
 }

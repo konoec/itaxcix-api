@@ -1,20 +1,20 @@
 <?php
 
-namespace itaxcix\models\entities\persona;
+namespace itaxcix\models\entities\tuc;
 
 use Doctrine\ORM\Mapping as ORM;
-use itaxcix\repositories\persona\TipoDocumentoRepository;
+use itaxcix\repositories\tuc\TipoServicioRepository;
 
-#[ORM\Entity(repositoryClass: TipoDocumentoRepository::class)]
-#[ORM\Table(name: 'tb_tipo_documento')]
-class TipoDocumento {
+#[ORM\Entity(repositoryClass: TipoServicioRepository::class)]
+#[ORM\Table(name: 'tb_tipo_servicio')]
+class TipoServicio {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'tipo_id', type: 'integer')]
     private ?int $id = null;
 
     #[ORM\Column(name: 'tipo_nombre', type: 'string', length: 50, unique: true, nullable: false)]
-    private string $nombre;
+    private ?string $nombre = null;
 
     #[ORM\Column(name: 'tipo_activo', type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $activo = true;
@@ -27,11 +27,11 @@ class TipoDocumento {
         $this->id = $id;
     }
 
-    public function getNombre(): string {
+    public function getNombre(): ?string {
         return $this->nombre;
     }
 
-    public function setNombre(string $nombre): void {
+    public function setNombre(?string $nombre): void {
         $this->nombre = $nombre;
     }
 

@@ -13,52 +13,44 @@ class Empresa {
     #[ORM\Column(name: 'empr_id', type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'empr_ruc', type: 'string', length: 11, nullable: true)]
+    #[ORM\Column(name: 'empr_ruc', type: 'string', length: 11, unique: true, nullable: true)]
     private ?string $ruc = null;
 
-    #[ORM\Column(name: 'empr_nombre', type: 'string', length: 100)]
+    #[ORM\Column(name: 'empr_nombre', type: 'string', length: 100, nullable: false)]
     private string $nombre;
 
-    #[ORM\Column(name: 'empr_activo', type: 'boolean', options: ['default' => true])]
+    #[ORM\Column(name: 'empr_activo', type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $activo = true;
 
-    public function getId(): ?int
-    {
+    public function getId(): ?int {
         return $this->id;
     }
 
-    public function setId(?int $id): void
-    {
+    public function setId(?int $id): void {
         $this->id = $id;
     }
 
-    public function getRuc(): ?string
-    {
+    public function getRuc(): ?string {
         return $this->ruc;
     }
 
-    public function setRuc(?string $ruc): void
-    {
+    public function setRuc(?string $ruc): void {
         $this->ruc = $ruc;
     }
 
-    public function getNombre(): string
-    {
+    public function getNombre(): string {
         return $this->nombre;
     }
 
-    public function setNombre(string $nombre): void
-    {
+    public function setNombre(string $nombre): void{
         $this->nombre = $nombre;
     }
 
-    public function isActivo(): bool
-    {
+    public function isActivo(): bool {
         return $this->activo;
     }
 
-    public function setActivo(bool $activo): void
-    {
+    public function setActivo(bool $activo): void {
         $this->activo = $activo;
     }
 }

@@ -13,10 +13,10 @@ class TipoCombustible {
     #[ORM\Column(name: 'tipo_id', type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'tipo_nombre', type: 'string', length: 50)]
+    #[ORM\Column(name: 'tipo_nombre', type: 'string', length: 50, unique: true, nullable: false)]
     private string $nombre;
 
-    #[ORM\Column(name: 'tipo_activo', type: 'boolean', options: ['default' => true])]
+    #[ORM\Column(name: 'tipo_activo', type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $activo = true;
 
     public function getId(): ?int

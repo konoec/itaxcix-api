@@ -3,7 +3,7 @@
 namespace itaxcix\models\dtos;
 
 use Exception;
-use itaxcix\validators\dtos\PasswordValidator;
+use itaxcix\validators\PasswordValidator;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(schema: "ResetPasswordRequest", description: "Datos para restablecer la contraseña")]

@@ -45,7 +45,7 @@ class Vehiculo {
     #[ORM\JoinColumn(name: 'vehi_categoria_id', referencedColumnName: 'cate_id')]
     private ?CategoriaVehiculo $categoria = null;
 
-    #[ORM\Column(type: 'boolean', name: 'vehi_activo', options: ['default' => true])]
+    #[ORM\Column(name: 'vehi_activo', type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $activo = true;
 
     public function getId(): ?int

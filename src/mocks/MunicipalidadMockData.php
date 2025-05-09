@@ -1,87 +1,19 @@
 <?php
 
-namespace itaxcix\services;
+namespace itaxcix\mocks;
 
-class ExternalApiService {
-    public function getPerson(string $documentType, string $documentNumber): ?array
+class MunicipalidadMockData {
+
+    /**
+     * Simulates a database query to get vehicle data by plate number.
+     *
+     * @param string $plate The plate number of the vehicle.
+     * @return array|null The vehicle data or null if not found.
+     */
+    public static function getVehicleByPlate(string $plate): ?array
     {
-        // Simulación de delay de red (opcional)
-        // usleep(500000); // 0.5 segundos de espera
-
-        // Caso exitoso: DNI
-        if ($documentType === '1' && preg_match('/^\d{8}$/', $documentNumber)) {
-            return [
-                'nombre' => 'Juan',
-                'apellido' => 'Pérez',
-                'documento' => $documentNumber,
-                'tipo_documento' => 'DNI',
-                'nacionalidad' => 'Peruana',
-                'fecha_nacimiento' => '1990-05-15',
-                'direccion' => 'Av. Javier Prado 123',
-                'telefono' => '+51987654321',
-                'email' => 'juan.perez@example.com'
-            ];
-        }
-
-        // Caso exitoso: RUC
-        if ($documentType === '4') {
-            return [
-                'nombre' => 'Juan',
-                'apellido' => 'Pérez',
-                'documento' => $documentNumber,
-                'tipo_documento' => 'RUC',
-                'nacionalidad' => 'Peruana',
-                'fecha_nacimiento' => '1985-03-22',
-                'direccion' => 'Av. Los Incas 456',
-                'telefono' => '999888777',
-                'email' => 'juan.perez@example.com'
-            ];
-        }
-
-        // Caso exitoso: Carné de Extranjería
-        if ($documentType === '3' && preg_match('/^[A-Za-z0-9]{8,12}$/', $documentNumber)) {
-            return [
-                'nombre' => 'Carlos',
-                'apellido' => 'Mendoza',
-                'tipo_documento' => 'Carné de Extranjería',
-                'documento' => $documentNumber,
-                'nacionalidad' => 'Colombiana',
-                'fecha_nacimiento' => '1985-08-22',
-                'direccion' => 'Jr. Los Olivos 456',
-                'telefono' => '+51976543210',
-                'email' => 'carlos.mendoza@example.org'
-            ];
-        }
-
-        // Caso exitoso: Pasaporte con formato válido
-        if ($documentType === '2' && preg_match('/^[A-Z]{1}[0-9]{7}$/', $documentNumber)) {
-            return [
-                'nombre' => 'María',
-                'apellido' => 'González',
-                'tipo_documento' => 'Pasaporte',
-                'documento' => $documentNumber,
-                'nacionalidad' => 'Argentina',
-                'fecha_nacimiento' => '1995-03-10',
-                'direccion' => 'Calle Falsa 123',
-                'telefono' => '+541123456789',
-                'email' => 'maria.gonzalez@example.net'
-            ];
-        }
-
-        // Caso: documento inválido o no soportado
-        return null;
-    }
-
-    public function getVehicleTUC(string $plate): ?array
-    {
-        // Validar formato de placa: 6 caracteres alfanuméricos mayúsculos
-        if (!preg_match('/^[A-Z0-9]{6}$/', $plate)) {
-            return null;
-        }
-
-        // Datos simulados para algunas placas específicas
-        if ($plate === 'M2T511') {
-            return [
+        $vehicles = [
+            'M2T511' => [
                 'DEPARTAMENTO' => 'LAMBAYEQUE',
                 'PROVINCIA' => 'CHICLAYO',
                 'DISTRITO' => 'CHICLAYO',
@@ -113,11 +45,8 @@ class ExternalApiService {
                 'RUTA' => 'CHICLAYO - ZAÑA - CAYALTI  Y  VICEVERSA',
                 'CATEGORIA' => 'M2',
                 'PROPIETARIO' => '8b2a8ce20a8a6607a01b32aa8dda3bf2'
-            ];
-        }
-
-        if ($plate === 'M2T526') {
-            return [
+            ],
+            'M2T526' => [
                 'DEPARTAMENTO' => 'LAMBAYEQUE',
                 'PROVINCIA' => 'CHICLAYO',
                 'DISTRITO' => 'CHICLAYO',
@@ -149,11 +78,8 @@ class ExternalApiService {
                 'RUTA' => 'CHICLAYO - ZAÑA - CAYALTI  Y  VICEVERSA',
                 'CATEGORIA' => 'M2',
                 'PROPIETARIO' => 'ae3e7c2aea85358a0a60389728bc643f'
-            ];
-        }
-
-        if ($plate === 'M2U359') {
-            return [
+            ],
+            'M2U359' => [
                 'DEPARTAMENTO' => 'LAMBAYEQUE',
                 'PROVINCIA' => 'CHICLAYO',
                 'DISTRITO' => 'CHICLAYO',
@@ -185,10 +111,9 @@ class ExternalApiService {
                 'RUTA' => 'CHICLAYO - ZAÑA - CAYALTI  Y  VICEVERSA',
                 'CATEGORIA' => 'M2',
                 'PROPIETARIO' => '34f3dfa7521421f23824d7838d5b4a3b'
-            ];
-        }
+            ]
+        ];
 
-        // Si la placa no está registrada
-        return null;
+        return $vehicles[$plate] ?? null;
     }
 }

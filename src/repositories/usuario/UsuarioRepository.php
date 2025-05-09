@@ -17,6 +17,10 @@ class UsuarioRepository extends EntityRepository {
         return $this->findOneBy(['alias' => $alias]);
     }
 
+    public function existsByAlias(string $alias): bool {
+        return $this->findByAlias($alias) !== null;
+    }
+
     /**
      * Válida si el usuario existe, tiene estado activo y la contraseña coincide.
      *
@@ -40,5 +44,23 @@ class UsuarioRepository extends EntityRepository {
         }
 
         return $usuario;
+    }
+
+    public function save(Usuario $usuario, bool $flush = true): void {
+        $entityManager = $this->getEntityManager();
+        $entityManager->persist($usuario);
+
+        if ($flush) {
+            $entityManager->flush();
+        }
+    }
+
+    public function remove(Usuario $usuario, bool $flush = true): void {
+        $entityManager = $this->getEntityManager();
+        $entityManager->remove($usuario);
+
+        if ($flush) {
+            $entityManager->flush();
+        }
     }
 }

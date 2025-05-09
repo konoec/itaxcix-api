@@ -28,53 +28,43 @@ class Usuario {
     #[ORM\JoinColumn(name: 'usua_estado_id', referencedColumnName: 'esta_id', nullable: false)]
     private ?EstadoUsuario $estado = null;
 
-    public function getId(): ?int
-    {
+    public function getId(): ?int {
         return $this->id;
     }
 
-    public function setId(?int $id): void
-    {
+    public function setId(?int $id): void {
         $this->id = $id;
     }
 
-    public function getAlias(): string
-    {
+    public function getAlias(): string {
         return $this->alias;
     }
 
-    public function setAlias(string $alias): void
-    {
+    public function setAlias(string $alias): void {
         $this->alias = $alias;
     }
 
-    public function getClave(): string
-    {
+    public function getClave(): string {
         return $this->clave;
     }
 
-    public function setClave(string $clave): void
-    {
+    public function setClave(string $clave): void {
         $this->clave = $clave;
     }
 
-    public function getPersona(): ?Persona
-    {
+    public function getPersona(): ?Persona {
         return $this->persona;
     }
 
-    public function setPersona(?Persona $persona): void
-    {
+    public function setPersona(?Persona $persona): void {
         $this->persona = $persona;
     }
 
-    public function getEstado(): ?EstadoUsuario
-    {
+    public function getEstado(): ?EstadoUsuario {
         return $this->estado;
     }
 
-    public function setEstado(?EstadoUsuario $estado): void
-    {
+    public function setEstado(?EstadoUsuario $estado): void {
         $this->estado = $estado;
     }
 }

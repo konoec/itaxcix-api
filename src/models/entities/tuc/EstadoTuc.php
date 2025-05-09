@@ -13,39 +13,33 @@ class EstadoTuc {
     #[ORM\Column(name: 'esta_id', type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'esta_nombre', type: 'string', length: 50)]
+    #[ORM\Column(name: 'esta_nombre', type: 'string', length: 50, unique: true, nullable: false)]
     private string $nombre;
 
-    #[ORM\Column(name: 'esta_activo', type: 'boolean', options: ['default' => true])]
+    #[ORM\Column(name: 'esta_activo', type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $activo = true;
 
-    public function getId(): ?int
-    {
+    public function getId(): ?int {
         return $this->id;
     }
 
-    public function setId(?int $id): void
-    {
+    public function setId(?int $id): void {
         $this->id = $id;
     }
 
-    public function getNombre(): string
-    {
+    public function getNombre(): string {
         return $this->nombre;
     }
 
-    public function setNombre(string $nombre): void
-    {
+    public function setNombre(string $nombre): void {
         $this->nombre = $nombre;
     }
 
-    public function isActivo(): bool
-    {
+    public function isActivo(): bool {
         return $this->activo;
     }
 
-    public function setActivo(bool $activo): void
-    {
+    public function setActivo(bool $activo): void {
         $this->activo = $activo;
     }
 }

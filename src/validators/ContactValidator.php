@@ -1,6 +1,6 @@
 <?php
 
-namespace itaxcix\validators\dtos;
+namespace itaxcix\validators;
 
 use Exception;
 
@@ -16,15 +16,17 @@ class ContactValidator {
     public static function validate(string $contact, int $typeId): void {
         switch ($typeId) {
             case 1:
-                if (!preg_match(FILTER_VALIDATE_EMAIL, $contact)) {
+                if (!filter_var($contact, FILTER_VALIDATE_EMAIL)) {
                     throw new Exception("El correo electrónico es inválido.", 400);
                 }
                 break;
+
             case 2:
                 if (!preg_match('/^9\d{8}$/', $contact)) {
                     throw new Exception("El número de teléfono móvil debe comenzar con 9 y tener 9 dígitos.", 400);
                 }
                 break;
+
             default:
                 throw new Exception("Tipo de contacto inválido.", 400);
         }

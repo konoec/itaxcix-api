@@ -15,6 +15,7 @@ use itaxcix\models\entities\tuc\Empresa;
 use itaxcix\models\entities\tuc\EstadoTuc;
 use itaxcix\models\entities\tuc\ModalidadTuc;
 use itaxcix\models\entities\tuc\RutaServicio;
+use itaxcix\models\entities\tuc\TipoServicio;
 use itaxcix\models\entities\tuc\TipoTramite;
 use itaxcix\models\entities\tuc\TramiteTuc;
 use itaxcix\models\entities\ubicacion\Departamento;
@@ -29,24 +30,30 @@ use itaxcix\models\entities\usuario\RolUsuario;
 use itaxcix\models\entities\usuario\TipoCodigoUsuario;
 use itaxcix\models\entities\usuario\TipoContacto;
 use itaxcix\models\entities\usuario\Usuario;
+use itaxcix\models\entities\usuario\VehiculoUsuario;
 use itaxcix\models\entities\vehiculo\CategoriaVehiculo;
 use itaxcix\models\entities\vehiculo\ClaseVehiculo;
 use itaxcix\models\entities\vehiculo\Color;
+use itaxcix\models\entities\vehiculo\EspecificacionTecnica;
 use itaxcix\models\entities\vehiculo\Marca;
 use itaxcix\models\entities\vehiculo\Modelo;
 use itaxcix\models\entities\vehiculo\TipoCombustible;
 use itaxcix\models\entities\vehiculo\Vehiculo;
-use itaxcix\validators\services\LoginValidator;
+use itaxcix\Utils\StringUtils;
 
 class AuthService {
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly ExternalApiService $externalApiService,
+        private readonly MunicipalidadService $municipalidadService,
+        private readonly ExternalService $externalService,
         private readonly JwtService $jwtService,
-        private readonly LoginValidator $loginValidator
+        private readonly StringUtils $stringUtils,
     ) {}
 
+    private function getContactoUsuarioRepository(): EntityRepository {
+        return $this->entityManager->getRepository(ContactoUsuario::class);
+    }
     private function getPersonaRepository(): EntityRepository {
         return $this->entityManager->getRepository(Persona::class);
     }
@@ -68,6 +75,66 @@ class AuthService {
     private function getRolUsuarioRepository(): EntityRepository {
         return $this->entityManager->getRepository(RolUsuario::class);
     }
+    private function getVehiculoRepository(): EntityRepository {
+        return $this->entityManager->getRepository(Vehiculo::class);
+    }
+    private function getDepartamentoRepository(): EntityRepository {
+        return $this->entityManager->getRepository(Departamento::class);
+    }
+    private function getProvinciaRepository(): EntityRepository {
+        return $this->entityManager->getRepository(Provincia::class);
+    }
+    private function getDistritoRepository(): EntityRepository {
+        return $this->entityManager->getRepository(Distrito::class);
+    }
+    private function getMarcaRepository(): EntityRepository {
+        return $this->entityManager->getRepository(Marca::class);
+    }
+    private function getModeloRepository(): EntityRepository {
+        return $this->entityManager->getRepository(Modelo::class);
+    }
+    private function getColorRepository(): EntityRepository {
+        return $this->entityManager->getRepository(Color::class);
+    }
+    private function getClaseVehiculoRepository(): EntityRepository {
+        return $this->entityManager->getRepository(ClaseVehiculo::class);
+    }
+    private function getCategoriaVehiculoRepository(): EntityRepository {
+        return $this->entityManager->getRepository(CategoriaVehiculo::class);
+    }
+    private function getTipoCombustibleRepository(): EntityRepository {
+        return $this->entityManager->getRepository(TipoCombustible::class);
+    }
+    private function getEmpresaRepository(): EntityRepository {
+        return $this->entityManager->getRepository(Empresa::class);
+    }
+    private function getModalidadTucRepository(): EntityRepository {
+        return $this->entityManager->getRepository(ModalidadTuc::class);
+    }
+    private function getTipoServicioRepository(): EntityRepository {
+        return $this->entityManager->getRepository(TipoServicio::class);
+    }
+    private function getTipoTramiteRepository(): EntityRepository {
+        return $this->entityManager->getRepository(TipoTramite::class);
+    }
+    private function getEstadoTucRepository(): EntityRepository {
+        return $this->entityManager->getRepository(EstadoTuc::class);
+    }
+    private function getTramiteTucRepository(): EntityRepository {
+        return $this->entityManager->getRepository(TramiteTuc::class);
+    }
+    private function getPerfilConductorRepository(): EntityRepository {
+        return $this->entityManager->getRepository(PerfilConductor::class);
+    }
+    private function getVehiculoUsuarioRepository(): EntityRepository {
+        return $this->entityManager->getRepository(VehiculoUsuario::class);
+    }
+    private function getRutaServicioRepository(): EntityRepository {
+        return $this->entityManager->getRepository(RutaServicio::class);
+    }
+    private function getEspecificacionTecnicaRepository(): EntityRepository {
+        return $this->entityManager->getRepository(EspecificacionTecnica::class);
+    }
 
     /**
      * Login method to authenticate a user.
@@ -77,17 +144,33 @@ class AuthService {
      * @throws Exception
      */
     public function login(LoginRequest $request): array {
+        // 1. Validar credenciales: esto lo hace el repositorio internamente
         $usuario = $this->getUsuarioRepository()->validateCredentials($request->username, $request->password);
-        $this->loginValidator->validateCredentials($usuario, $request->password);
+
+        // 2. Si no se encontró usuario válido, lanzar excepción
+        if (!$usuario) {
+            throw new Exception("Credenciales inválidas.", 401);
+        }
+
+        // 3. Obtener roles activos del usuario
         $roles = $this->getRolUsuarioRepository()->findActiveRolesByUsuario($usuario);
-        $this->loginValidator->validateRoles($roles);
+
+        // 4. Validar que tenga al menos un rol asignado
+        if (empty($roles)) {
+            throw new Exception("El usuario no tiene roles asignados.", 403);
+        }
+
+        // 5. Generar payload para JWT
         $payload = [
             'id' => $usuario->getId(),
             'alias' => $usuario->getAlias(),
             'roles' => $roles,
         ];
+
+        // 6. Generar token JWT
         $token = $this->jwtService->generateToken($payload);
 
+        // 7. Retornar respuesta final
         return [
             'token' => $token,
             'user' => [
@@ -98,113 +181,124 @@ class AuthService {
         ];
     }
 
-    public function registerCitizen(RegisterCitizenRequest $request): array
-    {
+    /**
+     * Registra un ciudadano en el sistema.
+     *
+     * Este servicio realiza validaciones y crea las entidades necesarias
+     * para registrar un ciudadano en la base de datos.
+     *
+     * @param RegisterCitizenRequest $dto Datos necesarios para el registro.
+     * @return array Información del usuario registrado.
+     * @throws Exception Sí ocurre algún error durante el proceso.
+     */
+    public function registerCitizen(RegisterCitizenRequest $dto): array {
         $this->entityManager->beginTransaction();
 
         try {
-            // Ya está validado, puedes usar directamente los campos:
-            $tipoDocumento = $this->getTipoDocumentoRepository()->findById($request->documentType);
-            if (!$tipoDocumento) {
-                throw new Exception('Tipo de documento no válido.', 400);
+            // 1. Validar si ya existe una persona con ese documento
+            if ($this->getPersonaRepository()->existsByDocumento($dto->document)) {
+                throw new Exception("Ya existe una persona con ese documento.", 400);
             }
 
-            // Verificar si ya existe persona por documento
-            $existingPerson = $this->getPersonaRepository()->findByDocument($request->documentNumber);
-
-            if (!$existingPerson) {
-                $externalData = $this->externalApiService->getPerson($request->documentType, $request->documentNumber);
-                if (!$externalData) {
-                    throw new Exception('No se encontraron datos en la API externa.', 422);
-                }
-
-                $persona = new Persona();
-                $persona->setNombre($externalData['nombre'] ?? null);
-                $persona->setApellido($externalData['apellido'] ?? null);
-                $persona->setDocumento($request->documentNumber);
-                $persona->setTipoDocumento($tipoDocumento);
-                $this->entityManager->persist($persona);
-                $this->entityManager->flush();
-            } else {
-                $persona = $existingPerson;
+            // 2. Validar si ya existe alias
+            if ($this->getUsuarioRepository()->existsByAlias($dto->alias)) {
+                throw new Exception("El alias ya está en uso.", 400);
             }
 
-            // Verificar si ya tiene usuario
-            $existingUserForPerson = $this->getUsuarioRepository()->findByPerson($persona);
-            if ($existingUserForPerson) {
-                throw new Exception("Ya existe un usuario registrado para esta persona.", 400);
+            // 3. Validar si ya existe contacto
+            if ($this->getContactoUsuarioRepository()->existsByValor($dto->contact)) {
+                throw new Exception("El contacto ya está registrado.", 400);
             }
 
-            // Verificar alias disponible
-            if ($this->getUsuarioRepository()->findByAlias($request->alias)) {
-                throw new Exception('Alias ya está en uso.', 400);
+            // 4. Obtener tipo de documento
+            $tipoDocumento = $this->getTipoDocumentoRepository()->getById($dto->documentTypeId);
+            if (!$tipoDocumento || !$tipoDocumento->isActivo()) {
+                throw new Exception("Tipo de documento inválido o inactivo.", 400);
             }
 
-            // Obtener estado por defecto
-            $estadoUsuario = $this->getEstadoUsuarioRepository()->findByName('Activo')
-                ?? $this->getEstadoUsuarioRepository()->getDefault();
-
-            if (!$estadoUsuario) {
-                throw new Exception('No hay estados de usuario configurados.', 500);
+            // 5. Obtener tipo de contacto
+            $tipoContacto = $this->getTipoContactoRepository()->getById($dto->contactTypeId);
+            if (!$tipoContacto || !$tipoContacto->isActivo()) {
+                throw new Exception("Tipo de contacto inválido o inactivo.", 400);
             }
 
-            // Registrar usuario
+            // 6. Validar con Reniec (ahora después de verificar unicidad)
+            $reniecResponse = $this->externalService->getPerson(
+                (string)$dto->documentTypeId,
+                $dto->document
+            );
+
+            if (!$reniecResponse['success']) {
+                throw new Exception("Documento no válido o no encontrado en Reniec.", 400);
+            }
+
+            $personaReniec = $reniecResponse['data'];
+
+            // 7. Crear Persona usando datos de Reniec
+            $persona = new Persona();
+            $persona->setDocumento($dto->document);
+            $persona->setTipoDocumento($tipoDocumento);
+
+            // Extraer nombres y apellidos de Reniec
+            if (isset($personaReniec['nombre_completo'])) {
+                $nombresApellidos = $this->stringUtils->splitFullName($personaReniec['nombre_completo']);
+                $persona->setNombre($nombresApellidos['nombres']);
+                $persona->setApellido($nombresApellidos['apellidos']);
+            } else if (isset($personaReniec['razon_social'])) {
+                // En caso de empresas (RUC)
+                $persona->setNombre($personaReniec['razon_social']);
+                $persona->setApellido('');
+            }
+
+            $persona->setActivo(true);
+
+            $this->getPersonaRepository()->save($persona);
+
+            // 8. Obtener estado 'Activo' (ID 1)
+            $estadoActivo = $this->getEstadoUsuarioRepository()->getById(1);
+            if (!$estadoActivo) {
+                throw new Exception("No se encontró el estado 'Activo'.", 500);
+            }
+
+            // 9. Crear Usuario
             $usuario = new Usuario();
-            $usuario->setAlias($request->alias);
-            $usuario->setClave(password_hash($request->password, PASSWORD_DEFAULT));
+            $usuario->setAlias($dto->alias);
+            $usuario->setClave(password_hash($dto->password, PASSWORD_DEFAULT));
             $usuario->setPersona($persona);
-            $usuario->setEstado($estadoUsuario);
-            $this->entityManager->persist($usuario);
-            $this->entityManager->flush();
+            $usuario->setEstado($estadoActivo);
 
-            // Buscar el rol "Ciudadano"
-            $rol = $this->getRolRepository()->findOneBy(['nombre' => 'Ciudadano']);
-            if (!$rol) {
-                throw new Exception("El rol 'Ciudadano' no existe.", 500);
+            $this->getUsuarioRepository()->save($usuario);
+
+            // 10. Registrar Contacto del usuario
+            $contacto = new ContactoUsuario();
+            $contacto->setUsuario($usuario);
+            $contacto->setTipo($tipoContacto);
+            $contacto->setValor($dto->contact);
+            $contacto->setConfirmado(false);
+            $contacto->setActivo(true);
+
+            $this->getContactoUsuarioRepository()->save($contacto);
+
+            // 11. Registrar Rol de Ciudadano
+            $rolCiudadano = $this->getRolRepository()->getByNombre('Ciudadano');
+            if (!$rolCiudadano || !$rolCiudadano->isActivo()) {
+                throw new Exception("No se encontró el rol 'Ciudadano'.", 500);
             }
 
             $rolUsuario = new RolUsuario();
             $rolUsuario->setUsuario($usuario);
-            $rolUsuario->setRol($rol);
+            $rolUsuario->setRol($rolCiudadano);
             $rolUsuario->setActivo(true);
 
-            $this->entityManager->persist($rolUsuario);
-            $this->entityManager->flush();
+            $this->getRolUsuarioRepository()->save($rolUsuario);
 
-            // Registrar contacto
-            $contactValue = $request->contactMethod['email'] ?? $request->contactMethod['phone'];
-            $tipoContactoNombre = isset($request->contactMethod['email']) ? 'Correo Electrónico' : 'Teléfono Móvil';
-
-            // Verificar si ese contacto ya está en uso
-            $existingContact = $this->entityManager->getRepository(ContactoUsuario::class)->findOneBy([
-                'valor' => $contactValue
-            ]);
-
-            if ($existingContact) {
-                throw new Exception("El contacto '{$contactValue}' ya está en uso.", 400);
-            }
-
-            // Obtener tipo de contacto
-            $tipoContacto = $this->getTipoContactoRepository()->findByName($tipoContactoNombre);
-            if (!$tipoContacto) {
-                throw new Exception('Tipo de contacto no válido.', 500);
-            }
-
-            // Guardar contacto
-            $contacto = new ContactoUsuario();
-            $contacto->setUsuario($usuario);
-            $contacto->setTipo($tipoContacto);
-            $contacto->setValor($contactValue);
-            $contacto->setConfirmado(false);
-            $this->entityManager->persist($contacto);
-            $this->entityManager->flush();
-
+            // Confirmar transacción
             $this->entityManager->commit();
 
             return [
-                'message' => 'Usuario registrado correctamente.',
-                'userId' => $usuario->getId(),
-                'personId' => $persona->getId()
+                'usuarioId' => $usuario->getId(),
+                'alias' => $usuario->getAlias(),
+                'mensaje' => 'Registro exitoso'
             ];
 
         } catch (Exception $e) {
@@ -213,285 +307,276 @@ class AuthService {
         }
     }
 
-    public function registerDriver(RegisterDriverRequest $request): array
-    {
+    /**
+     * Registra un conductor en el sistema.
+     *
+     * Este servicio realiza validaciones y crea las entidades necesarias
+     * para registrar un conductor en la base de datos.
+     *
+     * @param RegisterDriverRequest $dto Datos necesarios para el registro.
+     * @return array Información del usuario registrado.
+     * @throws Exception Sí ocurre algún error durante el proceso.
+     */
+    public function registerDriver(RegisterDriverRequest $dto): array {
         $this->entityManager->beginTransaction();
 
         try {
-            // 1. Validar persona
-            $tipoDocumento = $this->getTipoDocumentoRepository()->findById($request->documentType);
-            if (!$tipoDocumento) {
-                throw new Exception('Tipo de documento no válido.', 400);
+            // Bloque 1: Validaciones iniciales
+            if ($this->getPersonaRepository()->existsByDocumento($dto->document)) {
+                throw new Exception("Ya existe una persona con ese documento.", 400);
+            }
+            if ($this->getUsuarioRepository()->existsByAlias($dto->alias)) {
+                throw new Exception("El alias ya está en uso.", 400);
+            }
+            if ($this->getContactoUsuarioRepository()->existsByValor($dto->contact)) {
+                throw new Exception("El contacto ya está registrado.", 400);
+            }
+            if ($this->getVehiculoRepository()->existsByPlaca($dto->licensePlate)) {
+                throw new Exception("Ya existe un vehículo con esa placa.", 400);
             }
 
-            $existingPerson = $this->getPersonaRepository()->findByDocument($request->documentNumber);
-            if (!$existingPerson) {
-                $externalData = $this->externalApiService->getPerson($request->documentType, $request->documentNumber);
-                if (!$externalData) {
-                    throw new Exception('No se encontraron datos de persona en la API externa.', 422);
-                }
-                $persona = new Persona();
-                $persona->setNombre($externalData['nombre'] ?? null);
-                $persona->setApellido($externalData['apellido'] ?? null);
-                $persona->setDocumento($request->documentNumber);
-                $persona->setTipoDocumento($tipoDocumento);
-                $this->entityManager->persist($persona);
-                $this->entityManager->flush();
-            } else {
-                $persona = $existingPerson;
+            // Bloque 2: Obtener tipos básicos
+            $tipoDocumento = $this->getTipoDocumentoRepository()->getById($dto->documentTypeId);
+            if (!$tipoDocumento || !$tipoDocumento->isActivo()) {
+                throw new Exception("Tipo de documento inválido o inactivo.", 400);
             }
 
-            // 2. Validar usuario existente
-            $existingUserForPerson = $this->getUsuarioRepository()->findByPerson($persona);
-            if ($existingUserForPerson) {
-                throw new Exception("Ya existe un usuario registrado para esta persona.", 400);
-            }
-            if ($this->getUsuarioRepository()->findByAlias($request->alias)) {
-                throw new Exception('Alias ya está en uso.', 400);
+            $tipoContacto = $this->getTipoContactoRepository()->getById($dto->contactTypeId);
+            if (!$tipoContacto || !$tipoContacto->isActivo()) {
+                throw new Exception("Tipo de contacto inválido o inactivo.", 400);
             }
 
-            // 3. Validar TUC (placa)
-            $tucData = $this->externalApiService->getVehicleTUC($request->licensePlate);
-            if (!$tucData) {
-                throw new Exception('No se encontró la TUC (placa) en la API externa.', 422);
+            // Bloque 3: Llamadas a API externas (usar mocks por ahora)
+            $reniecResponse = $this->externalService->getPerson(
+                (string)$dto->documentTypeId,
+                $dto->document
+            );
+
+            if (!$reniecResponse['success']) {
+                throw new Exception("Documento no válido o no encontrado en Reniec.", 400);
             }
 
-            // 4. Registrar o reutilizar datos maestros (marca, modelo, color, clase, categoría)
-            $marcaRepo = $this->entityManager->getRepository(Marca::class);
-            $modeloRepo = $this->entityManager->getRepository(Modelo::class);
-            $colorRepo = $this->entityManager->getRepository(Color::class);
-            $claseRepo = $this->entityManager->getRepository(ClaseVehiculo::class);
-            $categoriaRepo = $this->entityManager->getRepository(CategoriaVehiculo::class);
-            $tipoCombustibleRepo = $this->entityManager->getRepository(TipoCombustible::class);
+            $vehiculoData = $this->municipalidadService->getVehicleTUC(
+                $dto->licensePlate
+            );
 
-            $marca = $marcaRepo->findOneBy(['nombre' => $tucData['MARCA']]);
-            if (!$marca) {
-                $marca = new Marca();
-                $marca->setNombre($tucData['MARCA']);
-                $this->entityManager->persist($marca);
-                $this->entityManager->flush();
+            if (!$vehiculoData) {
+                throw new Exception("Placa no válida o no encontrada en la información municipal.", 400);
             }
 
-            $modelo = $modeloRepo->findOneBy(['nombre' => $tucData['MODELO'], 'marca' => $marca]);
-            if (!$modelo) {
-                $modelo = new Modelo();
-                $modelo->setNombre($tucData['MODELO']);
-                $modelo->setMarca($marca);
-                $this->entityManager->persist($modelo);
-                $this->entityManager->flush();
+            // Bloque 4: Procesar Ubigeo desde el mock
+            $ubigeoDistrito = $vehiculoData['UBIGEO']; // '140101'
+            $ubigeoProvincia = substr($ubigeoDistrito, 0, 4) . '00'; // '140100'
+            $ubigeoDepartamento = substr($ubigeoDistrito, 0, 2) . '0000'; // '140000'
+
+            // Bloque 5: Crear o validar Departamento, Provincia, Distrito
+            $departamentoNombre = ucwords(strtolower($vehiculoData['DEPARTAMENTO'])); // Lambayeque
+            $provinciaNombre = ucwords(strtolower($vehiculoData['PROVINCIA']));       // Chiclayo
+            $distritoNombre = ucwords(strtolower($vehiculoData['DISTRITO']));         // Chiclayo
+
+            $departamento = $this->getDepartamentoRepository()->getOrCreateUbigeoOrName(
+                $ubigeoDepartamento,
+                $departamentoNombre
+            );
+            $provincia = $this->getProvinciaRepository()->getOrCreateUbigeoOrName(
+                $ubigeoProvincia,
+                $provinciaNombre,
+                $departamento
+            );
+            $distrito = $this->getDistritoRepository()->getOrCreateUbigeoOrName(
+                $ubigeoDistrito,
+                $distritoNombre,
+                $provincia
+            );
+
+            // Bloque 6: Crear o validar Marca, Modelo, Color
+            $marcaNombre = ucwords(strtolower($vehiculoData['MARCA'])); // Joylong
+            $modeloNombre = ucwords(strtolower($vehiculoData['MODELO'])); // Hkl6600
+            $colorNombre = ucwords(strtolower($vehiculoData['COLOR'])); // Blanco
+
+            $marca = $this->getMarcaRepository()->getOrCreateByName($marcaNombre);
+            $modelo = $this->getModeloRepository()->getOrCreateByNameAndMarca($modeloNombre, $marca);
+            $color = $this->getColorRepository()->getOrCreateByName($colorNombre);
+
+            // Bloque 7: Crear o validar Clase, Categoría, Combustible
+            $claseNombre = ucwords(strtolower($vehiculoData['CLASE'])); // Combi
+            $categoriaNombre = ucwords(strtolower($vehiculoData['CATEGORIA'])); // M2
+            $combustibleNombre = ucwords(strtolower($vehiculoData['TIPO_COMBUST'])); // Bi-combustible
+
+            $clase = $this->getClaseVehiculoRepository()->getOrCreateByName($claseNombre);
+            $categoria = $this->getCategoriaVehiculoRepository()->getOrCreateByName($categoriaNombre);
+            $tipoCombustible = $this->getTipoCombustibleRepository()->getOrCreateByName($combustibleNombre);
+
+            // Bloque 8: Validar/crear Empresa usando RUC_EMPRESA del vehículo
+            $empresaRuc = $vehiculoData['RUC_EMPRESA'];
+
+            // Llamar al servicio externo para obtener datos reales de la empresa
+            $rucResponse = $this->externalService->getPerson('4', $empresaRuc); // Tipo '4' = RUC
+
+            if (!$rucResponse['success']) {
+                throw new Exception("No se encontraron datos válidos para el RUC: $empresaRuc", 400);
             }
 
-            $color = $colorRepo->findOneBy(['nombre' => $tucData['COLOR']]);
-            if (!$color) {
-                $color = new Color();
-                $color->setNombre($tucData['COLOR']);
-                $this->entityManager->persist($color);
-                $this->entityManager->flush();
+            $rucData = $rucResponse['data'];
+            $razonSocial = $rucData['razon_social'] ?? null;
+
+            if (!$razonSocial) {
+                throw new Exception("No se pudo obtener la razón social de la empresa.", 400);
             }
 
-            $clase = $claseRepo->findOneBy(['nombre' => $tucData['CLASE']]);
-            if (!$clase) {
-                $clase = new ClaseVehiculo();
-                $clase->setNombre($tucData['CLASE']);
-                $this->entityManager->persist($clase);
-                $this->entityManager->flush();
+            // Crear o validar la empresa con RUC y nombre real
+            $empresa = $this->getEmpresaRepository()->getOrCreateByRucOrName($empresaRuc, $razonSocial);
+
+            // Bloque 9: Validar/crear ModalidadTuc
+            $modalidadNombre = ucwords(strtolower($vehiculoData['MODALIDAD'])); // Camioneta Rural
+            $modalidadTuc = $this->getModalidadTucRepository()->getOrCreateByName($modalidadNombre);
+
+            // Bloque 10: Validar/crear TipoServicio
+            $tipoServicioNombre = ucwords(strtolower($vehiculoData['TIP_SERV'])); // Transporte Interurbano
+            $tipoServicio = $this->getTipoServicioRepository()->getOrCreateByName($tipoServicioNombre);
+
+            // Bloque 11: Validar/crear TipoTramite
+            $tipoTramiteNombre = ucwords(strtolower($vehiculoData['TRAMITE'])); // Renovación De Concesión
+            $tipoTramite = $this->getTipoTramiteRepository()->getOrCreateByName($tipoTramiteNombre);
+
+            // Bloque 12: Validar estado TUC activo
+            $estadoTuc = $this->getEstadoTucRepository()->getByNombre('Activo');
+
+            // Bloque 13: Validar o crear Trámite TUC
+            $tramiteTuc = $this->getTramiteTucRepository()->findByPlaca($dto->licensePlate);
+            if (!$tramiteTuc) {
+                $tramiteTuc = new TramiteTuc();
+                $tramiteTuc->setCodigo('TR' . substr($dto->licensePlate, -4)); // TRM511
+
+                $tramiteTuc->setFechaTramite(new DateTime($vehiculoData['FECHA_TRAM']));
+                $tramiteTuc->setFechaEmision(new DateTime($vehiculoData['FECHA_EMI']));
+                $tramiteTuc->setFechaCaducidad(new DateTime($vehiculoData['FECHA_CADUC']));
+
+                $tramiteTuc->setEstado($estadoTuc);
+                $tramiteTuc->setTipo($tipoTramite);
+                $tramiteTuc->setModalidad($modalidadTuc);
+                $tramiteTuc->setEmpresa($empresa);
+                $tramiteTuc->setDistrito($distrito);
             }
 
-            $categoria = $categoriaRepo->findOneBy(['nombre' => $tucData['CATEGORIA']]);
-            if (!$categoria) {
-                $categoria = new CategoriaVehiculo();
-                $categoria->setNombre($tucData['CATEGORIA']);
-                $this->entityManager->persist($categoria);
-                $this->entityManager->flush();
+            if (!$tramiteTuc->getEstado()->isActivo()) {
+                throw new Exception("El trámite TUC asociado no está activo.", 400);
             }
 
-            $tipoCombustible = $tipoCombustibleRepo->findOneBy(['nombre' => $tucData['TIPO_COMBUST']]);
-            if (!$tipoCombustible) {
-                $tipoCombustible = new TipoCombustible();
-                $tipoCombustible->setNombre($tucData['TIPO_COMBUST']);
-                $this->entityManager->persist($tipoCombustible);
-                $this->entityManager->flush();
+            // Bloque 14: Crear Persona
+            $persona = new Persona();
+            $persona->setDocumento($dto->document);
+            $persona->setTipoDocumento($tipoDocumento);
+
+            $personaReniec = $reniecResponse['data'];
+            if (isset($personaReniec['nombre_completo'])) {
+                $nombresApellidos = $this->stringUtils->splitFullName($personaReniec['nombre_completo']);
+                $persona->setNombre($nombresApellidos['nombres']);
+                $persona->setApellido($nombresApellidos['apellidos']);
+            } else if (isset($personaReniec['razon_social'])) {
+                $persona->setNombre($personaReniec['razon_social']);
+                $persona->setApellido('');
             }
 
-            // 5. Registrar vehículo si no existe
-            $vehiculoRepo = $this->entityManager->getRepository(Vehiculo::class);
-            $vehiculo = $vehiculoRepo->findOneBy(['placa' => $tucData['PLACA']]);
-            if (!$vehiculo) {
-                $vehiculo = new Vehiculo();
-                $vehiculo->setPlaca($tucData['PLACA']);
-                $vehiculo->setModelo($modelo);
-                $vehiculo->setColor($color);
-                $vehiculo->setAnioFabricacion((int)$tucData['ANIO_FABRIC']);
-                $vehiculo->setNumeroAsientos((int)$tucData['NUM_ASIENTOS']);
-                $vehiculo->setNumeroPasajeros((int)$tucData['NUM_PASAJ']);
-                $vehiculo->setTipoCombustible($tipoCombustible);
-                $vehiculo->setClase($clase);
-                $vehiculo->setCategoria($categoria);
-                $this->entityManager->persist($vehiculo);
-                $this->entityManager->flush();
+            $persona->setActivo(true);
+            $this->getPersonaRepository()->save($persona);
+
+            // Bloque 15: Estado Activo
+            $estadoActivo = $this->getEstadoUsuarioRepository()->getById(1);
+
+            if (!$estadoActivo) {
+                throw new Exception("No se encontró el estado 'Activo'.", 500);
             }
 
-            // 6. Registrar ubicación (departamento, provincia, distrito)
-            $departamentoRepo = $this->entityManager->getRepository(Departamento::class);
-            $provinciaRepo = $this->entityManager->getRepository(Provincia::class);
-            $distritoRepo = $this->entityManager->getRepository(Distrito::class);
-
-            $departamento = $departamentoRepo->findOneBy(['nombre' => $tucData['DEPARTAMENTO']]);
-            if (!$departamento) {
-                $departamento = new Departamento();
-                $departamento->setNombre($tucData['DEPARTAMENTO']);
-                $departamento->setUbigeo(substr($tucData['UBIGEO'], 0, 2) . '0000');
-                $this->entityManager->persist($departamento);
-                $this->entityManager->flush();
-            }
-
-            $provincia = $provinciaRepo->findOneBy(['nombre' => $tucData['PROVINCIA'], 'departamento' => $departamento]);
-            if (!$provincia) {
-                $provincia = new Provincia();
-                $provincia->setNombre($tucData['PROVINCIA']);
-                $provincia->setDepartamento($departamento);
-                $provincia->setUbigeo(substr($tucData['UBIGEO'], 0, 4) . '00');
-                $this->entityManager->persist($provincia);
-                $this->entityManager->flush();
-            }
-
-            $distrito = $distritoRepo->findOneBy(['nombre' => $tucData['DISTRITO'], 'provincia' => $provincia]);
-            if (!$distrito) {
-                $distrito = new Distrito();
-                $distrito->setNombre($tucData['DISTRITO']);
-                $distrito->setProvincia($provincia);
-                $distrito->setUbigeo($tucData['UBIGEO']);
-                $this->entityManager->persist($distrito);
-                $this->entityManager->flush();
-            }
-
-            // 7. Registrar empresa, modalidad, tipo de tramite, estado TUC
-            $empresaRepo = $this->entityManager->getRepository(Empresa::class);
-            $modalidadRepo = $this->entityManager->getRepository(ModalidadTuc::class);
-            $tipoTramiteRepo = $this->entityManager->getRepository(TipoTramite::class);
-            $estadoTucRepo = $this->entityManager->getRepository(EstadoTuc::class);
-
-            $empresa = $empresaRepo->findOneBy(['ruc' => $tucData['RUC_EMPRESA']]);
-            if (!$empresa) {
-                $empresa = new Empresa();
-                $empresa->setRuc($tucData['RUC_EMPRESA']);
-                $empresa->setNombre($tucData['RUC_EMPRESA']); // O usa otro campo si tienes el nombre real
-                $this->entityManager->persist($empresa);
-                $this->entityManager->flush();
-            }
-
-            $modalidad = $modalidadRepo->findOneBy(['nombre' => $tucData['MODALIDAD']]);
-            if (!$modalidad) {
-                $modalidad = new ModalidadTuc();
-                $modalidad->setNombre($tucData['MODALIDAD']);
-                $this->entityManager->persist($modalidad);
-                $this->entityManager->flush();
-            }
-
-            $tipoTramite = $tipoTramiteRepo->findOneBy(['nombre' => $tucData['TRAMITE']]);
-            if (!$tipoTramite) {
-                $tipoTramite = new TipoTramite();
-                $tipoTramite->setNombre($tucData['TRAMITE']);
-                $this->entityManager->persist($tipoTramite);
-                $this->entityManager->flush();
-            }
-
-            $estadoTuc = $estadoTucRepo->findOneBy(['nombre' => 'Activo']);
-            if (!$estadoTuc) {
-                throw new Exception("No existe el estado TUC 'Activo'", 500);
-            }
-
-            // 6. Registrar usuario
-            $estadoUsuario = $this->getEstadoUsuarioRepository()->findByName('Activo')
-                ?? $this->getEstadoUsuarioRepository()->getDefault();
-            if (!$estadoUsuario) {
-                throw new Exception('No hay estados de usuario configurados.', 500);
-            }
-
+            // Bloque 16: Crear Usuario
             $usuario = new Usuario();
-            $usuario->setAlias($request->alias);
-            $usuario->setClave(password_hash($request->password, PASSWORD_DEFAULT));
+            $usuario->setAlias($dto->alias);
+            $usuario->setClave(password_hash($dto->password, PASSWORD_DEFAULT));
             $usuario->setPersona($persona);
-            $usuario->setEstado($estadoUsuario);
-            $this->entityManager->persist($usuario);
-            $this->entityManager->flush();
+            $usuario->setEstado($estadoActivo);
+            $this->getUsuarioRepository()->save($usuario);
 
-            // 7. Asignar rol Conductor
-            $rol = $this->getRolRepository()->findOneBy(['nombre' => 'Conductor']);
-            if (!$rol) {
-                throw new Exception("El rol 'Conductor' no existe.", 500);
-            }
-            $rolUsuario = new RolUsuario();
-            $rolUsuario->setUsuario($usuario);
-            $rolUsuario->setRol($rol);
-            $rolUsuario->setActivo(true);
-            $this->entityManager->persist($rolUsuario);
-            $this->entityManager->flush();
-
+            // Bloque 17: Perfil Conductor
             $perfilConductor = new PerfilConductor();
             $perfilConductor->setUsuario($usuario);
-            $perfilConductor->setDisponible(false); // o true si lo deseas disponible por defecto
-            $this->entityManager->persist($perfilConductor);
-            $this->entityManager->flush();
+            $perfilConductor->setDisponible(false);
+            $this->getPerfilConductorRepository()->save($perfilConductor);
 
-            // 8. Registrar tramite TUC
-            $fechaTram = isset($tucData['FECHA_TRAM']) ? DateTime::createFromFormat('Ymd', $tucData['FECHA_TRAM']) : null;
-            $fechaEmi = isset($tucData['FECHA_EMI']) ? DateTime::createFromFormat('Ymd', $tucData['FECHA_EMI']) : null;
-            $fechaCaduc = isset($tucData['FECHA_CADUC']) ? DateTime::createFromFormat('Ymd', $tucData['FECHA_CADUC']) : null;
-
-            $tramiteTuc = new TramiteTuc();
-            $tramiteTuc->setUsuario($usuario);
-            $tramiteTuc->setVehiculo($vehiculo);
-            $tramiteTuc->setEmpresa($empresa);
-            $tramiteTuc->setDistrito($distrito);
-            $tramiteTuc->setEstado($estadoTuc);
-            $tramiteTuc->setTipo($tipoTramite);
-            $tramiteTuc->setModalidad($modalidad);
-            if ($fechaTram) $tramiteTuc->setFechaTramite($fechaTram);
-            if ($fechaEmi) $tramiteTuc->setFechaEmision($fechaEmi);
-            if ($fechaCaduc) $tramiteTuc->setFechaCaducidad($fechaCaduc);
-
-            // Puedes setear otros campos como fechas, ruta, etc. según tu entidad
-            $this->entityManager->persist($tramiteTuc);
-            $this->entityManager->flush();
-
-            // 9. Registrar ruta de servicio
-            $rutaServicioRepo = $this->entityManager->getRepository(RutaServicio::class);
-            $rutaServicio = $rutaServicioRepo->findOneBy(['tramite' => $tramiteTuc, 'texto' => $tucData['RUTA']]);
-            if (!$rutaServicio) {
-                $rutaServicio = new RutaServicio();
-                $rutaServicio->setTramite($tramiteTuc);
-                $rutaServicio->setTexto($tucData['RUTA']);
-                $rutaServicio->setTipoServicio($tucData['TIP_SERV'] ?? null); // <-- Aquí se asigna TIP_SERV
-                $this->entityManager->persist($rutaServicio);
-                $this->entityManager->flush();
-            }
-
-            // 8. Registrar contacto
-            $contactValue = $request->contactMethod['email'] ?? $request->contactMethod['phone'];
-            $tipoContactoNombre = isset($request->contactMethod['email']) ? 'Correo Electrónico' : 'Teléfono Móvil';
-            $existingContact = $this->entityManager->getRepository(ContactoUsuario::class)->findOneBy([
-                'valor' => $contactValue
-            ]);
-            if ($existingContact) {
-                throw new Exception("El contacto '{$contactValue}' ya está en uso.", 400);
-            }
-            $tipoContacto = $this->getTipoContactoRepository()->findByName($tipoContactoNombre);
-            if (!$tipoContacto) {
-                throw new Exception('Tipo de contacto no válido.', 500);
-            }
+            // Bloque 18: Registrar Contacto del usuario
             $contacto = new ContactoUsuario();
             $contacto->setUsuario($usuario);
             $contacto->setTipo($tipoContacto);
-            $contacto->setValor($contactValue);
+            $contacto->setValor($dto->contact);
             $contacto->setConfirmado(false);
-            $this->entityManager->persist($contacto);
-            $this->entityManager->flush();
+            $contacto->setActivo(true);
+            $this->getContactoUsuarioRepository()->save($contacto);
 
+            // Bloque 19: Registrar Rol de Conductor
+            $rolConductor = $this->getRolRepository()->getByNombre('Conductor');
+            $rolUsuario = new RolUsuario();
+            $rolUsuario->setUsuario($usuario);
+            $rolUsuario->setRol($rolConductor);
+            $rolUsuario->setActivo(true);
+            $this->getRolUsuarioRepository()->save($rolUsuario);
+
+            // Bloque 20: Crear Vehículo
+            $vehiculo = new Vehiculo();
+            $vehiculo->setPlaca($dto->licensePlate);
+            $vehiculo->setModelo($modelo);
+            $vehiculo->setColor($color);
+            $vehiculo->setAnioFabricacion((int)$vehiculoData['ANIO_FABRIC']);
+            $vehiculo->setNumeroAsientos((int)$vehiculoData['NUM_ASIENTOS']);
+            $vehiculo->setNumeroPasajeros((int)$vehiculoData['NUM_PASAJ']);
+            $vehiculo->setTipoCombustible($tipoCombustible);
+            $vehiculo->setClase($clase);
+            $vehiculo->setCategoria($categoria);
+            $vehiculo->setActivo(true);
+            $this->getVehiculoRepository()->save($vehiculo);
+
+            // Bloque 21: Asociar Trámite TUC al Vehículo
+            $tramiteTuc->setVehiculo($vehiculo);
+            $this->getTramiteTucRepository()->save($tramiteTuc);
+
+            // Bloque 22: Crear relación entre usuario y vehículo
+            $vehiculoUsuario = new VehiculoUsuario();
+            $vehiculoUsuario->setUsuario($usuario);
+            $vehiculoUsuario->setVehiculo($vehiculo);
+            $vehiculoUsuario->setActivo(true);
+            $this->getVehiculoUsuarioRepository()->save($vehiculoUsuario);
+
+            // Bloque 23: Registrar o validar Ruta de Servicio
+            $rutaTexto = $vehiculoData['RUTA'] ?? null;
+            if ($rutaTexto) {
+                $rutaServicio = $this->getRutaServicioRepository()->findByTramite($tramiteTuc);
+
+                if (!$rutaServicio) {
+                    $rutaServicio = new RutaServicio();
+                    $rutaServicio->setTramite($tramiteTuc);
+                    $rutaServicio->setTipoServicio($tipoServicio);
+                    $rutaServicio->setTexto($rutaTexto);
+                    $rutaServicio->setActivo(true);
+
+                    $this->getRutaServicioRepository()->save($rutaServicio, false);
+                }
+            }
+
+            // Bloque 24: Crear especificación técnica del vehículo
+            $especificacion = new EspecificacionTecnica();
+            $especificacion->setVehiculo($vehiculo);
+            $especificacion->setPesoSeco((float)str_replace(',', '.', $vehiculoData['PESO_SECO']));
+            $especificacion->setPesoBruto((float)str_replace(',', '.', $vehiculoData['PESO_BRUTO']));
+            $especificacion->setLongitud((float)str_replace(',', '.', $vehiculoData['LONGITUD']));
+            $especificacion->setAltura((float)str_replace(',', '.', $vehiculoData['ALTURA']));
+            $especificacion->setAnchura((float)str_replace(',', '.', $vehiculoData['ANCHURA']));
+            $especificacion->setCargaUtil((float)str_replace(',', '.', $vehiculoData['CARGA_UTIL']));
+
+            $this->getEspecificacionTecnicaRepository()->save($especificacion, false);
+
+            // Bloque 25: Confirmar transacción
             $this->entityManager->commit();
 
             return [
-                'message' => 'Conductor registrado correctamente.',
+                'message' => 'Registro exitoso',
                 'userId' => $usuario->getId(),
                 'personId' => $persona->getId(),
                 'vehicleId' => $vehiculo->getId()
@@ -551,7 +636,7 @@ class AuthService {
             return [
                 'userId' => $contacto->getUsuario()->getId()
             ];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
     }
@@ -660,10 +745,7 @@ class AuthService {
 
         return $contacto;
     }
-
-    /**
-     * @throws Exception
-     */
+    
     private function findCodigo(string $code, ContactoUsuario $contacto): ?CodigoUsuario
     {
         if (empty(trim($code))) {
@@ -688,7 +770,7 @@ class AuthService {
             throw new Exception("Código sin fecha de expiración", 400);
         }
 
-        $now = new \DateTime('now', new \DateTimeZone('America/Caracas'));
+        $now = new DateTime('now', new \DateTimeZone('America/Caracas'));
         $expiracion = clone $now;
         $expiracion->modify('+15 minutes');
 

@@ -24,8 +24,8 @@
         }
     },
     "scripts": {
-        "db:create": "php bin/doctrine dbal:database:create",
-        "db:drop": "php bin/doctrine dbal:database:drop --force",
+        "db:create": "php bin/doctrine orm:schema-tool:create",
+        "db:drop": "php bin/doctrine orm:schema-tool:drop --force",
         "db:update": "php bin/doctrine orm:schema-tool:update --force",
         "generate-swagger": "openapi src -o public/openapi.json"
     },
