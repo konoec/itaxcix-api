@@ -39,7 +39,7 @@ use itaxcix\models\entities\vehiculo\Marca;
 use itaxcix\models\entities\vehiculo\Modelo;
 use itaxcix\models\entities\vehiculo\TipoCombustible;
 use itaxcix\models\entities\vehiculo\Vehiculo;
-use itaxcix\Utils\StringUtils;
+use itaxcix\utils\StringUtils;
 
 class AuthService {
 
