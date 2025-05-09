@@ -48,7 +48,7 @@ class AuthService {
         private readonly MunicipalidadService $municipalidadService,
         private readonly ExternalService $externalService,
         private readonly JwtService $jwtService,
-        private readonly StringUtils $stringUtils,
+        private readonly StringUtils $stringUtils
     ) {}
 
     private function getContactoUsuarioRepository(): EntityRepository {
