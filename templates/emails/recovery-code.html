@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Recuperación de contraseña</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .header {
+            background-color: #003366;
+            color: #ffffff;
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .logo {
+            font-size: 22px;
+            margin: 0;
+        }
+
+        .image-container {
+            background-color: #fcfcfc;
+            padding: 15px 20px;
+            margin: 20px -20px;
+            display: flex;
+            align-items: center; /* Centra verticalmente */
+            justify-content: space-between; /* Separa los elementos a los extremos */
+            box-sizing: border-box;
+        }
+
+        .image-text {
+            text-align: left;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .image-text p {
+            margin: 5px 0;
+            line-height: 1.5; /* Añade espacio entre líneas */
+        }
+
+        .image-container img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .content {
+            text-align: center;
+            padding-top: 10px;
+        }
+
+        .code {
+            font-size: 30px;
+            font-weight: bold;
+            color: #003366;
+            letter-spacing: 4px;
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #eaf5ff;
+            border-radius: 6px;
+            margin: 20px auto;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        }
+
+        .divider {
+            height: 1px;
+            background: #ddd;
+            margin: 20px auto;
+            width: 80%;
+        }
+
+        .expiration {
+            font-size: 14px;
+            color: #d93025;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #003366;
+            color: white !important;
+            padding: 12px 24px;
+            text-decoration: none !important;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 15px;
+            transition: background 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #00264d;
+        }
+
+        .centered {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .note {
+            font-size: 13px;
+            color: #666;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+            margin-top: 25px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="logo">iTaxCix</div>
+    </div>
+
+    <!-- Contenedor de texto e imagen (compatible con correos) -->
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#fcfcfc; padding:15px 20px; margin:20px -20px;">
+        <tr>
+            <!-- Texto izquierdo -->
+            <td width="70%" valign="middle" style="text-align:left; font-size:14px; color:#333;">
+                <p style="margin:0; padding:0;"><strong>Hola,</strong></p>
+                <p style="margin:2px 0 0 0; padding:0;">Solicitud de contraseña recibida.</p>
+            </td>
+
+            <!-- Imagen derecha -->
+            <td width="30%" valign="middle" align="right">
+                <img src="cid:image" alt="Técnico sonriente" width="80" height="80" style="border-radius:4px; object-fit:cover;">
+            </td>
+        </tr>
+    </table>
+
+    <div class="content">
+        <div class="code">{{code}}</div>
+
+        <div class="divider"></div>
+
+        <p class="expiration">Este código es válido por {{minutes}} minutos.</p>
+    </div>
+
+    <div class="centered">
+        <a class="btn" href="https://www.gob.pe/munichiclayo ">Ir al sitio web</a>
+    </div>
+
+    <div class="note">
+        Si tú no solicitaste este cambio, ignora el mensaje.
+    </div>
+
+    <div class="footer">
+        © 2025 iTaxCix | Todos los derechos reservados
+    </div>
+</div>
+</body>
+</html>

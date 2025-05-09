@@ -22,8 +22,8 @@ class ContactValidator {
                 break;
 
             case 2:
-                if (!preg_match('/^9\d{8}$/', $contact)) {
-                    throw new Exception("El número de teléfono móvil debe comenzar con 9 y tener 9 dígitos.", 400);
+                if (!preg_match('/^\+\d{10,15}$/', $contact)) {
+                    throw new Exception("El número debe estar en formato internacional (ej: +51987654321).");
                 }
                 break;
 

@@ -40,6 +40,8 @@ use itaxcix\models\entities\vehiculo\Marca;
 use itaxcix\models\entities\vehiculo\Modelo;
 use itaxcix\models\entities\vehiculo\TipoCombustible;
 use itaxcix\models\entities\vehiculo\Vehiculo;
+use itaxcix\services\notifications\NotificationServiceFactory;
+use itaxcix\services\notifications\NotificationServiceInterface;
 use itaxcix\utils\StringUtils;
 
 class AuthService {
@@ -49,7 +51,8 @@ class AuthService {
         private readonly MunicipalidadService $municipalidadService,
         private readonly ExternalService $externalService,
         private readonly JwtService $jwtService,
-        private readonly StringUtils $stringUtils
+        private readonly StringUtils $stringUtils,
+        private readonly NotificationServiceFactory $notificationServiceFactory
     ) {}
 
     private function getContactoUsuarioRepository(): EntityRepository {
@@ -612,27 +615,29 @@ class AuthService {
             throw new Exception("Contacto no encontrado.", 404);
         }
 
-        // Validar que el contacto haya sido confirmado
+        // Validar confirmación del contacto
         if (!$contacto->isConfirmado()) {
             throw new Exception("El contacto no está confirmado.", 400);
         }
 
-        // Buscar usuario asociado al contacto
+        // Buscar usuario asociado
         $usuario = $this->getUsuarioRepository()->findOneByContact($contacto);
-
         if (!$usuario) {
             throw new Exception("Usuario no encontrado.", 404);
         }
 
-        // Buscar tipo "Recuperación"
+        // Obtener tipo "Recuperación"
         $tipoRecuperacion = $this->getTipoCodigoUsuarioRepository()->findOneByName('Recuperación');
-
         if (!$tipoRecuperacion) {
             throw new Exception("Tipo de código no encontrado.", 500);
         }
 
         // Generar código
-        $this->getCodigoUsuarioRepository()->generateRecoveryCode($usuario, $contacto, $tipoRecuperacion);
+        $codigo = $this->getCodigoUsuarioRepository()->generateRecoveryCode($usuario, $contacto, $tipoRecuperacion);
+
+        // Seleccionar el servicio de notificación adecuado
+        $service = $this->notificationServiceFactory->getServiceForContactType($dto->contactTypeId);
+        $service->send($contacto->getValor(), 'Código de recuperación', $codigo->getCodigo());
     }
 
     /**
