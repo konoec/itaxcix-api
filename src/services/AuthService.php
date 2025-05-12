@@ -41,7 +41,6 @@ use itaxcix\models\entities\vehiculo\Modelo;
 use itaxcix\models\entities\vehiculo\TipoCombustible;
 use itaxcix\models\entities\vehiculo\Vehiculo;
 use itaxcix\services\notifications\NotificationServiceFactory;
-use itaxcix\services\notifications\NotificationServiceInterface;
 use itaxcix\utils\StringUtils;
 
 class AuthService {
@@ -341,8 +340,43 @@ class AuthService {
             if ($this->getContactoUsuarioRepository()->existsByValor($dto->contact)) {
                 throw new Exception("El contacto ya está registrado.", 400);
             }
-            if ($this->getVehiculoRepository()->existsByPlaca($dto->licensePlate)) {
-                throw new Exception("Ya existe un vehículo con esa placa.", 400);
+
+            $vehiculoExistente = $this->getVehiculoRepository()->existsByPlaca($dto->licensePlate);
+
+            if ($vehiculoExistente['existe']) {
+                if ($vehiculoExistente['relacionActiva']) {
+                    throw new Exception("Este vehículo ya está registrado y asociado a un conductor. Por favor, contacte con soporte.", 400);
+                } else {
+                    // Usar vehículo existente sin registrar datos nuevos del vehículo ni consultar a municipalidad
+                    $vehiculo = $this->getVehiculoRepository()->find($vehiculoExistente['id']);
+                    if (!$vehiculo) {
+                        throw new Exception("No se encontró el vehículo.", 500);
+                    }
+
+                    // Bloque 2: Obtener tipos básicos
+                    $tipoDocumento = $this->getTipoDocumentoRepository()->getById($dto->documentTypeId);
+                    if (!$tipoDocumento || !$tipoDocumento->isActivo()) {
+                        throw new Exception("Tipo de documento inválido o inactivo.", 400);
+                    }
+
+                    $tipoContacto = $this->getTipoContactoRepository()->getById($dto->contactTypeId);
+                    if (!$tipoContacto || !$tipoContacto->isActivo()) {
+                        throw new Exception("Tipo de contacto inválido o inactivo.", 400);
+                    }
+
+                    // Bloque 3: Llamadas a API externas (usar mocks por ahora)
+                    $reniecResponse = $this->externalService->getPerson(
+                        (string)$dto->documentTypeId,
+                        $dto->document
+                    );
+
+                    if (!$reniecResponse['success']) {
+                        throw new Exception("Documento no válido o no encontrado en Reniec.", 400);
+                    }
+
+                    // Saltarse bloques 3 al 21 (registro vehículo, tramiteTuc, etc.)
+                    goto skip_vehiculo_creation;
+                }
             }
 
             // Bloque 2: Obtener tipos básicos
@@ -473,7 +507,54 @@ class AuthService {
                 throw new Exception("El trámite TUC asociado no está activo.", 400);
             }
 
-            // Bloque 14: Crear Persona
+            // Bloque 14: Crear Vehículo
+            $vehiculo = new Vehiculo();
+            $vehiculo->setPlaca($dto->licensePlate);
+            $vehiculo->setModelo($modelo);
+            $vehiculo->setColor($color);
+            $vehiculo->setAnioFabricacion((int)$vehiculoData['ANIO_FABRIC']);
+            $vehiculo->setNumeroAsientos((int)$vehiculoData['NUM_ASIENTOS']);
+            $vehiculo->setNumeroPasajeros((int)$vehiculoData['NUM_PASAJ']);
+            $vehiculo->setTipoCombustible($tipoCombustible);
+            $vehiculo->setClase($clase);
+            $vehiculo->setCategoria($categoria);
+            $vehiculo->setActivo(true);
+            $this->getVehiculoRepository()->save($vehiculo);
+
+            // Bloque 15: Asociar Trámite TUC al Vehículo
+            $tramiteTuc->setVehiculo($vehiculo);
+            $this->getTramiteTucRepository()->save($tramiteTuc);
+
+            // Bloque 16: Registrar o validar Ruta de Servicio
+            $rutaTexto = $vehiculoData['RUTA'] ?? null;
+            if ($rutaTexto) {
+                $rutaServicio = $this->getRutaServicioRepository()->findByTramite($tramiteTuc);
+
+                if (!$rutaServicio) {
+                    $rutaServicio = new RutaServicio();
+                    $rutaServicio->setTramite($tramiteTuc);
+                    $rutaServicio->setTipoServicio($tipoServicio);
+                    $rutaServicio->setTexto($rutaTexto);
+                    $rutaServicio->setActivo(true);
+
+                    $this->getRutaServicioRepository()->save($rutaServicio, false);
+                }
+            }
+
+            // Bloque 17: Crear especificación técnica del vehículo
+            $especificacion = new EspecificacionTecnica();
+            $especificacion->setVehiculo($vehiculo);
+            $especificacion->setPesoSeco((float)str_replace(',', '.', $vehiculoData['PESO_SECO']));
+            $especificacion->setPesoBruto((float)str_replace(',', '.', $vehiculoData['PESO_BRUTO']));
+            $especificacion->setLongitud((float)str_replace(',', '.', $vehiculoData['LONGITUD']));
+            $especificacion->setAltura((float)str_replace(',', '.', $vehiculoData['ALTURA']));
+            $especificacion->setAnchura((float)str_replace(',', '.', $vehiculoData['ANCHURA']));
+            $especificacion->setCargaUtil((float)str_replace(',', '.', $vehiculoData['CARGA_UTIL']));
+
+            $this->getEspecificacionTecnicaRepository()->save($especificacion, false);
+
+            skip_vehiculo_creation:
+            // Bloque 18: Crear Persona
             $persona = new Persona();
             $persona->setDocumento($dto->document);
             $persona->setTipoDocumento($tipoDocumento);
@@ -491,14 +572,14 @@ class AuthService {
             $persona->setActivo(true);
             $this->getPersonaRepository()->save($persona);
 
-            // Bloque 15: Estado Activo
+            // Bloque 19: Estado Activo
             $estadoActivo = $this->getEstadoUsuarioRepository()->getById(1);
 
             if (!$estadoActivo) {
                 throw new Exception("No se encontró el estado 'Activo'.", 500);
             }
 
-            // Bloque 16: Crear Usuario
+            // Bloque 20: Crear Usuario
             $usuario = new Usuario();
             $usuario->setAlias($dto->alias);
             $usuario->setClave(password_hash($dto->password, PASSWORD_DEFAULT));
@@ -506,13 +587,13 @@ class AuthService {
             $usuario->setEstado($estadoActivo);
             $this->getUsuarioRepository()->save($usuario);
 
-            // Bloque 17: Perfil Conductor
+            // Bloque 21: Perfil Conductor
             $perfilConductor = new PerfilConductor();
             $perfilConductor->setUsuario($usuario);
             $perfilConductor->setDisponible(false);
             $this->getPerfilConductorRepository()->save($perfilConductor);
 
-            // Bloque 18: Registrar Contacto del usuario
+            // Bloque 22: Registrar Contacto del usuario
             $contacto = new ContactoUsuario();
             $contacto->setUsuario($usuario);
             $contacto->setTipo($tipoContacto);
@@ -521,7 +602,7 @@ class AuthService {
             $contacto->setActivo(true);
             $this->getContactoUsuarioRepository()->save($contacto);
 
-            // Bloque 19: Registrar Rol de Conductor
+            // Bloque 23: Registrar Rol de Conductor
             $rolConductor = $this->getRolRepository()->getByNombre('Conductor');
             $rolUsuario = new RolUsuario();
             $rolUsuario->setUsuario($usuario);
@@ -529,58 +610,12 @@ class AuthService {
             $rolUsuario->setActivo(true);
             $this->getRolUsuarioRepository()->save($rolUsuario);
 
-            // Bloque 20: Crear Vehículo
-            $vehiculo = new Vehiculo();
-            $vehiculo->setPlaca($dto->licensePlate);
-            $vehiculo->setModelo($modelo);
-            $vehiculo->setColor($color);
-            $vehiculo->setAnioFabricacion((int)$vehiculoData['ANIO_FABRIC']);
-            $vehiculo->setNumeroAsientos((int)$vehiculoData['NUM_ASIENTOS']);
-            $vehiculo->setNumeroPasajeros((int)$vehiculoData['NUM_PASAJ']);
-            $vehiculo->setTipoCombustible($tipoCombustible);
-            $vehiculo->setClase($clase);
-            $vehiculo->setCategoria($categoria);
-            $vehiculo->setActivo(true);
-            $this->getVehiculoRepository()->save($vehiculo);
-
-            // Bloque 21: Asociar Trámite TUC al Vehículo
-            $tramiteTuc->setVehiculo($vehiculo);
-            $this->getTramiteTucRepository()->save($tramiteTuc);
-
-            // Bloque 22: Crear relación entre usuario y vehículo
+            // Bloque 24: Crear relación entre usuario y vehículo
             $vehiculoUsuario = new VehiculoUsuario();
             $vehiculoUsuario->setUsuario($usuario);
             $vehiculoUsuario->setVehiculo($vehiculo);
             $vehiculoUsuario->setActivo(true);
             $this->getVehiculoUsuarioRepository()->save($vehiculoUsuario);
-
-            // Bloque 23: Registrar o validar Ruta de Servicio
-            $rutaTexto = $vehiculoData['RUTA'] ?? null;
-            if ($rutaTexto) {
-                $rutaServicio = $this->getRutaServicioRepository()->findByTramite($tramiteTuc);
-
-                if (!$rutaServicio) {
-                    $rutaServicio = new RutaServicio();
-                    $rutaServicio->setTramite($tramiteTuc);
-                    $rutaServicio->setTipoServicio($tipoServicio);
-                    $rutaServicio->setTexto($rutaTexto);
-                    $rutaServicio->setActivo(true);
-
-                    $this->getRutaServicioRepository()->save($rutaServicio, false);
-                }
-            }
-
-            // Bloque 24: Crear especificación técnica del vehículo
-            $especificacion = new EspecificacionTecnica();
-            $especificacion->setVehiculo($vehiculo);
-            $especificacion->setPesoSeco((float)str_replace(',', '.', $vehiculoData['PESO_SECO']));
-            $especificacion->setPesoBruto((float)str_replace(',', '.', $vehiculoData['PESO_BRUTO']));
-            $especificacion->setLongitud((float)str_replace(',', '.', $vehiculoData['LONGITUD']));
-            $especificacion->setAltura((float)str_replace(',', '.', $vehiculoData['ALTURA']));
-            $especificacion->setAnchura((float)str_replace(',', '.', $vehiculoData['ANCHURA']));
-            $especificacion->setCargaUtil((float)str_replace(',', '.', $vehiculoData['CARGA_UTIL']));
-
-            $this->getEspecificacionTecnicaRepository()->save($especificacion, false);
 
             // Bloque 25: Confirmar transacción
             $this->entityManager->commit();

@@ -2,7 +2,10 @@
 
 namespace itaxcix\models\entities\vehiculo;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use itaxcix\models\entities\usuario\VehiculoUsuario;
 use itaxcix\repositories\vehiculo\VehiculoRepository;
 
 #[ORM\Entity(repositoryClass: VehiculoRepository::class)]
@@ -48,113 +51,110 @@ class Vehiculo {
     #[ORM\Column(name: 'vehi_activo', type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $activo = true;
 
-    public function getId(): ?int
-    {
+    #[ORM\OneToMany(
+        targetEntity: VehiculoUsuario::class,
+        mappedBy: 'vehiculo',
+        orphanRemoval: true
+    )]
+    private Collection $vehiculoUsuarios;
+
+    public function __construct() {
+        $this->vehiculoUsuarios = new ArrayCollection();
+    }
+
+    public function getVehiculoUsuarios(): Collection {
+        return $this->vehiculoUsuarios;
+    }
+
+    public function setVehiculoUsuarios(Collection $vehiculoUsuarios): void {
+        $this->vehiculoUsuarios = $vehiculoUsuarios;
+    }
+
+    public function getId(): ?int {
         return $this->id;
     }
 
-    public function setId(?int $id): void
-    {
+    public function setId(?int $id): void {
         $this->id = $id;
     }
 
-    public function getPlaca(): string
-    {
+    public function getPlaca(): string {
         return $this->placa;
     }
 
-    public function setPlaca(string $placa): void
-    {
+    public function setPlaca(string $placa): void {
         $this->placa = $placa;
     }
 
-    public function getModelo(): ?Modelo
-    {
+    public function getModelo(): ?Modelo {
         return $this->modelo;
     }
 
-    public function setModelo(?Modelo $modelo): void
-    {
+    public function setModelo(?Modelo $modelo): void {
         $this->modelo = $modelo;
     }
 
-    public function getColor(): ?Color
-    {
+    public function getColor(): ?Color {
         return $this->color;
     }
 
-    public function setColor(?Color $color): void
-    {
+    public function setColor(?Color $color): void {
         $this->color = $color;
     }
 
-    public function getAnioFabricacion(): ?int
-    {
+    public function getAnioFabricacion(): ?int {
         return $this->anioFabricacion;
     }
 
-    public function setAnioFabricacion(?int $anioFabricacion): void
-    {
+    public function setAnioFabricacion(?int $anioFabricacion): void {
         $this->anioFabricacion = $anioFabricacion;
     }
 
-    public function getNumeroAsientos(): ?int
-    {
+    public function getNumeroAsientos(): ?int {
         return $this->numeroAsientos;
     }
 
-    public function setNumeroAsientos(?int $numeroAsientos): void
-    {
+    public function setNumeroAsientos(?int $numeroAsientos): void {
         $this->numeroAsientos = $numeroAsientos;
     }
 
-    public function getNumeroPasajeros(): ?int
-    {
+    public function getNumeroPasajeros(): ?int {
         return $this->numeroPasajeros;
     }
 
-    public function setNumeroPasajeros(?int $numeroPasajeros): void
-    {
+    public function setNumeroPasajeros(?int $numeroPasajeros): void {
         $this->numeroPasajeros = $numeroPasajeros;
     }
 
-    public function getTipoCombustible(): ?TipoCombustible
-    {
+    public function getTipoCombustible(): ?TipoCombustible {
         return $this->tipoCombustible;
     }
 
-    public function setTipoCombustible(?TipoCombustible $tipoCombustible): void
-    {
+    public function setTipoCombustible(?TipoCombustible $tipoCombustible): void {
         $this->tipoCombustible = $tipoCombustible;
     }
 
-    public function getClase(): ?ClaseVehiculo
-    {
+    public function getClase(): ?ClaseVehiculo {
         return $this->clase;
     }
 
-    public function setClase(?ClaseVehiculo $clase): void
-    {
+    public function setClase(?ClaseVehiculo $clase): void {
         $this->clase = $clase;
     }
 
-    public function getCategoria(): ?CategoriaVehiculo
-    {
+    public function getCategoria(): ?CategoriaVehiculo {
         return $this->categoria;
     }
 
-    public function setCategoria(?CategoriaVehiculo $categoria): void
-    {
+    public function setCategoria(?CategoriaVehiculo $categoria): void {
         $this->categoria = $categoria;
     }
 
-    public function isActivo(): bool
-    {
+    public function isActivo(): bool {
         return $this->activo;
     }
 
-    public function setActivo(bool $activo): void
-    {
+    public function setActivo(bool $activo): void {
         $this->activo = $activo;
     }
 }

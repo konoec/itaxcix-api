@@ -357,6 +357,87 @@
                     }
                 ]
             }
+        },
+        "/perfil/send-verification-code": {
+            "post": {
+                "tags": [
+                    "Perfil"
+                ],
+                "summary": "Enviar código de verificación a un contacto",
+                "operationId": "674f0d445be7989bed83c94b6c520449",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "itaxcix\\models\\dtos\\SendVerificationCodeRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Código enviado exitosamente"
+                    },
+                    "400": {
+                        "description": "Datos inválidos o contacto ya verificado"
+                    },
+                    "404": {
+                        "description": "Contacto no encontrado"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                }
+            }
+        },
+        "/perfil/verify-contact-code": {
+            "post": {
+                "tags": [
+                    "Perfil"
+                ],
+                "summary": "Verificar contacto mediante código",
+                "operationId": "46cf08590ba03a333fb7f4a57a6c2d16",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/VerifyCodeRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Contacto verificado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "userId": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Código inválido o datos incorrectos"
+                    },
+                    "404": {
+                        "description": "Contacto no encontrado"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -506,6 +587,10 @@
         {
             "name": "General",
             "description": "Endpoints relacionados con utilidades y pruebas"
+        },
+        {
+            "name": "Perfil",
+            "description": "Operaciones relacionadas con el perfil del usuario"
         }
     ]
 }

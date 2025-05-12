@@ -3,6 +3,7 @@
 namespace itaxcix\repositories\vehiculo;
 
 use Doctrine\ORM\EntityRepository;
+use itaxcix\models\entities\vehiculo\Vehiculo;
 
 class VehiculoRepository extends EntityRepository {
 
@@ -10,20 +11,34 @@ class VehiculoRepository extends EntityRepository {
      * Verifica si existe un vehículo con la placa especificada.
      *
      * @param string $placa La placa del vehículo a buscar.
-     * @return bool True si existe, false en caso contrario.
+     * @return array Un array con el resultado de la búsqueda.
      */
-    public function existsByPlaca(string $placa): bool {
-        $result = $this->createQueryBuilder('v')
-            ->select('COUNT(v.id)')
+    public function existsByPlaca(string $placa): array {
+        $qb = $this->createQueryBuilder('v')
+            ->select('v, vu')
+            ->leftJoin('v.vehiculoUsuarios', 'vu', 'WITH', 'vu.activo = true')
             ->where('v.placa = :placa')
-            ->setParameter('placa', $placa)
-            ->getQuery()
-            ->getSingleScalarResult();
+            ->setParameter('placa', $placa);
 
-        return (int)$result > 0;
+        $results = $qb->getQuery()->getArrayResult();
+
+        if (empty($results)) {
+            return ['existe' => false];
+        }
+
+        $vehiculo = $results[0];
+        $relacionActiva = !empty($vehiculo['vehiculoUsuarios']);
+
+        return [
+            'existe' => true,
+            'id' => $vehiculo['id'],
+            'relacionActiva' => $relacionActiva
+        ];
     }
 
-    public function save($vehiculo, bool $flush = true): void {
+
+
+    public function save(Vehiculo $vehiculo, bool $flush = true): void {
         $entityManager = $this->getEntityManager();
         $entityManager->persist($vehiculo);
 
@@ -32,7 +47,7 @@ class VehiculoRepository extends EntityRepository {
         }
     }
 
-    public function remove($vehiculo, bool $flush = true): void {
+    public function remove(Vehiculo $vehiculo, bool $flush = true): void {
         $entityManager = $this->getEntityManager();
         $entityManager->remove($vehiculo);
 

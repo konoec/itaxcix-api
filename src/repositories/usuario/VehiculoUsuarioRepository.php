@@ -3,9 +3,10 @@
 namespace itaxcix\repositories\usuario;
 
 use Doctrine\ORM\EntityRepository;
+use itaxcix\models\entities\usuario\VehiculoUsuario;
 
 class VehiculoUsuarioRepository extends EntityRepository {
-    public function save($vehiculoUsuario, bool $flush = true): void {
+    public function save(VehiculoUsuario $vehiculoUsuario, bool $flush = true): void {
         $entityManager = $this->getEntityManager();
         $entityManager->persist($vehiculoUsuario);
 
@@ -14,7 +15,7 @@ class VehiculoUsuarioRepository extends EntityRepository {
         }
     }
 
-    public function remove($vehiculoUsuario, bool $flush = true): void {
+    public function remove(VehiculoUsuario $vehiculoUsuario, bool $flush = true): void {
         $entityManager = $this->getEntityManager();
         $entityManager->remove($vehiculoUsuario);
 

@@ -18,7 +18,7 @@ class VehiculoUsuario {
     #[ORM\JoinColumn(name: 'cont_usuario_id', referencedColumnName: 'usua_id', nullable: false)]
     private ?Usuario $usuario = null;
 
-    #[ORM\ManyToOne(targetEntity: Vehiculo::class)]
+    #[ORM\ManyToOne(targetEntity: Vehiculo::class, inversedBy: 'vehiculoUsuarios')]
     #[ORM\JoinColumn(name: 'vehi_vehiculo_id', referencedColumnName: 'vehi_id', nullable: false)]
     private ?Vehiculo $vehiculo = null;
 

@@ -9,12 +9,7 @@ INSERT INTO tb_tipo_contacto (tipo_nombre)
 VALUES ('Correo Electrónico'), ('Teléfono Móvil');
 
 INSERT INTO tb_tipo_codigo_usuario (tipo_nombre)
-VALUES ('Verificación'),('Recuperación'),
-       ('Confirmación de Registro');
-
-INSERT INTO tb_configuracion (conf_clave, conf_valor)
-VALUES ('max_intentos_login', '3'), ('dias_expiracion_codigo', '1'),
-       ('email_soporte', 'soporte@taxiseguro.com');
+VALUES ('Verificación'),('Recuperación');
 
 INSERT INTO tb_rol (rol_nombre, rol_activo)
 VALUES

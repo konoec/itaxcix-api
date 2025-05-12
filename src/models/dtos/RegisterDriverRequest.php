@@ -26,7 +26,7 @@ class RegisterDriverRequest {
     public readonly int $contactTypeId;
     #[OA\Property(property: "contact", type: "string", example: "antonio@gmail.com")]
     public readonly string $contact;
-    #[OA\Property(property: "licensePlate", type: "string", example: "ABC-123")]
+    #[OA\Property(property: "licensePlate", type: "string", example: "ABC123")]
     public readonly string $licensePlate;
 
     /**
