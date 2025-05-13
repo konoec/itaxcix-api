@@ -17,8 +17,9 @@ class CodeValidator {
             throw new Exception("El código debe tener exactamente 6 caracteres.", 400);
         }
 
-        if (!preg_match('/^[A-Za-z0-9]{6}$/', $code)) {
-            throw new Exception("El código debe ser alfanumérico y tener 6 caracteres.", 400);
+        if (!preg_match('/^[A-Za-z0-9]+$/', $code)) {
+            throw new Exception("El código debe ser alfanumérico.", 400);
         }
     }
+
 }
