@@ -3,9 +3,10 @@
 namespace itaxcix\repositories\usuario;
 
 use Doctrine\ORM\EntityRepository;
+use itaxcix\models\entities\usuario\PerfilConductor;
 
 class PerfilConductorRepository extends EntityRepository {
-    public function save($perfilConductor, bool $flush = true): void {
+    public function save(PerfilConductor $perfilConductor, bool $flush = true): void {
         $entityManager = $this->getEntityManager();
         $entityManager->persist($perfilConductor);
 
@@ -14,7 +15,7 @@ class PerfilConductorRepository extends EntityRepository {
         }
     }
 
-    public function remove($perfilConductor, bool $flush = true): void {
+    public function remove(PerfilConductor $perfilConductor, bool $flush = true): void {
         $entityManager = $this->getEntityManager();
         $entityManager->remove($perfilConductor);
 

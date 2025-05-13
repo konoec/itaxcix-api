@@ -313,6 +313,112 @@
                 }
             }
         },
+        "/driver/activate-availability": {
+            "post": {
+                "tags": [
+                    "Conductor"
+                ],
+                "summary": "Activar disponibilidad del conductor para recibir viajes",
+                "operationId": "33652f6b3d20f459d7d954a62dbebf2a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActivateAvailabilityRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Disponibilidad activada correctamente"
+                    },
+                    "400": {
+                        "description": "Datos inválidos o conductor no encontrado"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                }
+            }
+        },
+        "/driver/deactivate-availability": {
+            "post": {
+                "tags": [
+                    "Conductor"
+                ],
+                "summary": "Desactivar disponibilidad del conductor",
+                "operationId": "0dfbce8e919e40cd759dadeaffd1b925",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DeactivateAvailabilityRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Disponibilidad desactivada correctamente"
+                    },
+                    "400": {
+                        "description": "Datos inválidos o conductor no encontrado"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                }
+            }
+        },
+        "/driver/status/{userId}": {
+            "get": {
+                "tags": [
+                    "Conductor"
+                ],
+                "summary": "Obtener el estado actual de disponibilidad del conductor",
+                "operationId": "65e1218165e7154952f25a40c246a040",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Estado del conductor obtenido exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "available": {
+                                            "type": "boolean"
+                                        },
+                                        "lastUpdated": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Conductor no encontrado"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                }
+            }
+        },
         "/hello/{name}": {
             "get": {
                 "tags": [
@@ -370,7 +476,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "itaxcix\\models\\dtos\\SendVerificationCodeRequest"
+                                "$ref": "#/components/schemas/SendVerificationCodeRequest"
                             }
                         }
                     }
@@ -438,10 +544,77 @@
                     }
                 }
             }
+        },
+        "/perfil/detach-vehicle": {
+            "post": {
+                "tags": [
+                    "Perfil"
+                ],
+                "summary": "Desvincular un vehículo del perfil del conductor",
+                "operationId": "e3f4e7eee831a78380131bf59e4a402d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DetachVehicleRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Vehículo desvinculado correctamente"
+                    },
+                    "400": {
+                        "description": "Datos inválidos o sin vehículo asignado"
+                    },
+                    "404": {
+                        "description": "Conductor o vehículo no encontrado"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                }
+            }
         }
     },
     "components": {
         "schemas": {
+            "ActivateAvailabilityRequest": {
+                "description": "Datos para desactivar la disponibilidad de un ciudadano",
+                "properties": {
+                    "userId": {
+                        "type": "integer",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            },
+            "DeactivateAvailabilityRequest": {
+                "description": "Datos para desactivar la disponibilidad de un ciudadano",
+                "properties": {
+                    "userId": {
+                        "type": "integer",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            },
+            "DetachVehicleRequest": {
+                "description": "Datos para desasociar un vehículo de un ciudadano",
+                "properties": {
+                    "userId": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "vehicleId": {
+                        "type": "integer",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            },
             "LoginRequest": {
                 "description": "Datos para iniciar sesión",
                 "properties": {
@@ -532,7 +705,7 @@
                     },
                     "licensePlate": {
                         "type": "string",
-                        "example": "ABC-123"
+                        "example": "ABC123"
                     }
                 },
                 "type": "object"
@@ -548,6 +721,26 @@
                         "type": "string",
                         "format": "password",
                         "example": "secureNewPassword123"
+                    }
+                },
+                "type": "object"
+            },
+            "SendVerificationCodeRequest": {
+                "description": "Datos necesarios para enviar un código de verificación",
+                "required": [
+                    "contactTypeId",
+                    "contact"
+                ],
+                "properties": {
+                    "contactTypeId": {
+                        "description": "El tipo de contacto (por ejemplo, email o teléfono)",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "contact": {
+                        "description": "El contacto al que se enviará el código (email o número de teléfono)",
+                        "type": "string",
+                        "example": "usuario@ejemplo.com"
                     }
                 },
                 "type": "object"
@@ -583,6 +776,10 @@
         {
             "name": "Authentication",
             "description": "Endpoints relacionados con autenticación"
+        },
+        {
+            "name": "Conductor",
+            "description": "Operaciones relacionadas con el conductor"
         },
         {
             "name": "General",

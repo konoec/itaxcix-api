@@ -3,6 +3,7 @@
 namespace itaxcix\controllers;
 
 use Exception;
+use itaxcix\models\dtos\DetachVehicleRequest;
 use itaxcix\models\dtos\SendVerificationCodeRequest;
 use itaxcix\models\dtos\VerifyCodeRequest;
 use itaxcix\services\PerfilService;
@@ -11,8 +12,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use OpenApi\Attributes as OA;
 
 #[OA\Tag(name: "Perfil", description: "Operaciones relacionadas con el perfil del usuario")]
-class PerfilController extends BaseController
-{
+class PerfilController extends BaseController {
     public function __construct(private readonly PerfilService $perfilService) {}
 
     #[OA\Post(
@@ -30,8 +30,7 @@ class PerfilController extends BaseController
             new OA\Response(response: 500, description: "Error interno del servidor")
         ]
     )]
-    public function sendVerificationCode(Request $request, Response $response): Response
-    {
+    public function sendVerificationCode(Request $request, Response $response): Response {
         try {
             $data = $this->getJsonObject($request);
             $dto = new SendVerificationCodeRequest($data);
@@ -66,8 +65,7 @@ class PerfilController extends BaseController
             new OA\Response(response: 500, description: "Error interno del servidor")
         ]
     )]
-    public function verifyContactCode(Request $request, Response $response): Response
-    {
+    public function verifyContactCode(Request $request, Response $response): Response {
         try {
             $data = $this->getJsonObject($request);
             $dto = new VerifyCodeRequest($data);
@@ -78,6 +76,34 @@ class PerfilController extends BaseController
                 'message' => 'Contacto verificado correctamente',
                 'userId' => $result['userId']
             ]);
+        } catch (Exception $e) {
+            return $this->handleError($e, $request, $response);
+        }
+    }
+
+    #[OA\Post(
+        path: "/perfil/detach-vehicle",
+        summary: "Desvincular un vehículo del perfil del conductor",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: DetachVehicleRequest::class)
+        ),
+        tags: ["Perfil"],
+        responses: [
+            new OA\Response(response: 200, description: "Vehículo desvinculado correctamente"),
+            new OA\Response(response: 400, description: "Datos inválidos o sin vehículo asignado"),
+            new OA\Response(response: 404, description: "Conductor o vehículo no encontrado"),
+            new OA\Response(response: 500, description: "Error interno del servidor")
+        ]
+    )]
+    public function detachVehicle(Request $request, Response $response): Response {
+        try {
+            $data = $this->getJsonObject($request);
+            $dto = new DetachVehicleRequest($data);
+
+            $this->perfilService->detachVehicle($dto->userId, $dto->vehicleId);
+
+            return $this->respondWithJson($response, ['message' => 'Vehículo desvinculado correctamente']);
         } catch (Exception $e) {
             return $this->handleError($e, $request, $response);
         }
