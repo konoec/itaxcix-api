@@ -10,26 +10,22 @@ use itaxcix\models\entities\usuario\TipoCodigoUsuario;
 use itaxcix\utils\StringUtils;
 use itaxcix\services\notifications\NotificationServiceFactory;
 
-class PerfilService
-{
+class PerfilService {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly NotificationServiceFactory $notificationServiceFactory,
         private readonly StringUtils $stringUtils
     ) {}
 
-    private function getContactoUsuarioRepository()
-    {
+    private function getContactoUsuarioRepository() {
         return $this->entityManager->getRepository(ContactoUsuario::class);
     }
 
-    private function getTipoCodigoUsuarioRepository()
-    {
+    private function getTipoCodigoUsuarioRepository() {
         return $this->entityManager->getRepository(TipoCodigoUsuario::class);
     }
 
-    private function getCodigoUsuarioRepository()
-    {
+    private function getCodigoUsuarioRepository() {
         return $this->entityManager->getRepository(CodigoUsuario::class);
     }
 
@@ -41,8 +37,7 @@ class PerfilService
      * @return void
      * @throws Exception
      */
-    public function sendVerificationCode(int $contactTypeId, string $contactValue): void
-    {
+    public function sendVerificationCode(int $contactTypeId, string $contactValue): void {
         // Buscar contacto
         $contacto = $this->getContactoUsuarioRepository()->findByTypeAndValue($contactTypeId, $contactValue);
         if (!$contacto) {
@@ -77,8 +72,7 @@ class PerfilService
      * @return array
      * @throws Exception
      */
-    public function verifyContactCode(string $code, int $contactTypeId, string $contactValue): array
-    {
+    public function verifyContactCode(string $code, int $contactTypeId, string $contactValue): array {
         // Buscar contacto
         $contacto = $this->getContactoUsuarioRepository()->findByTypeAndValue($contactTypeId, $contactValue);
         if (!$contacto) {

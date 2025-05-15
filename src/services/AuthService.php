@@ -483,29 +483,33 @@ class AuthService {
             $tipoTramiteNombre = ucwords(strtolower($vehiculoData['TRAMITE'])); // Renovación De Concesión
             $tipoTramite = $this->getTipoTramiteRepository()->getOrCreateByName($tipoTramiteNombre);
 
-            // Bloque 12: Validar estado TUC activo
-            $estadoTuc = $this->getEstadoTucRepository()->getByNombre('Activo');
+            // Bloque 12: Validar estados TUC (Activo y Vencido)
+            $estadoTucActivo = $this->getEstadoTucRepository()->getByNombre('Activo');
+            $estadoTucVencido = $this->getEstadoTucRepository()->getByNombre('Vencido'); // Asegúrate de tener este estado
 
-            // Bloque 13: Validar o crear Trámite TUC
-            $tramiteTuc = $this->getTramiteTucRepository()->findByPlaca($dto->licensePlate);
-            if (!$tramiteTuc) {
-                $tramiteTuc = new TramiteTuc();
-                $tramiteTuc->setCodigo('TR' . substr($dto->licensePlate, -4)); // TRM511
+            // Bloque 13: Crear Trámite TUC
+            $tramiteTuc = new TramiteTuc();
+            $tramiteTuc->setCodigo('TR' . substr($dto->licensePlate, -4)); // TRM511
 
-                $tramiteTuc->setFechaTramite(new DateTime($vehiculoData['FECHA_TRAM']));
-                $tramiteTuc->setFechaEmision(new DateTime($vehiculoData['FECHA_EMI']));
-                $tramiteTuc->setFechaCaducidad(new DateTime($vehiculoData['FECHA_CADUC']));
+            $tramiteTuc->setFechaTramite(new DateTime($vehiculoData['FECHA_TRAM']));
+            $tramiteTuc->setFechaEmision(new DateTime($vehiculoData['FECHA_EMI']));
+            $tramiteTuc->setFechaCaducidad(new DateTime($vehiculoData['FECHA_CADUC']));
 
-                $tramiteTuc->setEstado($estadoTuc);
-                $tramiteTuc->setTipo($tipoTramite);
-                $tramiteTuc->setModalidad($modalidadTuc);
-                $tramiteTuc->setEmpresa($empresa);
-                $tramiteTuc->setDistrito($distrito);
+            // Determinar si está Activo o Vencido
+            $hoy = new DateTime(); // Fecha actual
+            $fechaCaducidad = $tramiteTuc->getFechaCaducidad();
+
+            // Comparar fechas
+            if ($fechaCaducidad < $hoy) {
+                $tramiteTuc->setEstado($estadoTucVencido);
+            } else {
+                $tramiteTuc->setEstado($estadoTucActivo);
             }
 
-            if (!$tramiteTuc->getEstado()->isActivo()) {
-                throw new Exception("El trámite TUC asociado no está activo.", 400);
-            }
+            $tramiteTuc->setTipo($tipoTramite);
+            $tramiteTuc->setModalidad($modalidadTuc);
+            $tramiteTuc->setEmpresa($empresa);
+            $tramiteTuc->setDistrito($distrito);
 
             // Bloque 14: Crear Vehículo
             $vehiculo = new Vehiculo();

@@ -20,5 +20,6 @@ return function (RouteCollector $r) {
 
         $r->post('/driver/activate-availability', [JwtMiddleware::class, DriverController::class . '@activateAvailability']);
         $r->post('/driver/deactivate-availability', [JwtMiddleware::class, DriverController::class . '@deactivateAvailability']);
+        $r->post('/driver/status/{userId}', [JwtMiddleware::class, DriverController::class . '@getDriverStatus']);
     });
 };

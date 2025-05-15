@@ -101,10 +101,10 @@ class DriverController extends BaseController {
             new OA\Response(response: 500, description: "Error interno del servidor")
         ]
     )]
-    public function getDriverStatus(Request $request, Response $response, array $args): Response
-    {
+    public function getDriverStatus(Request $request, Response $response): Response {
         try {
-            $userId = (int)$args['userId'];
+            $routeParams = $request->getAttribute('route_params');
+            $userId = (int) htmlspecialchars($routeParams['userId']);
 
             $status = $this->driverService->getDriverStatus($userId);
 
