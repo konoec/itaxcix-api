@@ -102,4 +102,32 @@ class CodigoUsuarioRepository extends EntityRepository {
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    /**
+     * Genera un nuevo código de verificación.
+     *
+     * @param ContactoUsuario $contacto
+     * @param TipoCodigoUsuario $tipoCodigo
+     * @return CodigoUsuario
+     */
+    public function generateVerificationCode(ContactoUsuario $contacto, TipoCodigoUsuario $tipoCodigo): CodigoUsuario {
+        $entityManager = $this->getEntityManager();
+
+        $codigo = new CodigoUsuario();
+        $codigo->setContacto($contacto);
+        $codigo->setTipo($tipoCodigo);
+        $codigo->setCodigo($this->generateRandomCode());
+        $codigo->setFechaExpiracion((new DateTime())->modify('+5 minutes'));
+
+        // Si necesitas asociarlo a un usuario:
+        $usuario = $contacto->getUsuario();
+        if ($usuario) {
+            $codigo->setUsuario($usuario);
+        }
+
+        $entityManager->persist($codigo);
+        $entityManager->flush();
+
+        return $codigo;
+    }
 }

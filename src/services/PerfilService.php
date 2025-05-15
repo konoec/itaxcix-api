@@ -4,17 +4,16 @@ namespace itaxcix\services;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use itaxcix\models\dtos\SendVerificationCodeRequest;
 use itaxcix\models\entities\usuario\CodigoUsuario;
 use itaxcix\models\entities\usuario\ContactoUsuario;
 use itaxcix\models\entities\usuario\TipoCodigoUsuario;
-use itaxcix\utils\StringUtils;
 use itaxcix\services\notifications\NotificationServiceFactory;
 
 class PerfilService {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly NotificationServiceFactory $notificationServiceFactory,
-        private readonly StringUtils $stringUtils
+        private readonly NotificationServiceFactory $notificationServiceFactory
     ) {}
 
     private function getContactoUsuarioRepository() {
@@ -37,9 +36,9 @@ class PerfilService {
      * @return void
      * @throws Exception
      */
-    public function sendVerificationCode(int $contactTypeId, string $contactValue): void {
+    public function sendVerificationCode(SendVerificationCodeRequest $dto): void {
         // Buscar contacto
-        $contacto = $this->getContactoUsuarioRepository()->findByTypeAndValue($contactTypeId, $contactValue);
+        $contacto = $this->getContactoUsuarioRepository()->findByTypeAndValue($dto -> contactTypeId, $dto -> contact);
         if (!$contacto) {
             throw new Exception("Contacto no encontrado.", 404);
         }
@@ -59,8 +58,8 @@ class PerfilService {
         $codigo = $this->getCodigoUsuarioRepository()->generateVerificationCode($contacto, $tipoVerificacion);
 
         // Enviar notificación
-        $service = $this->notificationServiceFactory->getServiceForContactType($contactTypeId);
-        $service->send($contactValue, 'Código de verificación', $codigo);
+        $service = $this->notificationServiceFactory->getServiceForContactType($dto->contactTypeId);
+        $service->send($contacto->getValor(), 'Código de verificación', $codigo->getCodigo(), 'verification');
     }
 
     /**

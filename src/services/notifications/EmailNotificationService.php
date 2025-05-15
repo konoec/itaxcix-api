@@ -16,7 +16,7 @@ class EmailNotificationService implements NotificationServiceInterface {
      * @param string $code El código de verificación a enviar.
      * @throws Exception Si ocurre un error al enviar el correo.
      */
-    public function send(string $to, string $subject, string $code): void {
+    public function send(string $to, string $subject, string $code, string $templateType = 'recovery'): void {
         $mail = new PHPMailer(true);
         try {
             // Configurar servidor SMTP, credenciales, etc.
@@ -39,7 +39,13 @@ class EmailNotificationService implements NotificationServiceInterface {
                 'image'
             );
 
-            $template = EmailTemplateLoader::load('recovery-code', [
+            // Cargar plantilla según tipo
+            $templateName = match ($templateType) {
+                'verification' => 'verification-code',
+                default => 'recovery-code',
+            };
+
+            $template = EmailTemplateLoader::load($templateName, [
                 'code' => $code,
                 'minutes' => '5'
             ]);

@@ -9,12 +9,12 @@ use Exception;
 
 class SmsNotificationService implements NotificationServiceInterface {
 
-    public function send(string $to, string $subject, string $code): void {
+    public function send(string $to, string $subject, string $code, string $templateType = 'recovery'): void {
         try {
             // Limpiar y validar número destino
             $cleanedTo = preg_replace('/\D/', '', $to);
             if (strlen($cleanedTo) < 10) {
-                throw new Exception("Número de destino inválido.");
+                throw new Exception("Número de destino inválido: debe contener al menos 10 dígitos.");
             }
             $to = '+' . $cleanedTo;
 
@@ -23,17 +23,24 @@ class SmsNotificationService implements NotificationServiceInterface {
             $apiSecret = $_ENV['VONAGE_API_SECRET'] ?? throw new Exception('VONAGE_API_SECRET no configurado.');
             $from = $_ENV['VONAGE_PHONE'] ?? throw new Exception('VONAGE_PHONE no configurado.');
 
+            // Crear mensaje basado en el tipo de plantilla
+            $messageText = match ($templateType) {
+                'verification' => "Tu código de verificación es: $code. Este código expira en 5 minutos.",
+                'recovery' => "Tu código de recuperación es: $code. Este código expira en 5 minutos.",
+                default => "Código: $code. Este código expira en 5 minutos.",
+            };
+
             // Inicializar cliente Vonage
             $client = new VonageClient(new VonageBasic($apiKey, $apiSecret));
 
             // Crear mensaje
-            $message = new VonageSMS($to, $from, "Tu código de recuperación es: $code. Este código expira en 5 minutos.");
-            $message->setType('unicode'); // Importante para soportar tildes
+            $message = new VonageSMS($to, $from, $messageText);
+            $message->setType('unicode'); // Soporta tildes y caracteres especiales
 
             // Enviar mensaje
             $response = $client->sms()->send($message);
 
-            // Obtener el primer mensaje enviado
+            // Obtener resultado
             $sentMessage = $response->current();
 
             // Verificar si hubo error

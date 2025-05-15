@@ -3,6 +3,7 @@
 namespace itaxcix\controllers;
 
 use Exception;
+use itaxcix\models\dtos\AttachVehicleRequest;
 use itaxcix\models\dtos\DetachVehicleRequest;
 use itaxcix\models\dtos\SendVerificationCodeRequest;
 use itaxcix\models\dtos\VerifyCodeRequest;
@@ -35,7 +36,7 @@ class PerfilController extends BaseController {
             $data = $this->getJsonObject($request);
             $dto = new SendVerificationCodeRequest($data);
 
-            $this->perfilService->sendVerificationCode($dto->contactTypeId, $dto->contact);
+            $this->perfilService->sendVerificationCode($dto);
 
             return $this->respondWithJson($response, ['message' => 'Código de verificación enviado']);
         } catch (Exception $e) {
@@ -108,4 +109,33 @@ class PerfilController extends BaseController {
             return $this->handleError($e, $request, $response);
         }
     }
+
+    #[OA\Post(
+        path: "/perfil/attach-vehicle",
+        summary: "Vincular un vehículo al perfil del conductor",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: AttachVehicleRequest::class)
+        ),
+        tags: ["Perfil"],
+        responses: [
+            new OA\Response(response: 200, description: "Vehículo vinculado correctamente"),
+            new OA\Response(response: 400, description: "Datos inválidos o vehículo ya vinculado"),
+            new OA\Response(response: 404, description: "Conductor o vehículo no encontrado"),
+            new OA\Response(response: 500, description: "Error interno del servidor")
+        ]
+    )]
+    public function attachVehicle(Request $request, Response $response): Response {
+        try {
+            $data = $this->getJsonObject($request);
+            $dto = new AttachVehicleRequest($data);
+
+            $this->perfilService->attachVehicle($dto->userId, $dto->vehicleId);
+
+            return $this->respondWithJson($response, ['message' => 'Vehículo vinculado correctamente']);
+        } catch (Exception $e) {
+            return $this->handleError($e, $request, $response);
+        }
+    }
+
 }

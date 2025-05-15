@@ -340,7 +340,12 @@
                     "500": {
                         "description": "Error interno del servidor"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/driver/deactivate-availability": {
@@ -370,7 +375,12 @@
                     "500": {
                         "description": "Error interno del servidor"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/driver/status/{userId}": {
@@ -416,7 +426,12 @@
                     "500": {
                         "description": "Error interno del servidor"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/hello/{name}": {
@@ -577,6 +592,39 @@
                     }
                 }
             }
+        },
+        "/perfil/attach-vehicle": {
+            "post": {
+                "tags": [
+                    "Perfil"
+                ],
+                "summary": "Vincular un vehículo al perfil del conductor",
+                "operationId": "1a54340fe5c295b80a1e12d9c172720d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AttachVehicleRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Vehículo vinculado correctamente"
+                    },
+                    "400": {
+                        "description": "Datos inválidos o vehículo ya vinculado"
+                    },
+                    "404": {
+                        "description": "Conductor o vehículo no encontrado"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -585,6 +633,20 @@
                 "description": "Datos para desactivar la disponibilidad de un ciudadano",
                 "properties": {
                     "userId": {
+                        "type": "integer",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            },
+            "AttachVehicleRequest": {
+                "description": "Datos para asociar un vehículo de un ciudadano",
+                "properties": {
+                    "userId": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "vehicleId": {
                         "type": "integer",
                         "example": 1
                     }
@@ -727,18 +789,12 @@
             },
             "SendVerificationCodeRequest": {
                 "description": "Datos necesarios para enviar un código de verificación",
-                "required": [
-                    "contactTypeId",
-                    "contact"
-                ],
                 "properties": {
                     "contactTypeId": {
-                        "description": "El tipo de contacto (por ejemplo, email o teléfono)",
                         "type": "integer",
                         "example": 1
                     },
                     "contact": {
-                        "description": "El contacto al que se enviará el código (email o número de teléfono)",
                         "type": "string",
                         "example": "usuario@ejemplo.com"
                     }

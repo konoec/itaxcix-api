@@ -4,6 +4,7 @@ use FastRoute\RouteCollector;
 use itaxcix\controllers\AuthController;
 use itaxcix\controllers\DriverController;
 use itaxcix\controllers\HelloController;
+use itaxcix\controllers\PerfilController;
 use itaxcix\middleware\JwtMiddleware;
 
 return function (RouteCollector $r) {
@@ -20,6 +21,11 @@ return function (RouteCollector $r) {
 
         $r->post('/driver/activate-availability', [JwtMiddleware::class, DriverController::class . '@activateAvailability']);
         $r->post('/driver/deactivate-availability', [JwtMiddleware::class, DriverController::class . '@deactivateAvailability']);
-        $r->post('/driver/status/{userId}', [JwtMiddleware::class, DriverController::class . '@getDriverStatus']);
+        $r->get('/driver/status/{userId}', [JwtMiddleware::class, DriverController::class . '@getDriverStatus']);
+
+        $r->post('/perfil/send-verification-code', [JwtMiddleware::class, PerfilController::class . '@sendVerificationCode']);
+        $r->post('/perfil/verify-contact-code', [JwtMiddleware::class, PerfilController::class . '@verifyContactCode']);
+        $r->post('/perfil/attach-vehicle', [JwtMiddleware::class, PerfilController::class . '@attachVehicle']);
+        $r->post('/perfil/detach-vehicle', [JwtMiddleware::class, PerfilController::class . '@detachVehicle']);
     });
 };
