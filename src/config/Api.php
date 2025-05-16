@@ -27,5 +27,7 @@ return function (RouteCollector $r) {
         $r->post('/perfil/verify-contact-code', [JwtMiddleware::class, PerfilController::class . '@verifyContactCode']);
         $r->post('/perfil/attach-vehicle', [JwtMiddleware::class, PerfilController::class . '@attachVehicle']);
         $r->post('/perfil/detach-vehicle', [JwtMiddleware::class, PerfilController::class . '@detachVehicle']);
+        $r->post('/perfil/attach-contact', [JwtMiddleware::class, PerfilController::class . '@attachContact']);
+        $r->post('/perfil/detach-contact', [JwtMiddleware::class, PerfilController::class . '@detachContact']);
     });
 };

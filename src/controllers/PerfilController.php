@@ -3,7 +3,9 @@
 namespace itaxcix\controllers;
 
 use Exception;
+use itaxcix\models\dtos\AttachContactRequest;
 use itaxcix\models\dtos\AttachVehicleRequest;
+use itaxcix\models\dtos\DetachContactRequest;
 use itaxcix\models\dtos\DetachVehicleRequest;
 use itaxcix\models\dtos\SendVerificationCodeRequest;
 use itaxcix\models\dtos\VerifyCodeRequest;
@@ -138,4 +140,59 @@ class PerfilController extends BaseController {
         }
     }
 
+    #[OA\Post(
+        path: "/perfil/attach-contact",
+        summary: "Vincular un nuevo contacto (correo o teléfono) al perfil",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: AttachContactRequest::class)
+        ),
+        tags: ["Perfil"],
+        responses: [
+            new OA\Response(response: 200, description: "Contacto vinculado correctamente"),
+            new OA\Response(response: 400, description: "Datos inválidos o contacto duplicado"),
+            new OA\Response(response: 404, description: "Usuario no encontrado"),
+            new OA\Response(response: 500, description: "Error interno del servidor")
+        ]
+    )]
+    public function attachContact(Request $request, Response $response): Response {
+        try {
+            $data = $this->getJsonObject($request);
+            $dto = new AttachContactRequest($data);
+
+            $this->perfilService->attachContact($dto->userId, $dto->contact, $dto->contactTypeId);
+
+            return $this->respondWithJson($response, ['message' => 'Contacto vinculado correctamente']);
+        } catch (Exception $e) {
+            return $this->handleError($e, $request, $response);
+        }
+    }
+
+    #[OA\Post(
+        path: "/perfil/detach-contact",
+        summary: "Desvincular un contacto del perfil del usuario",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: DetachContactRequest::class)
+        ),
+        tags: ["Perfil"],
+        responses: [
+            new OA\Response(response: 200, description: "Contacto desvinculado correctamente"),
+            new OA\Response(response: 400, description: "Datos inválidos"),
+            new OA\Response(response: 404, description: "Usuario o contacto no encontrado"),
+            new OA\Response(response: 500, description: "Error interno del servidor")
+        ]
+    )]
+    public function detachContact(Request $request, Response $response): Response {
+        try {
+            $data = $this->getJsonObject($request);
+            $dto = new DetachContactRequest($data);
+
+            $this->perfilService->detachContact($dto->userId, $dto->contact);
+
+            return $this->respondWithJson($response, ['message' => 'Contacto desvinculado correctamente']);
+        } catch (Exception $e) {
+            return $this->handleError($e, $request, $response);
+        }
+    }
 }

@@ -9,6 +9,7 @@ use Exception;
 use InvalidArgumentException;
 use itaxcix\models\entities\tuc\EstadoTuc;
 use itaxcix\models\entities\tuc\TramiteTuc;
+use itaxcix\models\entities\usuario\ContactoUsuario;
 use itaxcix\models\entities\usuario\PerfilConductor;
 use itaxcix\models\entities\usuario\Usuario;
 use itaxcix\models\entities\usuario\VehiculoUsuario;
@@ -70,7 +71,6 @@ class DriverService {
         foreach ($vehiculosActivos as $vehiculoUsuario) {
             $vehiculo = $vehiculoUsuario->getVehiculo();
 
-            // Usamos el nuevo método del repositorio
             $tramitesVigentes = $this->getTramiteTucRepository()->findVigentesByVehiculo($vehiculo, $estadoTucActivo);
 
             if (!empty($tramitesVigentes)) {
@@ -82,7 +82,17 @@ class DriverService {
             throw new RuntimeException("El conductor no tiene ningún vehículo con un trámite TUC vigente.", 400);
         }
 
-        // 5. Activar disponibilidad del conductor
+        // 5. Verificar que tenga al menos un contacto confirmado
+        $contactosConfirmados = array_filter(
+            $usuario->getContactos()->toArray(),
+            fn(ContactoUsuario $contacto) => $contacto->isConfirmado()
+        );
+
+        if (empty($contactosConfirmados)) {
+            throw new RuntimeException("El conductor no tiene ningún contacto confirmado.", 400);
+        }
+
+        // 6. Activar disponibilidad del conductor
         $perfil = $this->getPerfilConductorRepository()->findOneBy(['usuario' => $usuario]);
 
         if (!$perfil) {
