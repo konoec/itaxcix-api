@@ -3,11 +3,13 @@
 
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
+use itaxcix\Infrastructure\Database\Config\EntityManagerFactory;
 
-// Ruta correcta a tu bootstrap.php
-require __DIR__ . '/../src/config/Bootstrap.php';
+// Carga Composer
+require_once __DIR__ . '/../vendor/autoload.php';
 
-// El bootstrap.php devuelve directamente el $entityManager
-$entityManager = require __DIR__ . '/../src/config/Bootstrap.php';
+// Crea el EntityManager usando la fábrica
+$entityManager = EntityManagerFactory::create();
 
+// Ejecuta la consola de Doctrine
 ConsoleRunner::run(new SingleManagerProvider($entityManager));
