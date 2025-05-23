@@ -27,7 +27,6 @@ class RegistrationController extends AbstractController {
 
             // 3. Mapear al DTO de entrada
             $dto = new RegistrationRequestDTO(
-                username: (string) $data['username'],
                 password: (string) $data['password'],
                 contactTypeId: (int) $data['contactTypeId'],
                 contactValue: (string) $data['contactValue'],

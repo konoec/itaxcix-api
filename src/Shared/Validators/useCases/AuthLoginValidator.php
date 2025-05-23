@@ -2,26 +2,49 @@
 
 namespace itaxcix\Shared\Validators\useCases;
 
+use itaxcix\Shared\Validators\rules\document\DniRule;
+use itaxcix\Shared\Validators\rules\document\RucRule;
+use itaxcix\Shared\Validators\rules\document\PassportRule;
+use itaxcix\Shared\Validators\rules\document\ForeignerIdRule;
 use itaxcix\Shared\Validators\generic\PasswordValidator;
-use itaxcix\Shared\Validators\generic\UsernameValidator;
 
 class AuthLoginValidator {
+    private const DOCUMENT_RULES = [
+        DniRule::class,
+        RucRule::class,
+        PassportRule::class,
+        ForeignerIdRule::class,
+    ];
+
     public function validate(array $data): array {
         $errors = [];
 
-        // Validar username
-        if (!isset($data['username'])) {
-            $errors['username'] = 'El nombre de usuario es requerido.';
+        // Validar documentValue
+        if (!isset($data['documentValue'])) {
+            $errors['documentValue'] = 'El número de documento es requerido.';
+        } else if (!is_string($data['documentValue'])) {
+            $errors['documentValue'] = 'El documento debe ser una cadena válida.';
         } else {
-            $usernameErrors = UsernameValidator::validate($data['username']);
-            if (!empty($usernameErrors)) {
-                $errors['username'] = reset($usernameErrors);
+            $documentValid = false;
+
+            foreach (self::DOCUMENT_RULES as $rule) {
+                $documentErrors = (new $rule())->validate($data['documentValue']);
+                if (empty($documentErrors)) {
+                    $documentValid = true;
+                    break;
+                }
+            }
+
+            if (!$documentValid) {
+                $errors['documentValue'] = 'El documento no tiene un formato válido.';
             }
         }
 
         // Validar password
         if (!isset($data['password'])) {
             $errors['password'] = 'La contraseña es requerida.';
+        } else if (!is_string($data['password'])) {
+            $errors['password'] = 'La contraseña debe ser una cadena.';
         } else {
             $passwordErrors = PasswordValidator::validate($data['password']);
             if (!empty($passwordErrors)) {
@@ -29,15 +52,11 @@ class AuthLoginValidator {
             }
         }
 
-        // Si hay errores, devolvemos un array con los mensajes específicos
+        // Devolver errores
         if (!empty($errors)) {
-            // Si hay más de un error, devolvemos el mensaje global
-            if (count($errors) > 1) {
-                return ['Los datos proporcionados no son válidos.'];
-            }
-
-            // Si solo hay un error, devolvemos ese mensaje específico
-            return [reset($errors)];
+            return count($errors) > 1
+                ? ['Los datos proporcionados no son válidos.']
+                : [reset($errors)];
         }
 
         return [];

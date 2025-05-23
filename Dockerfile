@@ -4,10 +4,12 @@ FROM php:8.2-fpm
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     zip \
-    unzip
+    unzip \
+    libjpeg-dev \
+    libpng-dev
 
 # Instalamos extensiones PHP necesarias
-RUN docker-php-ext-install pdo_pgsql opcache
+RUN docker-php-ext-install pdo_pgsql opcache gd
 
 # Configuración de OPcache
 RUN { \

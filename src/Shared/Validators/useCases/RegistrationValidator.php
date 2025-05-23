@@ -3,7 +3,6 @@
 namespace itaxcix\Shared\Validators\useCases;
 
 use itaxcix\Shared\Validators\generic\PasswordValidator;
-use itaxcix\Shared\Validators\generic\UsernameValidator;
 use itaxcix\Shared\Validators\rules\contact\EmailRule;
 use itaxcix\Shared\Validators\rules\contact\MobilePhoneRule;
 use itaxcix\Shared\Validators\generic\IdValidator;
@@ -16,18 +15,6 @@ class RegistrationValidator {
 
     public function validate(array $data): array {
         $errors = [];
-
-        // Validar username
-        if (!isset($data['username'])) {
-            $errors['username'] = 'El nombre de usuario es requerido.';
-        } else if (!is_string($data['username'])) {
-            $errors['username'] = 'El nombre de usuario debe ser una cadena válida.';
-        } else {
-            $usernameErrors = UsernameValidator::validate($data['username']);
-            if (!empty($usernameErrors)) {
-                $errors['username'] = reset($usernameErrors);
-            }
-        }
 
         // Validar password
         if (!isset($data['password'])) {
@@ -47,7 +34,7 @@ class RegistrationValidator {
         } else if (!is_int($data['contactTypeId']) && !ctype_digit($data['contactTypeId'])) {
             $errors['contactTypeId'] = 'El tipo de contacto debe ser un número entero válido.';
         } else {
-            $contactTypeId = (int)$data['contactTypeId'];
+            $contactTypeId = $data['contactTypeId'];
 
             if (!array_key_exists($contactTypeId, self::CONTACT_RULE_MAP)) {
                 $errors['contactTypeId'] = 'El tipo de contacto no es válido.';

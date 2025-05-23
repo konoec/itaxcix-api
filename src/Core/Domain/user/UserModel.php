@@ -7,22 +7,13 @@ use itaxcix\Infrastructure\Database\Entity\user\UserEntity;
 
 class UserModel {
     private int $id;
-    private string $alias;
     private string $password;
-    private ?PersonModel $person = null;
-    private ?UserStatusModel $status = null;
+    private ?PersonModel $person;
+    private ?UserStatusModel $status;
 
-    /**
-     * @param int $id
-     * @param string $alias
-     * @param string $password
-     * @param PersonModel|null $person
-     * @param UserStatusModel|null $status
-     */
-    public function __construct(int $id, string $alias, string $password, ?PersonModel $person, ?UserStatusModel $status)
+    public function __construct(int $id, string $password, ?PersonModel $person, ?UserStatusModel $status)
     {
         $this->id = $id;
-        $this->alias = $alias;
         $this->password = $password;
         $this->person = $person;
         $this->status = $status;
@@ -37,17 +28,6 @@ class UserModel {
     {
         $this->id = $id;
     }
-
-    public function getAlias(): string
-    {
-        return $this->alias;
-    }
-
-    public function setAlias(string $alias): void
-    {
-        $this->alias = $alias;
-    }
-
     public function getPassword(): string
     {
         return $this->password;
@@ -78,21 +58,13 @@ class UserModel {
         $this->status = $status;
     }
 
-    public function toEntity(): UserEntity {
-        $entity = new UserEntity();
+    public function toEntity(?UserEntity $existing = null): UserEntity {
+        $entity = $existing ?? new UserEntity();
 
-        $entity->setId($this->id);
-
-        $entity->setAlias($this->alias);
-        $entity->setPassword($this->password);
-
-        if ($this->person !== null) {
-            $entity->setPerson($this->person->toEntity());
-        }
-
-        if ($this->status !== null) {
-            $entity->setStatus($this->status->toEntity());
-        }
+        $entity->setId($this->getId());
+        $entity->setPassword($this->getPassword());
+        $entity->setPerson($this->getPerson()?->toEntity());
+        $entity->setStatus($this->getStatus()?->toEntity());
 
         return $entity;
     }

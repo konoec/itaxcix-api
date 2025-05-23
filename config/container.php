@@ -7,6 +7,7 @@ use itaxcix\Infrastructure\Auth\Middleware\JwtMiddleware;
 use itaxcix\Infrastructure\Auth\Service\JwtService;
 use itaxcix\Infrastructure\Database\Config\EntityManagerFactory;
 use function DI\autowire;
+use function DI\get;
 
 $containerBuilder = new ContainerBuilder();
 
@@ -17,21 +18,23 @@ $containerBuilder->addDefinitions([
     },
 
     // JWT
-    JwtEncoderInterface::class => function () {
+    JwtService::class => function () {
         return new JwtService(
             secret: $_ENV['JWT_SECRET'],
-            algorithm: 'HS256',
-            expiresIn: 3600
+            algorithm: $_ENV['JWT_ALGORITHM'] ?? 'HS256',
+            expiresIn: (int) ($_ENV['JWT_EXPIRES_IN'] ?? 3600)
         );
     },
+
+    // Interfaz → mismo servicio
+    JwtEncoderInterface::class => get(JwtService::class),
 
     // Middlewares
     JwtMiddleware::class => autowire(),
 ]);
 
-$containerBuilder->addDefinitions([
-    require __DIR__ . '/repositories.php'
-]);
+$containerBuilder->addDefinitions(__DIR__ . '/repositories.php');
+$containerBuilder->addDefinitions(__DIR__ . '/useCases.php');
 
 try {
     return $containerBuilder->build();

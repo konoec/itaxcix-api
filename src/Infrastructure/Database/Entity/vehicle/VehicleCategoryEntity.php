@@ -14,5 +14,40 @@ class VehicleCategoryEntity {
     #[ORM\Column(name: 'cate_nombre', type: 'string', length: 50, unique: true, nullable: true)]
     private ?string $name = null;
     #[ORM\Column(name: 'cate_activo', type: 'boolean', nullable: false, options: ['default' => true])]
-    protected bool $active = true;
+    private bool $active = true;
+
+    public function __construct()
+    {
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(?string $name): void
+    {
+        $this->name = $name;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): void
+    {
+        $this->active = $active;
+    }
+
 }

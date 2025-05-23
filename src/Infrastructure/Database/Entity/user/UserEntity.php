@@ -6,24 +6,23 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use itaxcix\Infrastructure\Database\Entity\person\PersonEntity;
+use itaxcix\Infrastructure\Database\Repository\user\DoctrineUserRepository;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: DoctrineUserRepository::class)]
 #[ORM\Table(name: 'tb_usuario')]
 class UserEntity {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'usua_id', type: 'integer')]
     private int $id;
-    #[ORM\Column(name: 'usua_alias', type: 'string', length: 50, unique: true, nullable: false)]
-    private string $alias;
     #[ORM\Column(name: 'usua_clave', type: 'string', length: 255, nullable: false)]
     private string $password;
     #[ORM\OneToOne(targetEntity: PersonEntity::class)]
     #[ORM\JoinColumn(name: 'usua_persona_id', referencedColumnName: 'pers_id', nullable: false)]
-    private ?PersonEntity $person = null;
+    private ?PersonEntity $person;
     #[ORM\ManyToOne(targetEntity: UserStatusEntity::class)]
     #[ORM\JoinColumn(name: 'usua_estado_id', referencedColumnName: 'esta_id', nullable: false)]
-    private ?UserStatusEntity $status = null;
+    private ?UserStatusEntity $status;
     #[ORM\OneToMany(
         targetEntity: UserContactEntity::class,
         mappedBy: 'user',
@@ -43,16 +42,6 @@ class UserEntity {
     public function setId(int $id): void
     {
         $this->id = $id;
-    }
-
-    public function getAlias(): string
-    {
-        return $this->alias;
-    }
-
-    public function setAlias(string $alias): void
-    {
-        $this->alias = $alias;
     }
 
     public function getPassword(): string

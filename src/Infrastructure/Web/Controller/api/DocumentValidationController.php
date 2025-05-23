@@ -3,6 +3,7 @@
 namespace itaxcix\Infrastructure\Web\Controller\api;
 
 use InvalidArgumentException;
+use itaxcix\Core\UseCases\DocumentValidationUseCase;
 use itaxcix\Infrastructure\Web\Controller\generic\AbstractController;
 use itaxcix\Shared\DTO\useCases\DocumentValidationRequestDTO;
 use itaxcix\Shared\Validators\useCases\DocumentValidationValidator;
@@ -10,6 +11,14 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class DocumentValidationController extends AbstractController {
+
+    private DocumentValidationUseCase $documentValidationUseCase;
+
+    public function __construct(DocumentValidationUseCase $documentValidationUseCase)
+    {
+        $this->documentValidationUseCase = $documentValidationUseCase;
+    }
+
     public function validateDocument(ServerRequestInterface $request): ResponseInterface {
         try {
             // 1. Obtener datos del cuerpo JSON
@@ -30,7 +39,7 @@ class DocumentValidationController extends AbstractController {
             );
 
             // 4. Llamar a lógica de validación (aquí iría el caso de uso)
-            $result = $this->fakeValidationService($dto);
+            $result = $this->documentValidationUseCase->execute($dto);
 
             // 5. Devolver resultado exitoso
             return $this->ok($result);
@@ -38,17 +47,5 @@ class DocumentValidationController extends AbstractController {
         } catch (InvalidArgumentException $e) {
             return $this->error($e->getMessage(), 400);
         }
-    }
-
-    /**
-     * Simulación de servicio de validación de documentos.
-     */
-    private function fakeValidationService(DocumentValidationRequestDTO $dto): array {
-        return [
-            'documentTypeId' => $dto->documentTypeId,
-            'documentValue' => $dto->documentValue,
-            'valid' => "",
-            'message' => "" ? 'Documento válido' : 'Documento inválido'
-        ];
     }
 }

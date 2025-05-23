@@ -18,4 +18,49 @@ class ModelEntity {
     private ?BrandEntity $brand = null;
     #[ORM\Column(name: 'mode_activo', type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $active = true;
+
+    public function __construct()
+    {
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    public function getBrand(): ?BrandEntity
+    {
+        return $this->brand;
+    }
+
+    public function setBrand(?BrandEntity $brand): void
+    {
+        $this->brand = $brand;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): void
+    {
+        $this->active = $active;
+    }
+
 }

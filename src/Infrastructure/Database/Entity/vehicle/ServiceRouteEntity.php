@@ -21,4 +21,59 @@ class ServiceRouteEntity {
     private ?string $text = null;
     #[ORM\Column(name: 'ruta_activo', type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $active = true;
+
+    public function __construct()
+    {
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getProcedure(): ?TucProcedureEntity
+    {
+        return $this->procedure;
+    }
+
+    public function setProcedure(?TucProcedureEntity $procedure): void
+    {
+        $this->procedure = $procedure;
+    }
+
+    public function getServiceType(): ?ServiceTypeEntity
+    {
+        return $this->serviceType;
+    }
+
+    public function setServiceType(?ServiceTypeEntity $serviceType): void
+    {
+        $this->serviceType = $serviceType;
+    }
+
+    public function getText(): ?string
+    {
+        return $this->text;
+    }
+
+    public function setText(?string $text): void
+    {
+        $this->text = $text;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): void
+    {
+        $this->active = $active;
+    }
+
 }

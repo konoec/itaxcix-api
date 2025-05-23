@@ -3,8 +3,9 @@
 namespace itaxcix\Infrastructure\Database\Entity\person;
 
 use Doctrine\ORM\Mapping as ORM;
+use itaxcix\Infrastructure\Database\Repository\person\DoctrineDocumentTypeRepository;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: DoctrineDocumentTypeRepository::class)]
 #[ORM\Table(name: 'tb_tipo_documento')]
 class DocumentTypeEntity {
     #[ORM\Id]
@@ -15,4 +16,38 @@ class DocumentTypeEntity {
     private string $name;
     #[ORM\Column(name: 'tipo_activo', type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $active = true;
+
+    public function __construct()
+    {
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): void
+    {
+        $this->active = $active;
+    }
 }

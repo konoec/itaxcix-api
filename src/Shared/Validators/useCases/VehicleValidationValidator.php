@@ -2,7 +2,6 @@
 
 namespace itaxcix\Shared\Validators\useCases;
 
-use itaxcix\Shared\DTO\useCases\VehicleValidationRequestDTO;
 use itaxcix\Shared\Validators\rules\document\DniRule;
 use itaxcix\Shared\Validators\rules\document\RucRule;
 use itaxcix\Shared\Validators\rules\document\PassportRule;
@@ -26,7 +25,7 @@ class VehicleValidationValidator {
         } else if (!is_int($data['documentTypeId']) && !ctype_digit($data['documentTypeId'])) {
             $errors['documentTypeId'] = 'El tipo de documento debe ser un número entero válido.';
         } else {
-            $documentTypeId = (int)$data['documentTypeId'];
+            $documentTypeId = $data['documentTypeId'];
 
             if (!array_key_exists($documentTypeId, self::DOCUMENT_RULE_MAP)) {
                 $errors['documentTypeId'] = 'El tipo de documento no es válido.';

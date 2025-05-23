@@ -3,6 +3,7 @@
 namespace itaxcix\Infrastructure\Web\Controller\api;
 
 use InvalidArgumentException;
+use itaxcix\Core\UseCases\VehicleValidationValidatorUseCase;
 use itaxcix\Infrastructure\Web\Controller\generic\AbstractController;
 use itaxcix\Shared\DTO\useCases\VehicleValidationRequestDTO;
 use itaxcix\Shared\Validators\useCases\VehicleValidationValidator;
@@ -10,6 +11,13 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class VehicleValidationController extends AbstractController {
+
+    private VehicleValidationValidatorUseCase $vehicleValidationValidatorUseCase;
+
+    public function __construct(VehicleValidationValidatorUseCase $vehicleValidationValidatorUseCase) {
+        $this->vehicleValidationValidatorUseCase = $vehicleValidationValidatorUseCase;
+    }
+
     public function validateVehicleWithDocument(ServerRequestInterface $request): ResponseInterface {
         try {
             // 1. Obtener datos del cuerpo JSON
@@ -31,7 +39,7 @@ class VehicleValidationController extends AbstractController {
             );
 
             // 4. Llamar a lógica de validación (aquí iría el caso de uso)
-            $result = $this->fakeVehicleValidationService($dto);
+            $result = $this->vehicleValidationValidatorUseCase->execute($dto);
 
             // 5. Devolver resultado exitoso
             return $this->ok($result);
@@ -39,28 +47,5 @@ class VehicleValidationController extends AbstractController {
         } catch (InvalidArgumentException $e) {
             return $this->error($e->getMessage(), 400);
         }
-    }
-
-    /**
-     * Simulación de servicio de validación de vehículo + documento.
-     */
-    private function fakeVehicleValidationService(VehicleValidationRequestDTO $dto): array {
-        // Aquí podría haber reglas complejas según el tipo de documento o la placa
-
-        return [
-            'document' => [
-                'typeId' => $dto->documentTypeId,
-                'value' => $dto->documentValue,
-                'valid' => ""
-            ],
-            'vehicle' => [
-                'plate' => $dto->plateValue,
-                'validPlate' => ""
-            ],
-            'valid' => "",
-            'message' => ""
-                ? 'Documento y placa válidos'
-                : 'Documento y/o placa inválidos'
-        ];
     }
 }

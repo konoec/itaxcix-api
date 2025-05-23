@@ -6,8 +6,9 @@ readonly class AuthLoginResponseDTO {
     public function __construct(
         public string $token,
         public int $userId,
-        public string $username,
-        public array $roles,
+        public string $documentValue,
+        public array $roles = [],
+        public array $permissions = [],
         public ?bool $availability = null
     ) {}
 }

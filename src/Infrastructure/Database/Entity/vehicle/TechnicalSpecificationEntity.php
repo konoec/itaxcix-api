@@ -26,4 +26,89 @@ class TechnicalSpecificationEntity {
     private ?float $width = null;
     #[ORM\Column(name: 'espe_carga_util', type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private ?float $payloadCapacity = null;
+
+    public function __construct()
+    {
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getVehicle(): VehicleEntity
+    {
+        return $this->vehicle;
+    }
+
+    public function setVehicle(VehicleEntity $vehicle): void
+    {
+        $this->vehicle = $vehicle;
+    }
+
+    public function getDryWeight(): ?float
+    {
+        return $this->dryWeight;
+    }
+
+    public function setDryWeight(?float $dryWeight): void
+    {
+        $this->dryWeight = $dryWeight;
+    }
+
+    public function getGrossWeight(): ?float
+    {
+        return $this->grossWeight;
+    }
+
+    public function setGrossWeight(?float $grossWeight): void
+    {
+        $this->grossWeight = $grossWeight;
+    }
+
+    public function getLength(): ?float
+    {
+        return $this->length;
+    }
+
+    public function setLength(?float $length): void
+    {
+        $this->length = $length;
+    }
+
+    public function getHeight(): ?float
+    {
+        return $this->height;
+    }
+
+    public function setHeight(?float $height): void
+    {
+        $this->height = $height;
+    }
+
+    public function getWidth(): ?float
+    {
+        return $this->width;
+    }
+
+    public function setWidth(?float $width): void
+    {
+        $this->width = $width;
+    }
+
+    public function getPayloadCapacity(): ?float
+    {
+        return $this->payloadCapacity;
+    }
+
+    public function setPayloadCapacity(?float $payloadCapacity): void
+    {
+        $this->payloadCapacity = $payloadCapacity;
+    }
+
 }

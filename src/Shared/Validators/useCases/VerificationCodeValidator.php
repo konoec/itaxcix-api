@@ -2,7 +2,6 @@
 
 namespace itaxcix\Shared\Validators\useCases;
 
-use itaxcix\Shared\DTO\useCases\VerificationCodeRequestDTO;
 use itaxcix\Shared\Validators\generic\IdValidator;
 use itaxcix\Shared\Validators\rules\auth\VerificationCodeRule;
 

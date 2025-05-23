@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8ca14e56c0ba46938e9746776c1d5c88",
+    "content-hash": "a95c767ac01fcf67464ace25962ca657",
     "packages": [
         {
             "name": "brick/math",
@@ -1491,6 +1491,50 @@
                 }
             ],
             "time": "2025-01-26T21:29:45+00:00"
+        },
+        {
+            "name": "mauricesvay/php-facedetection",
+            "version": "0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mauricesvay/php-facedetection.git",
+                "reference": "b016273ceceacd85562bbc50384fbabc947fe525"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mauricesvay/php-facedetection/zipball/b016273ceceacd85562bbc50384fbabc947fe525",
+                "reference": "b016273ceceacd85562bbc50384fbabc947fe525",
+                "shasum": ""
+            },
+            "require": {
+                "ext-gd": "*",
+                "php": ">=5.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "FaceDetector.php",
+                    "Exception/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Maurice Svay",
+                    "homepage": "https://github.com/mauricesvay/php-facedetection/graphs/contributors"
+                }
+            ],
+            "description": "PHP class to detect one face in images. A pure PHP port of an existing JS code from Karthik Tharavad.",
+            "homepage": "https://github.com/mauricesvay/php-facedetection",
+            "support": {
+                "issues": "https://github.com/mauricesvay/php-facedetection/issues",
+                "source": "https://github.com/mauricesvay/php-facedetection/tree/master"
+            },
+            "abandoned": true,
+            "time": "2016-01-26T22:10:00+00:00"
         },
         {
             "name": "nikic/fast-route",

@@ -20,4 +20,49 @@ class VehicleUserEntity {
     private ?VehicleEntity $vehicle = null;
     #[ORM\Column(name: 'cont_activo', type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $active = true;
+
+    public function __construct()
+    {
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getUser(): ?UserEntity
+    {
+        return $this->user;
+    }
+
+    public function setUser(?UserEntity $user): void
+    {
+        $this->user = $user;
+    }
+
+    public function getVehicle(): ?VehicleEntity
+    {
+        return $this->vehicle;
+    }
+
+    public function setVehicle(?VehicleEntity $vehicle): void
+    {
+        $this->vehicle = $vehicle;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): void
+    {
+        $this->active = $active;
+    }
+
 }

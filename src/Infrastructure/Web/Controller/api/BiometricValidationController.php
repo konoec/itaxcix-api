@@ -3,6 +3,7 @@
 namespace itaxcix\Infrastructure\Web\Controller\api;
 
 use InvalidArgumentException;
+use itaxcix\Core\UseCases\BiometricValidationUseCase;
 use itaxcix\Infrastructure\Web\Controller\generic\AbstractController;
 use itaxcix\Shared\DTO\useCases\BiometricValidationRequestDTO;
 use itaxcix\Shared\Validators\useCases\BiometricValidationValidator;
@@ -10,6 +11,13 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class BiometricValidationController extends AbstractController {
+
+    private BiometricValidationUseCase $biometricValidationUseCase;
+
+    public function __construct(BiometricValidationUseCase $biometricValidationUseCase) {
+        $this->biometricValidationUseCase = $biometricValidationUseCase;
+    }
+
     public function validateBiometric(ServerRequestInterface $request): ResponseInterface {
         try {
             // 1. Obtener datos del cuerpo JSON
@@ -29,7 +37,7 @@ class BiometricValidationController extends AbstractController {
             );
 
             // 4. Llamar a lógica de validación (aquí iría el caso de uso)
-            $result = $this->fakeBiometricValidationService($dto);
+            $result = $this->biometricValidationUseCase->execute($dto);
 
             // 5. Devolver resultado exitoso
             return $this->ok($result);
@@ -37,24 +45,5 @@ class BiometricValidationController extends AbstractController {
         } catch (InvalidArgumentException $e) {
             return $this->error($e->getMessage(), 400);
         }
-    }
-
-    /**
-     * Simulación de servicio de validación biométrica.
-     */
-    private function fakeBiometricValidationService(BiometricValidationRequestDTO $dto): array {
-        // Aquí podría haber una validación real contra un sistema biométrico
-
-        // Simular porcentaje de coincidencias
-        $matchPercentage = rand(80, 100); // Entre 80% y 100%
-
-        $valid = $matchPercentage >= 90;
-
-        return [
-            'personId' => $dto->personId,
-            'valid' => $valid,
-            'matchPercentage' => $matchPercentage . '%',
-            'message' => $valid ? 'Identidad verificada' : 'No se pudo verificar la identidad'
-        ];
     }
 }

@@ -18,4 +18,50 @@ class DistrictEntity {
     private ?ProvinceEntity $province = null;
     #[ORM\Column(name: 'dist_ubigeo', type: 'string', length: 6, unique: true, nullable: true)]
     private ?string $ubigeo = null;
+
+    public function __construct()
+    {
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(?string $name): void
+    {
+        $this->name = $name;
+    }
+
+    public function getProvince(): ?ProvinceEntity
+    {
+        return $this->province;
+    }
+
+    public function setProvince(?ProvinceEntity $province): void
+    {
+        $this->province = $province;
+    }
+
+    public function getUbigeo(): ?string
+    {
+        return $this->ubigeo;
+    }
+
+    public function setUbigeo(?string $ubigeo): void
+    {
+        $this->ubigeo = $ubigeo;
+    }
+
+
 }

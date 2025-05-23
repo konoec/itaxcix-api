@@ -25,7 +25,7 @@ class PasswordChangeValidator {
         if (!isset($data['newPassword'])) {
             $errors['newPassword'] = 'La nueva contraseña es requerida.';
         } else if (!is_string($data['newPassword'])) {
-            $errors['newPassword'] = 'La contraseña debe ser una cadena de texto.';
+            $errors['newPassword'] = 'La nueva contraseña debe ser una cadena de texto.';
         } else {
             $passwordErrors = PasswordValidator::validate($data['newPassword']);
             if (!empty($passwordErrors)) {
@@ -33,11 +33,25 @@ class PasswordChangeValidator {
             }
         }
 
-        // Devolver mensaje general si hay más de un error
-        if (count($errors) > 1) {
-            return ['Los datos proporcionados no son válidos.'];
+        // Validar repeatPassword
+        if (!isset($data['repeatPassword'])) {
+            $errors['repeatPassword'] = 'Repetir la contraseña es obligatorio.';
+        } else if (!is_string($data['repeatPassword'])) {
+            $errors['repeatPassword'] = 'La repetición de la contraseña debe ser una cadena.';
+        } else if (empty($data['newPassword'])) {
+            // Evita hacer la comparación si newPassword no está definido
+            // Esto se resolverá en otro paso
+        } else if ($data['newPassword'] !== $data['repeatPassword']) {
+            $errors['repeatPassword'] = 'Las contraseñas no coinciden.';
         }
 
-        return $errors;
+        // Si hay errores, devolvemos un mensaje general o específico
+        if (!empty($errors)) {
+            return count($errors) > 1
+                ? ['Los datos proporcionados no son válidos.']
+                : [reset($errors)];
+        }
+
+        return [];
     }
 }

@@ -43,4 +43,129 @@ class VehicleEntity {
         orphanRemoval: true
     )]
     private Collection $vehicleUsers;
+
+    public function __construct()
+    {
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getLicensePlate(): string
+    {
+        return $this->licensePlate;
+    }
+
+    public function setLicensePlate(string $licensePlate): void
+    {
+        $this->licensePlate = $licensePlate;
+    }
+
+    public function getModel(): ?ModelEntity
+    {
+        return $this->model;
+    }
+
+    public function setModel(?ModelEntity $model): void
+    {
+        $this->model = $model;
+    }
+
+    public function getColor(): ?ColorEntity
+    {
+        return $this->color;
+    }
+
+    public function setColor(?ColorEntity $color): void
+    {
+        $this->color = $color;
+    }
+
+    public function getManufactureYear(): ?int
+    {
+        return $this->manufactureYear;
+    }
+
+    public function setManufactureYear(?int $manufactureYear): void
+    {
+        $this->manufactureYear = $manufactureYear;
+    }
+
+    public function getSeatCount(): ?int
+    {
+        return $this->seatCount;
+    }
+
+    public function setSeatCount(?int $seatCount): void
+    {
+        $this->seatCount = $seatCount;
+    }
+
+    public function getPassengerCount(): ?int
+    {
+        return $this->passengerCount;
+    }
+
+    public function setPassengerCount(?int $passengerCount): void
+    {
+        $this->passengerCount = $passengerCount;
+    }
+
+    public function getFuelType(): ?FuelTypeEntity
+    {
+        return $this->fuelType;
+    }
+
+    public function setFuelType(?FuelTypeEntity $fuelType): void
+    {
+        $this->fuelType = $fuelType;
+    }
+
+    public function getVehicleClass(): ?VehicleClassEntity
+    {
+        return $this->vehicleClass;
+    }
+
+    public function setVehicleClass(?VehicleClassEntity $vehicleClass): void
+    {
+        $this->vehicleClass = $vehicleClass;
+    }
+
+    public function getCategory(): ?VehicleCategoryEntity
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?VehicleCategoryEntity $category): void
+    {
+        $this->category = $category;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): void
+    {
+        $this->active = $active;
+    }
+
+    public function getVehicleUsers(): Collection
+    {
+        return $this->vehicleUsers;
+    }
+
+    public function setVehicleUsers(Collection $vehicleUsers): void
+    {
+        $this->vehicleUsers = $vehicleUsers;
+    }
+
 }

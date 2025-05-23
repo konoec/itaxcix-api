@@ -17,7 +17,7 @@ class EntityManagerFactory {
         $isDevMode = $_ENV['APP_ENV'] === 'dev';
 
         $config = ORMSetup::createAttributeMetadataConfiguration(
-            paths: [dirname(__DIR__, 3) . '/Entity'],
+            paths: [dirname(__DIR__) . '/Entity'],
             isDevMode: $isDevMode
         );
 

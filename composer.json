@@ -19,7 +19,8 @@
         "nyholm/psr7-server": "^1.1",
         "phpmailer/phpmailer": "^6.10",
         "vonage/client": "^4.1",
-        "respect/validation": "^2.4"
+        "respect/validation": "^2.4",
+        "mauricesvay/php-facedetection": "^0.1.0"
     },
     "autoload": {
         "psr-4": {

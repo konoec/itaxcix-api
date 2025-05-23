@@ -4,7 +4,6 @@ namespace itaxcix\Shared\DTO\useCases;
 
 readonly class RegistrationRequestDTO {
     public function __construct(
-        public string $username,
         public string $password,
         public int $contactTypeId,
         public string $contactValue,
