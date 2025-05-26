@@ -3,8 +3,9 @@
 namespace itaxcix\Infrastructure\Database\Entity\location;
 
 use Doctrine\ORM\Mapping as ORM;
+use itaxcix\Infrastructure\Database\Repository\location\DoctrineDepartmentRepository;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: DoctrineDepartmentRepository::class)]
 #[ORM\Table(name: 'tb_departamento')]
 class DepartmentEntity {
     #[ORM\Id]

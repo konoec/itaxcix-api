@@ -6,7 +6,7 @@ use itaxcix\Infrastructure\Database\Entity\vehicle\TechnicalSpecificationEntity;
 
 class TechnicalSpecificationModel {
     private int $id;
-    private VehicleModel $vehicle;
+    private ?VehicleModel $vehicle;
     private ?float $dryWeight = null;
     private ?float $grossWeight = null;
     private ?float $length = null;
@@ -16,7 +16,7 @@ class TechnicalSpecificationModel {
 
     /**
      * @param int $id
-     * @param VehicleModel $vehicle
+     * @param VehicleModel|null $vehicle
      * @param float|null $dryWeight
      * @param float|null $grossWeight
      * @param float|null $length
@@ -24,7 +24,7 @@ class TechnicalSpecificationModel {
      * @param float|null $width
      * @param float|null $payloadCapacity
      */
-    public function __construct(int $id, VehicleModel $vehicle, ?float $dryWeight, ?float $grossWeight, ?float $length, ?float $height, ?float $width, ?float $payloadCapacity)
+    public function __construct(int $id, ?VehicleModel $vehicle, ?float $dryWeight, ?float $grossWeight, ?float $length, ?float $height, ?float $width, ?float $payloadCapacity)
     {
         $this->id = $id;
         $this->vehicle = $vehicle;
@@ -46,12 +46,12 @@ class TechnicalSpecificationModel {
         $this->id = $id;
     }
 
-    public function getVehicle(): VehicleModel
+    public function getVehicle(): ?VehicleModel
     {
         return $this->vehicle;
     }
 
-    public function setVehicle(VehicleModel $vehicle): void
+    public function setVehicle(?VehicleModel $vehicle): void
     {
         $this->vehicle = $vehicle;
     }

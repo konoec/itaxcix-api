@@ -42,10 +42,10 @@ class DocumentValidationUseCaseHandler implements DocumentValidationUseCase
                 throw new InvalidArgumentException('El documento ingresado hace referencia a una persona con acceso restringido. Contacte al administrador.');
             }
 
-            $user = $this->userRepository->findUserByPersonDocument($person->getDocument());
+            $user = $this->userRepository->findAllUserByPersonDocument($person->getDocument());
 
             if ($user !== null) {
-                throw new InvalidArgumentException('Ya existe un usuario activo con ese documento.');
+                throw new InvalidArgumentException('Ya existe un usuario con ese documento.');
             }
 
             return [

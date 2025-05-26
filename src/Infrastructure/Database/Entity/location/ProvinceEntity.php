@@ -3,8 +3,9 @@
 namespace itaxcix\Infrastructure\Database\Entity\location;
 
 use Doctrine\ORM\Mapping as ORM;
+use itaxcix\Infrastructure\Database\Repository\location\DoctrineProvinceRepository;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: DoctrineProvinceRepository::class)]
 #[ORM\Table(name: 'tb_provincia')]
 class ProvinceEntity {
     #[ORM\Id]

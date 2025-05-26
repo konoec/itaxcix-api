@@ -14,8 +14,6 @@ class TucProcedureEntity {
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'tram_id', type: 'integer')]
     private int $id;
-    #[ORM\Column(name: 'tram_codigo', type: 'string', length: 8, unique: true, nullable: false)]
-    private ?string $code = null;
     #[ORM\ManyToOne(targetEntity: VehicleEntity::class)]
     #[ORM\JoinColumn(name: 'tram_vehiculo_id', referencedColumnName: 'vehi_id')]
     private ?VehicleEntity $vehicle = null;
@@ -53,16 +51,6 @@ class TucProcedureEntity {
     public function setId(int $id): void
     {
         $this->id = $id;
-    }
-
-    public function getCode(): ?string
-    {
-        return $this->code;
-    }
-
-    public function setCode(?string $code): void
-    {
-        $this->code = $code;
     }
 
     public function getVehicle(): ?VehicleEntity

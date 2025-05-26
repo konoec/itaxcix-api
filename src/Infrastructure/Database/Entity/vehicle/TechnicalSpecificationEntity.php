@@ -13,7 +13,7 @@ class TechnicalSpecificationEntity {
     private int $id;
     #[ORM\OneToOne(targetEntity: VehicleEntity::class)]
     #[ORM\JoinColumn(name: 'espe_vehiculo_id', referencedColumnName: 'vehi_id')]
-    private VehicleEntity $vehicle;
+    private ?VehicleEntity $vehicle;
     #[ORM\Column(name: 'espe_peso_seco', type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private ?float $dryWeight = null;
     #[ORM\Column(name: 'espe_peso_bruto', type: 'decimal', precision: 10, scale: 2, nullable: true)]
@@ -41,12 +41,12 @@ class TechnicalSpecificationEntity {
         $this->id = $id;
     }
 
-    public function getVehicle(): VehicleEntity
+    public function getVehicle(): ?VehicleEntity
     {
         return $this->vehicle;
     }
 
-    public function setVehicle(VehicleEntity $vehicle): void
+    public function setVehicle(?VehicleEntity $vehicle): void
     {
         $this->vehicle = $vehicle;
     }

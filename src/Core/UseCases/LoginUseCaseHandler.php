@@ -2,6 +2,7 @@
 
 namespace itaxcix\Core\UseCases;
 
+use InvalidArgumentException;
 use itaxcix\Core\Interfaces\user\RolePermissionRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserRoleRepositoryInterface;
 use itaxcix\Infrastructure\Auth\Service\JwtService;
@@ -30,19 +31,19 @@ class LoginUseCaseHandler implements LoginUseCase
         $user = $this->userRepository->findUserByPersonDocument($dto->documentValue);
 
         if (!$user) {
-            return null;
+            throw new InvalidArgumentException('No existe un usuario activo con ese documento.');
         }
 
         // Verificar contraseña
         if (!password_verify($dto->password, $user->getPassword())) {
-            return null;
+            throw new InvalidArgumentException('Credenciales incorrectas.');
         }
 
         // Obtener roles del usuario
         $roles = $this->userRoleRepository->findRolesByUserId($user->getId(), $dto->web);
 
         if (empty($roles)) {
-            return null;
+            throw new InvalidArgumentException('Error en datos. Contacte al administrador.');
         }
 
         // Obtener todos los permisos de todos los roles

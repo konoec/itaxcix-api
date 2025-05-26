@@ -4,8 +4,9 @@ namespace itaxcix\Infrastructure\Database\Entity\vehicle;
 
 use Doctrine\ORM\Mapping as ORM;
 use itaxcix\Infrastructure\Database\Entity\user\UserEntity;
+use itaxcix\Infrastructure\Database\Repository\vehicle\DoctrineVehicleUserRepository;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: DoctrineVehicleUserRepository::class)]
 #[ORM\Table(name: 'tb_vehiculo_usuario')]
 class VehicleUserEntity {
     #[ORM\Id]

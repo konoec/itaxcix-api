@@ -40,4 +40,20 @@ class DoctrineUserRepository implements UserRepositoryInterface {
 
         return $entity ? $this->toDomain($entity) : null;
     }
+
+    public function findAllUserByPersonDocument(string $document): ?UserModel
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('u')
+            ->from(UserEntity::class, 'u')
+            ->innerJoin('u.person', 'p')
+            ->innerJoin('u.status', 's')
+            ->where('p.document = :document')
+            ->setParameter('document', $document)
+            ->getQuery();
+
+        $entity = $query->getOneOrNullResult();
+
+        return $entity ? $this->toDomain($entity) : null;
+    }
 }

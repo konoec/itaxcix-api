@@ -9,7 +9,6 @@ use itaxcix\Infrastructure\Database\Entity\vehicle\TucProcedureEntity;
 
 class TucProcedureModel {
     private int $id;
-    private ?string $code = null;
     private ?VehicleModel $vehicle = null;
     private ?CompanyModel $company = null;
     private ?DistrictModel $district = null;
@@ -22,7 +21,6 @@ class TucProcedureModel {
 
     /**
      * @param int $id
-     * @param string|null $code
      * @param VehicleModel|null $vehicle
      * @param CompanyModel|null $company
      * @param DistrictModel|null $district
@@ -33,10 +31,9 @@ class TucProcedureModel {
      * @param DateTime|null $issueDate
      * @param DateTime|null $expirationDate
      */
-    public function __construct(int $id, ?string $code, ?VehicleModel $vehicle, ?CompanyModel $company, ?DistrictModel $district, ?TucStatusModel $status, ?ProcedureTypeModel $type, ?TucModalityModel $modality, ?DateTime $procedureDate, ?DateTime $issueDate, ?DateTime $expirationDate)
+    public function __construct(int $id, ?VehicleModel $vehicle, ?CompanyModel $company, ?DistrictModel $district, ?TucStatusModel $status, ?ProcedureTypeModel $type, ?TucModalityModel $modality, ?DateTime $procedureDate, ?DateTime $issueDate, ?DateTime $expirationDate)
     {
         $this->id = $id;
-        $this->code = $code;
         $this->vehicle = $vehicle;
         $this->company = $company;
         $this->district = $district;
@@ -56,16 +53,6 @@ class TucProcedureModel {
     public function setId(int $id): void
     {
         $this->id = $id;
-    }
-
-    public function getCode(): ?string
-    {
-        return $this->code;
-    }
-
-    public function setCode(?string $code): void
-    {
-        $this->code = $code;
     }
 
     public function getVehicle(): ?VehicleModel
@@ -162,7 +149,6 @@ class TucProcedureModel {
     {
         $tucProcedureEntity = new TucProcedureEntity();
         $tucProcedureEntity->setId($this->id);
-        $tucProcedureEntity->setCode($this->code);
         $tucProcedureEntity->setVehicle($this->vehicle?->toEntity());
         $tucProcedureEntity->setCompany($this->company?->toEntity());
         $tucProcedureEntity->setDistrict($this->district?->toEntity());
