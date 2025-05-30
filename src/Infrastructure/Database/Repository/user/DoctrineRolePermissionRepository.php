@@ -15,7 +15,7 @@ class DoctrineRolePermissionRepository implements RolePermissionRepositoryInterf
         $this->entityManager = $entityManager;
     }
 
-    private function toDomain(RolePermissionModel $entity): RolePermissionModel {
+    private function toDomain(RolePermissionEntity $entity): RolePermissionModel {
         return new RolePermissionModel(
             $entity->getId(),
             $entity->getRole(),

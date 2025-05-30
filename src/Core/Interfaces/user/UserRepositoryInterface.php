@@ -7,4 +7,6 @@ use itaxcix\Core\Domain\user\UserModel;
 interface UserRepositoryInterface {
     public function findUserByPersonDocument(string $document): ?UserModel;
     public function findAllUserByPersonDocument(string $document): ?UserModel;
+    public function findAllUserByPersonId(int $personId): ?UserModel;
+    public function saveUser(UserModel $userModel): UserModel;
 }

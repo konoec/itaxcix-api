@@ -23,7 +23,7 @@ class BiometricValidationUseCaseHandler implements BiometricValidationUseCase
         $person = $this->personRepository->findPersonById($dto->personId);
 
         if ($person === null) {
-            throw new InvalidArgumentException('La persona no existe.');
+            throw new InvalidArgumentException('La persona no existe o no está activa.');
         }
 
         $validationDate = $person->getValidationDate();

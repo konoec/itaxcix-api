@@ -69,7 +69,6 @@ class RegistrationController extends AbstractController {
             $data = $this->getJsonBody($request);
 
             // 2. Validar campos requeridos
-            // 2. Validar datos de entrada
             $validator = new VerificationCodeValidator();
             $errors = $validator->validate($data);
             if (!empty($errors)) {

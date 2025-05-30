@@ -12,9 +12,6 @@ class UserCodeEntity {
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'codi_id', type: 'integer')]
     private int $id;
-    #[ORM\ManyToOne(targetEntity: UserEntity::class)]
-    #[ORM\JoinColumn(name: 'codi_usuario_id', referencedColumnName: 'usua_id')]
-    private ?UserEntity $user = null;
     #[ORM\ManyToOne(targetEntity: UserCodeTypeEntity::class)]
     #[ORM\JoinColumn(name: 'codi_tipo_id', referencedColumnName: 'tipo_id')]
     private ?UserCodeTypeEntity $type = null;
@@ -29,4 +26,78 @@ class UserCodeEntity {
     private ?DateTime $useDate = null;
     #[ORM\Column(name: 'codi_usado', type: 'boolean', options: ['default' => false])]
     private bool $used = false;
+
+    public function __construct()
+    {
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getType(): ?UserCodeTypeEntity
+    {
+        return $this->type;
+    }
+
+    public function setType(?UserCodeTypeEntity $type): void
+    {
+        $this->type = $type;
+    }
+
+    public function getContact(): ?UserContactEntity
+    {
+        return $this->contact;
+    }
+
+    public function setContact(?UserContactEntity $contact): void
+    {
+        $this->contact = $contact;
+    }
+
+    public function getCode(): string
+    {
+        return $this->code;
+    }
+
+    public function setCode(string $code): void
+    {
+        $this->code = $code;
+    }
+
+    public function getExpirationDate(): DateTime
+    {
+        return $this->expirationDate;
+    }
+
+    public function setExpirationDate(DateTime $expirationDate): void
+    {
+        $this->expirationDate = $expirationDate;
+    }
+
+    public function getUseDate(): ?DateTime
+    {
+        return $this->useDate;
+    }
+
+    public function setUseDate(?DateTime $useDate): void
+    {
+        $this->useDate = $useDate;
+    }
+
+    public function isUsed(): bool
+    {
+        return $this->used;
+    }
+
+    public function setUsed(bool $used): void
+    {
+        $this->used = $used;
+    }
 }

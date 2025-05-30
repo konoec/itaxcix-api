@@ -63,4 +63,33 @@ class DoctrineVehicleRepository implements VehicleRepositoryInterface {
 
         return $this->toDomain($entity);
     }
+
+    public function findAllVehicleById(int $id): ?VehicleModel
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('v')
+            ->from(VehicleEntity::class, 'v')
+            ->where('v.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery();
+
+        $entity = $query->getOneOrNullResult();
+
+        return $entity ? $this->toDomain($entity) : null;
+    }
+
+    public function findVehicleById(int $id): ?VehicleModel
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('v')
+            ->from(VehicleEntity::class, 'v')
+            ->where('v.id = :id')
+            ->setParameter('id', $id)
+            ->setParameter('active', true)
+            ->getQuery();
+
+        $entity = $query->getOneOrNullResult();
+
+        return $entity ? $this->toDomain($entity) : null;
+    }
 }

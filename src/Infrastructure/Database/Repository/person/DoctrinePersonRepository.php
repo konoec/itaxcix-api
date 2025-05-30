@@ -2,7 +2,6 @@
 
 namespace itaxcix\Infrastructure\Database\Repository\person;
 
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use itaxcix\Core\Domain\person\PersonModel;
 use itaxcix\Core\Interfaces\person\PersonRepositoryInterface;
@@ -67,6 +66,20 @@ class DoctrinePersonRepository implements PersonRepositoryInterface
             ->where('p.id = :personId')
             ->setParameter('personId', $personId)
             ->setParameter('active', true)
+            ->getQuery();
+
+        $entity = $query->getOneOrNullResult();
+
+        return $entity ? $this->toDomain($entity) : null;
+    }
+
+    public function findAllPersonById(int $personId): ?PersonModel
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('p')
+            ->from(PersonModel::class, 'p')
+            ->where('p.id = :personId')
+            ->setParameter('personId', $personId)
             ->getQuery();
 
         $entity = $query->getOneOrNullResult();

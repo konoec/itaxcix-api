@@ -15,7 +15,7 @@ class DoctrineUserRoleRepository implements UserRoleRepositoryInterface
         $this->entityManager = $entityManager;
     }
 
-    private function toDomain(UserRoleModel $entity): UserRoleModel {
+    private function toDomain(UserRoleEntity $entity): UserRoleModel {
         return new UserRoleModel(
             $entity->getId(),
             $entity->getRole(),
@@ -44,5 +44,19 @@ class DoctrineUserRoleRepository implements UserRoleRepositoryInterface
         return array_map(function ($item) {
             return $this->toDomain($item);
         }, $result);
+    }
+
+    public function saveUserRole(UserRoleModel $userRoleModel): UserRoleModel
+    {
+        $entity = new UserRoleEntity();
+        $entity->setId($userRoleModel->getId());
+        $entity->setRole($userRoleModel->getRole());
+        $entity->setUser($userRoleModel->getUser());
+        $entity->setActive($userRoleModel->isActive());
+
+        $this->entityManager->persist($entity);
+        $this->entityManager->flush();
+
+        return $this->toDomain($entity);
     }
 }

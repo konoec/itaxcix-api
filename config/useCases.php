@@ -6,8 +6,12 @@ use itaxcix\Core\UseCases\DocumentValidationUseCase;
 use itaxcix\Core\UseCases\DocumentValidationUseCaseHandler;
 use itaxcix\Core\UseCases\LoginUseCase;
 use itaxcix\Core\UseCases\LoginUseCaseHandler;
+use itaxcix\Core\UseCases\UserRegistrationUseCase;
+use itaxcix\Core\UseCases\UserRegistrationUseCaseHandler;
 use itaxcix\Core\UseCases\VehicleValidationValidatorUseCase;
 use itaxcix\Core\UseCases\VehicleValidationValidatorUseCaseHandler;
+use itaxcix\Core\UseCases\VerificationCodeUseCase;
+use itaxcix\Core\UseCases\VerificationCodeUseCaseHandler;
 use function DI\autowire;
 
 return [
@@ -15,4 +19,6 @@ return [
     DocumentValidationUseCase::class => autowire(DocumentValidationUseCaseHandler::class),
     VehicleValidationValidatorUseCase::class => autowire(VehicleValidationValidatorUseCaseHandler::class),
     BiometricValidationUseCase::class => autowire(BiometricValidationUseCaseHandler::class),
+    UserRegistrationUseCase::class => autowire(UserRegistrationUseCaseHandler::class),
+    VerificationCodeUseCase::class => autowire(VerificationCodeUseCaseHandler::class),
 ];
