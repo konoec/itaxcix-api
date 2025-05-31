@@ -15,10 +15,6 @@ use itaxcix\Infrastructure\Web\Controller\docs\DocsController;
 return function (RouteCollector $r) {
     // API Routes v1
     $r->addGroup('/api/v1', function ($r) {
-        // Master Route
-        $r->get('/master-data/document-types', [DocumentTypesController::class, 'getDocumentTypes']);
-        $r->get('/master-data/contact-types', [ContactTypesController::class, 'getContactTypes']);
-
         // Auth Routes
         $r->post('/auth/login', [AuthController::class, 'login']);
 

@@ -6,6 +6,9 @@ use itaxcix\Infrastructure\Auth\Interfaces\JwtEncoderInterface;
 use itaxcix\Infrastructure\Auth\Middleware\JwtMiddleware;
 use itaxcix\Infrastructure\Auth\Service\JwtService;
 use itaxcix\Infrastructure\Database\Config\EntityManagerFactory;
+use itaxcix\Infrastructure\Notifications\EmailNotificationService;
+use itaxcix\Infrastructure\Notifications\NotificationServiceFactory;
+use itaxcix\Infrastructure\Notifications\SmsNotificationService;
 use function DI\autowire;
 use function DI\get;
 
@@ -31,6 +34,18 @@ $containerBuilder->addDefinitions([
 
     // Middlewares
     JwtMiddleware::class => autowire(),
+
+    // Servicios de notificación
+    EmailNotificationService::class => autowire(),
+    SmsNotificationService::class => autowire(),
+
+    // Factory de notificaciones
+    NotificationServiceFactory::class => function($container) {
+        return new NotificationServiceFactory(
+            $container->get(EmailNotificationService::class),
+            $container->get(SmsNotificationService::class)
+        );
+    },
 ]);
 
 $containerBuilder->addDefinitions(__DIR__ . '/repositories.php');

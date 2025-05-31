@@ -20,6 +20,7 @@ use itaxcix\Core\Interfaces\user\UserRoleRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserStatusRepositoryInterface;
 use itaxcix\Core\Interfaces\vehicle\VehicleRepositoryInterface;
 use itaxcix\Core\Interfaces\vehicle\VehicleUserRepositoryInterface;
+use itaxcix\Infrastructure\Notifications\NotificationServiceFactory;
 use itaxcix\Shared\DTO\useCases\RegistrationRequestDTO;
 
 class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
@@ -34,8 +35,9 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
     private UserRoleRepositoryInterface $userRoleRepository;
     private UserCodeTypeRepositoryInterface $userCodeTypeRepository;
     private UserCodeRepositoryInterface $userCodeRepository;
+    private NotificationServiceFactory $notificationServiceFactory;
 
-    public function __construct(PersonRepositoryInterface $personRepository, UserRepositoryInterface $userRepository, VehicleRepositoryInterface $vehicleRepository, VehicleUserRepositoryInterface $vehicleUserRepository, ContactTypeRepositoryInterface $contactTypeRepository, UserContactRepositoryInterface $userContactRepository, UserStatusRepositoryInterface $userStatusRepository, RoleRepositoryInterface $roleRepository, UserRoleRepositoryInterface $userRoleRepository, UserCodeTypeRepositoryInterface $userCodeTypeRepository, UserCodeRepositoryInterface $userCodeRepository)
+    public function __construct(PersonRepositoryInterface $personRepository, UserRepositoryInterface $userRepository, VehicleRepositoryInterface $vehicleRepository, VehicleUserRepositoryInterface $vehicleUserRepository, ContactTypeRepositoryInterface $contactTypeRepository, UserContactRepositoryInterface $userContactRepository, UserStatusRepositoryInterface $userStatusRepository, RoleRepositoryInterface $roleRepository, UserRoleRepositoryInterface $userRoleRepository, UserCodeTypeRepositoryInterface $userCodeTypeRepository, UserCodeRepositoryInterface $userCodeRepository, NotificationServiceFactory $notificationServiceFactory)
     {
         $this->personRepository = $personRepository;
         $this->userRepository = $userRepository;
@@ -48,6 +50,7 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
         $this->userRoleRepository = $userRoleRepository;
         $this->userCodeTypeRepository = $userCodeTypeRepository;
         $this->userCodeRepository = $userCodeRepository;
+        $this->notificationServiceFactory = $notificationServiceFactory;
     }
 
     public function execute(RegistrationRequestDTO $dto): ?array
@@ -177,9 +180,10 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
         $newUserCode = $this->userCodeRepository->saveUserCode($newUserCode);
 
         // Enviar correo de confirmación, aquí va el servicio
+        $service = $this->notificationServiceFactory->getServiceForContactType($dto->contactTypeId);
+        $service->send($newUserCode->getContact()->getValue(), 'Código de recuperación', $newUserCode->getCode(), 'verification');
 
-
-        return null;
+        return ['userId' => $newUser->getId()];
     }
 
     private function generateUserCode(int $length = 6): string

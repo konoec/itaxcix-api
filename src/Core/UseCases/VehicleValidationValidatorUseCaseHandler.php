@@ -68,7 +68,6 @@ class VehicleValidationValidatorUseCaseHandler implements VehicleValidationValid
     private ProcedureTypeRepositoryInterface $procedureTypeRepository;
     private TucProcedureRepositoryInterface $tucProcedureRepository;
     private ServiceRouteRepositoryInterface $serviceRouteRepository;
-
     public function __construct(
         DocumentValidationUseCase $documentValidationUseCase,
         VehicleRepositoryInterface $vehicleRepository,
