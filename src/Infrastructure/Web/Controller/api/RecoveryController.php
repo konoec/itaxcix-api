@@ -3,6 +3,9 @@
 namespace itaxcix\Infrastructure\Web\Controller\api;
 
 use InvalidArgumentException;
+use itaxcix\Core\UseCases\ChangePasswordUseCase;
+use itaxcix\Core\UseCases\StartPasswordRecoveryUseCase;
+use itaxcix\Core\UseCases\VerifyRecoveryCodeUseCase;
 use itaxcix\Infrastructure\Web\Controller\generic\AbstractController;
 use itaxcix\Shared\DTO\useCases\PasswordChangeRequestDTO;
 use itaxcix\Shared\DTO\useCases\RecoveryStartRequestDTO;
@@ -14,8 +17,16 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class RecoveryController extends AbstractController {
-    // Simulamos una "base de datos" temporal para códigos de recuperación
-    private array $recoveryCodes = [];
+    private StartPasswordRecoveryUseCase $startPasswordRecoveryUseCase;
+    private VerifyRecoveryCodeUseCase $verifyRecoveryCodeUseCase;
+    private ChangePasswordUseCase $changePasswordUseCase;
+
+    public function __construct(StartPasswordRecoveryUseCase $startPasswordRecoveryUseCase, ChangePasswordUseCase $changePasswordUseCase, VerifyRecoveryCodeUseCase $verificationCodeUseCase)
+    {
+        $this->startPasswordRecoveryUseCase = $startPasswordRecoveryUseCase;
+        $this->changePasswordUseCase = $changePasswordUseCase;
+        $this->verifyRecoveryCodeUseCase = $verificationCodeUseCase;
+    }
 
     public function startPasswordRecovery(ServerRequestInterface $request): ResponseInterface {
         try {
@@ -37,7 +48,7 @@ class RecoveryController extends AbstractController {
             );
 
             // 4. Simular lógica de inicio de recuperación
-            $result = $this->fakeStartPasswordRecoveryService($dto);
+            $result = $this->startPasswordRecoveryUseCase->execute($dto);
 
             // 5. Devolver resultado exitoso
             return $this->ok($result);
@@ -46,33 +57,6 @@ class RecoveryController extends AbstractController {
             return $this->error($e->getMessage(), 400);
         }
     }
-
-    /**
-     * Simulación de servicio de inicio de recuperación de contraseña
-     */
-    private function fakeStartPasswordRecoveryService(RecoveryStartRequestDTO $dto): array {
-        // Aquí iría la lógica real: buscar usuario, generar código, enviar por email/SMS
-
-        // Generamos un código temporal
-        $code = str_pad((string) rand(0, 999999), 6, '0', STR_PAD_LEFT);
-
-        // Guardamos el código temporalmente (simulando base de datos)
-        $userId = 1234; // Esto vendría de buscar por contacto
-        $this->recoveryCodes[$userId] = [
-            'code' => $code,
-            'expiresAt' => time() + 300, // Expira en 5 minutos
-        ];
-
-        return [
-            'userId' => $userId,
-            'message' => 'Código de recuperación enviado',
-            'contactSentTo' => $dto->contactValue,
-            'codeSent' => $code, // En producción no devolver esto
-            'nextStep' => 'Verificar código'
-        ];
-    }
-
-    // =========================================================================
 
     public function verifyRecoveryCode(ServerRequestInterface $request): ResponseInterface
     {
@@ -95,7 +79,7 @@ class RecoveryController extends AbstractController {
             );
 
             // 4. Simular lógica de verificación de código
-            $result = $this->fakeVerifyRecoveryCodeService($dto);
+            $result = $this->verifyRecoveryCodeUseCase->execute($dto);
 
             // 5. Devolver resultado exitoso
             return $this->ok($result);
@@ -105,81 +89,37 @@ class RecoveryController extends AbstractController {
         }
     }
 
-    /**
-     * Simulación de servicio de verificación de código de recuperación
-     */
-    private function fakeVerifyRecoveryCodeService(VerificationCodeRequestDTO $dto): array
-    {
-        // Verificamos si existe el código y no ha expirado
-        if (!isset($this->recoveryCodes[$dto->userId])) {
-            return [
-                'valid' => false,
-                'message' => 'No hay código pendiente para este usuario'
-            ];
-        }
-
-        $record = $this->recoveryCodes[$dto->userId];
-
-        if ($record['expiresAt'] < time()) {
-            return [
-                'valid' => false,
-                'message' => 'El código ha expirado'
-            ];
-        }
-
-        $valid = hash_equals($record['code'], $dto->code);
-
-        return [
-            'valid' => $valid,
-            'message' => $valid ? 'Código verificado correctamente' : 'Código inválido'
-        ];
-    }
-
-    // =========================================================================
-
     public function changePassword(ServerRequestInterface $request): ResponseInterface {
         try {
-            // 1. Obtener datos del cuerpo JSON
+            // 1. Obtener y validar body
             $data = $this->getJsonBody($request);
-
-            // 2. Validar campos requeridos
             $validator = new PasswordChangeValidator();
             $errors = $validator->validate($data);
             if (!empty($errors)) {
-                // Si hay errores, devolver el primer error
                 return $this->error(reset($errors), 400);
             }
 
-            // 3. Mapear al DTO de entrada
+            // 2. Mapear DTO
             $dto = new PasswordChangeRequestDTO(
                 userId: (int) $data['userId'],
                 newPassword: (string) $data['newPassword'],
                 repeatPassword: (string) $data['repeatPassword']
             );
 
-            // 4. Simular lógica de cambio de contraseña
-            $result = $this->fakeChangePasswordService($dto);
+            // 3. Validar coincidencia con JWT
+            $authUser = $request->getAttribute('user');
+            if (!isset($authUser['userId']) || $dto->userId !== $authUser['userId']) {
+                return $this->error('Usuario no autorizado', 403);
+            }
 
-            // 5. Devolver resultado exitoso
+            // 4. Ejecutar caso de uso de cambio de contraseña
+            $result = $this->changePasswordUseCase->execute($dto);
+
+            // 5. Responder con éxito
             return $this->ok($result);
 
         } catch (InvalidArgumentException $e) {
             return $this->error($e->getMessage(), 400);
         }
-    }
-
-    /**
-     * Simulación de servicio de cambio de contraseña
-     */
-    private function fakeChangePasswordService(PasswordChangeRequestDTO $dto): array {
-        // Aquí iría la lógica real: actualizar contraseña en la BD
-
-        // Simulamos éxito
-        unset($this->recoveryCodes[$dto->userId]); // Limpiamos el código usado
-
-        return [
-            'userId' => $dto->userId,
-            'message' => 'Contraseña actualizada correctamente'
-        ];
     }
 }

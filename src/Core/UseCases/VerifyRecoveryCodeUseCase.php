@@ -1,0 +1,10 @@
+<?php
+
+namespace itaxcix\Core\UseCases;
+
+use itaxcix\Shared\DTO\useCases\VerificationCodeRequestDTO;
+
+interface VerifyRecoveryCodeUseCase
+{
+    public function execute(VerificationCodeRequestDTO $dto): ?array;
+}

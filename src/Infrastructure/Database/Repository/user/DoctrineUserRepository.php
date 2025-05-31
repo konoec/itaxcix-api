@@ -86,4 +86,22 @@ class DoctrineUserRepository implements UserRepositoryInterface {
 
         return $this->toDomain($entity);
     }
+
+    public function findUserById(int $id): ?UserModel
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('u')
+            ->from(UserEntity::class, 'u')
+            ->innerJoin('u.person', 'p')
+            ->innerJoin('u.status', 's')
+            ->where('u.id = :id')
+            ->andWhere('s.name = :statusName')
+            ->setParameter('id', $id)
+            ->setParameter('statusName', 'ACTIVO')
+            ->getQuery();
+
+        $entity = $query->getOneOrNullResult();
+
+        return $entity ? $this->toDomain($entity) : null;
+    }
 }

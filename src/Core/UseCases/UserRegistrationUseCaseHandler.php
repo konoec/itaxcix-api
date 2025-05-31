@@ -181,7 +181,7 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
 
         // Enviar correo de confirmación, aquí va el servicio
         $service = $this->notificationServiceFactory->getServiceForContactType($dto->contactTypeId);
-        $service->send($newUserCode->getContact()->getValue(), 'Código de recuperación', $newUserCode->getCode(), 'verification');
+        $service->send($newUserCode->getContact()->getValue(), 'Código de verificación', $newUserCode->getCode(), 'verification');
 
         return ['userId' => $newUser->getId()];
     }

@@ -8,5 +8,6 @@ interface UserRepositoryInterface {
     public function findUserByPersonDocument(string $document): ?UserModel;
     public function findAllUserByPersonDocument(string $document): ?UserModel;
     public function findAllUserByPersonId(int $personId): ?UserModel;
+    public function findUserById(int $id): ?UserModel;
     public function saveUser(UserModel $userModel): UserModel;
 }
