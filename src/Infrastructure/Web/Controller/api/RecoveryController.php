@@ -153,7 +153,8 @@ class RecoveryController extends AbstractController {
             // 3. Mapear al DTO de entrada
             $dto = new PasswordChangeRequestDTO(
                 userId: (int) $data['userId'],
-                newPassword: (string) $data['newPassword']
+                newPassword: (string) $data['newPassword'],
+                repeatPassword: (string) $data['repeatPassword']
             );
 
             // 4. Simular lógica de cambio de contraseña

@@ -36,7 +36,7 @@ class BiometricValidationController extends AbstractController {
                 imageBase64: (string) $data['imageBase64']
             );
 
-            // 4. Llamar a lógica de validación (aquí iría el caso de uso)
+            // 4. Lógica de validación
             $result = $this->biometricValidationUseCase->execute($dto);
 
             // 5. Devolver resultado exitoso

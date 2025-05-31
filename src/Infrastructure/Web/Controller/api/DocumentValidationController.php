@@ -38,7 +38,7 @@ class DocumentValidationController extends AbstractController {
                 documentValue: (string) $data['documentValue']
             );
 
-            // 4. Llamar a lógica de validación (aquí iría el caso de uso)
+            // 4. Lógica de validación
             $result = $this->documentValidationUseCase->execute($dto);
 
             // 5. Devolver resultado exitoso

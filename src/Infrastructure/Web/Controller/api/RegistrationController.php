@@ -3,6 +3,8 @@
 namespace itaxcix\Infrastructure\Web\Controller\api;
 
 use InvalidArgumentException;
+use itaxcix\Core\UseCases\UserRegistrationUseCase;
+use itaxcix\Core\UseCases\VerificationCodeUseCase;
 use itaxcix\Infrastructure\Web\Controller\generic\AbstractController;
 use itaxcix\Shared\DTO\useCases\RegistrationRequestDTO;
 use itaxcix\Shared\DTO\useCases\VerificationCodeRequestDTO;
@@ -12,6 +14,14 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class RegistrationController extends AbstractController {
+    private UserRegistrationUseCase $userRegistrationUseCase;
+    private VerificationCodeUseCase $verificationCodeUseCase;
+    public function __construct(UserRegistrationUseCase $userRegistrationUseCase, VerificationCodeUseCase $verificationCodeUseCase)
+    {
+        $this->userRegistrationUseCase = $userRegistrationUseCase;
+        $this->verificationCodeUseCase = $verificationCodeUseCase;
+    }
+
     public function submitRegistrationData(ServerRequestInterface $request): ResponseInterface {
         try {
             // 1. Obtener datos del cuerpo JSON
@@ -34,8 +44,8 @@ class RegistrationController extends AbstractController {
                 vehicleId: isset($data['vehicleId']) ? (int) $data['vehicleId'] : null
             );
 
-            // 4. Simular lógica de registro (aquí iría el caso de uso)
-            $result = $this->fakeRegistrationService($dto);
+            // 4. Lógica de registro
+            $result = $this->userRegistrationUseCase->execute($dto);
 
             // 5. Devolver resultado exitoso
             return $this->created($result);
@@ -44,24 +54,6 @@ class RegistrationController extends AbstractController {
             return $this->error($e->getMessage(), 400);
         }
     }
-
-    /**
-     * Simulación de servicio de registro
-     */
-    private function fakeRegistrationService(RegistrationRequestDTO $dto): array
-    {
-        // Aquí iría la lógica real: guardar usuario, generar token, enviar código, etc.
-
-        // Simulamos que se guardó correctamente
-        return [
-            'userId' => rand(1000, 9999), // ID simulado
-            'message' => 'Usuario registrado. Código de verificación enviado.',
-            'contactSentTo' => $dto->contactValue,
-            'nextStep' => 'Verificar contacto'
-        ];
-    }
-
-    // =========================================================================
 
     public function verifyContactCode(ServerRequestInterface $request): ResponseInterface {
         try {
@@ -82,8 +74,8 @@ class RegistrationController extends AbstractController {
                 code: (string) $data['code']
             );
 
-            // 4. Simular lógica de verificación (aquí iría el caso de uso)
-            $result = $this->fakeVerificationService($dto);
+            // 4. Lógica de verificación
+            $result = $this->verificationCodeUseCase->execute($dto);
 
             // 5. Devolver resultado exitoso
             return $this->ok($result);
@@ -91,18 +83,5 @@ class RegistrationController extends AbstractController {
         } catch (InvalidArgumentException $e) {
             return $this->error($e->getMessage(), 400);
         }
-    }
-
-    /**
-     * Simulación de servicio de verificación de código
-     */
-    private function fakeVerificationService(VerificationCodeRequestDTO $dto): array {
-        // En una app real, esto validar contra una BD o sistema de autenticación
-
-        return [
-            'userId' => $dto->userId,
-            'verified' => "",
-            'message' => "" ? 'Código verificado correctamente' : 'Código inválido',
-        ];
     }
 }
