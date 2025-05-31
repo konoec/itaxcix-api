@@ -4,8 +4,6 @@ use FastRoute\RouteCollector;
 use itaxcix\Infrastructure\Auth\Middleware\JwtMiddleware;
 use itaxcix\Infrastructure\Web\Controller\api\AuthController;
 use itaxcix\Infrastructure\Web\Controller\api\BiometricValidationController;
-use itaxcix\Infrastructure\Web\Controller\api\ContactTypesController;
-use itaxcix\Infrastructure\Web\Controller\api\DocumentTypesController;
 use itaxcix\Infrastructure\Web\Controller\api\DocumentValidationController;
 use itaxcix\Infrastructure\Web\Controller\api\RecoveryController;
 use itaxcix\Infrastructure\Web\Controller\api\RegistrationController;

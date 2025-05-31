@@ -1,38 +1,29 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "iTaxcix API",
-        "description": "Documentación de la API de autenticación y usuarios de iTaxcix",
-        "contact": {
-            "email": "soporte@itaxcix.com"
-        },
+        "title": "iTaxCix API",
         "version": "1.0.0"
     },
     "servers": [
         {
-            "url": "https://api.itaxcix.com",
-            "description": "Servidor de producción"
-        },
-        {
-            "url": "http://localhost:8080",
-            "description": "Entorno local de desarrollo"
+            "url": "http://localhost/api/v1"
         }
     ],
     "paths": {
         "/auth/login": {
             "post": {
                 "tags": [
-                    "Authentication"
+                    "Auth"
                 ],
-                "summary": "Iniciar sesión",
-                "description": "Inicia sesión en la aplicación.",
-                "operationId": "login",
+                "summary": "Iniciar sesión de usuario",
+                "description": "Autentica al usuario utilizando su documento y contraseña.",
+                "operationId": "loginUser",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/LoginRequest"
+                                "$ref": "#/components/schemas/AuthLoginRequestDTO"
                             }
                         }
                     }
@@ -44,11 +35,16 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "message": {
-                                            "type": "string"
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
                                         },
-                                        "user": {
-                                            "type": "object"
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/AuthLoginResponseDTO"
                                         }
                                     },
                                     "type": "object"
@@ -57,362 +53,171 @@
                         }
                     },
                     "401": {
-                        "description": "Credenciales inválidas"
-                    },
-                    "400": {
-                        "description": "Datos inválidos"
-                    }
-                }
-            }
-        },
-        "/auth/register/citizen": {
-            "post": {
-                "tags": [
-                    "Authentication"
-                ],
-                "summary": "Registrar un ciudadano",
-                "description": "Registra un nuevo ciudadano en la aplicación.",
-                "operationId": "registerCitizen",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/RegisterCitizenRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Registro exitoso",
+                        "description": "Credenciales inválidas",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
                                         "message": {
-                                            "type": "string"
-                                        },
-                                        "userId": {
-                                            "type": "integer"
-                                        },
-                                        "personId": {
-                                            "type": "integer"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Datos inválidos"
-                    },
-                    "422": {
-                        "description": "No se encontraron datos en la API externa"
-                    },
-                    "500": {
-                        "description": "Error interno del servidor"
-                    }
-                }
-            }
-        },
-        "/auth/register/driver": {
-            "post": {
-                "tags": [
-                    "Authentication"
-                ],
-                "summary": "Registrar un conductor",
-                "description": "Registra un nuevo conductor en la aplicación.",
-                "operationId": "registerDriver",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/RegisterDriverRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Registro exitoso",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string"
-                                        },
-                                        "userId": {
-                                            "type": "integer"
-                                        },
-                                        "personId": {
-                                            "type": "integer"
-                                        },
-                                        "vehicleId": {
-                                            "type": "integer"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Datos inválidos"
-                    },
-                    "422": {
-                        "description": "No se encontraron datos en la API externa"
-                    },
-                    "500": {
-                        "description": "Error interno del servidor"
-                    }
-                }
-            }
-        },
-        "/auth/recovery": {
-            "post": {
-                "tags": [
-                    "Authentication"
-                ],
-                "summary": "Solicitar recuperación de contraseña",
-                "description": "Solicita la recuperación de la contraseña.",
-                "operationId": "requestRecovery",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/RecoveryRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Solicitud de recuperación procesada",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Datos inválidos"
-                    },
-                    "404": {
-                        "description": "Contacto no encontrado"
-                    },
-                    "500": {
-                        "description": "Error interno del servidor"
-                    }
-                }
-            }
-        },
-        "/auth/verify-code": {
-            "post": {
-                "tags": [
-                    "Authentication"
-                ],
-                "summary": "Verificar el código de recuperación",
-                "description": "Verifica el código de recuperación de contraseña.",
-                "operationId": "verifyCode",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/VerifyCodeRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Código verificado exitosamente",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string"
-                                        },
-                                        "userId": {
-                                            "type": "integer"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Código inválido o datos incorrectos"
-                    },
-                    "404": {
-                        "description": "Contacto no encontrado"
-                    },
-                    "500": {
-                        "description": "Error interno del servidor"
-                    }
-                }
-            }
-        },
-        "/auth/reset-password": {
-            "post": {
-                "tags": [
-                    "Authentication"
-                ],
-                "summary": "Restablecer la contraseña",
-                "description": "Restablece la contraseña del usuario.",
-                "operationId": "resetPassword",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ResetPasswordRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Contraseña restablecida correctamente",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Datos inválidos"
-                    },
-                    "404": {
-                        "description": "Usuario no encontrado"
-                    },
-                    "500": {
-                        "description": "Error interno del servidor"
-                    }
-                }
-            }
-        },
-        "/driver/activate-availability": {
-            "post": {
-                "tags": [
-                    "Conductor"
-                ],
-                "summary": "Activar disponibilidad del conductor para recibir viajes",
-                "operationId": "33652f6b3d20f459d7d954a62dbebf2a",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ActivateAvailabilityRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Disponibilidad activada correctamente"
-                    },
-                    "400": {
-                        "description": "Datos inválidos o conductor no encontrado"
-                    },
-                    "500": {
-                        "description": "Error interno del servidor"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/driver/deactivate-availability": {
-            "post": {
-                "tags": [
-                    "Conductor"
-                ],
-                "summary": "Desactivar disponibilidad del conductor",
-                "operationId": "0dfbce8e919e40cd759dadeaffd1b925",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/DeactivateAvailabilityRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Disponibilidad desactivada correctamente"
-                    },
-                    "400": {
-                        "description": "Datos inválidos o conductor no encontrado"
-                    },
-                    "500": {
-                        "description": "Error interno del servidor"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/driver/status/{userId}": {
-            "get": {
-                "tags": [
-                    "Conductor"
-                ],
-                "summary": "Obtener el estado actual de disponibilidad del conductor",
-                "operationId": "65e1218165e7154952f25a40c246a040",
-                "parameters": [
-                    {
-                        "name": "userId",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Estado del conductor obtenido exitosamente",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "available": {
-                                            "type": "boolean"
-                                        },
-                                        "lastUpdated": {
                                             "type": "string",
-                                            "format": "date-time"
+                                            "example": "No autorizado"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Credenciales inválidas"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Errores de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petición inválida"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Documento o contraseña incorrectos"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error interno del servidor"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Ocurrió un error inesperado"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/validation/biometric": {
+            "post": {
+                "tags": [
+                    "Auth",
+                    "Validation"
+                ],
+                "summary": "Valida una imagen biométrica de una persona registrada.",
+                "description": "Recibe una imagen en formato Base64 y un ID de persona para validar si corresponde.",
+                "operationId": "validateBiometric",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BiometricValidationRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Imagen biométrica válida",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "personId": {
+                                                    "type": "integer",
+                                                    "example": 123
+                                                },
+                                                "validationDate": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2025-04-05T10:00:00Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Errores de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petición inválida"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "No se detectó un rostro válido en la imagen."
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -421,48 +226,590 @@
                         }
                     },
                     "404": {
-                        "description": "Conductor no encontrado"
-                    },
-                    "500": {
-                        "description": "Error interno del servidor"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/hello/{name}": {
-            "get": {
-                "tags": [
-                    "General"
-                ],
-                "summary": "Saludar al usuario",
-                "description": "Saluda al usuario autenticado.",
-                "operationId": "sayHello",
-                "parameters": [
-                    {
-                        "name": "name",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Respuesta exitosa",
+                        "description": "Persona no encontrada",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "message": {
-                                            "type": "string"
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
                                         },
-                                        "user": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No encontrado"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "La persona no existe o no está activa."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error interno del servidor"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Error al detectar el rostro"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/validation/document": {
+            "post": {
+                "tags": [
+                    "Auth",
+                    "Validation"
+                ],
+                "summary": "Valida un documento según su tipo y valor",
+                "description": "Recibe un tipo de documento y su valor para realizar una validación lógica y de formato.",
+                "operationId": "validateDocument",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DocumentValidationRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Documento validado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "personId": {
+                                                    "type": "integer",
+                                                    "example": 123
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "error": {
+                                            "type": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Errores de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petición inválida"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "El tipo de documento no es admitido actualmente."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Documento no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No encontrado"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "El documento no existe."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error interno del servidor"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Ocurrió un error inesperado"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/recovery/start": {
+            "post": {
+                "tags": [
+                    "Auth",
+                    "Recovery"
+                ],
+                "summary": "Iniciar recuperación de contraseña",
+                "description": "Envía un código de recuperación al contacto especificado.",
+                "operationId": "startPasswordRecovery",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RecoveryStartRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Código de recuperación enviado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "description": "Datos asociados a la recuperación",
+                                            "properties": {
+                                                "userId": {
+                                                    "type": "integer",
+                                                    "example": 123
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Errores de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petición inválida"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "El contacto no está activo."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error interno del servidor"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Ocurrió un error inesperado"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/recovery/verify-code": {
+            "post": {
+                "tags": [
+                    "Auth",
+                    "Recovery"
+                ],
+                "summary": "Verificar código de recuperación",
+                "description": "Verifica si el código proporcionado es válido para el usuario.",
+                "operationId": "verifyRecoveryCode",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/VerificationCodeRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Código verificado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "El código de recuperación es válido."
+                                                },
+                                                "token": {
+                                                    "type": "string",
+                                                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.xxxxx"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Código inválido o expirado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petición inválida"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "El código de recuperación no es válido."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Errores de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petición inválida"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "userId es requerido"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error interno del servidor"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Ocurrió un error inesperado"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/recovery/change-password": {
+            "post": {
+                "tags": [
+                    "Auth",
+                    "Recovery"
+                ],
+                "summary": "Cambiar contraseña",
+                "description": "Permite cambiar la contraseña una vez verificado el código de recuperación.",
+                "operationId": "changePassword",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PasswordChangeRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Contraseña cambiada correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Contraseña cambiada exitosamente"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Errores de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petición inválida"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Las contraseñas no coinciden."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Usuario no autorizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No autorizado"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Usuario no autorizado"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error interno del servidor"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Ocurrió un error inesperado"
+                                                }
+                                            },
                                             "type": "object"
                                         }
                                     },
@@ -479,68 +826,78 @@
                 ]
             }
         },
-        "/perfil/send-verification-code": {
+        "/auth/registration": {
             "post": {
                 "tags": [
-                    "Perfil"
+                    "Auth",
+                    "Registration"
                 ],
-                "summary": "Enviar código de verificación a un contacto",
-                "operationId": "674f0d445be7989bed83c94b6c520449",
+                "summary": "Registrar nuevo usuario",
+                "description": "Recibe los datos necesarios para registrar a un nuevo usuario.",
+                "operationId": "submitRegistrationData",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/SendVerificationCodeRequest"
+                                "$ref": "#/components/schemas/RegistrationRequestDTO"
                             }
                         }
                     }
                 },
                 "responses": {
-                    "200": {
-                        "description": "Código enviado exitosamente"
-                    },
-                    "400": {
-                        "description": "Datos inválidos o contacto ya verificado"
-                    },
-                    "404": {
-                        "description": "Contacto no encontrado"
-                    },
-                    "500": {
-                        "description": "Error interno del servidor"
-                    }
-                }
-            }
-        },
-        "/perfil/verify-contact-code": {
-            "post": {
-                "tags": [
-                    "Perfil"
-                ],
-                "summary": "Verificar contacto mediante código",
-                "operationId": "46cf08590ba03a333fb7f4a57a6c2d16",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/VerifyCodeRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Contacto verificado correctamente",
+                    "201": {
+                        "description": "Usuario registrado correctamente",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "message": {
-                                            "type": "string"
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
                                         },
-                                        "userId": {
-                                            "type": "integer"
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Creado"
+                                        },
+                                        "data": {
+                                            "description": "Datos del usuario creado",
+                                            "properties": {
+                                                "userId": {
+                                                    "type": "integer",
+                                                    "example": 123
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Errores de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petición inválida"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Ya existe un contacto registrado con ese número o correo."
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -549,79 +906,345 @@
                         }
                     },
                     "400": {
-                        "description": "Código inválido o datos incorrectos"
-                    },
-                    "404": {
-                        "description": "Contacto no encontrado"
+                        "description": "Usuario ya registrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petición inválida"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Ya existe un usuario registrado con esa persona."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "500": {
-                        "description": "Error interno del servidor"
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error interno del servidor"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Ocurrió un error inesperado"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
         },
-        "/perfil/detach-vehicle": {
+        "/auth/registration/verify-code": {
             "post": {
                 "tags": [
-                    "Perfil"
+                    "Auth",
+                    "Registration"
                 ],
-                "summary": "Desvincular un vehículo del perfil del conductor",
-                "operationId": "e3f4e7eee831a78380131bf59e4a402d",
+                "summary": "Verificar código de contacto",
+                "description": "Verifica si el código proporcionado es válido para el usuario.",
+                "operationId": "verifyContactCode",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/DetachVehicleRequest"
+                                "$ref": "#/components/schemas/VerificationCodeRequestDTO"
                             }
                         }
                     }
                 },
                 "responses": {
                     "200": {
-                        "description": "Vehículo desvinculado correctamente"
+                        "description": "Código verificado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "El código de verificación es válido."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "400": {
-                        "description": "Datos inválidos o sin vehículo asignado"
+                        "description": "Código inválido o expirado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petición inválida"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "El código de verificación no es válido."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
-                    "404": {
-                        "description": "Conductor o vehículo no encontrado"
+                    "422": {
+                        "description": "Errores de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petición inválida"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "userId es requerido"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "500": {
-                        "description": "Error interno del servidor"
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error interno del servidor"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Ocurrió un error inesperado"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
         },
-        "/perfil/attach-vehicle": {
+        "/auth/validation/vehicle": {
             "post": {
                 "tags": [
-                    "Perfil"
+                    "Auth",
+                    "Validation"
                 ],
-                "summary": "Vincular un vehículo al perfil del conductor",
-                "operationId": "1a54340fe5c295b80a1e12d9c172720d",
+                "summary": "Validar vehículo con documento",
+                "description": "Valida si el vehículo asociado al documento proporcionado es válido.",
+                "operationId": "validateVehicleWithDocument",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/AttachVehicleRequest"
+                                "$ref": "#/components/schemas/VehicleValidationRequestDTO"
                             }
                         }
                     }
                 },
                 "responses": {
                     "200": {
-                        "description": "Vehículo vinculado correctamente"
+                        "description": "Vehículo validado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "description": "Datos asociados al resultado de la validación del vehículo",
+                                            "properties": {
+                                                "personId": {
+                                                    "type": "integer",
+                                                    "example": 123
+                                                },
+                                                "vehicleId": {
+                                                    "type": "integer",
+                                                    "example": 456
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "400": {
-                        "description": "Datos inválidos o vehículo ya vinculado"
+                        "description": "Errores de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petición inválida"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Documento o contraseña incorrectos"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "404": {
-                        "description": "Conductor o vehículo no encontrado"
+                        "description": "Documento o vehículo no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No encontrado"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "La persona no existe o no está activa."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "500": {
-                        "description": "Error interno del servidor"
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error interno del servidor"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Ocurrió un error inesperado"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -629,221 +1252,224 @@
     },
     "components": {
         "schemas": {
-            "ActivateAvailabilityRequest": {
-                "description": "Datos para desactivar la disponibilidad de un ciudadano",
-                "properties": {
-                    "userId": {
-                        "type": "integer",
-                        "example": 1
-                    }
-                },
-                "type": "object"
-            },
-            "AttachVehicleRequest": {
-                "description": "Datos para asociar un vehículo de un ciudadano",
-                "properties": {
-                    "userId": {
-                        "type": "integer",
-                        "example": 1
-                    },
-                    "vehicleId": {
-                        "type": "integer",
-                        "example": 1
-                    }
-                },
-                "type": "object"
-            },
-            "DeactivateAvailabilityRequest": {
-                "description": "Datos para desactivar la disponibilidad de un ciudadano",
-                "properties": {
-                    "userId": {
-                        "type": "integer",
-                        "example": 1
-                    }
-                },
-                "type": "object"
-            },
-            "DetachVehicleRequest": {
-                "description": "Datos para desasociar un vehículo de un ciudadano",
-                "properties": {
-                    "userId": {
-                        "type": "integer",
-                        "example": 1
-                    },
-                    "vehicleId": {
-                        "type": "integer",
-                        "example": 1
-                    }
-                },
-                "type": "object"
-            },
-            "LoginRequest": {
+            "AuthLoginRequestDTO": {
                 "description": "Datos para iniciar sesión",
                 "properties": {
-                    "username": {
+                    "documentValue": {
+                        "description": "Valor del documento de identidad del usuario",
                         "type": "string",
-                        "example": "juan.perez"
+                        "example": "12345678"
                     },
                     "password": {
+                        "description": "Contraseña del usuario",
                         "type": "string",
-                        "format": "password",
-                        "example": "securePassword123"
-                    }
-                },
-                "type": "object"
-            },
-            "RecoveryRequest": {
-                "description": "Datos para recuperar contraseña",
-                "properties": {
-                    "contactTypeId": {
-                        "type": "integer",
-                        "example": 1
+                        "example": "Password123@"
                     },
-                    "contact": {
-                        "type": "string",
-                        "example": "antonio@gmail.com"
+                    "web": {
+                        "description": "Indica si el inicio es desde web",
+                        "type": "boolean",
+                        "example": false
                     }
                 },
                 "type": "object"
             },
-            "RegisterCitizenRequest": {
-                "description": "Datos para registrar un ciudadano",
+            "AuthLoginResponseDTO": {
+                "description": "Datos de respuesta tras iniciar sesión",
+                "properties": {
+                    "token": {
+                        "description": "Token JWT generado",
+                        "type": "string",
+                        "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.xxxxx"
+                    },
+                    "userId": {
+                        "description": "ID del usuario autenticado",
+                        "type": "integer",
+                        "example": 123
+                    },
+                    "documentValue": {
+                        "description": "Valor del documento del usuario",
+                        "type": "string",
+                        "example": "12345678"
+                    },
+                    "roles": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": [
+                            "admin",
+                            "user"
+                        ]
+                    },
+                    "permissions": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": [
+                            "read_users",
+                            "write_users"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
+            "BiometricValidationRequestDTO": {
+                "description": "Datos necesarios para validar una imagen biométrica",
+                "properties": {
+                    "personId": {
+                        "description": "ID único de la persona",
+                        "type": "integer",
+                        "example": 12345
+                    },
+                    "imageBase64": {
+                        "description": "Imagen biométrica en formato Base64",
+                        "type": "string",
+                        "example": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
+                    }
+                },
+                "type": "object"
+            },
+            "DocumentValidationRequestDTO": {
+                "description": "Datos necesarios para validar un documento",
                 "properties": {
                     "documentTypeId": {
+                        "description": "ID del tipo de documento",
                         "type": "integer",
                         "example": 1
                     },
-                    "document": {
+                    "documentValue": {
+                        "description": "Valor del documento",
                         "type": "string",
-                        "example": "123456789"
-                    },
-                    "alias": {
-                        "type": "string",
-                        "example": "antonio.perez"
-                    },
-                    "password": {
-                        "type": "string",
-                        "format": "password",
-                        "example": "securePassword123"
-                    },
-                    "contactTypeId": {
-                        "type": "integer",
-                        "example": 1
-                    },
-                    "contact": {
-                        "type": "string",
-                        "example": "antonio@gmail.com"
+                        "example": "12345670"
                     }
                 },
                 "type": "object"
             },
-            "RegisterDriverRequest": {
-                "description": "Datos para registrar un conductor",
+            "PasswordChangeRequestDTO": {
+                "description": "Datos necesarios para cambiar la contraseña",
                 "properties": {
-                    "documentTypeId": {
+                    "userId": {
+                        "description": "ID del usuario",
                         "type": "integer",
-                        "example": 1
+                        "example": 123
                     },
-                    "document": {
+                    "newPassword": {
+                        "description": "Nueva contraseña",
                         "type": "string",
-                        "example": "123456789"
+                        "example": "nueva@Contrasena123"
                     },
-                    "alias": {
+                    "repeatPassword": {
+                        "description": "Confirmación de nueva contraseña",
                         "type": "string",
-                        "example": "antonio.perez"
+                        "example": "nueva@Contrasena123"
+                    }
+                },
+                "type": "object"
+            },
+            "RecoveryStartRequestDTO": {
+                "description": "Datos necesarios para iniciar la recuperación de contraseña",
+                "properties": {
+                    "contactTypeId": {
+                        "description": "ID del tipo de contacto",
+                        "type": "integer",
+                        "example": 2
                     },
+                    "contactValue": {
+                        "description": "Valor del contacto (correo o teléfono)",
+                        "type": "string",
+                        "example": "+51935123123"
+                    }
+                },
+                "type": "object"
+            },
+            "RegistrationRequestDTO": {
+                "description": "Datos necesarios para registrar un nuevo usuario",
+                "properties": {
                     "password": {
+                        "description": "Contraseña del usuario",
                         "type": "string",
-                        "format": "password",
-                        "example": "securePassword123"
+                        "example": "contrasena@123"
                     },
                     "contactTypeId": {
+                        "description": "ID del tipo de contacto",
                         "type": "integer",
                         "example": 1
                     },
-                    "contact": {
+                    "contactValue": {
+                        "description": "Valor del contacto (correo o teléfono)",
                         "type": "string",
-                        "example": "antonio@gmail.com"
+                        "example": "usuario@example.com"
                     },
-                    "licensePlate": {
+                    "personId": {
+                        "description": "ID de la persona asociada",
+                        "type": "integer",
+                        "example": 123
+                    },
+                    "vehicleId": {
+                        "description": "ID opcional del vehículo asociado",
+                        "type": "integer",
+                        "example": 456,
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "VehicleValidationRequestDTO": {
+                "description": "Datos necesarios para validar un vehículo",
+                "properties": {
+                    "documentTypeId": {
+                        "description": "ID del tipo de documento",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "documentValue": {
+                        "description": "Valor del documento",
+                        "type": "string",
+                        "example": "12345678"
+                    },
+                    "plateValue": {
+                        "description": "Número de placa del vehículo",
                         "type": "string",
                         "example": "ABC123"
                     }
                 },
                 "type": "object"
             },
-            "ResetPasswordRequest": {
-                "description": "Datos para restablecer la contraseña",
+            "VerificationCodeRequestDTO": {
+                "description": "Datos necesarios para verificar el código de recuperación",
                 "properties": {
                     "userId": {
+                        "description": "ID del usuario",
                         "type": "integer",
-                        "example": 1
+                        "example": 123
                     },
-                    "newPassword": {
-                        "type": "string",
-                        "format": "password",
-                        "example": "secureNewPassword123"
-                    }
-                },
-                "type": "object"
-            },
-            "SendVerificationCodeRequest": {
-                "description": "Datos necesarios para enviar un código de verificación",
-                "properties": {
-                    "contactTypeId": {
-                        "type": "integer",
-                        "example": 1
-                    },
-                    "contact": {
-                        "type": "string",
-                        "example": "usuario@ejemplo.com"
-                    }
-                },
-                "type": "object"
-            },
-            "VerifyCodeRequest": {
-                "description": "Datos para verificar el código de recuperación",
-                "properties": {
                     "code": {
+                        "description": "Código de verificación",
                         "type": "string",
-                        "example": "123456"
-                    },
-                    "contactTypeId": {
-                        "type": "integer",
-                        "example": 1
-                    },
-                    "contact": {
-                        "type": "string",
-                        "example": "antonio@gmail.com"
+                        "example": "ABC123"
                     }
                 },
                 "type": "object"
-            }
-        },
-        "securitySchemes": {
-            "bearerAuth": {
-                "type": "http",
-                "bearerFormat": "JWT",
-                "scheme": "bearer"
             }
         }
     },
     "tags": [
         {
-            "name": "Authentication",
-            "description": "Endpoints relacionados con autenticación"
+            "name": "Auth",
+            "description": "Auth"
         },
         {
-            "name": "Conductor",
-            "description": "Operaciones relacionadas con el conductor"
+            "name": "Validation",
+            "description": "Validation"
         },
         {
-            "name": "General",
-            "description": "Endpoints relacionados con utilidades y pruebas"
+            "name": "Recovery",
+            "description": "Recovery"
         },
         {
-            "name": "Perfil",
-            "description": "Operaciones relacionadas con el perfil del usuario"
+            "name": "Registration",
+            "description": "Registration"
         }
     ]
 }

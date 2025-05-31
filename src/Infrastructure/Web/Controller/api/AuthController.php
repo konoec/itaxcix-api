@@ -6,10 +6,77 @@ use InvalidArgumentException;
 use itaxcix\Core\UseCases\LoginUseCase;
 use itaxcix\Infrastructure\Web\Controller\generic\AbstractController;
 use itaxcix\Shared\DTO\useCases\AuthLoginRequestDTO;
+use itaxcix\Shared\DTO\useCases\AuthLoginResponseDTO;
 use itaxcix\Shared\Validators\useCases\AuthLoginValidator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use OpenApi\Attributes as OA;
 
+#[OA\Post(
+    path: "/auth/login",
+    operationId: "loginUser",
+    description: "Autentica al usuario utilizando su documento y contraseña.",
+    summary: "Iniciar sesión de usuario",
+    requestBody: new OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(ref: AuthLoginRequestDTO::class)
+    ),
+    tags: ["Auth"]
+)]
+#[OA\Response(
+    response: 200,
+    description: "Inicio de sesión exitoso",
+    content: new OA\JsonContent(
+        properties: [
+            new OA\Property(property: "success", type: "boolean", example: true),
+            new OA\Property(property: "message", type: "string", example: "OK"),
+            new OA\Property(property: "data", ref: AuthLoginResponseDTO::class),
+        ],
+        type: "object"
+    )
+)]
+#[OA\Response(
+    response: 401,
+    description: "Credenciales inválidas",
+    content: new OA\JsonContent(
+        properties: [
+            new OA\Property(property: "success", type: "boolean", example: false),
+            new OA\Property(property: "message", type: "string", example: "No autorizado"),
+            new OA\Property(property: "error", properties: [
+                new OA\Property(property: "message", type: "string", example: "Credenciales inválidas")
+            ], type: "object")
+        ],
+        type: "object"
+    )
+)]
+#[OA\Response(
+    response: 400,
+    description: "Errores de validación",
+    content: new OA\JsonContent(
+        properties: [
+            new OA\Property(property: "success", type: "boolean", example: false),
+            new OA\Property(property: "message", type: "string", example: "Petición inválida"),
+            new OA\Property(property: "error", properties: [
+                new OA\Property(property: "message", type: "string", example: "Documento o contraseña incorrectos")
+            ], type: "object")
+        ],
+        type: "object"
+    )
+)]
+#[OA\Response(
+    response: 500,
+    description: "Error interno del servidor",
+    content: new OA\JsonContent(
+        properties: [
+            new OA\Property(property: "success", type: "boolean", example: false),
+            new OA\Property(property: "message", type: "string", example: "Error interno del servidor"),
+            new OA\Property(property: "error", properties: [
+                new OA\Property(property: "message", type: "string", example: "Ocurrió un error inesperado")
+            ], type: "object")
+        ],
+        type: "object"
+    )
+)]
 class AuthController extends AbstractController
 {
     private LoginUseCase $loginUseCase;

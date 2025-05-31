@@ -44,14 +44,20 @@ class DoctrineUserCodeRepository implements UserCodeRepositoryInterface
         return $this->toDomain($entity);
     }
 
-    public function findUserCodeByValue(string $value): ?UserCodeModel
+    public function findUserCodeByValueAndUser(string $value, int $userId): ?UserCodeModel
     {
-        $query = $this->entityManager->createQueryBuilder()
-            ->select('uc')
+        $qb = $this->entityManager->createQueryBuilder();
+        $qb->select('uc')
             ->from(UserCodeEntity::class, 'uc')
+            ->innerJoin('uc.contact', 'c')
             ->where('uc.code = :code')
+            ->andWhere('c.user = :userId')
+            ->andWhere('uc.used = false')
             ->setParameter('code', $value)
+            ->setParameter('userId', $userId)
+            ->setMaxResults(1);
 
-            ->getQuery();
+        $entity = $qb->getQuery()->getOneOrNullResult();
+        return $entity ? $this->toDomain($entity) : null;
     }
 }

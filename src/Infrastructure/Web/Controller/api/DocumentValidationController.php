@@ -9,7 +9,80 @@ use itaxcix\Shared\DTO\useCases\DocumentValidationRequestDTO;
 use itaxcix\Shared\Validators\useCases\DocumentValidationValidator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use OpenApi\Attributes as OA;
 
+#[OA\Post(
+    path: "/auth/validation/document",
+    operationId: "validateDocument",
+    description: "Recibe un tipo de documento y su valor para realizar una validación lógica y de formato.",
+    summary: "Valida un documento según su tipo y valor",
+    requestBody: new OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(ref: DocumentValidationRequestDTO::class)
+    ),
+    tags: ["Auth", "Validation"]
+)]
+#[OA\Response(
+    response: 200,
+    description: "Documento validado correctamente",
+    content: new OA\JsonContent(
+        properties: [
+            new OA\Property(property: "success", type: "boolean", example: true),
+            new OA\Property(property: "message", type: "string", example: "OK"),
+            new OA\Property(
+                property: "data",
+                properties: [
+                    new OA\Property(property: "personId", type: "integer", example: 123)
+                ],
+                type: "object"
+            ),
+            new OA\Property(property: "error", type: "null")
+        ],
+        type: "object"
+    )
+)]
+#[OA\Response(
+    response: 400,
+    description: "Errores de validación",
+    content: new OA\JsonContent(
+        properties: [
+            new OA\Property(property: "success", type: "boolean", example: false),
+            new OA\Property(property: "message", type: "string", example: "Petición inválida"),
+            new OA\Property(property: "error", properties: [
+                new OA\Property(property: "message", type: "string", example: "El tipo de documento no es admitido actualmente.")
+            ], type: "object")
+        ],
+        type: "object"
+    )
+)]
+#[OA\Response(
+    response: 404,
+    description: "Documento no encontrado",
+    content: new OA\JsonContent(
+        properties: [
+            new OA\Property(property: "success", type: "boolean", example: false),
+            new OA\Property(property: "message", type: "string", example: "No encontrado"),
+            new OA\Property(property: "error", properties: [
+                new OA\Property(property: "message", type: "string", example: "El documento no existe.")
+            ], type: "object")
+        ],
+        type: "object"
+    )
+)]
+#[OA\Response(
+    response: 500,
+    description: "Error interno del servidor",
+    content: new OA\JsonContent(
+        properties: [
+            new OA\Property(property: "success", type: "boolean", example: false),
+            new OA\Property(property: "message", type: "string", example: "Error interno del servidor"),
+            new OA\Property(property: "error", properties: [
+                new OA\Property(property: "message", type: "string", example: "Ocurrió un error inesperado")
+            ], type: "object")
+        ],
+        type: "object"
+    )
+)]
 class DocumentValidationController extends AbstractController {
 
     private DocumentValidationUseCase $documentValidationUseCase;

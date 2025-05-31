@@ -77,8 +77,6 @@ class DocumentValidationUseCaseHandler implements DocumentValidationUseCase
         ];
     }
 
-
-
     private function fakeReniecApi(string $documentValue): array
     {
         return [

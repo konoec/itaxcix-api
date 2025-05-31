@@ -20,22 +20,15 @@ class VerificationCodeUseCaseHandler implements VerificationCodeUseCase {
 
     public function execute(VerificationCodeRequestDTO $dto): ?array
     {
-        $userCode = $this->userCodeRepository->findUserCodeByValue($dto->code);
+        $userCode = $this->userCodeRepository
+            ->findUserCodeByValueAndUser($dto->code, $dto->userId);
 
         if (!$userCode) {
             throw new InvalidArgumentException('El código de verificación no es válido.');
         }
 
-        if ($userCode->getContact()->getUser()->getId() !== $dto->userId) {
-            throw new InvalidArgumentException('El código de verificación no es válido.');
-        }
-
         if ($userCode->getExpirationDate() < new DateTime()) {
             throw new InvalidArgumentException('El código de verificación ha expirado.');
-        }
-
-        if ($userCode->isUsed()) {
-            throw new InvalidArgumentException('El código de verificación ya ha sido utilizado.');
         }
 
         $userCode->setUsed(true);
