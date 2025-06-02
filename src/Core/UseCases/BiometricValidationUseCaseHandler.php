@@ -67,11 +67,17 @@ class BiometricValidationUseCaseHandler implements BiometricValidationUseCase
         file_put_contents($rutaTemporal, $imagenBinaria);
 
         $detector = new FaceDetector();
+
         try {
+            // Silencia temporalmente los warnings (no recomendado para producción)
+            set_error_handler(function () {}, E_WARNING | E_DEPRECATED);
             $detector->faceDetect($rutaTemporal);
+            restore_error_handler();
         } catch (Exception $e) {
+            restore_error_handler(); // Asegúrate de restaurarlo en el catch también
             throw new RuntimeException('Error al detectar el rostro: ' . $e->getMessage(), 0, $e);
         }
+
 
         unlink($rutaTemporal);
 

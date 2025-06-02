@@ -3,11 +3,11 @@
 namespace itaxcix\Infrastructure\Database\Repository\user;
 
 use Doctrine\ORM\EntityManagerInterface;
-use itaxcix\Core\Domain\user\UserCodeTypeModel;
-use itaxcix\Core\Interfaces\user\UserCodeTypeRepositoryInterface;
-use itaxcix\Infrastructure\Database\Entity\user\UserCodeTypeEntity;
+use itaxcix\Core\Domain\user\RoleModel;
+use itaxcix\Core\Interfaces\user\RoleRepositoryInterface;
+use itaxcix\Infrastructure\Database\Entity\user\RoleEntity;
 
-class DoctrineUserCodeTypeRepository implements UserCodeTypeRepositoryInterface
+class DoctrineRoleRepository implements RoleRepositoryInterface
 {
     private EntityManagerInterface $entityManager;
 
@@ -15,21 +15,21 @@ class DoctrineUserCodeTypeRepository implements UserCodeTypeRepositoryInterface
         $this->entityManager = $entityManager;
     }
 
-    public function toDomain(UserCodeTypeEntity $entity): UserCodeTypeModel {
-        return new UserCodeTypeModel(
+    public function toDomain(RoleEntity $entity): RoleModel {
+        return new RoleModel(
             id: $entity->getId(),
             name: $entity->getName(),
             active: $entity->isActive()
         );
     }
 
-    public function findUserCodeTypeByName(string $name): ?UserCodeTypeModel
+    public function findRoleByName(string $name): ?RoleModel
     {
         $query = $this->entityManager->createQueryBuilder()
-            ->select('uct')
-            ->from(UserCodeTypeEntity::class, 'uct')
-            ->where('uct.name = :name')
-            ->andWhere('uct.active = :active')
+            ->select('r')
+            ->from(RoleEntity::class, 'r')
+            ->where('r.name = :name')
+            ->andWhere('r.active = :active')
             ->setParameter('name', $name)
             ->setParameter('active', true)
             ->getQuery();

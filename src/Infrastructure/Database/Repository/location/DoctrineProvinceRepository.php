@@ -3,16 +3,21 @@
 namespace itaxcix\Infrastructure\Database\Repository\location;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
 use itaxcix\Core\Domain\location\ProvinceModel;
+use itaxcix\Core\Interfaces\location\DepartmentRepositoryInterface;
 use itaxcix\Core\Interfaces\location\ProvinceRepositoryInterface;
+use itaxcix\Infrastructure\Database\Entity\location\DepartmentEntity;
 use itaxcix\Infrastructure\Database\Entity\location\ProvinceEntity;
 
 class DoctrineProvinceRepository implements ProvinceRepositoryInterface
 {
     private EntityManagerInterface $entityManager;
+    private DepartmentRepositoryInterface $departmentRepository;
 
-    public function __construct(EntityManagerInterface $entityManager) {
+    public function __construct(EntityManagerInterface $entityManager, DepartmentRepositoryInterface $departmentRepository){
         $this->entityManager = $entityManager;
+        $this->departmentRepository = $departmentRepository;
     }
 
     public function toDomain(ProvinceEntity $entity): ProvinceModel
@@ -20,7 +25,7 @@ class DoctrineProvinceRepository implements ProvinceRepositoryInterface
         return new ProvinceModel(
             id: $entity->getId(),
             name: $entity->getName(),
-            department: $entity->getDepartment(),
+            department: $this->departmentRepository->toDomain($entity->getDepartment()),
             ubigeo: $entity->getUbigeo()
         );
     }
@@ -39,11 +44,23 @@ class DoctrineProvinceRepository implements ProvinceRepositoryInterface
         return $entity ? $this->toDomain($entity) : null;
     }
 
+    /**
+     * @throws ORMException
+     */
     public function saveProvince(ProvinceModel $provinceModel): ProvinceModel
     {
-        $entity = new ProvinceEntity();
+        if ($provinceModel->getId()) {
+            $entity = $this->entityManager->find(ProvinceEntity::class, $provinceModel->getId());
+        } else {
+            $entity = new ProvinceEntity();
+        }
+
         $entity->setName($provinceModel->getName());
-        $entity->setDepartment($provinceModel->getDepartment());
+        $entity->setDepartment(
+            $this->entityManager->getReference(
+                DepartmentEntity::class, $provinceModel->getDepartment()->getId()
+            )
+        );
         $entity->setUbigeo($provinceModel->getUbigeo());
 
         $this->entityManager->persist($entity);

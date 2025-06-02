@@ -22,7 +22,7 @@ class PersonEntity {
     private ?DocumentTypeEntity $documentType = null;
     #[ORM\Column(name: 'pers_documento', type: 'string', length: 20, unique: true, nullable: false)]
     private string $document;
-    #[ORM\Column(name: 'pers_fecha_validacion', type: 'datetime')]
+    #[ORM\Column(name: 'pers_fecha_validacion', type: 'datetime', nullable: true)]
     private ?DateTime $validationDate;
     #[ORM\Column(name: 'pers_imagen', type: 'string', length: 255, nullable: true)]
     private ?string $image = null;

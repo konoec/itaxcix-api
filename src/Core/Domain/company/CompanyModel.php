@@ -5,18 +5,18 @@ namespace itaxcix\Core\Domain\company;
 use itaxcix\Infrastructure\Database\Entity\company\CompanyEntity;
 
 class CompanyModel {
-    private int $id;
+    private ?int $id;
     private string $ruc;
     private ?string $name = null;
     private bool $active = true;
 
     /**
-     * @param int $id
+     * @param ?int $id
      * @param string $ruc
      * @param string|null $name
      * @param bool $active
      */
-    public function __construct(int $id, string $ruc, ?string $name, bool $active)
+    public function __construct(?int $id, string $ruc, ?string $name, bool $active)
     {
         $this->id = $id;
         $this->ruc = $ruc;
@@ -24,12 +24,12 @@ class CompanyModel {
         $this->active = $active;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }

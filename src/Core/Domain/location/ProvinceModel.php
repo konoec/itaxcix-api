@@ -5,18 +5,18 @@ namespace itaxcix\Core\Domain\location;
 use itaxcix\Infrastructure\Database\Entity\location\ProvinceEntity;
 
 class ProvinceModel {
-    private int $id;
+    private ?int $id;
     private ?string $name = null;
     private ?DepartmentModel $department = null;
     private ?string $ubigeo = null;
 
     /**
-     * @param int $id
+     * @param ?int $id
      * @param string|null $name
      * @param DepartmentModel|null $department
      * @param string|null $ubigeo
      */
-    public function __construct(int $id, ?string $name, ?DepartmentModel $department, ?string $ubigeo)
+    public function __construct(?int $id, ?string $name, ?DepartmentModel $department, ?string $ubigeo)
     {
         $this->id = $id;
         $this->name = $name;
@@ -24,12 +24,12 @@ class ProvinceModel {
         $this->ubigeo = $ubigeo;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }

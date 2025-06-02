@@ -8,7 +8,7 @@ use itaxcix\Core\Domain\location\DistrictModel;
 use itaxcix\Infrastructure\Database\Entity\vehicle\TucProcedureEntity;
 
 class TucProcedureModel {
-    private int $id;
+    private ?int $id;
     private ?VehicleModel $vehicle = null;
     private ?CompanyModel $company = null;
     private ?DistrictModel $district = null;
@@ -20,7 +20,7 @@ class TucProcedureModel {
     private ?DateTime $expirationDate = null;
 
     /**
-     * @param int $id
+     * @param ?int $id
      * @param VehicleModel|null $vehicle
      * @param CompanyModel|null $company
      * @param DistrictModel|null $district
@@ -31,7 +31,7 @@ class TucProcedureModel {
      * @param DateTime|null $issueDate
      * @param DateTime|null $expirationDate
      */
-    public function __construct(int $id, ?VehicleModel $vehicle, ?CompanyModel $company, ?DistrictModel $district, ?TucStatusModel $status, ?ProcedureTypeModel $type, ?TucModalityModel $modality, ?DateTime $procedureDate, ?DateTime $issueDate, ?DateTime $expirationDate)
+    public function __construct(?int $id, ?VehicleModel $vehicle, ?CompanyModel $company, ?DistrictModel $district, ?TucStatusModel $status, ?ProcedureTypeModel $type, ?TucModalityModel $modality, ?DateTime $procedureDate, ?DateTime $issueDate, ?DateTime $expirationDate)
     {
         $this->id = $id;
         $this->vehicle = $vehicle;
@@ -45,12 +45,12 @@ class TucProcedureModel {
         $this->expirationDate = $expirationDate;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }

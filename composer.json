@@ -20,7 +20,8 @@
         "phpmailer/phpmailer": "^6.10",
         "vonage/client": "^4.1",
         "respect/validation": "^2.4",
-        "mauricesvay/php-facedetection": "^0.1.0"
+        "mauricesvay/php-facedetection": "^0.1.0",
+        "ext-gd": "*"
     },
     "autoload": {
         "psr-4": {

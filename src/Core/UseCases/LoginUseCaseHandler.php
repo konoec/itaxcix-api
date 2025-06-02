@@ -3,6 +3,8 @@
 namespace itaxcix\Core\UseCases;
 
 use InvalidArgumentException;
+use itaxcix\Core\Domain\user\RolePermissionModel;
+use itaxcix\Core\Domain\user\UserRoleModel;
 use itaxcix\Core\Interfaces\user\RolePermissionRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserRoleRepositoryInterface;
 use itaxcix\Infrastructure\Auth\Service\JwtService;
@@ -49,8 +51,8 @@ class LoginUseCaseHandler implements LoginUseCase
         // Obtener todos los permisos de todos los roles
         $permissions = [];
         foreach ($roles as $role) {
-            $perms = $this->rolePermissionRepository->findPermissionsByRoleId($role->getId(), $dto->web);
-            $permissions = [...$permissions, ...array_map(fn($p) => $p->getName(), $perms)];
+            $perms = $this->rolePermissionRepository->findPermissionsByRoleId($role->getRole()->getId(), $dto->web);
+            $permissions = [...$permissions, ...array_map(fn(RolePermissionModel $p) => $p->getPermission()->getName(), $perms)];
         }
 
         // Eliminar duplicados
@@ -59,7 +61,7 @@ class LoginUseCaseHandler implements LoginUseCase
         // Generar token
         $token = $this->jwtService->encode([
             'user_id' => $user->getId(),
-            'roles' => array_map(fn($r) => $r->getName(), $roles),
+            'roles' => array_map(fn(UserRoleModel $r) => $r->getRole()?->getName(), $roles),
             'permissions' => $permissions,
             'exp' => time() + 3600
         ]);
@@ -68,7 +70,7 @@ class LoginUseCaseHandler implements LoginUseCase
             token: $token,
             userId: $user->getId(),
             documentValue: $user->getPerson()->getDocument(),
-            roles: array_map(fn($r) => $r->getName(), $roles),
+            roles: array_map(fn(UserRoleModel $r) => $r->getRole()?->getName(), $roles),
             permissions: $permissions
         );
     }

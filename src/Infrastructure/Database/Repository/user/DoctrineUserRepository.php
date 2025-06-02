@@ -3,23 +3,34 @@
 namespace itaxcix\Infrastructure\Database\Repository\user;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
 use itaxcix\Core\Domain\user\UserModel;
+use itaxcix\Core\Interfaces\person\PersonRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserRepositoryInterface;
+use itaxcix\Core\Interfaces\user\UserStatusRepositoryInterface;
+use itaxcix\Infrastructure\Database\Entity\person\PersonEntity;
 use itaxcix\Infrastructure\Database\Entity\user\UserEntity;
+use itaxcix\Infrastructure\Database\Entity\user\UserStatusEntity;
 
 class DoctrineUserRepository implements UserRepositoryInterface {
     private EntityManagerInterface $entityManager;
+    private UserStatusRepositoryInterface $userStatusRepository;
+    private PersonRepositoryInterface $personRepository;
 
-    public function __construct(EntityManagerInterface $entityManager) {
+    public function __construct(EntityManagerInterface $entityManager,
+                                UserStatusRepositoryInterface $userStatusRepository,
+                                PersonRepositoryInterface $personRepository) {
         $this->entityManager = $entityManager;
+        $this->userStatusRepository = $userStatusRepository;
+        $this->personRepository = $personRepository;
     }
 
-    private function toDomain(UserEntity $entity): UserModel {
+    public function toDomain(UserEntity $entity): UserModel {
         return new UserModel(
             id: $entity->getId(),
             password: $entity->getPassword(),
-            person: $entity->getPerson(),
-            status: $entity->getStatus()
+            person: $this->personRepository->toDomain($entity->getPerson()),
+            status: $this->userStatusRepository->toDomain($entity->getStatus())
         );
     }
 
@@ -73,13 +84,30 @@ class DoctrineUserRepository implements UserRepositoryInterface {
         return $entity ? $this->toDomain($entity) : null;
     }
 
+    /**
+     * @throws ORMException
+     */
     public function saveUser(UserModel $userModel): UserModel
     {
-        $entity = new UserEntity();
-        $entity->setId($userModel->getId());
+        if ($userModel->getId()) {
+            $entity = $this->entityManager->find(UserEntity::class, $userModel->getId());
+        } else {
+            $entity = new UserEntity();
+        }
+
         $entity->setPassword($userModel->getPassword());
-        $entity->setPerson($userModel->getPerson()?->toEntity());
-        $entity->setStatus($userModel->getStatus()?->toEntity());
+        $entity->setPerson(
+            $this->entityManager->getReference(
+                PersonEntity::class,
+                $userModel->getPerson()?->getId()
+            )
+        );
+        $entity->setStatus(
+            $this->entityManager->getReference(
+                UserStatusEntity::class,
+                $userModel->getStatus()?->getId()
+            )
+        );
 
         $this->entityManager->persist($entity);
         $this->entityManager->flush();

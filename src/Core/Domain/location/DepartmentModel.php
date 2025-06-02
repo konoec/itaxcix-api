@@ -5,28 +5,28 @@ namespace itaxcix\Core\Domain\location;
 use itaxcix\Infrastructure\Database\Entity\location\DepartmentEntity;
 
 class DepartmentModel {
-    private int $id;
+    private ?int $id;
     private ?string $name = null;
     private ?string $ubigeo = null;
 
     /**
-     * @param int $id
+     * @param ?int $id
      * @param string|null $name
      * @param string|null $ubigeo
      */
-    public function __construct(int $id, ?string $name, ?string $ubigeo)
+    public function __construct(?int $id, ?string $name, ?string $ubigeo)
     {
         $this->id = $id;
         $this->name = $name;
         $this->ubigeo = $ubigeo;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }

@@ -5,7 +5,7 @@ namespace itaxcix\Core\Domain\vehicle;
 use itaxcix\Infrastructure\Database\Entity\vehicle\VehicleEntity;
 
 class VehicleModel {
-    private int $id;
+    private ?int $id;
     private string $licensePlate;
     private ?ModelModel $model = null;
     private ?ColorModel $color = null;
@@ -18,7 +18,7 @@ class VehicleModel {
     private bool $active = true;
 
     /**
-     * @param int $id
+     * @param ?int $id
      * @param string $licensePlate
      * @param ModelModel|null $model
      * @param ColorModel|null $color
@@ -30,7 +30,7 @@ class VehicleModel {
      * @param VehicleCategoryModel|null $category
      * @param bool $active
      */
-    public function __construct(int $id, string $licensePlate, ?ModelModel $model, ?ColorModel $color, ?int $manufactureYear, ?int $seatCount, ?int $passengerCount, ?FuelTypeModel $fuelType, ?VehicleClassModel $vehicleClass, ?VehicleCategoryModel $category, bool $active)
+    public function __construct(?int $id, string $licensePlate, ?ModelModel $model, ?ColorModel $color, ?int $manufactureYear, ?int $seatCount, ?int $passengerCount, ?FuelTypeModel $fuelType, ?VehicleClassModel $vehicleClass, ?VehicleCategoryModel $category, bool $active)
     {
         $this->id = $id;
         $this->licensePlate = $licensePlate;
@@ -45,12 +45,12 @@ class VehicleModel {
         $this->active = $active;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }

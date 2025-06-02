@@ -6,18 +6,18 @@ use itaxcix\Core\Domain\user\UserModel;
 use itaxcix\Infrastructure\Database\Entity\vehicle\VehicleUserEntity;
 
 class VehicleUserModel {
-    private int $id;
+    private ?int $id;
     private ?UserModel $user = null;
     private ?VehicleModel $vehicle = null;
     private bool $active = true;
 
     /**
-     * @param int $id
+     * @param ?int $id
      * @param UserModel|null $user
      * @param VehicleModel|null $vehicle
      * @param bool $active
      */
-    public function __construct(int $id, ?UserModel $user, ?VehicleModel $vehicle, bool $active)
+    public function __construct(?int $id, ?UserModel $user, ?VehicleModel $vehicle, bool $active)
     {
         $this->id = $id;
         $this->user = $user;
@@ -25,12 +25,12 @@ class VehicleUserModel {
         $this->active = $active;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }

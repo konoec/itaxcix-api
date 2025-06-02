@@ -4,7 +4,7 @@ namespace itaxcix\Infrastructure\Notifications;
 
 class EmailTemplateLoader {
     public static function load(string $templateName, array $replacements = []): string {
-        $path = __DIR__ . "/../../templates/emails/{$templateName}.html";
+        $path = __DIR__ . "/../../../templates/emails/{$templateName}.html";
 
         if (!file_exists($path)) {
             throw new \Exception("La plantilla {$templateName} no existe.");

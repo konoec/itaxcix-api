@@ -3,6 +3,8 @@
 namespace itaxcix\Infrastructure\Database\Repository\vehicle;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use itaxcix\Core\Domain\vehicle\ProcedureTypeModel;
 use itaxcix\Core\Interfaces\vehicle\ProcedureTypeRepositoryInterface;
 use itaxcix\Infrastructure\Database\Entity\vehicle\ProcedureTypeEntity;
@@ -38,10 +40,18 @@ class DoctrineProcedureTypeRepository implements ProcedureTypeRepositoryInterfac
         return $entity ? $this->toDomain($entity) : null;
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     public function saveProcedureType(ProcedureTypeModel $procedureTypeModel): ProcedureTypeModel
     {
-        $entity = new ProcedureTypeEntity();
-        $entity->setId($procedureTypeModel->getId());
+        if ($procedureTypeModel->getId()) {
+            $entity = $this->entityManager->find(ProcedureTypeEntity::class, $procedureTypeModel->getId());
+        } else {
+            $entity = new ProcedureTypeEntity();
+        }
+
         $entity->setName($procedureTypeModel->getName());
         $entity->setActive($procedureTypeModel->isActive());
 

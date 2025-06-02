@@ -5,7 +5,7 @@ namespace itaxcix\Core\Domain\user;
 use itaxcix\Infrastructure\Database\Entity\user\UserContactEntity;
 
 class UserContactModel {
-    private int $id;
+    private ?int $id;
     private ?UserModel $user;
     private ?ContactTypeModel $type;
     private string $value;
@@ -13,14 +13,14 @@ class UserContactModel {
     private bool $active = true;
 
     /**
-     * @param int $id
+     * @param ?int $id
      * @param ?UserModel $user
      * @param ?ContactTypeModel $type
      * @param string $value
      * @param bool $confirmed
      * @param bool $active
      */
-    public function __construct(int $id, ?UserModel $user, ?ContactTypeModel $type, string $value, bool $confirmed, bool $active)
+    public function __construct(?int $id, ?UserModel $user, ?ContactTypeModel $type, string $value, bool $confirmed, bool $active)
     {
         $this->id = $id;
         $this->user = $user;
@@ -31,12 +31,12 @@ class UserContactModel {
     }
 
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }

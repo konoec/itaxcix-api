@@ -33,7 +33,10 @@ class VerifyRecoveryCodeUseCaseHandler implements VerifyRecoveryCodeUseCase {
         $userCode->setUsed(true);
         $this->userCodeRepository->saveUserCode($userCode);
 
-        $token = $this->jwtService->encode(['userId' => $dto->userId]);
+        $token = $this->jwtService->encode(
+            ['userId' => $dto->userId],
+            300
+        );
 
         return [
             'message' => 'El código de recuperación es válido.',

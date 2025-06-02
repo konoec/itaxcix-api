@@ -3,6 +3,8 @@
 namespace itaxcix\Infrastructure\Database\Repository\vehicle;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use itaxcix\Core\Domain\vehicle\VehicleClassModel;
 use itaxcix\Core\Interfaces\vehicle\VehicleClassRepositoryInterface;
 use itaxcix\Infrastructure\Database\Entity\vehicle\VehicleClassEntity;
@@ -38,9 +40,18 @@ class DoctrineVehicleClassRepository implements VehicleClassRepositoryInterface 
         return $entity ? $this->toDomain($entity) : null;
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     public function saveVehicleClass(VehicleClassModel $vehicleClassModel): VehicleClassModel
     {
-        $entity = new VehicleClassEntity();
+        if ($vehicleClassModel->getId()){
+            $entity = $this->entityManager->find(VehicleClassEntity::class, $vehicleClassModel->getId());
+        } else {
+            $entity = new VehicleClassEntity();
+        }
+
         $entity->setName($vehicleClassModel->getName());
         $entity->setActive($vehicleClassModel->isActive());
 

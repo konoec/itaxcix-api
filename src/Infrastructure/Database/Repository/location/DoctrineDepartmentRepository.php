@@ -3,6 +3,8 @@
 namespace itaxcix\Infrastructure\Database\Repository\location;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use itaxcix\Core\Domain\location\DepartmentModel;
 use itaxcix\Core\Domain\location\DistrictModel;
 use itaxcix\Core\Interfaces\location\DepartmentRepositoryInterface;
@@ -41,15 +43,24 @@ class DoctrineDepartmentRepository implements DepartmentRepositoryInterface
         return $entity ? $this->toDomain($entity) : null;
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     public function saveDepartment(DepartmentModel $departmentModel): DepartmentModel
     {
-        $departmentEntity = new DepartmentEntity();
-        $departmentEntity->setName($departmentModel->getName());
-        $departmentEntity->setUbigeo($departmentModel->getUbigeo());
+        if ($departmentModel->getId()) {
+            $entity = $this->entityManager->find(DepartmentEntity::class, $departmentModel->getId());
+        } else {
+            $entity = new DepartmentEntity();
+        }
 
-        $this->entityManager->persist($departmentEntity);
+        $entity->setName($departmentModel->getName());
+        $entity->setUbigeo($departmentModel->getUbigeo());
+
+        $this->entityManager->persist($entity);
         $this->entityManager->flush();
 
-        return $this->toDomain($departmentEntity);
+        return $this->toDomain($entity);
     }
 }

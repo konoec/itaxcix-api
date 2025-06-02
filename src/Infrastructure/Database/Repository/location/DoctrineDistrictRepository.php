@@ -3,16 +3,22 @@
 namespace itaxcix\Infrastructure\Database\Repository\location;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
 use itaxcix\Core\Domain\location\DistrictModel;
 use itaxcix\Core\Interfaces\location\DistrictRepositoryInterface;
+use itaxcix\Core\Interfaces\location\ProvinceRepositoryInterface;
 use itaxcix\Infrastructure\Database\Entity\location\DistrictEntity;
+use itaxcix\Infrastructure\Database\Entity\location\ProvinceEntity;
+use RuntimeException;
 
 class DoctrineDistrictRepository implements DistrictRepositoryInterface
 {
     private EntityManagerInterface $entityManager;
+    private ProvinceRepositoryInterface $provinceRepository;
 
-    public function __construct(EntityManagerInterface $entityManager) {
+    public function __construct(EntityManagerInterface $entityManager, ProvinceRepositoryInterface $provinceRepository) {
         $this->entityManager = $entityManager;
+        $this->provinceRepository = $provinceRepository;
     }
 
     public function toDomain(DistrictEntity $entity): DistrictModel
@@ -20,7 +26,7 @@ class DoctrineDistrictRepository implements DistrictRepositoryInterface
         return new DistrictModel(
             id: $entity->getId(),
             name: $entity->getName(),
-            province: $entity->getProvince(),
+            province: $this->provinceRepository->toDomain($entity->getProvince()),
             ubigeo: $entity->getUbigeo()
         );
     }
@@ -39,16 +45,29 @@ class DoctrineDistrictRepository implements DistrictRepositoryInterface
         return $entity ? $this->toDomain($entity) : null;
     }
 
+    /**
+     * @throws ORMException
+     */
     public function saveDistrict(DistrictModel $districtModel): DistrictModel
     {
-        $districtEntity = new DistrictEntity();
-        $districtEntity->setName($districtModel->getName());
-        $districtEntity->setUbigeo($districtModel->getUbigeo());
-        $districtEntity->setProvince($districtModel->getProvince());
+        if ($districtModel->getId()) {
+            $entity = $this->entityManager->find(DistrictEntity::class, $districtModel->getId());
+        } else {
+            $entity = new DistrictEntity();
+        }
 
-        $this->entityManager->persist($districtEntity);
+        $entity->setName($districtModel->getName());
+        $entity->setUbigeo($districtModel->getUbigeo());
+        $entity->setProvince(
+            $this->entityManager->getReference(
+                ProvinceEntity::class,
+                $districtModel->getProvince()->getId()
+            )
+        );
+
+        $this->entityManager->persist($entity);
         $this->entityManager->flush();
 
-        return $this->toDomain($districtEntity);
+        return $this->toDomain($entity);
     }
 }

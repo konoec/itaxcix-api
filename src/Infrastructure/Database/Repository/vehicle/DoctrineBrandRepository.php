@@ -3,6 +3,8 @@
 namespace itaxcix\Infrastructure\Database\Repository\vehicle;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use itaxcix\Core\Domain\vehicle\BrandModel;
 use itaxcix\Core\Interfaces\vehicle\BrandRepositoryInterface;
 use itaxcix\Infrastructure\Database\Entity\vehicle\BrandEntity;
@@ -38,10 +40,18 @@ class DoctrineBrandRepository implements BrandRepositoryInterface {
         return $entity ? $this->toDomain($entity) : null;
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     public function saveBrand(BrandModel $brandModel): BrandModel
     {
-        $entity = new BrandEntity();
-        $entity->setId($brandModel->getId());
+        if ($brandModel->getId()) {
+            $entity = $this->entityManager->find(BrandEntity::class, $brandModel->getId());
+        } else {
+            $entity = new BrandEntity();
+        }
+
         $entity->setName($brandModel->getName());
         $entity->setActive($brandModel->isActive());
 

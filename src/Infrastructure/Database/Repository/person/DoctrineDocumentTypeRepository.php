@@ -3,9 +3,9 @@
 namespace itaxcix\Infrastructure\Database\Repository\person;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use itaxcix\Core\Domain\person\DocumentTypeModel;
 use itaxcix\Core\Interfaces\person\DocumentTypeRepositoryInterface;
+use itaxcix\Infrastructure\Database\Entity\person\DocumentTypeEntity;
 
 class DoctrineDocumentTypeRepository implements DocumentTypeRepositoryInterface
 {
@@ -15,7 +15,7 @@ class DoctrineDocumentTypeRepository implements DocumentTypeRepositoryInterface
         $this->entityManager = $entityManager;
     }
 
-    public function toDomain(DocumentTypeModel $entity): DocumentTypeModel {
+    public function toDomain(DocumentTypeEntity $entity): DocumentTypeModel {
         return new DocumentTypeModel(
             $entity->getId(),
             $entity->getName(),
@@ -27,8 +27,9 @@ class DoctrineDocumentTypeRepository implements DocumentTypeRepositoryInterface
     {
         $query = $this->entityManager->createQueryBuilder()
             ->select('dt')
-            ->from(DocumentTypeModel::class, 'dt')
+            ->from(DocumentTypeEntity::class, 'dt')
             ->where('dt.name = :name')
+            ->andWhere('dt.active = :active')
             ->setParameter('name', $name)
             ->setParameter('active', true)
             ->getQuery();

@@ -5,20 +5,20 @@ namespace itaxcix\Core\Domain\vehicle;
 use itaxcix\Infrastructure\Database\Entity\vehicle\ServiceRouteEntity;
 
 class ServiceRouteModel {
-    private int $id;
+    private ?int $id;
     private ?TucProcedureModel $procedure = null;
     private ?ServiceTypeModel $serviceType = null;
     private ?string $text = null;
     private bool $active = true;
 
     /**
-     * @param int $id
+     * @param ?int $id
      * @param TucProcedureModel|null $procedure
      * @param ServiceTypeModel|null $serviceType
      * @param string|null $text
      * @param bool $active
      */
-    public function __construct(int $id, ?TucProcedureModel $procedure, ?ServiceTypeModel $serviceType, ?string $text, bool $active)
+    public function __construct(?int $id, ?TucProcedureModel $procedure, ?ServiceTypeModel $serviceType, ?string $text, bool $active)
     {
         $this->id = $id;
         $this->procedure = $procedure;
@@ -27,12 +27,12 @@ class ServiceRouteModel {
         $this->active = $active;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }

@@ -60,7 +60,7 @@ class StartPasswordRecoveryUseCaseHandler implements StartPasswordRecoveryUseCas
         }
 
         $newUserCode = new UserCodeModel(
-            id: 0,
+            id: null,
             type: $userCodeType,
             contact: $userContact,
             code: $this->generateUserCode(),

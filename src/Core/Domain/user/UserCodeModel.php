@@ -6,7 +6,7 @@ use DateTime;
 use itaxcix\Infrastructure\Database\Entity\user\UserCodeEntity;
 
 class UserCodeModel {
-    private int $id;
+    private ?int $id;
     private ?UserCodeTypeModel $type = null;
     private ?UserContactModel $contact = null;
     private string $code;
@@ -15,7 +15,7 @@ class UserCodeModel {
     private bool $used = false;
 
     /**
-     * @param int $id
+     * @param ?int $id
      * @param UserCodeTypeModel|null $type
      * @param UserContactModel|null $contact
      * @param string $code
@@ -23,7 +23,7 @@ class UserCodeModel {
      * @param DateTime|null $useDate
      * @param bool $used
      */
-    public function __construct(int $id, ?UserCodeTypeModel $type, ?UserContactModel $contact, string $code, DateTime $expirationDate, ?DateTime $useDate, bool $used)
+    public function __construct(?int $id, ?UserCodeTypeModel $type, ?UserContactModel $contact, string $code, DateTime $expirationDate, ?DateTime $useDate, bool $used)
     {
         $this->id = $id;
         $this->type = $type;
@@ -34,12 +34,12 @@ class UserCodeModel {
         $this->used = $used;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }

@@ -7,13 +7,19 @@ use itaxcix\Core\Interfaces\location\ProvinceRepositoryInterface;
 use itaxcix\Core\Interfaces\person\DocumentTypeRepositoryInterface;
 use itaxcix\Core\Interfaces\person\PersonRepositoryInterface;
 use itaxcix\Core\Interfaces\user\ContactTypeRepositoryInterface;
+use itaxcix\Core\Interfaces\user\PermissionRepositoryInterface;
 use itaxcix\Core\Interfaces\user\RolePermissionRepositoryInterface;
+use itaxcix\Core\Interfaces\user\RoleRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserCodeRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserCodeTypeRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserContactRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserRoleRepositoryInterface;
+use itaxcix\Core\Interfaces\user\UserStatusRepositoryInterface;
+use itaxcix\Core\Interfaces\vehicle\BrandRepositoryInterface;
+use itaxcix\Core\Interfaces\vehicle\ColorRepositoryInterface;
 use itaxcix\Core\Interfaces\vehicle\FuelTypeRepositoryInterface;
+use itaxcix\Core\Interfaces\vehicle\ModelRepositoryInterface;
 use itaxcix\Core\Interfaces\vehicle\ProcedureTypeRepositoryInterface;
 use itaxcix\Core\Interfaces\vehicle\ServiceRouteRepositoryInterface;
 use itaxcix\Core\Interfaces\vehicle\ServiceTypeRepositoryInterface;
@@ -24,6 +30,7 @@ use itaxcix\Core\Interfaces\vehicle\TucStatusRepositoryInterface;
 use itaxcix\Core\Interfaces\vehicle\VehicleCategoryRepositoryInterface;
 use itaxcix\Core\Interfaces\vehicle\VehicleClassRepositoryInterface;
 use itaxcix\Core\Interfaces\vehicle\VehicleRepositoryInterface;
+use itaxcix\Core\Interfaces\vehicle\VehicleUserRepositoryInterface;
 use itaxcix\Infrastructure\Database\Repository\company\DoctrineCompanyRepository;
 use itaxcix\Infrastructure\Database\Repository\location\DoctrineDepartmentRepository;
 use itaxcix\Infrastructure\Database\Repository\location\DoctrineDistrictRepository;
@@ -31,13 +38,19 @@ use itaxcix\Infrastructure\Database\Repository\location\DoctrineProvinceReposito
 use itaxcix\Infrastructure\Database\Repository\person\DoctrineDocumentTypeRepository;
 use itaxcix\Infrastructure\Database\Repository\person\DoctrinePersonRepository;
 use itaxcix\Infrastructure\Database\Repository\user\DoctrineContactTypeRepository;
+use itaxcix\Infrastructure\Database\Repository\user\DoctrinePermissionRepository;
 use itaxcix\Infrastructure\Database\Repository\user\DoctrineRolePermissionRepository;
+use itaxcix\Infrastructure\Database\Repository\user\DoctrineRoleRepository;
 use itaxcix\Infrastructure\Database\Repository\user\DoctrineUserCodeRepository;
 use itaxcix\Infrastructure\Database\Repository\user\DoctrineUserCodeTypeRepository;
 use itaxcix\Infrastructure\Database\Repository\user\DoctrineUserContactRepository;
 use itaxcix\Infrastructure\Database\Repository\user\DoctrineUserRepository;
 use itaxcix\Infrastructure\Database\Repository\user\DoctrineUserRoleRepository;
+use itaxcix\Infrastructure\Database\Repository\user\DoctrineUserStatusRepository;
+use itaxcix\Infrastructure\Database\Repository\vehicle\DoctrineBrandRepository;
+use itaxcix\Infrastructure\Database\Repository\vehicle\DoctrineColorRepository;
 use itaxcix\Infrastructure\Database\Repository\vehicle\DoctrineFuelTypeRepository;
+use itaxcix\Infrastructure\Database\Repository\vehicle\DoctrineModelRepository;
 use itaxcix\Infrastructure\Database\Repository\vehicle\DoctrineProcedureTypeRepository;
 use itaxcix\Infrastructure\Database\Repository\vehicle\DoctrineServiceRouteRepository;
 use itaxcix\Infrastructure\Database\Repository\vehicle\DoctrineServiceTypeRepository;
@@ -48,6 +61,7 @@ use itaxcix\Infrastructure\Database\Repository\vehicle\DoctrineTucStatusReposito
 use itaxcix\Infrastructure\Database\Repository\vehicle\DoctrineVehicleCategoryRepository;
 use itaxcix\Infrastructure\Database\Repository\vehicle\DoctrineVehicleClassRepository;
 use itaxcix\Infrastructure\Database\Repository\vehicle\DoctrineVehicleRepository;
+use itaxcix\Infrastructure\Database\Repository\vehicle\DoctrineVehicleUserRepository;
 use function DI\autowire;
 
 return [
@@ -58,6 +72,10 @@ return [
     UserContactRepositoryInterface::class => autowire(DoctrineUserContactRepository::class),
     UserCodeTypeRepositoryInterface::class => autowire(DoctrineUserCodeTypeRepository::class),
     UserCodeRepositoryInterface::class => autowire(DoctrineUserCodeRepository::class),
+    UserStatusRepositoryInterface::class => autowire(DoctrineUserStatusRepository::class),
+    RoleRepositoryInterface::class => autowire(DoctrineRoleRepository::class),
+    VehicleUserRepositoryInterface::class => autowire(DoctrineVehicleUserRepository::class),
+    PermissionRepositoryInterface::class => autowire(DoctrinePermissionRepository::class),
 
     PersonRepositoryInterface::class => autowire(DoctrinePersonRepository::class),
     DocumentTypeRepositoryInterface::class => autowire(DoctrineDocumentTypeRepository::class),
@@ -67,6 +85,9 @@ return [
     VehicleCategoryRepositoryInterface::class => autowire(DoctrineVehicleCategoryRepository::class),
     TechnicalSpecificationRepositoryInterface::class => autowire(DoctrineTechnicalSpecificationRepository::class),
     FuelTypeRepositoryInterface::class => autowire(DoctrineFuelTypeRepository::class),
+    BrandRepositoryInterface::class => autowire(DoctrineBrandRepository::class),
+    ColorRepositoryInterface::class => autowire(DoctrineColorRepository::class),
+    ModelRepositoryInterface::class => autowire(DoctrineModelRepository::class),
 
     CompanyRepositoryInterface::class => autowire(DoctrineCompanyRepository::class),
 

@@ -1,15 +1,21 @@
 FROM php:8.2-fpm
 
-# Instalamos dependencias básicas
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     zip \
     unzip \
     libjpeg-dev \
-    libpng-dev
+    libpng-dev \
+    libfreetype6-dev \
+    libwebp-dev
 
-# Instalamos extensiones PHP necesarias
-RUN docker-php-ext-install pdo_pgsql opcache gd
+RUN docker-php-ext-configure gd \
+    --with-jpeg \
+    --with-freetype \
+    --with-webp \
+    && docker-php-ext-install pdo_pgsql opcache gd \
+    && docker-php-ext-enable gd
+
 
 # Configuración de OPcache
 RUN { \

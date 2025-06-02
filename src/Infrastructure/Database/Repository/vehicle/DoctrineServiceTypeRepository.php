@@ -3,6 +3,8 @@
 namespace itaxcix\Infrastructure\Database\Repository\vehicle;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use itaxcix\Core\Domain\vehicle\ServiceTypeModel;
 use itaxcix\Core\Interfaces\vehicle\ServiceTypeRepositoryInterface;
 use itaxcix\Infrastructure\Database\Entity\vehicle\ServiceTypeEntity;
@@ -38,10 +40,18 @@ class DoctrineServiceTypeRepository implements ServiceTypeRepositoryInterface {
         return $entity ? $this->toDomain($entity) : null;
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     public function saveServiceType(ServiceTypeModel $serviceTypeModel): ServiceTypeModel
     {
-        $entity = new ServiceTypeEntity();
-        $entity->setId($serviceTypeModel->getId());
+        if ($serviceTypeModel->getId()) {
+            $entity = $this->entityManager->find(ServiceTypeEntity::class, $serviceTypeModel->getId());
+        } else {
+            $entity = new ServiceTypeEntity();
+        }
+
         $entity->setName($serviceTypeModel->getName());
         $entity->setActive($serviceTypeModel->isActive());
 

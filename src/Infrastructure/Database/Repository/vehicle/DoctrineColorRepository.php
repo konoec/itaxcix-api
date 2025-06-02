@@ -3,6 +3,8 @@
 namespace itaxcix\Infrastructure\Database\Repository\vehicle;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use itaxcix\Core\Domain\vehicle\ColorModel;
 use itaxcix\Core\Interfaces\vehicle\ColorRepositoryInterface;
 use itaxcix\Infrastructure\Database\Entity\vehicle\ColorEntity;
@@ -38,10 +40,18 @@ class DoctrineColorRepository implements ColorRepositoryInterface {
         return $entity ? $this->toDomain($entity) : null;
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     public function saveColor(ColorModel $colorModel): ColorModel
     {
-        $entity = new ColorEntity();
-        $entity->setId($colorModel->getId());
+        if ($colorModel->getId()) {
+            $entity = $this->entityManager->find(ColorEntity::class, $colorModel->getId());
+        } else {
+            $entity = new ColorEntity();
+        }
+
         $entity->setName($colorModel->getName());
         $entity->setActive($colorModel->isActive());
 

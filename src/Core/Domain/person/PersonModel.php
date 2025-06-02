@@ -6,7 +6,7 @@ use DateTime;
 use itaxcix\Infrastructure\Database\Entity\person\PersonEntity;
 
 class PersonModel {
-    private int $id;
+    private ?int $id;
     private ?string $name = null;
     private ?string $lastName = null;
     private ?DocumentTypeModel $documentType = null;
@@ -16,7 +16,7 @@ class PersonModel {
     private bool $active = true;
 
     public function __construct(
-        int $id,
+        ?int $id,
         ?string $name,
         ?string $lastName,
         ?DocumentTypeModel $documentType,
@@ -35,12 +35,12 @@ class PersonModel {
         $this->active = $active;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }

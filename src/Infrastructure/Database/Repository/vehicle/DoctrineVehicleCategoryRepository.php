@@ -3,6 +3,8 @@
 namespace itaxcix\Infrastructure\Database\Repository\vehicle;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use itaxcix\Core\Domain\vehicle\VehicleCategoryModel;
 use itaxcix\Core\Interfaces\vehicle\VehicleCategoryRepositoryInterface;
 use itaxcix\Infrastructure\Database\Entity\vehicle\VehicleCategoryEntity;
@@ -27,7 +29,7 @@ class DoctrineVehicleCategoryRepository implements VehicleCategoryRepositoryInte
     {
         $query = $this->entityManager->createQueryBuilder()
             ->select('vc')
-            ->from(VehicleCategoryModel::class, 'vc')
+            ->from(VehicleCategoryEntity::class, 'vc')
             ->where('vc.name = :name')
             ->setParameter('name', $name)
             ->getQuery();
@@ -37,10 +39,18 @@ class DoctrineVehicleCategoryRepository implements VehicleCategoryRepositoryInte
         return $entity ? $this->toDomain($entity) : null;
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     public function saveVehicleCategory(VehicleCategoryModel $vehicleCategoryModel): VehicleCategoryModel
     {
-        $entity = new VehicleCategoryEntity();
-        $entity->setId($vehicleCategoryModel->getId());
+        if ($vehicleCategoryModel->getId()) {
+            $entity = $this->entityManager->find(VehicleCategoryEntity::class, $vehicleCategoryModel->getId());
+        } else {
+            $entity = new VehicleCategoryEntity();
+        }
+
         $entity->setName($vehicleCategoryModel->getName());
         $entity->setActive($vehicleCategoryModel->isActive());
 

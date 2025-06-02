@@ -15,7 +15,7 @@ class DoctrineContactTypeRepository implements ContactTypeRepositoryInterface
         $this->entityManager = $entityManager;
     }
 
-    private function toDomain(ContactTypeEntity $entity): ContactTypeModel {
+    public function toDomain(ContactTypeEntity $entity): ContactTypeModel {
         return new ContactTypeModel(
             $entity->getId(),
             $entity->getName(),
@@ -29,6 +29,7 @@ class DoctrineContactTypeRepository implements ContactTypeRepositoryInterface
             ->select('ct')
             ->from(ContactTypeEntity::class, 'ct')
             ->where('ct.id = :id')
+            ->andWhere('ct.active = :active')
             ->setParameter('id', $id)
             ->setParameter('active', true)
             ->getQuery();

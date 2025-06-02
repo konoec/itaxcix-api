@@ -53,6 +53,9 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
         $this->notificationServiceFactory = $notificationServiceFactory;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function execute(RegistrationRequestDTO $dto): ?array
     {
         $contactType = $this->contactTypeRepository->findContactTypeById($dto->contactTypeId);
@@ -116,7 +119,7 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
         }
 
         $newUser = new UserModel(
-            id: 0,
+            id: null,
             password: password_hash($dto->password, PASSWORD_DEFAULT),
             person: $person,
             status: $userStatus
@@ -125,7 +128,7 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
         $newUser = $this->userRepository->saveUser($newUser);
 
         $newUserContact = new UserContactModel(
-            id: 0,
+            id: null,
             user: $newUser,
             type: $contactType,
             value: $dto->contactValue,
@@ -139,7 +142,7 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
 
         if ($dto->vehicleId !== null) {
             $newVehicleUser = new VehicleUserModel(
-                id: 0,
+                id: null,
                 user: $newUser,
                 vehicle: $vehicle,
                 active: true
@@ -159,7 +162,7 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
         }
 
         $userRole = new UserRoleModel(
-            id: 0,
+            id: null,
             role: $role,
             user: $newUser,
             active: true
@@ -168,9 +171,9 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
         $userRole = $this->userRoleRepository->saveUserRole($userRole);
 
         $newUserCode = new UserCodeModel(
-            id: 0,
+            id: null,
             type: $userCodeType,
-            contact: $userContact,
+            contact: $newUserContact,
             code: $this->generateUserCode(),
             expirationDate: (new DateTime())->modify('+10 minutes'),
             useDate: null,

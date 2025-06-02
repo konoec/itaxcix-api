@@ -5,6 +5,8 @@ namespace itaxcix\Core\UseCases;
 use InvalidArgumentException;
 use itaxcix\Core\Interfaces\user\UserRepositoryInterface;
 use itaxcix\Shared\DTO\useCases\PasswordChangeRequestDTO;
+use function Symfony\Component\String\u;
+
 class ChangePasswordUseCaseHandler implements ChangePasswordUseCase
 {
     private UserRepositoryInterface $userRepository;
@@ -22,7 +24,7 @@ class ChangePasswordUseCaseHandler implements ChangePasswordUseCase
             throw new InvalidArgumentException('Usuario no encontrado');
         }
 
-        $user->setPassword($dto->newPassword);
+        $user->setPassword(password_hash($dto->newPassword, PASSWORD_DEFAULT));
         $this->userRepository->saveUser($user);
 
         return [

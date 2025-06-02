@@ -3,6 +3,8 @@
 namespace itaxcix\Infrastructure\Database\Repository\vehicle;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use itaxcix\Core\Domain\vehicle\TucStatusModel;
 use itaxcix\Core\Interfaces\vehicle\TucStatusRepositoryInterface;
 use itaxcix\Infrastructure\Database\Entity\vehicle\TucStatusEntity;
@@ -38,10 +40,18 @@ class DoctrineTucStatusRepository implements TucStatusRepositoryInterface {
         return $entity ? $this->toDomain($entity) : null;
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     public function saveTucStatus(TucStatusModel $tucStatusModel): TucStatusModel
     {
-        $entity = new TucStatusEntity();
-        $entity->setId($tucStatusModel->getId());
+        if ($tucStatusModel->getId()) {
+            $entity = $this->entityManager->find(TucStatusEntity::class, $tucStatusModel->getId());
+        } else {
+            $entity = new TucStatusEntity();
+        }
+
         $entity->setName($tucStatusModel->getName());
         $entity->setActive($tucStatusModel->isActive());
 

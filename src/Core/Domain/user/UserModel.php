@@ -6,12 +6,12 @@ use itaxcix\Core\Domain\person\PersonModel;
 use itaxcix\Infrastructure\Database\Entity\user\UserEntity;
 
 class UserModel {
-    private int $id;
+    private ?int $id;
     private string $password;
     private ?PersonModel $person;
     private ?UserStatusModel $status;
 
-    public function __construct(int $id, string $password, ?PersonModel $person, ?UserStatusModel $status)
+    public function __construct(?int $id, string $password, ?PersonModel $person, ?UserStatusModel $status)
     {
         $this->id = $id;
         $this->password = $password;
@@ -19,12 +19,12 @@ class UserModel {
         $this->status = $status;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }

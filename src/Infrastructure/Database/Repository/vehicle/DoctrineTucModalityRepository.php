@@ -3,6 +3,8 @@
 namespace itaxcix\Infrastructure\Database\Repository\vehicle;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use itaxcix\Core\Domain\vehicle\TucModalityModel;
 use itaxcix\Core\Interfaces\vehicle\TucModalityRepositoryInterface;
 use itaxcix\Infrastructure\Database\Entity\vehicle\TucModalityEntity;
@@ -38,10 +40,18 @@ class DoctrineTucModalityRepository implements TucModalityRepositoryInterface {
         return $entity ? $this->toDomain($entity) : null;
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     public function saveTucModality(TucModalityModel $brandModel): TucModalityModel
     {
-        $entity = new TucModalityEntity();
-        $entity->setId($brandModel->getId());
+        if ($brandModel->getId()) {
+            $entity = $this->entityManager->find(TucModalityEntity::class, $brandModel->getId());
+        } else {
+            $entity = new TucModalityEntity();
+        }
+
         $entity->setName($brandModel->getName());
         $entity->setActive($brandModel->isActive());
 

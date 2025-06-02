@@ -60,7 +60,7 @@ class DocumentValidationUseCaseHandler implements DocumentValidationUseCase
         }
 
         $person = new PersonModel(
-            id: 0,
+            id: null,
             name: $data['name'] ?? '',
             lastName: $data['lastName'] ?? '',
             documentType: $documentType,

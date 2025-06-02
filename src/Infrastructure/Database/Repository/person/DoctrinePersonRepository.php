@@ -3,16 +3,21 @@
 namespace itaxcix\Infrastructure\Database\Repository\person;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
 use itaxcix\Core\Domain\person\PersonModel;
+use itaxcix\Core\Interfaces\person\DocumentTypeRepositoryInterface;
 use itaxcix\Core\Interfaces\person\PersonRepositoryInterface;
+use itaxcix\Infrastructure\Database\Entity\person\DocumentTypeEntity;
 use itaxcix\Infrastructure\Database\Entity\person\PersonEntity;
 
 class DoctrinePersonRepository implements PersonRepositoryInterface
 {
     private EntityManagerInterface $entityManager;
+    private DocumentTypeRepositoryInterface $documentTypeRepository;
 
-    public function __construct(EntityManagerInterface $entityManager) {
+    public function __construct(EntityManagerInterface $entityManager, DocumentTypeRepositoryInterface $documentTypeRepository) {
         $this->entityManager = $entityManager;
+        $this->documentTypeRepository = $documentTypeRepository;
     }
 
     public function toDomain(PersonEntity $entity): PersonModel
@@ -21,7 +26,7 @@ class DoctrinePersonRepository implements PersonRepositoryInterface
             id: $entity->getId(),
             name: $entity->getName(),
             lastName: $entity->getLastName(),
-            documentType: $entity->getDocumentType(),
+            documentType: $this->documentTypeRepository->toDomain($entity->getDocumentType()),
             document: $entity->getDocument(),
             validationDate: $entity->getValidationDate(),
             active: $entity->isActive()
@@ -32,7 +37,7 @@ class DoctrinePersonRepository implements PersonRepositoryInterface
     {
         $query = $this->entityManager->createQueryBuilder()
             ->select('p')
-            ->from(PersonModel::class, 'p')
+            ->from(PersonEntity::class, 'p')
             ->where('p.document = :documentValue')
             ->setParameter('documentValue', $documentValue)
             ->getQuery();
@@ -42,12 +47,25 @@ class DoctrinePersonRepository implements PersonRepositoryInterface
         return $entity ? $this->toDomain($entity) : null;
     }
 
+    /**
+     * @throws ORMException
+     */
     public function savePerson(PersonModel $personModel): PersonModel
     {
-        $entity = new PersonEntity();
+        if ($personModel->getId()) {
+            $entity = $this->entityManager->find(PersonEntity::class, $personModel->getId());
+        } else {
+            $entity = new PersonEntity();
+        }
+
         $entity->setName($personModel->getName());
         $entity->setLastName($personModel->getLastName());
-        $entity->setDocumentType($personModel->getDocumentType());
+        $entity->setDocumentType(
+            $this->entityManager->getReference(
+                DocumentTypeEntity::class,
+                $personModel->getDocumentType()->getId()
+            )
+        );
         $entity->setDocument($personModel->getDocument());
         $entity->setValidationDate($personModel->getValidationDate());
         $entity->setActive($personModel->isActive());
@@ -62,8 +80,9 @@ class DoctrinePersonRepository implements PersonRepositoryInterface
     {
         $query = $this->entityManager->createQueryBuilder()
             ->select('p')
-            ->from(PersonModel::class, 'p')
+            ->from(PersonEntity::class, 'p')
             ->where('p.id = :personId')
+            ->andWhere('p.active = :active')
             ->setParameter('personId', $personId)
             ->setParameter('active', true)
             ->getQuery();
@@ -77,7 +96,7 @@ class DoctrinePersonRepository implements PersonRepositoryInterface
     {
         $query = $this->entityManager->createQueryBuilder()
             ->select('p')
-            ->from(PersonModel::class, 'p')
+            ->from(PersonEntity::class, 'p')
             ->where('p.id = :personId')
             ->setParameter('personId', $personId)
             ->getQuery();

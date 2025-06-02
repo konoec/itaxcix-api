@@ -127,7 +127,7 @@ class VehicleValidationValidatorUseCaseHandler implements VehicleValidationValid
         }
 
         // Verificar si el vehículo está registrado
-        $vehicle = $this->vehicleRepository->findAllVehicleByPlate($dto->documentValue);
+        $vehicle = $this->vehicleRepository->findAllVehicleByPlate($dto->plateValue);
 
         if ($vehicle) {
             // El vehículo está registrado
@@ -156,15 +156,13 @@ class VehicleValidationValidatorUseCaseHandler implements VehicleValidationValid
         }
 
         foreach ($data->vehicles as $index => $vehicleDTO) {
-            $vehicleDTO = new VehicleDTO();
-
             // Debo verificar si es la primera vez que se registra el vehículo, ya que los que se iteran son los relacionados a la tuc.
             if ($index === 0) {
                 // MARCA
                 $brandModel = $this->brandRepository->findAllBrandByName($vehicleDTO->marca);
                 if ($brandModel === null) {
                     $brandModel = new BrandModel(
-                        id: 0,
+                        id: null,
                         name: $vehicleDTO->marca,
                         active: true
                     );
@@ -176,7 +174,7 @@ class VehicleValidationValidatorUseCaseHandler implements VehicleValidationValid
                 $ModelModel = $this->modelRepository->findAllModelByName($vehicleDTO->modelo);
                 if ($ModelModel === null) {
                     $ModelModel = new ModelModel(
-                        id: 0,
+                        id: null,
                         name: $vehicleDTO->modelo,
                         brand: $brandModel,
                         active: true
@@ -189,7 +187,7 @@ class VehicleValidationValidatorUseCaseHandler implements VehicleValidationValid
                 $colorModel = $this->colorRepository->findAllColorByName($vehicleDTO->color);
                 if ($colorModel === null) {
                     $colorModel = new ColorModel(
-                        id: 0,
+                        id: null,
                         name: $vehicleDTO->color,
                         active: true
                     );
@@ -201,7 +199,7 @@ class VehicleValidationValidatorUseCaseHandler implements VehicleValidationValid
                 $fuelTypeModel = $this->fuelTypeRepository->findAllFuelTypeByName($vehicleDTO->tipoCombust);
                 if ($fuelTypeModel === null) {
                     $fuelTypeModel = new FuelTypeModel(
-                        id: 0,
+                        id: null,
                         name: $vehicleDTO->tipoCombust,
                         active: true
                     );
@@ -213,7 +211,7 @@ class VehicleValidationValidatorUseCaseHandler implements VehicleValidationValid
                 $vehicleClassModel = $this->vehicleClassRepository->findAllVehicleClassByName($vehicleDTO->clase);
                 if ($vehicleClassModel === null) {
                     $vehicleClassModel = new VehicleClassModel(
-                        id: 0,
+                        id: null,
                         name: $vehicleDTO->clase,
                         active: true
                     );
@@ -225,7 +223,7 @@ class VehicleValidationValidatorUseCaseHandler implements VehicleValidationValid
                 $vehicleCategoryModel = $this->vehicleCategoryRepository->findAllVehicleCategoryByName($vehicleDTO->categoria);
                 if ($vehicleCategoryModel === null) {
                     $vehicleCategoryModel = new VehicleCategoryModel(
-                        id: 0,
+                        id: null,
                         name: $vehicleDTO->categoria,
                         active: true
                     );
@@ -235,7 +233,7 @@ class VehicleValidationValidatorUseCaseHandler implements VehicleValidationValid
 
                 // VEHÍCULO
                 $vehicle = new VehicleModel(
-                    id: 0,
+                    id: null,
                     licensePlate: $vehicleDTO->placa,
                     model: $ModelModel,
                     color: $colorModel,
@@ -252,7 +250,7 @@ class VehicleValidationValidatorUseCaseHandler implements VehicleValidationValid
 
                 // ESPECIFICACIÓN TÉCNICA
                 $technicalSpecification = new TechnicalSpecificationModel(
-                    id: 0,
+                    id: null,
                     vehicle: $vehicle,
                     dryWeight: $vehicleDTO->pesoSeco,
                     grossWeight: $vehicleDTO->pesoBruto,
@@ -275,7 +273,7 @@ class VehicleValidationValidatorUseCaseHandler implements VehicleValidationValid
                 $departmentModel = $this->departmentRepository->findDepartmentByName($vehicleDTO->departamento);
                 if ($departmentModel === null) {
                     $departmentModel = new DepartmentModel(
-                        id: 0,
+                        id: null,
                         name: $vehicleDTO->departamento,
                         ubigeo: $departmentUbigeo
                     );
@@ -287,7 +285,7 @@ class VehicleValidationValidatorUseCaseHandler implements VehicleValidationValid
                 $provinceModel = $this->provinceRepository->findProvinceByName($vehicleDTO->provincia);
                 if ($provinceModel === null) {
                     $provinceModel = new ProvinceModel(
-                        id: 0,
+                        id: null,
                         name: $vehicleDTO->provincia,
                         department: $departmentModel,
                         ubigeo: $provinceUbigeo
@@ -300,7 +298,7 @@ class VehicleValidationValidatorUseCaseHandler implements VehicleValidationValid
                 $districtModel = $this->districtRepository->findDistrictByName($vehicleDTO->distrito);
                 if ($districtModel === null) {
                     $districtModel = new DistrictModel(
-                        id: 0,
+                        id: null,
                         name: $vehicleDTO->distrito,
                         province: $provinceModel,
                         ubigeo: $districtUbigeo
@@ -315,7 +313,7 @@ class VehicleValidationValidatorUseCaseHandler implements VehicleValidationValid
 
                 if ($empresa === null){
                     $empresa = new CompanyModel(
-                        id: 0,
+                        id: null,
                         ruc: $vehicleDTO->rucEmpresa,
                         name: null,
                         active: true
@@ -330,7 +328,7 @@ class VehicleValidationValidatorUseCaseHandler implements VehicleValidationValid
 
                 if ($serviceType === null) {
                     $serviceType = new ServiceTypeModel(
-                        id: 0,
+                        id: null,
                         name: $vehicleDTO->tipServ,
                         active: true
                     );
@@ -344,7 +342,7 @@ class VehicleValidationValidatorUseCaseHandler implements VehicleValidationValid
 
                 if ($tucModality === null) {
                     $tucModality = new TucModalityModel(
-                        id: 0,
+                        id: null,
                         name: $vehicleDTO->modalidad,
                         active: true
                     );
@@ -357,11 +355,11 @@ class VehicleValidationValidatorUseCaseHandler implements VehicleValidationValid
                 $fechaCaducidad = DateTime::createFromFormat('Ymd', $vehicleDTO->fechaCaduc);
 
                 if ($fechaCaducidad === false || $fechaCaducidad < new DateTime()) {
-                    $tucStatus = $this->tucStatusRepository->findAllTucStatusByName('Caducado');
+                    $tucStatus = $this->tucStatusRepository->findAllTucStatusByName('VENCIDO');
 
                     if ($tucStatus === null) {
                         $tucStatus = new TucStatusModel(
-                            id: 0,
+                            id: null,
                             name: 'VENCIDO',
                             active: true
                         );
@@ -373,7 +371,7 @@ class VehicleValidationValidatorUseCaseHandler implements VehicleValidationValid
 
                     if ($tucStatus === null) {
                         $tucStatus = new TucStatusModel(
-                            id: 0,
+                            id: null,
                             name: 'ACTIVO',
                             active: true
                         );
@@ -388,7 +386,7 @@ class VehicleValidationValidatorUseCaseHandler implements VehicleValidationValid
 
                 if ($procedureType === null) {
                     $procedureType = new ProcedureTypeModel(
-                        id: 0,
+                        id: null,
                         name: $vehicleDTO->tramite,
                         active: true
                     );
@@ -402,7 +400,7 @@ class VehicleValidationValidatorUseCaseHandler implements VehicleValidationValid
             $expirationDate = DateTime::createFromFormat('Ymd', $vehicleDTO->fechaCaduc);
 
             $tucProcedure = new TucProcedureModel(
-                id: 0,
+                id: null,
                 vehicle: $vehicle,
                 company: $empresa ?? null,
                 district: $districtModel ?? null,
@@ -418,7 +416,7 @@ class VehicleValidationValidatorUseCaseHandler implements VehicleValidationValid
 
             if ($vehicleDTO->ruta){
                 $serviceRoute = new ServiceRouteModel(
-                    id: 0,
+                    id: null,
                     procedure: $tucProcedure,
                     serviceType: $serviceType ?? null,
                     text: $vehicleDTO->ruta,
@@ -438,33 +436,34 @@ class VehicleValidationValidatorUseCaseHandler implements VehicleValidationValid
 
     private function fakeMunicipalApi(string $plateValue): VehicleResponseDTO
     {
-        // Ruta al archivo CSV de datos de vehículos
-        $csvFilePath = __DIR__ . '/../../../data/vehicles.csv';
+        $csvFilePath = dirname(__DIR__, 3) . '/public/csv/data.csv';
 
-        // Verificar que el archivo existe
         if (!file_exists($csvFilePath)) {
             throw new InvalidArgumentException('El archivo de datos de vehículos no existe.');
         }
 
-        // Abrir el archivo CSV
         $file = fopen($csvFilePath, 'r');
         if (!$file) {
             throw new InvalidArgumentException('No se pudo abrir el archivo de datos de vehículos.');
         }
 
-        // Leer la primera línea como cabeceras
         $headers = fgetcsv($file);
         if (!$headers) {
             fclose($file);
             throw new InvalidArgumentException('El archivo CSV no tiene un formato válido.');
         }
 
-        // Buscar vehículos con la placa especificada
+        $headers = array_map('trim', $headers);
+
         $matchingVehicles = [];
         while (($row = fgetcsv($file)) !== false) {
+            // Validación de consistencia
+            if (count($headers) !== count($row)) {
+                continue;
+            }
+
             $rowData = array_combine($headers, $row);
 
-            // Buscamos por la columna PLACA
             if (isset($rowData['PLACA']) && strtoupper($rowData['PLACA']) === strtoupper($plateValue)) {
                 $matchingVehicles[] = VehicleDTO::fromArray($rowData);
             }
@@ -472,12 +471,8 @@ class VehicleValidationValidatorUseCaseHandler implements VehicleValidationValid
 
         fclose($file);
 
-        // Si no se encuentra ningún vehículo, devolver respuesta vacía
-        if (empty($matchingVehicles)) {
-            return VehicleResponseDTO::notFound();
-        }
-
-        // Devolver todos los vehículos encontrados
-        return VehicleResponseDTO::found($matchingVehicles);
+        return empty($matchingVehicles)
+            ? VehicleResponseDTO::notFound()
+            : VehicleResponseDTO::found($matchingVehicles);
     }
 }

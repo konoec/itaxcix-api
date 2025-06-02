@@ -3,6 +3,8 @@
 namespace itaxcix\Infrastructure\Database\Repository\company;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use itaxcix\Core\Domain\company\CompanyModel;
 use itaxcix\Core\Interfaces\company\CompanyRepositoryInterface;
 use itaxcix\Infrastructure\Database\Entity\company\CompanyEntity;
@@ -39,10 +41,18 @@ class DoctrineCompanyRepository implements CompanyRepositoryInterface {
         return $entity ? $this->toDomain($entity) : null;
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     public function saveCompany(CompanyModel $companyModel): CompanyModel
     {
-        $entity = new CompanyEntity();
-        $entity->setId($companyModel->getId());
+        if ($companyModel->getId()) {
+            $entity = $this->entityManager->find(CompanyEntity::class, $companyModel->getId());
+        } else {
+            $entity = new CompanyEntity();
+        }
+
         $entity->setRuc($companyModel->getRuc());
         $entity->setName($companyModel->getName());
         $entity->setActive($companyModel->isActive());

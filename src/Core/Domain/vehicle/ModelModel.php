@@ -5,18 +5,18 @@ namespace itaxcix\Core\Domain\vehicle;
 use itaxcix\Infrastructure\Database\Entity\vehicle\ModelEntity;
 
 class ModelModel {
-    private int $id;
+    private ?int $id;
     private string $name;
     private ?BrandModel $brand = null;
     private bool $active = true;
 
     /**
-     * @param int $id
+     * @param ?int $id
      * @param string $name
      * @param BrandModel|null $brand
      * @param bool $active
      */
-    public function __construct(int $id, string $name, ?BrandModel $brand, bool $active)
+    public function __construct(?int $id, string $name, ?BrandModel $brand, bool $active)
     {
         $this->id = $id;
         $this->name = $name;
@@ -24,12 +24,12 @@ class ModelModel {
         $this->active = $active;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }
