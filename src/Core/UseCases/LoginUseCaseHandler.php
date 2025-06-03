@@ -6,6 +6,7 @@ use InvalidArgumentException;
 use itaxcix\Core\Domain\user\RolePermissionModel;
 use itaxcix\Core\Domain\user\UserRoleModel;
 use itaxcix\Core\Interfaces\user\RolePermissionRepositoryInterface;
+use itaxcix\Core\Interfaces\user\UserContactRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserRoleRepositoryInterface;
 use itaxcix\Infrastructure\Auth\Service\JwtService;
 use itaxcix\Shared\DTO\useCases\AuthLoginRequestDTO;
@@ -17,14 +18,16 @@ class LoginUseCaseHandler implements LoginUseCase
     private UserRepositoryInterface $userRepository;
     private UserRoleRepositoryInterface $userRoleRepository;
     private RolePermissionRepositoryInterface $rolePermissionRepository;
+    private UserContactRepositoryInterface $userContactRepository;
     private JwtService $jwtService;
 
-    public function __construct(UserRepositoryInterface $userRepository, UserRoleRepositoryInterface $userRoleRepository, RolePermissionRepositoryInterface $rolePermissionRepository, JwtService $jwtService)
+    public function __construct(UserRepositoryInterface $userRepository, UserRoleRepositoryInterface $userRoleRepository, RolePermissionRepositoryInterface $rolePermissionRepository, JwtService $jwtService, UserContactRepositoryInterface $userContactRepository)
     {
         $this->userRepository = $userRepository;
         $this->userRoleRepository = $userRoleRepository;
         $this->rolePermissionRepository = $rolePermissionRepository;
         $this->jwtService = $jwtService;
+        $this->userContactRepository = $userContactRepository;
     }
 
     public function execute(AuthLoginRequestDTO $dto): ?AuthLoginResponseDTO
@@ -34,6 +37,12 @@ class LoginUseCaseHandler implements LoginUseCase
 
         if (!$user) {
             throw new InvalidArgumentException('No existe un usuario activo con ese documento.');
+        }
+
+        $userContact = $this->userContactRepository->findUserContactById($user->getId());
+
+        if (!$userContact || !$userContact->isConfirmed()) {
+            throw new InvalidArgumentException('El usuario no tiene un contacto confirmado.');
         }
 
         // Verificar contraseña

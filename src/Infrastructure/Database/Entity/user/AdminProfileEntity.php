@@ -18,4 +18,48 @@ class AdminProfileEntity {
     private ?string $area = null;
     #[ORM\Column(name: 'perf_cargo', type: 'string', length: 100)]
     private ?string $position = null;
+
+    public function __construct()
+    {
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getUser(): ?UserEntity
+    {
+        return $this->user;
+    }
+
+    public function setUser(?UserEntity $user): void
+    {
+        $this->user = $user;
+    }
+
+    public function getArea(): ?string
+    {
+        return $this->area;
+    }
+
+    public function setArea(?string $area): void
+    {
+        $this->area = $area;
+    }
+
+    public function getPosition(): ?string
+    {
+        return $this->position;
+    }
+
+    public function setPosition(?string $position): void
+    {
+        $this->position = $position;
+    }
 }

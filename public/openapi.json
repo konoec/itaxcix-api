@@ -1105,6 +1105,78 @@
                 }
             }
         },
+        "/auth/registration/resend-code": {
+            "post": {
+                "tags": [
+                    "Auth",
+                    "Registration"
+                ],
+                "summary": "Reenviar código de verificación",
+                "description": "Reenvía el código de verificación tras el registro.",
+                "operationId": "resendContactCode",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ResendVerificationCodeRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Código reenviado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Código reenviado correctamente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Petición inválida",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petición inválida"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Usuario no encontrado."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/auth/validation/vehicle": {
             "post": {
                 "tags": [
@@ -1411,6 +1483,17 @@
                         "type": "integer",
                         "example": 456,
                         "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "ResendVerificationCodeRequestDTO": {
+                "description": "Datos necesarios para re-enviar el código de verificación",
+                "properties": {
+                    "userId": {
+                        "description": "ID del usuario para la que se reenvía el código de verificación",
+                        "type": "integer",
+                        "example": 123
                     }
                 },
                 "type": "object"

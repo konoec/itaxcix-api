@@ -8,6 +8,8 @@ use itaxcix\Core\UseCases\DocumentValidationUseCase;
 use itaxcix\Core\UseCases\DocumentValidationUseCaseHandler;
 use itaxcix\Core\UseCases\LoginUseCase;
 use itaxcix\Core\UseCases\LoginUseCaseHandler;
+use itaxcix\Core\UseCases\ResendVerificationCodeUseCase;
+use itaxcix\Core\UseCases\ResendVerificationCodeUseCaseHandler;
 use itaxcix\Core\UseCases\StartPasswordRecoveryUseCase;
 use itaxcix\Core\UseCases\StartPasswordRecoveryUseCaseHandler;
 use itaxcix\Core\UseCases\UserRegistrationUseCase;
@@ -30,4 +32,5 @@ return [
     ChangePasswordUseCase::class => autowire(ChangePasswordUseCaseHandler::class),
     StartPasswordRecoveryUseCase::class => autowire(StartPasswordRecoveryUseCaseHandler::class),
     VerifyRecoveryCodeUseCase::class => autowire(VerifyRecoveryCodeUseCaseHandler::class),
+    ResendVerificationCodeUseCase::class => autowire(ResendVerificationCodeUseCaseHandler::class),
 ];

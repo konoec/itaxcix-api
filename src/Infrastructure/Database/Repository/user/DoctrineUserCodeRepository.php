@@ -73,14 +73,37 @@ class DoctrineUserCodeRepository implements UserCodeRepositoryInterface
     public function findUserCodeByValueAndUser(string $value, int $userId): ?UserCodeModel
     {
         $qb = $this->entityManager->createQueryBuilder();
-        $qb->select('uc')
+        $qb
+            ->select('uc')
             ->from(UserCodeEntity::class, 'uc')
             ->innerJoin('uc.contact', 'c')
+            ->innerJoin('c.user', 'u')
             ->where('uc.code = :code')
-            ->andWhere('c.user = :userId')
+            ->andWhere('u.id = :userId')
             ->andWhere('uc.used = false')
             ->setParameter('code', $value)
             ->setParameter('userId', $userId)
+            ->orderBy('uc.id', 'DESC')
+            ->setMaxResults(1);
+
+        $entity = $qb->getQuery()->getOneOrNullResult();
+        return $entity ? $this->toDomain($entity) : null;
+    }
+
+    public function findUserCodeByUserIdAndTypeId(int $userId, int $typeId): ?UserCodeModel
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+        $qb
+            ->select('uc')
+            ->from(UserCodeEntity::class, 'uc')
+            ->innerJoin('uc.contact', 'c')
+            ->innerJoin('c.user', 'u')
+            ->innerJoin('uc.type', 't')
+            ->where('u.id = :userId')
+            ->andWhere('t.id = :typeId')
+            ->setParameter('userId', $userId)
+            ->setParameter('typeId', $typeId)
+            ->orderBy('uc.id', 'DESC')
             ->setMaxResults(1);
 
         $entity = $qb->getQuery()->getOneOrNullResult();

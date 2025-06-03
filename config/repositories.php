@@ -6,7 +6,9 @@ use itaxcix\Core\Interfaces\location\DistrictRepositoryInterface;
 use itaxcix\Core\Interfaces\location\ProvinceRepositoryInterface;
 use itaxcix\Core\Interfaces\person\DocumentTypeRepositoryInterface;
 use itaxcix\Core\Interfaces\person\PersonRepositoryInterface;
+use itaxcix\Core\Interfaces\user\AdminProfileRepositoryInterface;
 use itaxcix\Core\Interfaces\user\ContactTypeRepositoryInterface;
+use itaxcix\Core\Interfaces\user\DriverProfileRepositoryInterface;
 use itaxcix\Core\Interfaces\user\PermissionRepositoryInterface;
 use itaxcix\Core\Interfaces\user\RolePermissionRepositoryInterface;
 use itaxcix\Core\Interfaces\user\RoleRepositoryInterface;
@@ -37,7 +39,9 @@ use itaxcix\Infrastructure\Database\Repository\location\DoctrineDistrictReposito
 use itaxcix\Infrastructure\Database\Repository\location\DoctrineProvinceRepository;
 use itaxcix\Infrastructure\Database\Repository\person\DoctrineDocumentTypeRepository;
 use itaxcix\Infrastructure\Database\Repository\person\DoctrinePersonRepository;
+use itaxcix\Infrastructure\Database\Repository\user\DoctrineAdminProfileRepository;
 use itaxcix\Infrastructure\Database\Repository\user\DoctrineContactTypeRepository;
+use itaxcix\Infrastructure\Database\Repository\user\DoctrineDriverProfileRepository;
 use itaxcix\Infrastructure\Database\Repository\user\DoctrinePermissionRepository;
 use itaxcix\Infrastructure\Database\Repository\user\DoctrineRolePermissionRepository;
 use itaxcix\Infrastructure\Database\Repository\user\DoctrineRoleRepository;
@@ -76,6 +80,8 @@ return [
     RoleRepositoryInterface::class => autowire(DoctrineRoleRepository::class),
     VehicleUserRepositoryInterface::class => autowire(DoctrineVehicleUserRepository::class),
     PermissionRepositoryInterface::class => autowire(DoctrinePermissionRepository::class),
+    AdminProfileRepositoryInterface::class => autowire(DoctrineAdminProfileRepository::class),
+    DriverProfileRepositoryInterface::class => autowire(DoctrineDriverProfileRepository::class),
 
     PersonRepositoryInterface::class => autowire(DoctrinePersonRepository::class),
     DocumentTypeRepositoryInterface::class => autowire(DoctrineDocumentTypeRepository::class),

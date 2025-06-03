@@ -23,6 +23,7 @@ return function (RouteCollector $r) {
 
         // Registration Routes
         $r->post('/auth/registration', [RegistrationController::class, 'submitRegistrationData']);
+        $r->post('/auth/registration/resend-code', [RegistrationController::class, 'resendContactCode']);
         $r->post('/auth/registration/verify-code', [RegistrationController::class, 'verifyContactCode']);
 
         // Recovery Routes

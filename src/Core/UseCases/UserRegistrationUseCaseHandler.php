@@ -4,6 +4,7 @@ namespace itaxcix\Core\UseCases;
 
 use DateTime;
 use InvalidArgumentException;
+use itaxcix\Core\Domain\user\DriverProfileModel;
 use itaxcix\Core\Domain\user\UserCodeModel;
 use itaxcix\Core\Domain\user\UserContactModel;
 use itaxcix\Core\Domain\user\UserModel;
@@ -11,6 +12,7 @@ use itaxcix\Core\Domain\user\UserRoleModel;
 use itaxcix\Core\Domain\vehicle\VehicleUserModel;
 use itaxcix\Core\Interfaces\person\PersonRepositoryInterface;
 use itaxcix\Core\Interfaces\user\ContactTypeRepositoryInterface;
+use itaxcix\Core\Interfaces\user\DriverProfileRepositoryInterface;
 use itaxcix\Core\Interfaces\user\RoleRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserCodeRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserCodeTypeRepositoryInterface;
@@ -36,8 +38,9 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
     private UserCodeTypeRepositoryInterface $userCodeTypeRepository;
     private UserCodeRepositoryInterface $userCodeRepository;
     private NotificationServiceFactory $notificationServiceFactory;
+    private DriverProfileRepositoryInterface $driverProfileRepository;
 
-    public function __construct(PersonRepositoryInterface $personRepository, UserRepositoryInterface $userRepository, VehicleRepositoryInterface $vehicleRepository, VehicleUserRepositoryInterface $vehicleUserRepository, ContactTypeRepositoryInterface $contactTypeRepository, UserContactRepositoryInterface $userContactRepository, UserStatusRepositoryInterface $userStatusRepository, RoleRepositoryInterface $roleRepository, UserRoleRepositoryInterface $userRoleRepository, UserCodeTypeRepositoryInterface $userCodeTypeRepository, UserCodeRepositoryInterface $userCodeRepository, NotificationServiceFactory $notificationServiceFactory)
+    public function __construct(PersonRepositoryInterface $personRepository, UserRepositoryInterface $userRepository, VehicleRepositoryInterface $vehicleRepository, VehicleUserRepositoryInterface $vehicleUserRepository, ContactTypeRepositoryInterface $contactTypeRepository, UserContactRepositoryInterface $userContactRepository, UserStatusRepositoryInterface $userStatusRepository, RoleRepositoryInterface $roleRepository, UserRoleRepositoryInterface $userRoleRepository, UserCodeTypeRepositoryInterface $userCodeTypeRepository, UserCodeRepositoryInterface $userCodeRepository, NotificationServiceFactory $notificationServiceFactory, DriverProfileRepositoryInterface $driverProfileRepository)
     {
         $this->personRepository = $personRepository;
         $this->userRepository = $userRepository;
@@ -51,6 +54,7 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
         $this->userCodeTypeRepository = $userCodeTypeRepository;
         $this->userCodeRepository = $userCodeRepository;
         $this->notificationServiceFactory = $notificationServiceFactory;
+        $this->driverProfileRepository = $driverProfileRepository;
     }
 
     /**
@@ -107,6 +111,7 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
 
             $vehicle = $this->vehicleRepository->findVehicleById($dto->vehicleId);
             $vehicleUser = $this->vehicleUserRepository->findVehicleUserByVehicleId($dto->vehicleId);
+            $userStatus = $this->userStatusRepository->findUserStatusByName('PENDIENTE');
 
             if (!$vehicle) {
                 throw new InvalidArgumentException('El vehículo no existe o no está activo.');
@@ -114,6 +119,10 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
 
             if ($vehicleUser) {
                 throw new InvalidArgumentException('El vehículo ya está registrado a otro usuario.');
+            }
+
+            if (!$userStatus) {
+                throw new InvalidArgumentException('El estado de usuario pendiente no existe.');
             }
 
         }
@@ -141,6 +150,14 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
         $role = null;
 
         if ($dto->vehicleId !== null) {
+            $driverProfile = new DriverProfileModel(
+                id: null,
+                user: $newUser,
+                available: true
+            );
+
+            $driverProfile = $this->driverProfileRepository->saveDriverProfile($driverProfile);
+
             $newVehicleUser = new VehicleUserModel(
                 id: null,
                 user: $newUser,
