@@ -193,7 +193,7 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
             type: $userCodeType,
             contact: $newUserContact,
             code: $this->generateUserCode(),
-            expirationDate: (new DateTime())->modify('+10 minutes'),
+            expirationDate: (new DateTime())->modify('+5 minutes'),
             useDate: null,
             used: false
         );
