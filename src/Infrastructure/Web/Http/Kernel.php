@@ -84,10 +84,25 @@ class Kernel implements RequestHandlerInterface
         $request = $request->withAttribute('route_params', $routeParams);
 
         if ($this->isMiddlewareHandler($handler)) {
-            [$middlewareClass, [$controllerClass, $controllerMethod]] = $handler;
+            // Desempaquetar
+            $middlewareClass = $handler[0];
+            if (count($handler) === 3) {
+                [$ , $requiredPermission, $controller] = $handler;
+            } else {
+                $requiredPermission = null;
+                $controller = $handler[1];
+            }
 
             try {
-                $middleware = $this->container->get($middlewareClass);
+                // Instanciar middleware dinámico
+                if ($requiredPermission !== null) {
+                    $middleware = new $middlewareClass(
+                        $this->container->get(JwtService::class),
+                        $requiredPermission
+                    );
+                } else {
+                    $middleware = $this->container->get($middlewareClass);
+                }
 
                 if (!$middleware instanceof MiddlewareInterface) {
                     return $this->jsonResponse(500, [
@@ -95,19 +110,14 @@ class Kernel implements RequestHandlerInterface
                     ]);
                 }
 
-                $handlerFn = function (ServerRequestInterface $request) use ($controllerClass, $controllerMethod) {
+                // Preparar el handler final
+                [$controllerClass, $controllerMethod] = $controller;
+                $handlerFn = function (ServerRequestInterface $req) use ($controllerClass, $controllerMethod) {
                     $controller = $this->container->get($controllerClass);
-                    return $controller->{$controllerMethod}($request, new Response());
+                    return $controller->{$controllerMethod}($req, new Response());
                 };
-
-                $handlerFn = function (ServerRequestInterface $request) use ($controllerClass, $controllerMethod) {
-                    $controller = $this->container->get($controllerClass);
-                    return $controller->{$controllerMethod}($request, new Response());
-                };
-
                 $requestHandler = new class($handlerFn) implements RequestHandlerInterface {
-                    public function __construct(private readonly Closure $handler) {}
-
+                    public function __construct(private readonly \Closure $handler) {}
                     public function handle(ServerRequestInterface $request): ResponseInterface {
                         return ($this->handler)($request);
                     }
@@ -117,7 +127,7 @@ class Kernel implements RequestHandlerInterface
 
             } catch (\Exception $e) {
                 return $this->jsonResponse(500, [
-                    'error' => 'Error al procesar middleware',
+                    'error'   => 'Error al procesar middleware',
                     'message' => $e->getMessage()
                 ]);
             }
@@ -143,12 +153,11 @@ class Kernel implements RequestHandlerInterface
 
     private function isMiddlewareHandler(array $handler): bool
     {
-        return (
-            is_array($handler) &&
-            count($handler) === 2 &&
-            class_exists($handler[0]) &&
-            is_subclass_of($handler[0], MiddlewareInterface::class)
-        );
+        // Soporta [Middleware::class, Controller], o [Middleware::class, permiso, Controller]
+        return is_array($handler)
+            && in_array(count($handler), [2, 3], true)
+            && class_exists($handler[0])
+            && is_subclass_of($handler[0], MiddlewareInterface::class);
     }
 
     public function run(): void

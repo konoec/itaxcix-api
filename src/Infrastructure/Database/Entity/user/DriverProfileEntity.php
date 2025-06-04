@@ -16,6 +16,9 @@ class DriverProfileEntity {
     private ?UserEntity $user = null;
     #[ORM\Column(name: 'perf_disponible', type: 'boolean', nullable: false, options: ['default' => false])]
     private bool $available = false;
+    #[ORM\ManyToOne(targetEntity: DriverStatusEntity::class)]
+    #[ORM\JoinColumn(name: 'perf_estado_id', referencedColumnName: 'esta_id', nullable: false)]
+    private ?DriverStatusEntity $status;
 
     public function __construct()
     {
@@ -49,5 +52,15 @@ class DriverProfileEntity {
     public function setAvailable(bool $available): void
     {
         $this->available = $available;
+    }
+
+    public function getStatus(): ?DriverStatusEntity
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?DriverStatusEntity $status): void
+    {
+        $this->status = $status;
     }
 }

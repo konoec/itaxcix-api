@@ -6,17 +6,20 @@ class DriverProfileModel {
     private ?int $id;
     private ?UserModel $user = null;
     private bool $available = false;
+    private ?DriverStatusModel $status;
 
     /**
      * @param int|null $id
      * @param UserModel|null $user
      * @param bool $available
+     * @param DriverStatusModel|null $status
      */
-    public function __construct(?int $id, ?UserModel $user, bool $available)
+    public function __construct(?int $id, ?UserModel $user, bool $available, ?DriverStatusModel $status)
     {
         $this->id = $id;
         $this->user = $user;
         $this->available = $available;
+        $this->status = $status;
     }
 
     public function getId(): ?int
@@ -48,4 +51,16 @@ class DriverProfileModel {
     {
         $this->available = $available;
     }
+
+    public function getStatus(): ?DriverStatusModel
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?DriverStatusModel $status): void
+    {
+        $this->status = $status;
+    }
+
+
 }
