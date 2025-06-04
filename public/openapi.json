@@ -10,6 +10,411 @@
         }
     ],
     "paths": {
+        "/drivers/approve": {
+            "post": {
+                "tags": [
+                    "Admission"
+                ],
+                "summary": "Aprueba un conductor pendiente",
+                "description": "Recibe el ID de un conductor en estado pendiente y lo aprueba.",
+                "operationId": "approveDriver",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApproveDriverRequestDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Conductor aprobado con éxito",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "El conductor ha sido aprobado."
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": []
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación o lógica de negocio",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "ID de conductor inválido"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "El conductor no existe o no está pendiente."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error interno del servidor"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "No se pudo procesar la aprobación."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/drivers/reject": {
+            "post": {
+                "tags": [
+                    "Admission"
+                ],
+                "summary": "Rechaza un conductor pendiente",
+                "description": "Recibe el ID de un conductor en estado pendiente y lo rechaza.",
+                "operationId": "rejectDriver",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "itaxcix\\Shared\\DTO\\useCases\\Admission\\RejectDriverRequestDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Conductor rechazado con éxito",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "El conductor ha sido rechazado."
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": []
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación o lógica de negocio",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "ID de conductor inválido"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "El conductor no existe o no está pendiente."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error interno del servidor"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "No se pudo procesar el rechazo."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/drivers/pending": {
+            "get": {
+                "tags": [
+                    "Admission"
+                ],
+                "summary": "Obtiene todos los conductores pendientes",
+                "description": "Retorna un arreglo con la información básica de los conductores en estado pendiente.",
+                "operationId": "getAllPendingDrivers",
+                "responses": {
+                    "200": {
+                        "description": "Listado de conductores pendientes",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/PendingDriverResponseDTO"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No se encontraron conductores pendientes",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No se encontraron conductores pendientes"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error interno del servidor"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "No se pudo obtener los conductores pendientes."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/drivers/pending/{id}": {
+            "get": {
+                "tags": [
+                    "Admission"
+                ],
+                "summary": "Obtiene los detalles de un conductor pendiente",
+                "description": "Retorna la información detallada de un conductor en estado pendiente según su ID.",
+                "operationId": "getDriverDetails",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del conductor pendiente",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 123
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalles del conductor pendiente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PendingDriverDetailsResponseDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ID de conductor inválido o error de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "ID de conductor inválido"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Conductor no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Conductor no encontrado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error interno del servidor"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "No se pudo obtener los detalles del conductor pendiente."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/auth/login": {
             "post": {
                 "tags": [
@@ -966,6 +1371,78 @@
                 }
             }
         },
+        "/auth/registration/resend-code": {
+            "post": {
+                "tags": [
+                    "Auth",
+                    "Registration"
+                ],
+                "summary": "Reenviar código de verificación",
+                "description": "Reenvía el código de verificación tras el registro.",
+                "operationId": "resendContactCode",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ResendVerificationCodeRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Código reenviado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Código reenviado correctamente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Petición inválida",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petición inválida"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Usuario no encontrado."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/auth/registration/verify-code": {
             "post": {
                 "tags": [
@@ -1092,78 +1569,6 @@
                                                 "message": {
                                                     "type": "string",
                                                     "example": "Ocurrió un error inesperado"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/registration/resend-code": {
-            "post": {
-                "tags": [
-                    "Auth",
-                    "Registration"
-                ],
-                "summary": "Reenviar código de verificación",
-                "description": "Reenvía el código de verificación tras el registro.",
-                "operationId": "resendContactCode",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ResendVerificationCodeRequestDTO"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Código reenviado correctamente",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Código reenviado correctamente"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Petición inválida",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Petición inválida"
-                                        },
-                                        "error": {
-                                            "properties": {
-                                                "message": {
-                                                    "type": "string",
-                                                    "example": "Usuario no encontrado."
                                                 }
                                             },
                                             "type": "object"
@@ -1324,6 +1729,109 @@
     },
     "components": {
         "schemas": {
+            "ApproveDriverRequestDto": {
+                "description": "Datos necesarios para aprobar un conductor",
+                "properties": {
+                    "driverId": {
+                        "description": "ID del conductor",
+                        "type": "integer",
+                        "example": 123
+                    }
+                },
+                "type": "object"
+            },
+            "PendingDriverDetailsResponseDTO": {
+                "description": "Datos necesarios para aprobar un conductor",
+                "properties": {
+                    "driverId": {
+                        "description": "ID del conductor",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "fullName": {
+                        "description": "Nombre completo del conductor",
+                        "type": "string",
+                        "example": "Juan Pérez Gómez"
+                    },
+                    "documentValue": {
+                        "description": "Documento del conductor",
+                        "type": "string",
+                        "example": "73486545"
+                    },
+                    "plateValue": {
+                        "description": "Valor de la placa que conduce",
+                        "type": "string",
+                        "example": "ABC123"
+                    },
+                    "contactValue": {
+                        "description": "Contacto del conductor",
+                        "type": "string",
+                        "example": "+51987654321"
+                    },
+                    "rucCompany": {
+                        "description": "Ruc de la empresa a la que forma parte.",
+                        "type": "string",
+                        "example": "20456789012"
+                    },
+                    "tucType": {
+                        "description": "Tipo de tramite de tarjeta unica de circulación del conductor",
+                        "type": "string",
+                        "example": "Actualización de datos"
+                    },
+                    "tucModality": {
+                        "description": "Modalidad de la tarjeta única de circulación del conductor",
+                        "type": "string",
+                        "example": "Omnibus"
+                    },
+                    "tucIssueDate": {
+                        "description": "Fecha de emisión de la tarjeta única de circulación del conductor",
+                        "type": "string",
+                        "example": "2023-01-15"
+                    },
+                    "tucExpirationDate": {
+                        "description": "Fecha de expiración de la tarjeta única de circulación del conductor",
+                        "type": "string",
+                        "example": "2025-01-15"
+                    },
+                    "tucStatus": {
+                        "description": "Estado de la tarjeta única de circulación del conductor",
+                        "type": "string",
+                        "example": "Activo"
+                    }
+                },
+                "type": "object"
+            },
+            "PendingDriverResponseDTO": {
+                "description": "Datos necesarios para aprobar un conductor",
+                "properties": {
+                    "driverId": {
+                        "description": "ID del conductor",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "fullName": {
+                        "description": "Nombre completo del conductor",
+                        "type": "string",
+                        "example": "Juan Pérez Gómez"
+                    },
+                    "documentValue": {
+                        "description": "Documento del conductor",
+                        "type": "string",
+                        "example": "73486545"
+                    },
+                    "plateValue": {
+                        "description": "Valor de la placa que conduce",
+                        "type": "string",
+                        "example": "ABC123"
+                    },
+                    "contactValue": {
+                        "description": "Contacto del conductor",
+                        "type": "string",
+                        "example": "+51987654321"
+                    }
+                },
+                "type": "object"
+            },
             "AuthLoginRequestDTO": {
                 "description": "Datos para iniciar sesión",
                 "properties": {
@@ -1535,9 +2043,20 @@
                 },
                 "type": "object"
             }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
         }
     },
     "tags": [
+        {
+            "name": "Admission",
+            "description": "Admission"
+        },
         {
             "name": "Auth",
             "description": "Auth"

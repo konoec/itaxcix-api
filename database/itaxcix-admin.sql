@@ -11,7 +11,7 @@ INSERT INTO tb_persona (
              '00000000', -- DNI ficticio
              1,          -- tipo_documento_id = DNI
              TRUE
-         ) RETURNING pers_id;
+         );
 
 -- 2. Insertar usuario
 INSERT INTO tb_usuario (
@@ -22,7 +22,7 @@ INSERT INTO tb_usuario (
              '$2y$10$5H91LNdWlaK0m21FSDJFquQrs4qGLqqKrgwhgGnZQ/GdNo0plJRmy', -- password_hash('Password@123', PASSWORD_DEFAULT)
              1, -- pers_id obtenido del paso anterior
              1  -- estado ACTIVO
-         ) RETURNING usua_id;
+         );
 
 -- 3. Insertar contacto del usuario (correo electrónico)
 INSERT INTO tb_contacto_usuario (
