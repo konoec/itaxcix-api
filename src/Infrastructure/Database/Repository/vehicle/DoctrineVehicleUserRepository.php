@@ -79,4 +79,21 @@ class DoctrineVehicleUserRepository implements VehicleUserRepositoryInterface {
 
         return $this->toDomain($entity);
     }
+
+    public function findVehicleUserByUserId(int $userId): ?VehicleUserModel
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('vu')
+            ->from(VehicleUserEntity::class, 'vu')
+            ->innerJoin('vu.user', 'u')
+            ->where('u.id = :userId')
+            ->andWhere('vu.active = :active')
+            ->setParameter('userId', $userId)
+            ->setParameter('active', true)
+            ->getQuery();
+
+        $entity = $query->getOneOrNullResult();
+
+        return $entity ? $this->toDomain($entity) : null;
+    }
 }

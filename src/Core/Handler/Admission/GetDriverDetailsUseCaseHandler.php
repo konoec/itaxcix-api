@@ -4,18 +4,32 @@ namespace itaxcix\Core\Handler\Admission;
 
 use InvalidArgumentException;
 use itaxcix\Core\Interfaces\user\DriverProfileRepositoryInterface;
+use itaxcix\Core\Interfaces\user\UserContactRepositoryInterface;
+use itaxcix\Core\Interfaces\vehicle\TucProcedureRepositoryInterface;
+use itaxcix\Core\Interfaces\vehicle\VehicleUserRepositoryInterface;
 use itaxcix\Core\UseCases\Admission\GetDriverDetailsUseCase;
+use itaxcix\Shared\DTO\useCases\Admission\PendingDriverDetailsResponseDTO;
 
 class GetDriverDetailsUseCaseHandler implements GetDriverDetailsUseCase
 {
     private DriverProfileRepositoryInterface $driverProfileRepository;
+    private VehicleUserRepositoryInterface $vehicleUserRepository;
+    private UserContactRepositoryInterface $userContactRepository;
+    private TucProcedureRepositoryInterface $tucProcedureRepository;
 
-    public function __construct(DriverProfileRepositoryInterface $driverProfileRepository)
-    {
+    public function __construct(
+        DriverProfileRepositoryInterface $driverProfileRepository,
+        VehicleUserRepositoryInterface $vehicleUserRepository,
+        UserContactRepositoryInterface $userContactRepository,
+        TucProcedureRepositoryInterface $tucProcedureRepository
+    ) {
         $this->driverProfileRepository = $driverProfileRepository;
+        $this->vehicleUserRepository = $vehicleUserRepository;
+        $this->userContactRepository = $userContactRepository;
+        $this->tucProcedureRepository = $tucProcedureRepository;
     }
 
-    public function execute(int $driverId): ?array
+    public function execute(int $driverId): ?PendingDriverDetailsResponseDTO
     {
         $driverProfile = $this->driverProfileRepository->findDriverProfileByUserId($driverId);
 
@@ -27,13 +41,22 @@ class GetDriverDetailsUseCaseHandler implements GetDriverDetailsUseCase
             throw new InvalidArgumentException('El conductor no está en estado pendiente.');
         }
 
-        // Buscar los usuarios con estado de usuario en pendiente
-        // de la tabla persona saco nombre, apellido y documento
-        // de la tabla usuarioVehiculo saco el idVehiculo y de ahí su placa
-        // de la tabla usuario contacto saco el contacto
-        // reutilizar la lógica de la consulta de los conductores pendientes
-        // para las fechas usaremos la tuc a partir del idVehiculo
-        // para el ruc usaremos el id tuc
-        // tipo modalidad y estado a partir de id de tuc
+        $vehicleUser = $this->vehicleUserRepository->findVehicleUserByUserId($driverProfile->getUser()->getId());
+        $contactUser = $this->userContactRepository->findUserContactByUserId($driverProfile->getUser()->getId());
+        $tuc = $this->tucProcedureRepository->findTucProcedureByVehicleId($vehicleUser->getVehicle()->getId());
+
+        return new PendingDriverDetailsResponseDTO(
+            driverId: $driverProfile->getId(),
+            fullName: $driverProfile->getUser()->getPerson()->getName() . ' ' . $driverProfile->getUser()->getPerson()->getLastName(),
+            documentValue: $driverProfile->getUser()->getPerson()->getDocument(),
+            plateValue: $vehicleUser->getVehicle()->getLicensePlate(),
+            contactValue: $contactUser->getValue(),
+            rucCompany: $tuc->getCompany()->getRuc(),
+            tucType: $tuc->getType()->getName(),
+            tucModality: $tuc->getModality()->getName(),
+            tucIssueDate: $tuc->getIssueDate(),
+            tucExpirationDate: $tuc->getExpirationDate(),
+            tucStatus: $tuc->getStatus()->getName(),
+        );
     }
 }

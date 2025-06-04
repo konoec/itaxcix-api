@@ -3,9 +3,11 @@
 namespace itaxcix\Core\Handler\Admission;
 
 use InvalidArgumentException;
-use itaxcix\Core\Domain\user\UserModel;
+use itaxcix\Core\Domain\user\DriverProfileModel;
 use itaxcix\Core\Interfaces\user\DriverProfileRepositoryInterface;
 use itaxcix\Core\Interfaces\user\DriverStatusRepositoryInterface;
+use itaxcix\Core\Interfaces\user\UserContactRepositoryInterface;
+use itaxcix\Core\Interfaces\vehicle\VehicleUserRepositoryInterface;
 use itaxcix\Core\UseCases\Admission\GetPendingDriversUseCase;
 use itaxcix\Shared\DTO\useCases\Admission\PendingDriverResponseDTO;
 
@@ -13,13 +15,19 @@ class GetPendingDriversUseCaseHandler implements GetPendingDriversUseCase
 {
     public DriverProfileRepositoryInterface $driverProfileRepository;
     public DriverStatusRepositoryInterface $driverStatusRepository;
+    public VehicleUserRepositoryInterface $vehicleUserRepository;
+    public UserContactRepositoryInterface $userContactRepository;
 
     public function __construct(
         DriverProfileRepositoryInterface $driverProfileRepository,
-        DriverStatusRepositoryInterface $driverStatusRepository
+        DriverStatusRepositoryInterface $driverStatusRepository,
+        VehicleUserRepositoryInterface $vehicleUserRepository,
+        UserContactRepositoryInterface $userContactRepository,
     ) {
         $this->driverProfileRepository = $driverProfileRepository;
         $this->driverStatusRepository = $driverStatusRepository;
+        $this->vehicleUserRepository = $vehicleUserRepository;
+        $this->userContactRepository = $userContactRepository;
     }
 
     public function execute(): ?array
@@ -37,21 +45,23 @@ class GetPendingDriversUseCaseHandler implements GetPendingDriversUseCase
         }
 
         $response = [];
-        $persons = [];
         foreach ($driversProfiles as $profile) {
+            if (!$profile instanceof DriverProfileModel) {
+                throw new InvalidArgumentException('El perfil del conductor no es válido.');
+            }
+
+            $vehicleUser = $this->vehicleUserRepository->findVehicleUserByUserId($profile->getUser()->getId());
+            $contactUser = $this->userContactRepository->findUserContactByUserId($profile->getUser()->getId());
+
             $response[] = new PendingDriverResponseDTO(
                 driverId: $profile->getId(),
                 fullName: $profile->getUser()->getPerson()->getName() . ' ' . $profile->getUser()->getPerson()->getLastName(),
-                documentValue:
+                documentValue: $profile->getUser()->getPerson()->getDocument(),
+                plateValue: $vehicleUser->getVehicle()->getLicensePlate(),
+                contactValue: $contactUser->getValue()
             );
         }
 
-        if (empty($users)) {
-            throw new InvalidArgumentException('No se encontraron usuarios asociados a los conductores pendientes.');
-        }
-
-        // de la tabla persona saco nombre, apellido y documento
-        // de la tabla usuarioVehiculo saco el idVehiculo y de ahí su placa
-        // de la tabla usuario contacto saco el contacto
+        return $response;
     }
 }
