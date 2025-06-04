@@ -5,6 +5,7 @@ namespace itaxcix\Infrastructure\Web\Http;
 use Closure;
 use DI\Container;
 use FastRoute\Dispatcher;
+use itaxcix\Infrastructure\Auth\Service\JwtService;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
@@ -87,7 +88,8 @@ class Kernel implements RequestHandlerInterface
             // Desempaquetar
             $middlewareClass = $handler[0];
             if (count($handler) === 3) {
-                [$ , $requiredPermission, $controller] = $handler;
+                // Soporta [Middleware::class, permiso, Controller
+                [$_, $requiredPermission, $controller] = $handler;
             } else {
                 $requiredPermission = null;
                 $controller = $handler[1];
