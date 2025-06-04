@@ -1,6 +1,6 @@
 <?php
 
-namespace itaxcix\Core\UseCases;
+namespace itaxcix\Core\Handler;
 
 use DateTime;
 use InvalidArgumentException;
@@ -9,6 +9,7 @@ use itaxcix\Core\Interfaces\user\ContactTypeRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserCodeRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserCodeTypeRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserContactRepositoryInterface;
+use itaxcix\Core\UseCases\StartPasswordRecoveryUseCase;
 use itaxcix\Infrastructure\Notifications\NotificationServiceFactory;
 use itaxcix\Shared\DTO\useCases\RecoveryStartRequestDTO;
 

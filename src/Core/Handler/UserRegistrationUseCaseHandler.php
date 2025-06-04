@@ -1,6 +1,6 @@
 <?php
 
-namespace itaxcix\Core\UseCases;
+namespace itaxcix\Core\Handler;
 
 use DateTime;
 use InvalidArgumentException;
@@ -22,6 +22,7 @@ use itaxcix\Core\Interfaces\user\UserRoleRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserStatusRepositoryInterface;
 use itaxcix\Core\Interfaces\vehicle\VehicleRepositoryInterface;
 use itaxcix\Core\Interfaces\vehicle\VehicleUserRepositoryInterface;
+use itaxcix\Core\UseCases\UserRegistrationUseCase;
 use itaxcix\Infrastructure\Notifications\NotificationServiceFactory;
 use itaxcix\Shared\DTO\useCases\RegistrationRequestDTO;
 

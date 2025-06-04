@@ -182,22 +182,26 @@ class RegistrationController extends AbstractController {
     )]
     public function resendContactCode(ServerRequestInterface $request): ResponseInterface
     {
-        $data = $this->getJsonBody($request);
+        try {
+            $data = $this->getJsonBody($request);
 
-        $validator = new ResendVerificationCodeValidator();
-        $errors = $validator->validate($data);
+            $validator = new ResendVerificationCodeValidator();
+            $errors = $validator->validate($data);
 
-        if (!empty($errors)) {
-            return $this->error(reset($errors), 400);
+            if (!empty($errors)) {
+                return $this->error(reset($errors), 400);
+            }
+
+            $dto = new ResendVerificationCodeRequestDTO(
+                userId: (int) $data['userId']
+            );
+
+            $result = $this->resendVerificationCodeUseCase->execute($dto);
+
+            return $this->ok($result);
+        } catch (InvalidArgumentException $e) {
+            return $this->error($e->getMessage(), 400);
         }
-
-        $dto = new ResendVerificationCodeRequestDTO(
-            userId: (int) $data['userId']
-        );
-
-        $result = $this->resendVerificationCodeUseCase->execute($dto);
-
-        return $this->ok($result);
     }
 
     #[OA\Post(

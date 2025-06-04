@@ -1,11 +1,12 @@
 <?php
 
-namespace itaxcix\Core\UseCases;
+namespace itaxcix\Core\Handler;
 
 use DateTime;
 use InvalidArgumentException;
 use itaxcix\Core\Interfaces\user\UserCodeRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserContactRepositoryInterface;
+use itaxcix\Core\UseCases\VerificationCodeUseCase;
 use itaxcix\Shared\DTO\useCases\VerificationCodeRequestDTO;
 
 class VerificationCodeUseCaseHandler implements VerificationCodeUseCase {

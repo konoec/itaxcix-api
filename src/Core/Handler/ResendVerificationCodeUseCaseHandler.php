@@ -1,18 +1,17 @@
 <?php
 
-namespace itaxcix\Core\UseCases;
+namespace itaxcix\Core\Handler;
 
 use DateTime;
 use InvalidArgumentException;
-use itaxcix\Core\Domain\user\UserModel;
 use itaxcix\Core\Domain\user\UserCodeModel;
 use itaxcix\Core\Interfaces\user\UserCodeRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserCodeTypeRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserContactRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserRepositoryInterface;
+use itaxcix\Core\UseCases\ResendVerificationCodeUseCase as ResendInterface;
 use itaxcix\Infrastructure\Notifications\NotificationServiceFactory;
 use itaxcix\Shared\DTO\useCases\ResendVerificationCodeRequestDTO;
-use itaxcix\Core\UseCases\ResendVerificationCodeUseCase as ResendInterface;
 
 class ResendVerificationCodeUseCaseHandler implements ResendInterface
 {

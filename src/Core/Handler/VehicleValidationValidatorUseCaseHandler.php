@@ -1,6 +1,6 @@
 <?php
 
-namespace itaxcix\Core\UseCases;
+namespace itaxcix\Core\Handler;
 
 use DateTime;
 use InvalidArgumentException;
@@ -41,6 +41,8 @@ use itaxcix\Core\Interfaces\vehicle\VehicleCategoryRepositoryInterface;
 use itaxcix\Core\Interfaces\vehicle\VehicleClassRepositoryInterface;
 use itaxcix\Core\Interfaces\vehicle\VehicleRepositoryInterface;
 use itaxcix\Core\Interfaces\vehicle\VehicleUserRepositoryInterface;
+use itaxcix\Core\UseCases\DocumentValidationUseCase;
+use itaxcix\Core\UseCases\VehicleValidationValidatorUseCase;
 use itaxcix\Shared\DTO\client\VehicleDTO;
 use itaxcix\Shared\DTO\client\VehicleResponseDTO;
 use itaxcix\Shared\DTO\useCases\DocumentValidationRequestDTO;

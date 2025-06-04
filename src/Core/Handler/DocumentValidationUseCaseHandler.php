@@ -1,12 +1,13 @@
 <?php
 
-namespace itaxcix\Core\UseCases;
+namespace itaxcix\Core\Handler;
 
 use InvalidArgumentException;
 use itaxcix\Core\Domain\person\PersonModel;
 use itaxcix\Core\Interfaces\person\DocumentTypeRepositoryInterface;
 use itaxcix\Core\Interfaces\person\PersonRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserRepositoryInterface;
+use itaxcix\Core\UseCases\DocumentValidationUseCase;
 use itaxcix\Shared\DTO\useCases\DocumentValidationRequestDTO;
 
 class DocumentValidationUseCaseHandler implements DocumentValidationUseCase

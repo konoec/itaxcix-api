@@ -1,25 +1,25 @@
 <?php
 
+use itaxcix\Core\Handler\BiometricValidationUseCaseHandler;
+use itaxcix\Core\Handler\ChangePasswordUseCaseHandler;
+use itaxcix\Core\Handler\DocumentValidationUseCaseHandler;
+use itaxcix\Core\Handler\LoginUseCaseHandler;
+use itaxcix\Core\Handler\ResendVerificationCodeUseCaseHandler;
+use itaxcix\Core\Handler\StartPasswordRecoveryUseCaseHandler;
+use itaxcix\Core\Handler\UserRegistrationUseCaseHandler;
+use itaxcix\Core\Handler\VehicleValidationValidatorUseCaseHandler;
+use itaxcix\Core\Handler\VerificationCodeUseCaseHandler;
+use itaxcix\Core\Handler\VerifyRecoveryCodeUseCaseHandler;
 use itaxcix\Core\UseCases\BiometricValidationUseCase;
-use itaxcix\Core\UseCases\BiometricValidationUseCaseHandler;
 use itaxcix\Core\UseCases\ChangePasswordUseCase;
-use itaxcix\Core\UseCases\ChangePasswordUseCaseHandler;
 use itaxcix\Core\UseCases\DocumentValidationUseCase;
-use itaxcix\Core\UseCases\DocumentValidationUseCaseHandler;
 use itaxcix\Core\UseCases\LoginUseCase;
-use itaxcix\Core\UseCases\LoginUseCaseHandler;
 use itaxcix\Core\UseCases\ResendVerificationCodeUseCase;
-use itaxcix\Core\UseCases\ResendVerificationCodeUseCaseHandler;
 use itaxcix\Core\UseCases\StartPasswordRecoveryUseCase;
-use itaxcix\Core\UseCases\StartPasswordRecoveryUseCaseHandler;
 use itaxcix\Core\UseCases\UserRegistrationUseCase;
-use itaxcix\Core\UseCases\UserRegistrationUseCaseHandler;
 use itaxcix\Core\UseCases\VehicleValidationValidatorUseCase;
-use itaxcix\Core\UseCases\VehicleValidationValidatorUseCaseHandler;
 use itaxcix\Core\UseCases\VerificationCodeUseCase;
-use itaxcix\Core\UseCases\VerificationCodeUseCaseHandler;
 use itaxcix\Core\UseCases\VerifyRecoveryCodeUseCase;
-use itaxcix\Core\UseCases\VerifyRecoveryCodeUseCaseHandler;
 use function DI\autowire;
 
 return [

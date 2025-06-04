@@ -1,11 +1,12 @@
 <?php
 
-namespace itaxcix\Core\UseCases;
+namespace itaxcix\Core\Handler;
 
 use DateTime;
 use Exception;
 use InvalidArgumentException;
 use itaxcix\Core\Interfaces\person\PersonRepositoryInterface;
+use itaxcix\Core\UseCases\BiometricValidationUseCase;
 use itaxcix\Shared\DTO\useCases\BiometricValidationRequestDTO;
 use RuntimeException;
 use svay\FaceDetector;

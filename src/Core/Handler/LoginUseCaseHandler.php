@@ -1,16 +1,17 @@
 <?php
 
-namespace itaxcix\Core\UseCases;
+namespace itaxcix\Core\Handler;
 
 use InvalidArgumentException;
 use itaxcix\Core\Domain\user\RolePermissionModel;
 use itaxcix\Core\Domain\user\UserRoleModel;
 use itaxcix\Core\Interfaces\user\RolePermissionRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserContactRepositoryInterface;
+use itaxcix\Core\Interfaces\user\UserRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserRoleRepositoryInterface;
+use itaxcix\Core\UseCases\LoginUseCase;
 use itaxcix\Infrastructure\Auth\Service\JwtService;
 use itaxcix\Shared\DTO\useCases\AuthLoginRequestDTO;
-use itaxcix\Core\Interfaces\user\UserRepositoryInterface;
 use itaxcix\Shared\DTO\useCases\AuthLoginResponseDTO;
 
 class LoginUseCaseHandler implements LoginUseCase

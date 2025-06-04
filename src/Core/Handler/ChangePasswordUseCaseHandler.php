@@ -1,11 +1,11 @@
 <?php
 
-namespace itaxcix\Core\UseCases;
+namespace itaxcix\Core\Handler;
 
 use InvalidArgumentException;
 use itaxcix\Core\Interfaces\user\UserRepositoryInterface;
+use itaxcix\Core\UseCases\ChangePasswordUseCase;
 use itaxcix\Shared\DTO\useCases\PasswordChangeRequestDTO;
-use function Symfony\Component\String\u;
 
 class ChangePasswordUseCaseHandler implements ChangePasswordUseCase
 {
