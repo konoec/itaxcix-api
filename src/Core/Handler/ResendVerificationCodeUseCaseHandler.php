@@ -53,7 +53,13 @@ class ResendVerificationCodeUseCaseHandler implements ResendInterface
         $preUserCode = $this->userCodeRepository->findUserCodeByUserIdAndTypeId($user->getId(), $userCodeType->getId());
 
         if ($preUserCode && $preUserCode->getExpirationDate() > new DateTime()) {
-            throw new InvalidArgumentException('Ya se ha enviado un código de verificación recientemente. Por favor, espere a que expire.');
+            $now = new DateTime();
+            $interval = $now->diff($preUserCode->getExpirationDate());
+            $minutes = $interval->i + ($interval->h * 60);
+            $seconds = $interval->s;
+            throw new InvalidArgumentException(
+                'Ya se ha enviado un código de verificación recientemente. Por favor, espere a que expire. Tiempo restante: ' . $minutes . ' minutos y ' . $seconds . ' segundos.'
+            );
         }
 
         $code = $this->generateUserCode();
