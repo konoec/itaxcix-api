@@ -24,13 +24,14 @@ class LoginUseCaseHandler implements LoginUseCase
     private DriverProfileRepositoryInterface $driverProfileRepository;
     private JwtService $jwtService;
 
-    public function __construct(UserRepositoryInterface $userRepository, UserRoleRepositoryInterface $userRoleRepository, RolePermissionRepositoryInterface $rolePermissionRepository, JwtService $jwtService, UserContactRepositoryInterface $userContactRepository)
+    public function __construct(UserRepositoryInterface $userRepository, UserRoleRepositoryInterface $userRoleRepository, RolePermissionRepositoryInterface $rolePermissionRepository, JwtService $jwtService, UserContactRepositoryInterface $userContactRepository, DriverProfileRepositoryInterface $driverProfileRepository)
     {
         $this->userRepository = $userRepository;
         $this->userRoleRepository = $userRoleRepository;
         $this->rolePermissionRepository = $rolePermissionRepository;
         $this->jwtService = $jwtService;
         $this->userContactRepository = $userContactRepository;
+        $this->driverProfileRepository = $driverProfileRepository;
     }
 
     public function execute(AuthLoginRequestDTO $dto): ?AuthLoginResponseDTO

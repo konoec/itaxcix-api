@@ -4,6 +4,7 @@ namespace itaxcix\Infrastructure\Web\Http;
 
 use Closure;
 use DI\Container;
+use Exception;
 use FastRoute\Dispatcher;
 use itaxcix\Infrastructure\Auth\Service\JwtService;
 use Nyholm\Psr7\Factory\Psr17Factory;
@@ -127,7 +128,7 @@ class Kernel implements RequestHandlerInterface
 
                 return $middleware->process($request, $requestHandler);
 
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 return $this->jsonResponse(500, [
                     'error'   => 'Error al procesar middleware',
                     'message' => $e->getMessage()
@@ -145,7 +146,7 @@ class Kernel implements RequestHandlerInterface
         try {
             $controller = $this->container->get($controllerClass);
             return $controller->{$controllerMethod}($request, new Response());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->jsonResponse(500, [
                 'error' => 'Error interno',
                 'message' => $e->getMessage()
