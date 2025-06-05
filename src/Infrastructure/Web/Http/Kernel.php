@@ -185,7 +185,7 @@ class Kernel implements RequestHandlerInterface
         }
 
         $response = $this->handle($request);
-        $this->sendResponse($response);
+        $this->sendResponse($response, $origin);
     }
 
     private function sendResponse(ResponseInterface $response, string $origin): void
