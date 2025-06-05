@@ -17,7 +17,7 @@ class UserContactEntity {
     #[ORM\ManyToOne(targetEntity: ContactTypeEntity::class)]
     #[ORM\JoinColumn(name: 'cont_tipo_id', referencedColumnName: 'tipo_id', nullable: false)]
     private ?ContactTypeEntity $type;
-    #[ORM\Column(name: 'cont_valor', type: 'string', length: 100, unique: true, nullable: false)]
+    #[ORM\Column(name: 'cont_valor', type: 'string', length: 100, nullable: false)]
     private string $value;
     #[ORM\Column(name: 'cont_confirmado', type: 'boolean', nullable: false)]
     private bool $confirmed;

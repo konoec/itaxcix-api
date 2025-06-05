@@ -75,23 +75,9 @@ class DoctrineUserContactRepository implements UserContactRepositoryInterface
             ->select('uc')
             ->from(UserContactEntity::class, 'uc')
             ->where('uc.value = :value')
+            ->andWhere('uc.confirmed = :confirmed')
             ->setParameter('value', $value)
-            ->getQuery();
-
-        $entity = $query->getOneOrNullResult();
-
-        return $entity ? $this->toDomain($entity) : null;
-    }
-
-    public function findUserContactById(int $id): ?UserContactModel
-    {
-        $query = $this->entityManager->createQueryBuilder()
-            ->select('uc')
-            ->from(UserContactEntity::class, 'uc')
-            ->where('uc.id = :id')
-            ->andWhere('uc.active = :active')
-            ->setParameter('id', $id)
-            ->setParameter('active', true)
+            ->setParameter('confirmed', true)
             ->getQuery();
 
         $entity = $query->getOneOrNullResult();

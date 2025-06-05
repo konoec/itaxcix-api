@@ -82,7 +82,7 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
         }
 
         if ($userContact){
-            throw new InvalidArgumentException('Ya existe un contacto registrado con ese número o correo.');
+            throw new InvalidArgumentException('Ya existe un contacto admitido registrado con ese número o correo.');
         }
 
         if (!$person) {

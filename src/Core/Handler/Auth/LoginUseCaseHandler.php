@@ -49,7 +49,7 @@ class LoginUseCaseHandler implements LoginUseCase
             throw new InvalidArgumentException('El conductor no está aprobado.');
         }
 
-        $userContact = $this->userContactRepository->findUserContactById($user->getId());
+        $userContact = $this->userContactRepository->findUserContactByUserId($user->getId());
 
         if (!$userContact || !$userContact->isConfirmed()) {
             throw new InvalidArgumentException('El usuario no tiene un contacto confirmado.');

@@ -40,7 +40,7 @@ class ResendVerificationCodeUseCaseHandler implements ResendInterface
             throw new InvalidArgumentException('Usuario no encontrado.');
         }
 
-        $contact = $this->userContactRepository->findUserContactById($user->getId());
+        $contact = $this->userContactRepository->findUserContactByUserId($user->getId());
 
         if (!$contact) {
             throw new InvalidArgumentException('El usuario no tiene un contacto asociado.');

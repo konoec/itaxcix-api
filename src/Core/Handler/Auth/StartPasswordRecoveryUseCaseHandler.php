@@ -39,7 +39,7 @@ class StartPasswordRecoveryUseCaseHandler implements StartPasswordRecoveryUseCas
         $userContact = $this->userContactRepository->findAllUserContactByValue($dto->contactValue);
 
         if (!$userContact) {
-            throw new InvalidArgumentException('El contacto no existe.');
+            throw new InvalidArgumentException('El contacto no es válido.');
         }
 
         if ($userContact->getType()->getId() !== $dto->contactTypeId) {
@@ -48,10 +48,6 @@ class StartPasswordRecoveryUseCaseHandler implements StartPasswordRecoveryUseCas
 
         if (!$userContact->isActive()){
             throw new InvalidArgumentException('El contacto no está activo.');
-        }
-
-        if (!$userContact->isConfirmed()) {
-            throw new InvalidArgumentException('El contacto no está confirmado.');
         }
 
         $userCodeType = $this->userCodeTypeRepository->findUserCodeTypeByName('RECUPERACIÓN');
