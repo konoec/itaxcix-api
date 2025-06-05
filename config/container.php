@@ -9,6 +9,7 @@ use itaxcix\Infrastructure\Database\Config\EntityManagerFactory;
 use itaxcix\Infrastructure\Notifications\EmailNotificationService;
 use itaxcix\Infrastructure\Notifications\NotificationServiceFactory;
 use itaxcix\Infrastructure\Notifications\SmsNotificationService;
+use itaxcix\Infrastructure\Web\Middleware\CorsMiddleware;
 use function DI\autowire;
 use function DI\get;
 
