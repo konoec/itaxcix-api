@@ -10,7 +10,7 @@
         }
     ],
     "paths": {
-        "/drivers/approve": {
+        "/drivers/approve/": {
             "post": {
                 "tags": [
                     "Admission"
@@ -119,7 +119,7 @@
                 ]
             }
         },
-        "/drivers/reject": {
+        "/drivers/reject/": {
             "post": {
                 "tags": [
                     "Admission"

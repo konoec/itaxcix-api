@@ -21,7 +21,8 @@
         "vonage/client": "^4.1",
         "respect/validation": "^2.4",
         "mauricesvay/php-facedetection": "^0.1.0",
-        "ext-gd": "*"
+        "ext-gd": "*",
+        "cboden/ratchet": "^0.4.4"
     },
     "autoload": {
         "psr-4": {

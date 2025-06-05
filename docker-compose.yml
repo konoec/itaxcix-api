@@ -42,6 +42,20 @@ services:
     networks:
       - app-network
 
+  ws:
+    image: php:8.2-cli
+    container_name: itaxcix-ws
+    volumes:
+      - ./:/var/www/html
+    command: php /var/www/html/ws/ws-server.php
+    environment:
+      WS_HOST: ${WS_HOST}
+      WS_PORT: ${WS_PORT}
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
 volumes:
   data:
 

@@ -175,6 +175,7 @@ class Kernel implements RequestHandlerInterface
         if ($request->getMethod() === 'OPTIONS') {
             $preflight = $this->psr17Factory->createResponse(204)
                 ->withHeader('Access-Control-Allow-Origin', '*')
+                ->withHeader('Access-Control-Allow-Credentials', 'true')
                 ->withHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
                 ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
             $this->sendResponse($preflight);
@@ -190,6 +191,7 @@ class Kernel implements RequestHandlerInterface
         // CORS en todas las respuestas
         $response = $response
             ->withHeader('Access-Control-Allow-Origin', '*')
+            ->withHeader('Access-Control-Allow-Credentials', 'true')
             ->withHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
             ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
 
