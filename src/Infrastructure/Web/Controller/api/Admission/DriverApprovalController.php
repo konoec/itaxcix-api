@@ -27,7 +27,7 @@ class DriverApprovalController extends AbstractController
     }
 
     #[OA\Post(
-        path: "/drivers/approve/",
+        path: "/drivers/approve",
         operationId: "approveDriver",
         description: "Recibe el ID de un conductor en estado pendiente y lo aprueba.",
         summary: "Aprueba un conductor pendiente",
@@ -118,7 +118,7 @@ class DriverApprovalController extends AbstractController
     }
 
     #[OA\Post(
-        path: "/drivers/reject/",
+        path: "/drivers/reject",
         operationId: "rejectDriver",
         description: "Recibe el ID de un conductor en estado pendiente y lo rechaza.",
         summary: "Rechaza un conductor pendiente",
