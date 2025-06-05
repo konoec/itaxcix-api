@@ -171,32 +171,15 @@ class Kernel implements RequestHandlerInterface
     {
         $request = $this->createServerRequestFromGlobals();
 
-        $origin = $request->getHeaderLine('Origin') ?: '*';
+        // Invocar el middleware CORS antes de manejar la petición
+        $cors     = $this->container->get(CorsMiddleware::class);
+        $response = $cors->process($request, $this);
 
-        // Preflight CORS
-        if ($request->getMethod() === 'OPTIONS') {
-            $preflight = $this->psr17Factory->createResponse(204)
-                ->withHeader('Access-Control-Allow-Origin', $origin)
-                ->withHeader('Access-Control-Allow-Credentials', 'true')
-                ->withHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
-                ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-            $this->sendResponse($preflight, $origin);
-            return;
-        }
-
-        $response = $this->handle($request);
-        $this->sendResponse($response, $origin);
+        $this->sendResponse($response);
     }
 
-    private function sendResponse(ResponseInterface $response, string $origin): void
+    private function sendResponse(ResponseInterface $response): void
     {
-        // CORS en todas las respuestas
-        $response = $response
-            ->withHeader('Access-Control-Allow-Origin', $origin)
-            ->withHeader('Access-Control-Allow-Credentials', 'true')
-            ->withHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
-            ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-
         http_response_code($response->getStatusCode());
         foreach ($response->getHeaders() as $name => $values) {
             foreach ($values as $value) {
