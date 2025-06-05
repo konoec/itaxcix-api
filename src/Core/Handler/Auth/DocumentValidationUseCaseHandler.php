@@ -76,9 +76,16 @@ class DocumentValidationUseCaseHandler implements DocumentValidationUseCase
 
     private function fakeReniecApi(string $documentValue): array
     {
+        $nombres = ['JUAN', 'MARIA', 'PATRICIO', 'LUIS', 'ANA', 'CARLOS', 'JESUS', 'SOFIA'];
+        $apellidos = ['GONZALES', 'PEREZ', 'RAMIREZ', 'GARCIA', 'RODRIGUEZ', 'LOPEZ', 'FERNANDEZ', 'SANCHEZ'];
+
+        $nombre = $nombres[array_rand($nombres)];
+        $apellido1 = $apellidos[array_rand($apellidos)];
+        $apellido2 = $apellidos[array_rand($apellidos)];
+
         return [
-            'name' => 'PATRICIO JESUS',
-            'lastName' => 'GONZALES GONZALES',
+            'name' => $nombre,
+            'lastName' => $apellido1 . ' ' . $apellido2,
         ];
     }
 }
