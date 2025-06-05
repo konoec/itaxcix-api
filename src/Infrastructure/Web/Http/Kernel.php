@@ -85,6 +85,10 @@ class Kernel implements RequestHandlerInterface
         // Añadir parámetros de ruta al request
         $request = $request->withAttribute('route_params', $routeParams);
 
+        foreach ($routeParams as $name => $value) {
+            $request = $request->withAttribute($name, $value);
+        }
+
         if ($this->isMiddlewareHandler($handler)) {
             // Desempaquetar
             $middlewareClass = $handler[0];

@@ -54,8 +54,8 @@ class GetDriverDetailsUseCaseHandler implements GetDriverDetailsUseCase
             rucCompany: $tuc->getCompany()->getRuc(),
             tucType: $tuc->getType()->getName(),
             tucModality: $tuc->getModality()->getName(),
-            tucIssueDate: $tuc->getIssueDate(),
-            tucExpirationDate: $tuc->getExpirationDate(),
+            tucIssueDate: $tuc->getIssueDate()->format('Y-m-d'),
+            tucExpirationDate: $tuc->getExpirationDate()->format('Y-m-d'),
             tucStatus: $tuc->getStatus()->getName(),
         );
     }

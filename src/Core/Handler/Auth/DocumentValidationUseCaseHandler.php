@@ -56,10 +56,6 @@ class DocumentValidationUseCaseHandler implements DocumentValidationUseCase
 
         $data = $this->fakeReniecApi($dto->documentValue);
 
-        if ($data === null) {
-            throw new InvalidArgumentException('El documento no existe.');
-        }
-
         $person = new PersonModel(
             id: null,
             name: $data['name'] ?? '',

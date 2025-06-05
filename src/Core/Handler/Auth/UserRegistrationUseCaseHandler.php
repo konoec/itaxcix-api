@@ -111,6 +111,9 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
             throw new InvalidArgumentException('El estado de usuario activo no existe.');
         }
 
+        $driverStatus = null;
+        $vehicle = null;
+
         if ($dto->vehicleId !== null) {
 
             $vehicle = $this->vehicleRepository->findVehicleById($dto->vehicleId);

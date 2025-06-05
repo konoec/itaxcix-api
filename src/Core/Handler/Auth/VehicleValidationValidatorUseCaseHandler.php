@@ -438,7 +438,7 @@ class VehicleValidationValidatorUseCaseHandler implements VehicleValidationValid
 
     private function fakeMunicipalApi(string $plateValue): VehicleResponseDTO
     {
-        $csvFilePath = dirname(__DIR__, 3) . '/public/csv/data.csv';
+        $csvFilePath = dirname(__DIR__, 4) . '/public/csv/data.csv';
 
         if (!file_exists($csvFilePath)) {
             throw new InvalidArgumentException('El archivo de datos de vehículos no existe.');

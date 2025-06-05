@@ -2,6 +2,7 @@
 
 namespace itaxcix\Core\Handler\Admission;
 
+use Exception;
 use InvalidArgumentException;
 use itaxcix\Core\Domain\user\DriverProfileModel;
 use itaxcix\Core\Interfaces\user\DriverProfileRepositoryInterface;
@@ -30,18 +31,21 @@ class GetPendingDriversUseCaseHandler implements GetPendingDriversUseCase
         $this->userContactRepository = $userContactRepository;
     }
 
+    /**
+     * @throws Exception
+     */
     public function execute(): ?array
     {
         $driverStatus = $this->driverStatusRepository->findDriverStatusByName('PENDIENTE');
 
-        if ($driverStatus){
+        if (!$driverStatus){
             throw new InvalidArgumentException('No se encontró el estado de conductor PENDIENTE');
         }
 
         $driversProfiles = $this->driverProfileRepository->findDriversProfilesByStatusId($driverStatus->getId());
 
         if (empty($driversProfiles)) {
-            throw new ('No se encontraron conductores pendientes.');
+            throw new InvalidArgumentException('No se encontraron conductores pendientes.');
         }
 
         $response = [];
@@ -54,7 +58,7 @@ class GetPendingDriversUseCaseHandler implements GetPendingDriversUseCase
             $contactUser = $this->userContactRepository->findUserContactByUserId($profile->getUser()->getId());
 
             $response[] = new PendingDriverResponseDTO(
-                driverId: $profile->getId(),
+                driverId: $profile->getUser()->getId(),
                 fullName: $profile->getUser()->getPerson()->getName() . ' ' . $profile->getUser()->getPerson()->getLastName(),
                 documentValue: $profile->getUser()->getPerson()->getDocument(),
                 plateValue: $vehicleUser->getVehicle()->getLicensePlate(),

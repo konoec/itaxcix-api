@@ -7,7 +7,7 @@ use OpenApi\Attributes as OA;
 #[OA\Schema(description: "Datos de respuesta tras iniciar sesión")]
 readonly class AuthLoginResponseDTO {
     public function __construct(
-        #[OA\Property(description: "Token JWT generado", example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.xxxxx")]
+        #[OA\Property(description: "Token JWT generado", example: "eyJhb...")]
         public string $token,
 
         #[OA\Property(description: "ID del usuario autenticado", example: 123)]
@@ -15,6 +15,15 @@ readonly class AuthLoginResponseDTO {
 
         #[OA\Property(description: "Valor del documento del usuario", example: "12345678")]
         public string $documentValue,
+
+        #[OA\Property(description: "Nombre del usuario", example: "Juan")]
+        public string $firstName,
+
+        #[OA\Property(description: "Apellido del usuario", example: "Pérez")]
+        public string $lastName,
+
+        #[OA\Property(description: "Estado de disponibilidad", example: true, nullable: true)]
+        public ?bool $availabilityStatus,
 
         #[OA\Property(
             property: "roles",

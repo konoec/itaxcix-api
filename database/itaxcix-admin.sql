@@ -4,13 +4,15 @@ INSERT INTO tb_persona (
     pers_apellido,
     pers_documento,
     pers_tipo_documento_id,
-    pers_activo
+    pers_activo,
+    pers_fecha_validacion
 ) VALUES (
              'Administrador',
              'Principal',
              '00000000', -- DNI ficticio
              1,          -- tipo_documento_id = DNI
-             TRUE
+             TRUE,
+             NOW()      -- Fecha de validación actual
          );
 
 -- 2. Insertar usuario

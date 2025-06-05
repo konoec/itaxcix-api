@@ -49,10 +49,6 @@ class RejectDriverAdmissionUseCaseHandler implements RejectDriverAdmissionUseCas
 
         $updatedDriverProfile = $this->driverProfileRepository->saveDriverProfile($newDriverProfie);
 
-        if (!$updatedDriverProfile) {
-            throw new InvalidArgumentException('No se pudo actualizar el perfil del conductor.');
-        }
-
         return [
             'message' => 'El conductor ha sido rechazado.',
         ];
