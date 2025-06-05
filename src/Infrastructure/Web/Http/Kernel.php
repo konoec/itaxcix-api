@@ -166,8 +166,36 @@ class Kernel implements RequestHandlerInterface
     public function run(): void
     {
         $request = $this->createServerRequestFromGlobals();
+
+        // Preflight CORS
+        if ($request->getMethod() === 'OPTIONS') {
+            $preflight = $this->psr17Factory->createResponse(204)
+                ->withHeader('Access-Control-Allow-Origin', '*')
+                ->withHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
+                ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+            $this->sendResponse($preflight);
+            return;
+        }
+
         $response = $this->handle($request);
         $this->sendResponse($response);
+    }
+
+    private function sendResponse(ResponseInterface $response): void
+    {
+        // CORS en todas las respuestas
+        $response = $response
+            ->withHeader('Access-Control-Allow-Origin', '*')
+            ->withHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
+            ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+
+        http_response_code($response->getStatusCode());
+        foreach ($response->getHeaders() as $name => $values) {
+            foreach ($values as $value) {
+                header(sprintf('%s: %s', $name, $value));
+            }
+        }
+        echo $response->getBody();
     }
 
     private function createServerRequestFromGlobals(): ServerRequestInterface
@@ -187,18 +215,5 @@ class Kernel implements RequestHandlerInterface
         }
 
         return $request;
-    }
-
-    private function sendResponse(ResponseInterface $response): void
-    {
-        http_response_code($response->getStatusCode());
-
-        foreach ($response->getHeaders() as $name => $values) {
-            foreach ($values as $value) {
-                header(sprintf('%s: %s', $name, $value));
-            }
-        }
-
-        echo $response->getBody();
     }
 }
