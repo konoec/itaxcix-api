@@ -167,6 +167,17 @@ class Kernel implements RequestHandlerInterface
             && is_subclass_of($handler[0], MiddlewareInterface::class);
     }
 
+    public function run(): void
+    {
+        $request = $this->createServerRequestFromGlobals();
+
+        // Invocar el middleware CORS antes de manejar la petición
+        $cors     = $this->container->get(CorsMiddleware::class);
+        $response = $cors->process($request, $this);
+
+        $this->sendResponse($response);
+    }
+
     private function sendResponse(ResponseInterface $response): void
     {
         http_response_code($response->getStatusCode());
@@ -186,17 +197,6 @@ class Kernel implements RequestHandlerInterface
             }
         }
 
-        echo $response->getBody();
-    }
-
-    private function sendResponse(ResponseInterface $response): void
-    {
-        http_response_code($response->getStatusCode());
-        foreach ($response->getHeaders() as $name => $values) {
-            foreach ($values as $value) {
-                header(sprintf('%s: %s', $name, $value));
-            }
-        }
         echo $response->getBody();
     }
 
