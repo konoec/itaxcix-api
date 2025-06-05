@@ -167,15 +167,26 @@ class Kernel implements RequestHandlerInterface
             && is_subclass_of($handler[0], MiddlewareInterface::class);
     }
 
-    public function run(): void
+    private function sendResponse(ResponseInterface $response): void
     {
-        $request = $this->createServerRequestFromGlobals();
+        http_response_code($response->getStatusCode());
 
-        // Invocar el middleware CORS antes de manejar la petición
-        $cors     = $this->container->get(CorsMiddleware::class);
-        $response = $cors->process($request, $this);
+        // Fallback CORS si falta
+        if (! $response->hasHeader('Access-Control-Allow-Origin')) {
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Credentials: true');
+            header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization');
+            header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH, OPTIONS');
+            header('Vary: Origin');
+        }
 
-        $this->sendResponse($response);
+        foreach ($response->getHeaders() as $name => $values) {
+            foreach ($values as $value) {
+                header(sprintf('%s: %s', $name, $value));
+            }
+        }
+
+        echo $response->getBody();
     }
 
     private function sendResponse(ResponseInterface $response): void
