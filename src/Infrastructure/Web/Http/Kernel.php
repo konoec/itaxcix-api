@@ -73,6 +73,12 @@ class Kernel implements RequestHandlerInterface
     {
         $response = new Response($status);
         $response = $response->withHeader('Content-Type', 'application/json');
+        $response = $response->withHeader('Access-Control-Allow-Origin', '*')
+            ->withHeader('Access-Control-Allow-Credentials', 'true')
+            ->withHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
+            ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
+            ->withHeader('Vary', 'Origin');
+
         $body = $this->psr17Factory->createStream(json_encode($data));
         return $response->withBody($body);
     }
