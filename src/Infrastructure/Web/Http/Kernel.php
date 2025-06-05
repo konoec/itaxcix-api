@@ -2,11 +2,11 @@
 
 namespace itaxcix\Infrastructure\Web\Http;
 
-use Closure;
 use DI\Container;
 use Exception;
 use FastRoute\Dispatcher;
 use itaxcix\Infrastructure\Auth\Service\JwtService;
+use itaxcix\Infrastructure\Web\Middleware\CorsMiddleware;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;

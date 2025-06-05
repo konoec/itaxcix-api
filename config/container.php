@@ -35,6 +35,8 @@ $containerBuilder->addDefinitions([
     // Middlewares
     JwtMiddleware::class => autowire(),
 
+    CorsMiddleware::class => autowire(),
+
     // Servicios de notificación
     EmailNotificationService::class => autowire(),
     SmsNotificationService::class => autowire(),
