@@ -96,4 +96,16 @@ class DoctrineDriverProfileRepository implements DriverProfileRepositoryInterfac
 
         return array_map([$this, 'toDomain'], $result);
     }
+
+    public function countDriversProfilesByStatusId(int $statusId): int
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('COUNT(dp.id)')
+            ->from(DriverProfileEntity::class, 'dp')
+            ->join('dp.status', 'ds')
+            ->where('ds.id = :statusId')
+            ->setParameter('statusId', $statusId);
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
 }

@@ -68,17 +68,15 @@ class PendingDriversController extends AbstractController
             type: "object"
         )
     )]
-    public function getAllPendingDrivers(): ResponseInterface
+    public function getAllPendingDrivers(ServerRequestInterface $request): ResponseInterface
     {
+        $query   = $request->getQueryParams();
+        $page    = max(1, (int) ($query['page'] ?? 1));
+        $perPage = max(1, (int) ($query['perPage'] ?? 10));
+
         try {
-            $pendingDriversResponse = $this->getPendingDriversUseCase->execute();
-
-            if ($pendingDriversResponse === null) {
-                return $this->error('No se encontraron conductores pendientes', 404);
-            }
-
-            return $this->ok($pendingDriversResponse);
-
+            $paginated = $this->getPendingDriversUseCase->execute($page, $perPage);
+            return $this->ok($paginated);
         } catch (InvalidArgumentException $e) {
             return $this->error($e->getMessage(), 400);
         }

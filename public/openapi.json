@@ -1859,7 +1859,7 @@
                     "token": {
                         "description": "Token JWT generado",
                         "type": "string",
-                        "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.xxxxx"
+                        "example": "eyJhb..."
                     },
                     "userId": {
                         "description": "ID del usuario autenticado",
@@ -1870,6 +1870,22 @@
                         "description": "Valor del documento del usuario",
                         "type": "string",
                         "example": "12345678"
+                    },
+                    "firstName": {
+                        "description": "Nombre del usuario",
+                        "type": "string",
+                        "example": "Juan"
+                    },
+                    "lastName": {
+                        "description": "Apellido del usuario",
+                        "type": "string",
+                        "example": "Pérez"
+                    },
+                    "availabilityStatus": {
+                        "description": "Estado de disponibilidad",
+                        "type": "boolean",
+                        "example": true,
+                        "nullable": true
                     },
                     "roles": {
                         "type": "array",

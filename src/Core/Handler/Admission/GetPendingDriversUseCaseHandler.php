@@ -10,6 +10,8 @@ use itaxcix\Core\Interfaces\user\DriverStatusRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserContactRepositoryInterface;
 use itaxcix\Core\Interfaces\vehicle\VehicleUserRepositoryInterface;
 use itaxcix\Core\UseCases\Admission\GetPendingDriversUseCase;
+use itaxcix\Shared\DTO\generic\PaginationMetaDTO;
+use itaxcix\Shared\DTO\generic\PaginationResponseDTO;
 use itaxcix\Shared\DTO\useCases\Admission\PendingDriverResponseDTO;
 
 class GetPendingDriversUseCaseHandler implements GetPendingDriversUseCase
@@ -34,38 +36,28 @@ class GetPendingDriversUseCaseHandler implements GetPendingDriversUseCase
     /**
      * @throws Exception
      */
-    public function execute(): ?array
+    public function execute(int $page, int $perPage): PaginationResponseDTO
     {
-        $driverStatus = $this->driverStatusRepository->findDriverStatusByName('PENDIENTE');
-
-        if (!$driverStatus){
-            throw new InvalidArgumentException('No se encontró el estado de conductor PENDIENTE');
+        $status = $this->driverStatusRepository->findDriverStatusByName('PENDIENTE');
+        if (!$status) {
+            throw new InvalidArgumentException('Estado PENDIENTE no existe');
         }
 
-        $driversProfiles = $this->driverProfileRepository->findDriversProfilesByStatusId($driverStatus->getId());
+        $total   = $this->driverProfileRepository->countDriversProfilesByStatusId($status->getId());
+        $offset  = ($page - 1) * $perPage;
+        $profiles = $this->driverProfileRepository->findDriversProfilesByStatusId($status->getId(), $offset, $perPage);
 
-        if (empty($driversProfiles)) {
-            throw new InvalidArgumentException('No se encontraron conductores pendientes.');
-        }
+        $items = array_map(fn($profile) => new PendingDriverResponseDTO(
+            driverId:      $profile->getUser()->getId(),
+            fullName:      $profile->getUser()->getPerson()->getName() . ' ' . $profile->getUser()->getPerson()->getLastName(),
+            documentValue: $profile->getUser()->getPerson()->getDocument(),
+            plateValue:    $this->vehicleUserRepository->findVehicleUserByUserId($profile->getUser()->getId())->getVehicle()->getLicensePlate(),
+            contactValue:  $this->userContactRepository->findUserContactByUserId($profile->getUser()->getId())->getValue()
+        ), $profiles);
 
-        $response = [];
-        foreach ($driversProfiles as $profile) {
-            if (!$profile instanceof DriverProfileModel) {
-                throw new InvalidArgumentException('El perfil del conductor no es válido.');
-            }
+        $lastPage = (int) ceil($total / $perPage);
+        $meta     = new PaginationMetaDTO(total: $total, perPage: $perPage, currentPage: $page, lastPage: $lastPage);
 
-            $vehicleUser = $this->vehicleUserRepository->findVehicleUserByUserId($profile->getUser()->getId());
-            $contactUser = $this->userContactRepository->findUserContactByUserId($profile->getUser()->getId());
-
-            $response[] = new PendingDriverResponseDTO(
-                driverId: $profile->getUser()->getId(),
-                fullName: $profile->getUser()->getPerson()->getName() . ' ' . $profile->getUser()->getPerson()->getLastName(),
-                documentValue: $profile->getUser()->getPerson()->getDocument(),
-                plateValue: $vehicleUser->getVehicle()->getLicensePlate(),
-                contactValue: $contactUser->getValue()
-            );
-        }
-
-        return $response;
+        return new PaginationResponseDTO(items: $items, meta: $meta);
     }
 }

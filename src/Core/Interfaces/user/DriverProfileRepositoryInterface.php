@@ -8,4 +8,5 @@ interface DriverProfileRepositoryInterface {
     public function findDriverProfileByUserId(int $userId): ?DriverProfileModel;
     public function findDriversProfilesByStatusId(int $statusId): ?array;
     public function saveDriverProfile(DriverProfileModel $driverProfileModel): DriverProfileModel;
+    public function countDriversProfilesByStatusId(int $statusId): int;
 }
