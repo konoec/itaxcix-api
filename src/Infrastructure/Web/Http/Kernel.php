@@ -171,14 +171,16 @@ class Kernel implements RequestHandlerInterface
     {
         $request = $this->createServerRequestFromGlobals();
 
+        $origin = $request->getHeaderLine('Origin') ?: '*';
+
         // Preflight CORS
         if ($request->getMethod() === 'OPTIONS') {
             $preflight = $this->psr17Factory->createResponse(204)
-                ->withHeader('Access-Control-Allow-Origin', '*')
+                ->withHeader('Access-Control-Allow-Origin', $origin)
                 ->withHeader('Access-Control-Allow-Credentials', 'true')
                 ->withHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
                 ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-            $this->sendResponse($preflight);
+            $this->sendResponse($preflight, $origin);
             return;
         }
 
@@ -186,11 +188,11 @@ class Kernel implements RequestHandlerInterface
         $this->sendResponse($response);
     }
 
-    private function sendResponse(ResponseInterface $response): void
+    private function sendResponse(ResponseInterface $response, string $origin): void
     {
         // CORS en todas las respuestas
         $response = $response
-            ->withHeader('Access-Control-Allow-Origin', '*')
+            ->withHeader('Access-Control-Allow-Origin', $origin)
             ->withHeader('Access-Control-Allow-Credentials', 'true')
             ->withHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
             ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
