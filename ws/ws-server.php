@@ -5,7 +5,6 @@ require __DIR__ . '/../vendor/autoload.php';
 use itaxcix\Infrastructure\WebSocket\DriverStatusHandler;
 use itaxcix\Infrastructure\WebSocket\WebSocketServer;
 use DI\ContainerBuilder;
-use Vonage\Voice\Endpoint\Websocket;
 
 // Carga configuración de WebSockets
 $config = require __DIR__ . '/../config/ws.php';
