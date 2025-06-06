@@ -4,6 +4,7 @@ namespace itaxcix\Core\Handler\Auth;
 
 use DateTime;
 use InvalidArgumentException;
+use itaxcix\Core\Domain\user\CitizenProfileModel;
 use itaxcix\Core\Domain\user\DriverProfileModel;
 use itaxcix\Core\Domain\user\UserCodeModel;
 use itaxcix\Core\Domain\user\UserContactModel;
@@ -11,6 +12,7 @@ use itaxcix\Core\Domain\user\UserModel;
 use itaxcix\Core\Domain\user\UserRoleModel;
 use itaxcix\Core\Domain\vehicle\VehicleUserModel;
 use itaxcix\Core\Interfaces\person\PersonRepositoryInterface;
+use itaxcix\Core\Interfaces\user\CitizenProfileRepositoryInterface;
 use itaxcix\Core\Interfaces\user\ContactTypeRepositoryInterface;
 use itaxcix\Core\Interfaces\user\DriverProfileRepositoryInterface;
 use itaxcix\Core\Interfaces\user\DriverStatusRepositoryInterface;
@@ -42,8 +44,9 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
     private NotificationServiceFactory $notificationServiceFactory;
     private DriverProfileRepositoryInterface $driverProfileRepository;
     private DriverStatusRepositoryInterface $driverStatusRepository;
+    private CitizenProfileRepositoryInterface $citizenProfileRepository;
 
-    public function __construct(PersonRepositoryInterface $personRepository, UserRepositoryInterface $userRepository, VehicleRepositoryInterface $vehicleRepository, VehicleUserRepositoryInterface $vehicleUserRepository, ContactTypeRepositoryInterface $contactTypeRepository, UserContactRepositoryInterface $userContactRepository, UserStatusRepositoryInterface $userStatusRepository, RoleRepositoryInterface $roleRepository, UserRoleRepositoryInterface $userRoleRepository, UserCodeTypeRepositoryInterface $userCodeTypeRepository, UserCodeRepositoryInterface $userCodeRepository, NotificationServiceFactory $notificationServiceFactory, DriverProfileRepositoryInterface $driverProfileRepository, DriverStatusRepositoryInterface $driverStatusRepository)
+    public function __construct(PersonRepositoryInterface $personRepository, UserRepositoryInterface $userRepository, VehicleRepositoryInterface $vehicleRepository, VehicleUserRepositoryInterface $vehicleUserRepository, ContactTypeRepositoryInterface $contactTypeRepository, UserContactRepositoryInterface $userContactRepository, UserStatusRepositoryInterface $userStatusRepository, RoleRepositoryInterface $roleRepository, UserRoleRepositoryInterface $userRoleRepository, UserCodeTypeRepositoryInterface $userCodeTypeRepository, UserCodeRepositoryInterface $userCodeRepository, NotificationServiceFactory $notificationServiceFactory, DriverProfileRepositoryInterface $driverProfileRepository, DriverStatusRepositoryInterface $driverStatusRepository, CitizenProfileRepositoryInterface $citizenProfileRepository)
     {
         $this->personRepository = $personRepository;
         $this->userRepository = $userRepository;
@@ -160,7 +163,9 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
                 id: null,
                 user: $newUser,
                 available: true,
-                status: $driverStatus
+                status: $driverStatus,
+                averageRating: 0.00,
+                ratingCount:0
             );
 
             $driverProfile = $this->driverProfileRepository->saveDriverProfile($driverProfile);
@@ -177,6 +182,15 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
             // Asignar roles al usuario basado en el vehículo
             $role = $this->roleRepository->findRoleByName("CONDUCTOR");
         } else{
+            $citizenProfile = new CitizenProfileModel(
+                id: null,
+                user: $newUser,
+                averageRating: 0.00,
+                ratingCount: 0
+            );
+
+            $citizenProfile = $this->citizenProfileRepository->saveCitizenProfile($citizenProfile);
+
             // Asignar roles al usuario basado en el ciudadano
             $role = $this->roleRepository->findRoleByName("CIUDADANO");
         }

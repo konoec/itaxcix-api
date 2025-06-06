@@ -30,7 +30,9 @@ class DoctrineDriverProfileRepository implements DriverProfileRepositoryInterfac
             id: $entity->getId(),
             user: $this->userRepository->toDomain($entity->getUser()),
             available: $entity->isAvailable(),
-            status: $this->driverStatusRepository->toDomain($entity->getStatus())
+            status: $this->driverStatusRepository->toDomain($entity->getStatus()),
+            averageRating: $entity->getAverageRating(),
+            ratingCount: $entity->getRatingCount()
         );
     }
 
@@ -57,6 +59,8 @@ class DoctrineDriverProfileRepository implements DriverProfileRepositoryInterfac
             )
         );
         $entity->setAvailable($driverProfileModel->isAvailable());
+        $entity->setAverageRating($driverProfileModel->getAverageRating());
+        $entity->setRatingCount($driverProfileModel->getRatingCount());
 
         $this->entityManager->persist($entity);
         $this->entityManager->flush();

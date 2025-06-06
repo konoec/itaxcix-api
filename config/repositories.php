@@ -7,6 +7,7 @@ use itaxcix\Core\Interfaces\location\ProvinceRepositoryInterface;
 use itaxcix\Core\Interfaces\person\DocumentTypeRepositoryInterface;
 use itaxcix\Core\Interfaces\person\PersonRepositoryInterface;
 use itaxcix\Core\Interfaces\user\AdminProfileRepositoryInterface;
+use itaxcix\Core\Interfaces\user\CitizenProfileRepositoryInterface;
 use itaxcix\Core\Interfaces\user\ContactTypeRepositoryInterface;
 use itaxcix\Core\Interfaces\user\DriverProfileRepositoryInterface;
 use itaxcix\Core\Interfaces\user\DriverStatusRepositoryInterface;
@@ -41,6 +42,7 @@ use itaxcix\Infrastructure\Database\Repository\location\DoctrineProvinceReposito
 use itaxcix\Infrastructure\Database\Repository\person\DoctrineDocumentTypeRepository;
 use itaxcix\Infrastructure\Database\Repository\person\DoctrinePersonRepository;
 use itaxcix\Infrastructure\Database\Repository\user\DoctrineAdminProfileRepository;
+use itaxcix\Infrastructure\Database\Repository\user\DoctrineCitizenProfileRepository;
 use itaxcix\Infrastructure\Database\Repository\user\DoctrineContactTypeRepository;
 use itaxcix\Infrastructure\Database\Repository\user\DoctrineDriverProfileRepository;
 use itaxcix\Infrastructure\Database\Repository\user\DoctrineDriverStatusRepository;
@@ -85,6 +87,7 @@ return [
     PermissionRepositoryInterface::class => autowire(DoctrinePermissionRepository::class),
     AdminProfileRepositoryInterface::class => autowire(DoctrineAdminProfileRepository::class),
     DriverProfileRepositoryInterface::class => autowire(DoctrineDriverProfileRepository::class),
+    CitizenProfileRepositoryInterface::class => autowire(DoctrineCitizenProfileRepository::class),
 
     PersonRepositoryInterface::class => autowire(DoctrinePersonRepository::class),
     DocumentTypeRepositoryInterface::class => autowire(DoctrineDocumentTypeRepository::class),

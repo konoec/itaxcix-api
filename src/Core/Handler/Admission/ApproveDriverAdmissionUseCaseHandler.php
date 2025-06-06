@@ -44,7 +44,9 @@ class ApproveDriverAdmissionUseCaseHandler implements ApproveDriverAdmissionUseC
             id: $driverProfile->getId(),
             user: $driverProfile->getUser(),
             available: $driverProfile->isAvailable(),
-            status: $driverStatus
+            status: $driverStatus,
+            averageRating: $driverProfile->getAverageRating(),
+            ratingCount: $driverProfile->getRatingCount()
         );
 
         $updatedDriverProfile = $this->driverProfileRepository->saveDriverProfile($newDriverProfie);
