@@ -22,6 +22,16 @@ class CorsMiddleware implements MiddlewareInterface
             return $response->withStatus(204);
         }
 
+        // Agregar logs
+        print_r('==== CORS Debug ====');
+        print_r('URI: ' . $request->getUri()->getPath());
+        print_r('Method: ' . $request->getMethod());
+        print_r('Headers: ' . json_encode($request->getHeaders()));
+
+        // Log de respuesta
+        print_r('Response status: ' . $response->getStatusCode());
+        print_r('Response headers: ' . json_encode($response->getHeaders()));
+
         return $response;
     }
 }

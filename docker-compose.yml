@@ -47,6 +47,7 @@ services:
     container_name: itaxcix-ws
     volumes:
       - ./:/var/www/html
+      - ./logs:/var/log/php
     command: php /var/www/html/ws/ws-server.php
     environment:
       WS_HOST: ${WS_HOST}
