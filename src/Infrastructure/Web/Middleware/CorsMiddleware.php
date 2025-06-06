@@ -20,8 +20,11 @@ readonly class CorsMiddleware implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        $origin = $request->getHeaderLine('Origin') ?: '*';
+
         $response = $handler->handle($request)
-            ->withHeader('Access-Control-Allow-Origin', '*')
+            ->withHeader('Access-Control-Allow-Origin', $origin)
+            ->withHeader('Access-Control-Allow-Credentials', 'true')
             ->withHeader('Access-Control-Allow-Methods', $this->corsConfig['methods'])
             ->withHeader('Access-Control-Allow-Headers', $this->corsConfig['headers'])
             ->withHeader('Access-Control-Max-Age', $this->corsConfig['max_age']);
