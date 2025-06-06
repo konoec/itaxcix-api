@@ -62,6 +62,7 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
         $this->notificationServiceFactory = $notificationServiceFactory;
         $this->driverProfileRepository = $driverProfileRepository;
         $this->driverStatusRepository = $driverStatusRepository;
+        $this->citizenProfileRepository = $citizenProfileRepository;
     }
 
     /**

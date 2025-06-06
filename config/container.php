@@ -5,6 +5,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use itaxcix\Infrastructure\Auth\Interfaces\JwtEncoderInterface;
 use itaxcix\Infrastructure\Auth\Middleware\JwtMiddleware;
 use itaxcix\Infrastructure\Auth\Service\JwtService;
+use itaxcix\Infrastructure\Cache\RedisService;
 use itaxcix\Infrastructure\Database\Config\EntityManagerFactory;
 use itaxcix\Infrastructure\Notifications\EmailNotificationService;
 use itaxcix\Infrastructure\Notifications\NotificationServiceFactory;
@@ -48,6 +49,10 @@ $containerBuilder->addDefinitions([
             $container->get(EmailNotificationService::class),
             $container->get(SmsNotificationService::class)
         );
+    },
+
+    RedisService::class => function () {
+        return new RedisService();
     },
 ]);
 

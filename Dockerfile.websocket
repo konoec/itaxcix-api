@@ -1,0 +1,44 @@
+FROM php:8.2-cli
+
+# Instalamos dependencias y extensiones necesarias
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    zip \
+    unzip \
+    git \
+    libjpeg-dev \
+    libpng-dev \
+    libfreetype6-dev \
+    libwebp-dev \
+    && docker-php-ext-configure gd \
+        --with-jpeg \
+        --with-freetype \
+        --with-webp \
+    && docker-php-ext-install \
+        sockets \
+        pdo_pgsql \
+        pcntl \
+        gd \
+    && docker-php-ext-enable \
+        sockets \
+        pcntl \
+        gd
+
+# Configuramos Git para permitir el directorio
+RUN git config --global --add safe.directory /var/www/html
+
+# Instalamos Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Configuramos directorio de trabajo
+WORKDIR /var/www/html
+
+# Copiamos archivos del proyecto
+COPY . .
+
+# Instalamos dependencias con --ignore-platform-reqs para evitar problemas
+RUN composer install --no-scripts --no-autoloader --ignore-platform-reqs \
+    && composer dump-autoload --optimize
+
+# Comando para iniciar el servidor WebSocket
+CMD ["php", "ws/ws-server.php"]

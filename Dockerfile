@@ -7,14 +7,16 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libpng-dev \
     libfreetype6-dev \
-    libwebp-dev
+    libwebp-dev \
+    && rm -rf /var/lib/apt/lists/*
 
+# Instalamos las extensiones PHP
 RUN docker-php-ext-configure gd \
     --with-jpeg \
     --with-freetype \
     --with-webp \
-    && docker-php-ext-install pdo_pgsql opcache gd \
-    && docker-php-ext-enable gd
+    && docker-php-ext-install pdo_pgsql opcache gd pcntl \
+    && docker-php-ext-enable gd pcntl
 
 
 # Configuración de OPcache

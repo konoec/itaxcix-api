@@ -22,7 +22,9 @@
         "respect/validation": "^2.4",
         "mauricesvay/php-facedetection": "^0.1.0",
         "ext-gd": "*",
-        "cboden/ratchet": "^0.4.4"
+        "cboden/ratchet": "^0.4.4",
+        "predis/predis": "^3.0",
+        "react/async": "^4.3"
     },
     "autoload": {
         "psr-4": {

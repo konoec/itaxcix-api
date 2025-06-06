@@ -132,4 +132,25 @@ class DoctrineTucProcedureRepository implements TucProcedureRepositoryInterface 
 
         return $this->toDomain($result);
     }
+
+    public function findTucProceduresByVehicleIdAndStatusId(int $vehicleId, int $statusId): ?array
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('tp')
+            ->from(TucProcedureEntity::class, 'tp')
+            ->join('tp.vehicle', 'v')
+            ->join('tp.status', 's')
+            ->where('v.id = :vehicleId')
+            ->andWhere('s.id = :statusId')
+            ->setParameter('vehicleId', $vehicleId)
+            ->setParameter('statusId', $statusId);
+
+        $results = $qb->getQuery()->getResult();
+
+        if (empty($results)) {
+            return null;
+        }
+
+        return array_map([$this, 'toDomain'], $results);
+    }
 }

@@ -6,6 +6,7 @@ use itaxcix\Core\Domain\vehicle\TucProcedureModel;
 
 interface TucProcedureRepositoryInterface
 {
+    public function findTucProceduresByVehicleIdAndStatusId(int $vehicleId, int $statusId): ?array;
     public function findTucProcedureByVehicleId(int $vehicleId): ?TucProcedureModel;
     public function saveTucProcedure(TucProcedureModel $tucProcedureModel): TucProcedureModel;
 }
