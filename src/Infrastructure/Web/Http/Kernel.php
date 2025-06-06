@@ -82,77 +82,84 @@ class Kernel implements RequestHandlerInterface
         array $handler,
         array $routeParams
     ): ResponseInterface {
-        // Añadir parámetros de ruta al request
-        $request = $request->withAttribute('route_params', $routeParams);
+        try {
+            // Añadir parámetros de ruta al request
+            $request = $request->withAttribute('route_params', $routeParams);
 
-        foreach ($routeParams as $name => $value) {
-            $request = $request->withAttribute($name, $value);
-        }
-
-        if ($this->isMiddlewareHandler($handler)) {
-            // Desempaquetar
-            $middlewareClass = $handler[0];
-            if (count($handler) === 3) {
-                // Soporta [Middleware::class, permiso, Controller
-                [$_, $requiredPermission, $controller] = $handler;
-            } else {
-                $requiredPermission = null;
-                $controller = $handler[1];
+            foreach ($routeParams as $name => $value) {
+                $request = $request->withAttribute($name, $value);
             }
 
-            try {
-                // Instanciar middleware dinámico
-                if ($requiredPermission !== null) {
-                    $middleware = new $middlewareClass(
-                        $this->container->get(JwtService::class),
-                        $requiredPermission
-                    );
+            if ($this->isMiddlewareHandler($handler)) {
+                // Desempaquetar
+                $middlewareClass = $handler[0];
+                if (count($handler) === 3) {
+                    // Soporta [Middleware::class, permiso, Controller
+                    [$_, $requiredPermission, $controller] = $handler;
                 } else {
-                    $middleware = $this->container->get($middlewareClass);
+                    $requiredPermission = null;
+                    $controller = $handler[1];
                 }
 
-                if (!$middleware instanceof MiddlewareInterface) {
+                try {
+                    // Instanciar middleware dinámico
+                    if ($requiredPermission !== null) {
+                        $middleware = new $middlewareClass(
+                            $this->container->get(JwtService::class),
+                            $requiredPermission
+                        );
+                    } else {
+                        $middleware = $this->container->get($middlewareClass);
+                    }
+
+                    if (!$middleware instanceof MiddlewareInterface) {
+                        return $this->jsonResponse(500, [
+                            'error' => 'El middleware debe implementar MiddlewareInterface'
+                        ]);
+                    }
+
+                    // Preparar el handler final
+                    [$controllerClass, $controllerMethod] = $controller;
+                    $handlerFn = function (ServerRequestInterface $req) use ($controllerClass, $controllerMethod) {
+                        $controller = $this->container->get($controllerClass);
+                        return $controller->{$controllerMethod}($req, new Response());
+                    };
+                    $requestHandler = new class($handlerFn) implements RequestHandlerInterface {
+                        public function __construct(private readonly \Closure $handler) {}
+                        public function handle(ServerRequestInterface $request): ResponseInterface {
+                            return ($this->handler)($request);
+                        }
+                    };
+
+                    return $middleware->process($request, $requestHandler);
+
+                } catch (Exception $e) {
                     return $this->jsonResponse(500, [
-                        'error' => 'El middleware debe implementar MiddlewareInterface'
+                        'error'   => 'Error al procesar middleware',
+                        'message' => $e->getMessage()
                     ]);
                 }
+            }
 
-                // Preparar el handler final
-                [$controllerClass, $controllerMethod] = $controller;
-                $handlerFn = function (ServerRequestInterface $req) use ($controllerClass, $controllerMethod) {
-                    $controller = $this->container->get($controllerClass);
-                    return $controller->{$controllerMethod}($req, new Response());
-                };
-                $requestHandler = new class($handlerFn) implements RequestHandlerInterface {
-                    public function __construct(private readonly \Closure $handler) {}
-                    public function handle(ServerRequestInterface $request): ResponseInterface {
-                        return ($this->handler)($request);
-                    }
-                };
+            // Handler directo: [Controller::class, 'method']
+            if (!is_array($handler) || count($handler) !== 2) {
+                return $this->jsonResponse(500, ['error' => 'Formato de handler inválido']);
+            }
 
-                return $middleware->process($request, $requestHandler);
+            [$controllerClass, $controllerMethod] = $handler;
 
+            try {
+                $controller = $this->container->get($controllerClass);
+                return $controller->{$controllerMethod}($request, new Response());
             } catch (Exception $e) {
                 return $this->jsonResponse(500, [
-                    'error'   => 'Error al procesar middleware',
+                    'error' => 'Error interno',
                     'message' => $e->getMessage()
                 ]);
             }
-        }
-
-        // Handler directo: [Controller::class, 'method']
-        if (!is_array($handler) || count($handler) !== 2) {
-            return $this->jsonResponse(500, ['error' => 'Formato de handler inválido']);
-        }
-
-        [$controllerClass, $controllerMethod] = $handler;
-
-        try {
-            $controller = $this->container->get($controllerClass);
-            return $controller->{$controllerMethod}($request, new Response());
         } catch (Exception $e) {
             return $this->jsonResponse(500, [
-                'error' => 'Error interno',
+                'error' => 'Error interno del servidor',
                 'message' => $e->getMessage()
             ]);
         }
@@ -169,31 +176,32 @@ class Kernel implements RequestHandlerInterface
 
     public function run(): void
     {
-        $request = $this->createServerRequestFromGlobals();
-
-        // Invocar el middleware CORS antes de manejar la petición
-        $cors     = $this->container->get(CorsMiddleware::class);
-        $response = $cors->process($request, $this);
-
-        $this->sendResponse($response);
+        try {
+            $request = $this->createServerRequestFromGlobals();
+            $cors = $this->container->get(CorsMiddleware::class);
+            $response = $cors->process($request, $this);
+            $this->sendResponse($response);
+        } catch (Exception $e) {
+            $response = $this->jsonResponse(500, [
+                'error' => 'Error interno del servidor',
+                'message' => $e->getMessage()
+            ]);
+            $this->sendResponse($response);
+        }
     }
 
     private function sendResponse(ResponseInterface $response): void
     {
-        http_response_code($response->getStatusCode());
-
-        // Fallback CORS si falta
-        if (! $response->hasHeader('Access-Control-Allow-Origin')) {
-            header('Access-Control-Allow-Origin: *');
-            header('Access-Control-Allow-Credentials: true');
-            header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization');
-            header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH, OPTIONS');
-            header('Vary: Origin');
+        if (headers_sent()) {
+            return;
         }
 
+        http_response_code($response->getStatusCode());
+
         foreach ($response->getHeaders() as $name => $values) {
+            $name = str_replace(' ', '-', ucwords(strtolower(str_replace('-', ' ', $name))));
             foreach ($values as $value) {
-                header(sprintf('%s: %s', $name, $value));
+                header("$name: $value", false);
             }
         }
 
@@ -202,17 +210,18 @@ class Kernel implements RequestHandlerInterface
 
     private function createServerRequestFromGlobals(): ServerRequestInterface
     {
-        $uri = $this->normalizeUri($_SERVER['REQUEST_URI']);
-        $bodyContent = file_get_contents('php://input');
+        $uri = $this->normalizeUri($_SERVER['REQUEST_URI'] ?? '/');
+        $bodyContent = file_get_contents('php://input') ?: '';
         $stream = $this->psr17Factory->createStream($bodyContent);
 
         $request = $this->psr17Factory->createServerRequest(
-            $_SERVER['REQUEST_METHOD'],
+            $_SERVER['REQUEST_METHOD'] ?? 'GET',
             $uri,
             $_SERVER
         )->withBody($stream);
 
-        foreach (getallheaders() as $name => $value) {
+        $headers = is_callable('getallheaders') ? getallheaders() : [];
+        foreach ($headers as $name => $value) {
             $request = $request->withHeader($name, $value);
         }
 
