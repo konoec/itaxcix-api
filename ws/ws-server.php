@@ -1,20 +1,29 @@
 <?php
 
+// Oculta los warnings deprecados de PHP 8.2+
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+
 require __DIR__ . '/../vendor/autoload.php';
 
 use itaxcix\Infrastructure\WebSocket\DriverStatusHandler;
 use itaxcix\Infrastructure\WebSocket\WebSocketServer;
-use DI\ContainerBuilder;
+use React\EventLoop\Factory as LoopFactory;
+use Ratchet\Http\HttpServer;
+use Ratchet\WebSocket\WsServer;
+use Ratchet\Server\IoServer;
 
 // Carga configuración de WebSockets
 $config = require __DIR__ . '/../config/ws.php';
 
-// Construye el contenedor de dependencias
-$container = (new ContainerBuilder())->build();
+// Crea el event loop de ReactPHP
+$loop = LoopFactory::create();
 
-// Obtiene el handler desde el contenedor (con Redis inyectado)
-$handler = $container->get(DriverStatusHandler::class);
+// Instancia el handler solo con el event loop
+$handler = new DriverStatusHandler($loop);
 
-// Instancia y arranca el servidor
-$server = new WebSocketServer($config, $handler);
-$server->run();
+// Instancia el servidor Ratchet usando el mismo loop
+$wsServer = new WsServer($handler);
+$httpServer = new HttpServer($wsServer);
+$ioServer = IoServer::factory($httpServer, $config['port'], $config['host'], $loop);
+
+$loop->run();

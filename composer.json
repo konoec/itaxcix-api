@@ -24,7 +24,8 @@
         "ext-gd": "*",
         "cboden/ratchet": "^0.4.4",
         "predis/predis": "^3.0",
-        "react/async": "^4.3"
+        "react/async": "^4.3",
+        "clue/redis-react": "^2.8"
     },
     "autoload": {
         "psr-4": {

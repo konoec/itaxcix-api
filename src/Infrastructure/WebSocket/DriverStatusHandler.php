@@ -2,61 +2,45 @@
 
 namespace itaxcix\Infrastructure\WebSocket;
 
+use Clue\React\Redis\Factory as RedisFactory;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 use SplObjectStorage;
-use itaxcix\Infrastructure\Cache\RedisService;
+use React\EventLoop\LoopInterface;
 
 class DriverStatusHandler implements MessageComponentInterface
 {
     private SplObjectStorage $clients;
-    private RedisService $redisService;
 
-    public function __construct(RedisService $redisService)
+    public function __construct(LoopInterface $loop)
     {
         $this->clients = new SplObjectStorage();
-        $this->redisService = $redisService;
-        $this->forkRedisSubscriber();
+        $this->setupAsyncRedisSubscriber($loop);
     }
 
-    private function forkRedisSubscriber(): void
+    private function setupAsyncRedisSubscriber(LoopInterface $loop): void
     {
-        if (!function_exists('pcntl_fork')) {
-            return;
-        }
-
-        $pid = pcntl_fork();
-
-        if ($pid === -1) {
-            return;
-        }
-
-        if ($pid === 0) {
-            $this->listenToRedisChannel();
-            exit(0);
-        }
-    }
-
-    private function listenToRedisChannel(): void
-    {
-        try {
-            $pubsub = $this->redisService->getClient()->pubSubLoop();
-            $pubsub->subscribe('driver_status_changed');
-
-            foreach ($pubsub as $message) {
-                if (isset($message->kind) && $message->kind === 'message') {
-                    $this->broadcastMessage($message->payload);
+        $factory = new RedisFactory($loop);
+        $redisDsn = sprintf('redis://%s:%d', getenv('REDIS_HOST') ?: 'redis', getenv('REDIS_PORT') ?: 6379);
+        $factory->createClient($redisDsn)->then(function ($client) {
+            $client->subscribe('driver_status_changed');
+            error_log('[WebSocket] Suscrito a canal Redis (async): driver_status_changed');
+            $client->on('message', function ($message) {
+                // $message es un array: ['kind' => 'message', 'channel' => ..., 'payload' => ...]
+                if (isset($message['kind']) && $message['kind'] === 'message') {
+                    error_log('[WebSocket] Mensaje recibido de Redis (async): ' . $message['payload']);
+                    $this->broadcastMessage($message['payload']);
                 }
-            }
-
-            unset($pubsub);
-        } catch (\Exception $e) {
-            // Silenciado
-        }
+            });
+        }, function ($e) {
+            error_log('[WebSocket] Error al conectar a Redis async: ' . $e->getMessage());
+        });
     }
 
     private function broadcastMessage(string $message): void
     {
+        // Log para depuración
+        error_log('[WebSocket] Enviando mensaje a clientes: ' . $message);
         foreach ($this->clients as $client) {
             $client->send($message);
         }
@@ -65,6 +49,8 @@ class DriverStatusHandler implements MessageComponentInterface
     public function onOpen(ConnectionInterface $conn): void
     {
         $this->clients->attach($conn);
+        error_log('[WebSocket] Cliente conectado');
+        $conn->send(json_encode(['test' => '¡Conexión exitosa!']));
     }
 
     public function onMessage(ConnectionInterface $from, $msg): void
@@ -75,10 +61,12 @@ class DriverStatusHandler implements MessageComponentInterface
     public function onClose(ConnectionInterface $conn): void
     {
         $this->clients->detach($conn);
+        error_log('[WebSocket] Cliente desconectado');
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e): void
     {
+        error_log('[WebSocket] Error en conexión: ' . $e->getMessage());
         $conn->close();
     }
 }
