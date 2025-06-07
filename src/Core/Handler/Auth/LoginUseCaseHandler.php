@@ -5,6 +5,7 @@ namespace itaxcix\Core\Handler\Auth;
 use InvalidArgumentException;
 use itaxcix\Core\Domain\user\RolePermissionModel;
 use itaxcix\Core\Domain\user\UserRoleModel;
+use itaxcix\Core\Interfaces\user\CitizenProfileRepositoryInterface;
 use itaxcix\Core\Interfaces\user\DriverProfileRepositoryInterface;
 use itaxcix\Core\Interfaces\user\RolePermissionRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserContactRepositoryInterface;
@@ -22,9 +23,10 @@ class LoginUseCaseHandler implements LoginUseCase
     private RolePermissionRepositoryInterface $rolePermissionRepository;
     private UserContactRepositoryInterface $userContactRepository;
     private DriverProfileRepositoryInterface $driverProfileRepository;
+    private CitizenProfileRepositoryInterface $citizenProfileRepository;
     private JwtService $jwtService;
 
-    public function __construct(UserRepositoryInterface $userRepository, UserRoleRepositoryInterface $userRoleRepository, RolePermissionRepositoryInterface $rolePermissionRepository, JwtService $jwtService, UserContactRepositoryInterface $userContactRepository, DriverProfileRepositoryInterface $driverProfileRepository)
+    public function __construct(UserRepositoryInterface $userRepository, UserRoleRepositoryInterface $userRoleRepository, RolePermissionRepositoryInterface $rolePermissionRepository, JwtService $jwtService, UserContactRepositoryInterface $userContactRepository, DriverProfileRepositoryInterface $driverProfileRepository, CitizenProfileRepositoryInterface $citizenProfileRepository)
     {
         $this->userRepository = $userRepository;
         $this->userRoleRepository = $userRoleRepository;
@@ -32,6 +34,7 @@ class LoginUseCaseHandler implements LoginUseCase
         $this->jwtService = $jwtService;
         $this->userContactRepository = $userContactRepository;
         $this->driverProfileRepository = $driverProfileRepository;
+        $this->citizenProfileRepository = $citizenProfileRepository;
     }
 
     public function execute(AuthLoginRequestDTO $dto): ?AuthLoginResponseDTO
@@ -44,9 +47,20 @@ class LoginUseCaseHandler implements LoginUseCase
         }
 
         $driverProfile = $this->driverProfileRepository->findDriverProfileByUserId($user->getId());
+        $citizenProfile = $this->citizenProfileRepository->findCitizenProfileByUserId($user->getId());
 
         if ($driverProfile && $driverProfile->getStatus()->getName() !== 'APROBADO') {
             throw new InvalidArgumentException('El conductor no está aprobado.');
+        }
+
+        $averageRating = null;
+
+        if ($driverProfile){
+            $averageRating = $driverProfile->getAverageRating();
+        }
+
+        if ($citizenProfile){
+            $averageRating = $citizenProfile->getAverageRating();
         }
 
         $userContact = $this->userContactRepository->findUserContactByUserId($user->getId());
@@ -97,7 +111,8 @@ class LoginUseCaseHandler implements LoginUseCase
             firstName: $user->getPerson()->getName(),
             lastName: $user->getPerson()->getLastName(),
             roles: array_map(fn(UserRoleModel $r) => $r->getRole()?->getName(), $roles),
-            permissions: $permissions
+            permissions: $permissions,
+            rating: $averageRating
         );
     }
 }

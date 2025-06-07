@@ -2015,6 +2015,13 @@
                             "read_users",
                             "write_users"
                         ]
+                    },
+                    "rating": {
+                        "description": "Valor de la calificación del usuario",
+                        "type": "number",
+                        "format": "float",
+                        "example": 4.5,
+                        "nullable": true
                     }
                 },
                 "type": "object"

@@ -36,6 +36,8 @@ readonly class AuthLoginResponseDTO {
             items: new OA\Items(type: "string"),
             example: ["read_users", "write_users"]
         )]
-        public array $permissions
+        public array $permissions,
+        #[OA\Property(description: "Valor de la calificación del usuario", example: 4.5)]
+        public ?float $rating
     ) {}
 }

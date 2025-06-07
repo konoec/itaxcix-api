@@ -54,4 +54,19 @@ class DoctrineCitizenProfileRepository implements CitizenProfileRepositoryInterf
 
         return $this->toDomain($entity);
     }
+
+    public function findCitizenProfileByUserId(int $userId): ?CitizenProfileModel
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('cp')
+            ->from(CitizenProfileEntity::class, 'cp')
+            ->join('cp.user', 'u')
+            ->where('u.id = :userId')
+            ->setParameter('userId', $userId)
+            ->setMaxResults(1);
+
+        $entity = $query->getQuery()->getOneOrNullResult();
+
+        return $entity ? $this->toDomain($entity) : null;
+    }
 }
