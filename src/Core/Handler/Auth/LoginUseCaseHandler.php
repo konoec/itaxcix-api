@@ -96,7 +96,6 @@ class LoginUseCaseHandler implements LoginUseCase
             documentValue: $user->getPerson()->getDocument(),
             firstName: $user->getPerson()->getName(),
             lastName: $user->getPerson()->getLastName(),
-            availabilityStatus: $driverProfile?->isAvailable(),
             roles: array_map(fn(UserRoleModel $r) => $r->getRole()?->getName(), $roles),
             permissions: $permissions
         );

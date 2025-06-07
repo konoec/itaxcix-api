@@ -163,7 +163,6 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
             $driverProfile = new DriverProfileModel(
                 id: null,
                 user: $newUser,
-                available: false,
                 status: $driverStatus,
                 averageRating: 0.00,
                 ratingCount:0

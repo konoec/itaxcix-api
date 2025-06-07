@@ -6,6 +6,7 @@ use InvalidArgumentException;
 use itaxcix\Core\Domain\user\DriverProfileModel;
 use itaxcix\Core\Interfaces\user\DriverProfileRepositoryInterface;
 use itaxcix\Core\Interfaces\user\DriverStatusRepositoryInterface;
+use itaxcix\Core\Interfaces\user\UserContactRepositoryInterface;
 use itaxcix\Core\UseCases\Admission\ApproveDriverAdmissionUseCase;
 use itaxcix\Shared\DTO\useCases\Admission\ApproveDriverRequestDto;
 
@@ -13,13 +14,16 @@ class ApproveDriverAdmissionUseCaseHandler implements ApproveDriverAdmissionUseC
 {
     private DriverProfileRepositoryInterface $driverProfileRepository;
     private DriverStatusRepositoryInterface $driverStatusRepository;
+    private UserContactRepositoryInterface $userContactRepository;
 
     public function __construct(
         DriverProfileRepositoryInterface $driverProfileRepository,
-        DriverStatusRepositoryInterface $driverStatusRepository
+        DriverStatusRepositoryInterface $driverStatusRepository,
+        UserContactRepositoryInterface $userContactRepository
     ) {
         $this->driverProfileRepository = $driverProfileRepository;
         $this->driverStatusRepository = $driverStatusRepository;
+        $this->userContactRepository = $userContactRepository;
     }
 
     public function execute(ApproveDriverRequestDto $dto): ?array
@@ -28,6 +32,16 @@ class ApproveDriverAdmissionUseCaseHandler implements ApproveDriverAdmissionUseC
 
         if (!$driverStatus) {
             throw new InvalidArgumentException('No se encontró el estado de conductor APROBADO');
+        }
+
+        $userContact = $this->userContactRepository->findUserContactByUserId($dto->driverId);
+
+        if (!$userContact) {
+            throw new InvalidArgumentException('El contacto del usuario no existe.');
+        }
+
+        if (!$userContact->isConfirmed()) {
+            throw new InvalidArgumentException('El contacto del usuario no está verificado.');
         }
 
         $driverProfile = $this->driverProfileRepository->findDriverProfileByUserId($dto->driverId);
@@ -43,7 +57,6 @@ class ApproveDriverAdmissionUseCaseHandler implements ApproveDriverAdmissionUseC
         $newDriverProfie = new DriverProfileModel(
             id: $driverProfile->getId(),
             user: $driverProfile->getUser(),
-            available: $driverProfile->isAvailable(),
             status: $driverStatus,
             averageRating: $driverProfile->getAverageRating(),
             ratingCount: $driverProfile->getRatingCount()

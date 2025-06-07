@@ -42,7 +42,21 @@ class GetDriverDetailsUseCaseHandler implements GetDriverDetailsUseCase
         }
 
         $vehicleUser = $this->vehicleUserRepository->findVehicleUserByUserId($driverProfile->getUser()->getId());
+
+        if (!$vehicleUser) {
+            throw new InvalidArgumentException('El usuario de vehículo no existe para el conductor.');
+        }
+
         $contactUser = $this->userContactRepository->findUserContactByUserId($driverProfile->getUser()->getId());
+
+        if (!$contactUser) {
+            throw new InvalidArgumentException('El contacto del usuario no existe.');
+        }
+
+        if (!$contactUser->isConfirmed()) {
+            throw new InvalidArgumentException('El contacto del usuario no está verificado.');
+        }
+
         $tuc = $this->tucProcedureRepository->findTucProcedureByVehicleId($vehicleUser->getVehicle()->getId());
 
         return new PendingDriverDetailsResponseDTO(

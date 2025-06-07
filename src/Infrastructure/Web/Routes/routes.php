@@ -11,7 +11,7 @@ use itaxcix\Infrastructure\Web\Controller\api\Auth\DocumentValidationController;
 use itaxcix\Infrastructure\Web\Controller\api\Auth\RecoveryController;
 use itaxcix\Infrastructure\Web\Controller\api\Auth\RegistrationController;
 use itaxcix\Infrastructure\Web\Controller\api\Auth\VehicleValidationController;
-use itaxcix\Infrastructure\Web\Controller\api\Driver\DriverStatusController;
+use itaxcix\Infrastructure\Web\Controller\api\Driver\DriverTucStatusController;
 use itaxcix\Infrastructure\Web\Controller\docs\DocsController;
 
 return function (RouteCollector $r) {
@@ -42,8 +42,7 @@ return function (RouteCollector $r) {
         $r->post('/drivers/reject', [JwtPermissionMiddleware::class, 'ADMISIÓN DE CONDUCTORES', [DriverApprovalController::class, 'rejectDriver']]);
 
         // Driver Routes
-        $r->patch('/drivers/{id}/toggle-active', [JwtPermissionMiddleware::class, 'INICIO CONDUCTOR', [DriverStatusController::class, 'toggleActiveStatus']
-        ]);
+        $r->get('/drivers/{id}/has-active-tuc', [JwtPermissionMiddleware::class, 'INICIO CONDUCTOR', [DriverTucStatusController::class, 'hasActiveTuc']]);
     });
 
     // Web Routes v1

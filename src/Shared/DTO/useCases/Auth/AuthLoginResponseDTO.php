@@ -22,9 +22,6 @@ readonly class AuthLoginResponseDTO {
         #[OA\Property(description: "Apellido del usuario", example: "Pérez")]
         public string $lastName,
 
-        #[OA\Property(description: "Estado de disponibilidad", example: true, nullable: true)]
-        public ?bool $availabilityStatus,
-
         #[OA\Property(
             property: "roles",
             type: "array",

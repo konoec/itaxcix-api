@@ -1726,14 +1726,14 @@
                 }
             }
         },
-        "/drivers/{id}/toggle-active": {
-            "patch": {
+        "/drivers/{id}/has-active-tuc": {
+            "get": {
                 "tags": [
                     "Driver"
                 ],
-                "summary": "Cambiar estado activo del conductor",
-                "description": "Activa o desactiva el estado de disponibilidad de un conductor.",
-                "operationId": "toggleDriverActiveStatus",
+                "summary": "Verificar TUC activa del conductor",
+                "description": "Verifica si el conductor tiene una TUC activa.",
+                "operationId": "checkDriverHasActiveTuc",
                 "parameters": [
                     {
                         "name": "id",
@@ -1748,7 +1748,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Estado actualizado correctamente",
+                        "description": "Consulta realizada correctamente",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1767,7 +1767,7 @@
                                                     "type": "integer",
                                                     "example": 123
                                                 },
-                                                "available": {
+                                                "hasActiveTuc": {
                                                     "type": "boolean",
                                                     "example": true
                                                 }
@@ -1810,7 +1810,7 @@
                         }
                     },
                     "404": {
-                        "description": "Conductor no encontrado o error al cambiar el estado",
+                        "description": "Conductor no encontrado",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1821,7 +1821,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Conductor no encontrado o error al cambiar el estado"
+                                            "example": "Conductor no encontrado"
                                         },
                                         "error": {
                                             "properties": {

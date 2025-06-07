@@ -5,7 +5,6 @@ namespace itaxcix\Core\Domain\user;
 class DriverProfileModel {
     private ?int $id;
     private ?UserModel $user = null;
-    private bool $available = false;
     private ?DriverStatusModel $status;
     private float $averageRating = 0.00;
     private int $ratingCount = 0;
@@ -13,16 +12,14 @@ class DriverProfileModel {
     /**
      * @param int|null $id
      * @param UserModel|null $user
-     * @param bool $available
      * @param DriverStatusModel|null $status
      * @param float $averageRating
      * @param int $ratingCount
      */
-    public function __construct(?int $id, ?UserModel $user, bool $available, ?DriverStatusModel $status, float $averageRating, int $ratingCount)
+    public function __construct(?int $id, ?UserModel $user, ?DriverStatusModel $status, float $averageRating, int $ratingCount)
     {
         $this->id = $id;
         $this->user = $user;
-        $this->available = $available;
         $this->status = $status;
         $this->averageRating = $averageRating;
         $this->ratingCount = $ratingCount;
@@ -47,16 +44,6 @@ class DriverProfileModel {
     public function setUser(?UserModel $user): void
     {
         $this->user = $user;
-    }
-
-    public function isAvailable(): bool
-    {
-        return $this->available;
-    }
-
-    public function setAvailable(bool $available): void
-    {
-        $this->available = $available;
     }
 
     public function getStatus(): ?DriverStatusModel

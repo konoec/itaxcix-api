@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iTaxCix - Modo Conductor</title>
+    <style>
+        #status {
+            padding: 10px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .online {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .offline {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        #map {
+            height: 300px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+<h1>Modo Conductor</h1>
+
+<div id="status" class="offline">Desconectado</div>
+
+<button id="toggleStatus">Conectarse</button>
+
+<div id="map"></div>
+<div>Tu ubicación actual se está compartiendo mientras estés en línea</div>
+
+<!-- Script de Google Maps -->
+<script src="https://maps.googleapis.com/maps/api/js?key=TU_API_KEY"></script>
+
+<!-- Nuestros scripts -->
+<script src="/js/driver-location-sender.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const statusEl = document.getElementById('status');
+        const toggleBtn = document.getElementById('toggleStatus');
+        const mapEl = document.getElementById('map');
+        let map = null;
+        let marker = null;
+        let isOnline = false;
+
+        // Inicializar mapa
+        map = new google.maps.Map(mapEl, {
+            center: { lat: 19.4326, lng: -99.1332 },
+            zoom: 15
+        });
+
+        toggleBtn.addEventListener('click', function() {
+            if (isOnline) {
+                // Desconectar
+                window.driverLocationSender.disconnect();
+                statusEl.className = 'offline';
+                statusEl.textContent = 'Desconectado';
+                toggleBtn.textContent = 'Conectarse';
+                isOnline = false;
+            } else {
+                // Conectar como conductor
+                const driverData = {
+                    id: "<?php echo $userId; ?>", // Debe venir de servidor
+                    fullName: "<?php echo $fullName; ?>", // Debe venir de servidor
+                    image: "<?php echo $profileImage; ?>", // Debe venir de servidor
+                    rating: "<?php echo $rating; ?>" // Debe venir de servidor
+                };
+
+                const success = window.driverLocationSender.connect(driverData);
+
+                if (success) {
+                    statusEl.className = 'online';
+                    statusEl.textContent = 'Conectado - Compartiendo ubicación';
+                    toggleBtn.textContent = 'Desconectarse';
+                    isOnline = true;
+
+                    // Mostrar posición en mapa
+                    if (navigator.geolocation) {
+                        navigator.geolocation.watchPosition((position) => {
+                            const pos = {
+                                lat: position.coords.latitude,
+                                lng: position.coords.longitude
+                            };
+
+                            if (!marker) {
+                                marker = new google.maps.Marker({
+                                    position: pos,
+                                    map: map,
+                                    title: 'Tu ubicación'
+                                });
+                            } else {
+                                marker.setPosition(pos);
+                            }
+
+                            map.setCenter(pos);
+                        });
+                    }
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

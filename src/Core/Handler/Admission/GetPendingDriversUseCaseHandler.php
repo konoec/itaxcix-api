@@ -47,13 +47,20 @@ class GetPendingDriversUseCaseHandler implements GetPendingDriversUseCase
         $offset  = ($page - 1) * $perPage;
         $profiles = $this->driverProfileRepository->findDriversProfilesByStatusId($status->getId(), $offset, $perPage);
 
-        $items = array_map(fn($profile) => new PendingDriverResponseDTO(
-            driverId:      $profile->getUser()->getId(),
-            fullName:      $profile->getUser()->getPerson()->getName() . ' ' . $profile->getUser()->getPerson()->getLastName(),
-            documentValue: $profile->getUser()->getPerson()->getDocument(),
-            plateValue:    $this->vehicleUserRepository->findVehicleUserByUserId($profile->getUser()->getId())->getVehicle()->getLicensePlate(),
-            contactValue:  $this->userContactRepository->findUserContactByUserId($profile->getUser()->getId())->getValue()
-        ), $profiles);
+        $items = array_values(array_filter(array_map(function($profile) {
+            $userId = $profile->getUser()->getId();
+            $contact = $this->userContactRepository->findUserContactByUserId($userId);
+            if (!$contact || !$contact->isConfirmed()) {
+                return null;
+            }
+            return new PendingDriverResponseDTO(
+                driverId:      $userId,
+                fullName:      $profile->getUser()->getPerson()->getName() . ' ' . $profile->getUser()->getPerson()->getLastName(),
+                documentValue: $profile->getUser()->getPerson()->getDocument(),
+                plateValue:    $this->vehicleUserRepository->findVehicleUserByUserId($userId)->getVehicle()->getLicensePlate(),
+                contactValue:  $contact->getValue()
+            );
+        }, $profiles)));
 
         $lastPage = (int) ceil($total / $perPage);
         $meta     = new PaginationMetaDTO(total: $total, perPage: $perPage, currentPage: $page, lastPage: $lastPage);

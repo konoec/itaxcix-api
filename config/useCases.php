@@ -14,7 +14,7 @@ use itaxcix\Core\Handler\Auth\UserRegistrationUseCaseHandler;
 use itaxcix\Core\Handler\Auth\VehicleValidationValidatorUseCaseHandler;
 use itaxcix\Core\Handler\Auth\VerificationCodeUseCaseHandler;
 use itaxcix\Core\Handler\Auth\VerifyRecoveryCodeUseCaseHandler;
-use itaxcix\Core\Handler\Driver\ToggleDriverStatusUseCaseHandler;
+use itaxcix\Core\Handler\Driver\DriverTucStatusUseCaseHandler;
 use itaxcix\Core\UseCases\Admission\ApproveDriverAdmissionUseCase;
 use itaxcix\Core\UseCases\Admission\GetDriverDetailsUseCase;
 use itaxcix\Core\UseCases\Admission\GetPendingDriversUseCase;
@@ -29,7 +29,7 @@ use itaxcix\Core\UseCases\Auth\UserRegistrationUseCase;
 use itaxcix\Core\UseCases\Auth\VehicleValidationValidatorUseCase;
 use itaxcix\Core\UseCases\Auth\VerificationCodeUseCase;
 use itaxcix\Core\UseCases\Auth\VerifyRecoveryCodeUseCase;
-use itaxcix\Core\UseCases\Driver\ToggleDriverStatusUseCase;
+use itaxcix\Core\UseCases\Driver\DriverTucStatusUseCase;
 use function DI\autowire;
 
 return [
@@ -52,5 +52,5 @@ return [
     RejectDriverAdmissionUseCase::class => autowire(RejectDriverAdmissionUseCaseHandler::class),
 
     // Driver Use Cases
-    ToggleDriverStatusUseCase::class => autowire(ToggleDriverStatusUseCaseHandler::class),
+    DriverTucStatusUseCase::class => autowire(DriverTucStatusUseCaseHandler::class),
 ];

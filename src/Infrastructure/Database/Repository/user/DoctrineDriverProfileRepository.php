@@ -29,7 +29,6 @@ class DoctrineDriverProfileRepository implements DriverProfileRepositoryInterfac
         return new DriverProfileModel(
             id: $entity->getId(),
             user: $this->userRepository->toDomain($entity->getUser()),
-            available: $entity->isAvailable(),
             status: $this->driverStatusRepository->toDomain($entity->getStatus()),
             averageRating: $entity->getAverageRating(),
             ratingCount: $entity->getRatingCount()
@@ -58,7 +57,6 @@ class DoctrineDriverProfileRepository implements DriverProfileRepositoryInterfac
                 DriverStatusEntity::class, $driverProfileModel->getStatus()->getId()
             )
         );
-        $entity->setAvailable($driverProfileModel->isAvailable());
         $entity->setAverageRating($driverProfileModel->getAverageRating());
         $entity->setRatingCount($driverProfileModel->getRatingCount());
 
@@ -87,14 +85,16 @@ class DoctrineDriverProfileRepository implements DriverProfileRepositoryInterfac
         return $this->toDomain($result);
     }
 
-    public function findDriversProfilesByStatusId(int $statusId): array
+    public function findDriversProfilesByStatusId(int $statusId, int $offset = 0, int $perPage = 20): array
     {
         $qb = $this->entityManager->createQueryBuilder()
             ->select('dp')
             ->from(DriverProfileEntity::class, 'dp')
             ->join('dp.status', 'ds')
             ->where('ds.id = :statusId')
-            ->setParameter('statusId', $statusId);
+            ->setParameter('statusId', $statusId)
+            ->setFirstResult($offset)
+            ->setMaxResults($perPage);
 
         $result = $qb->getQuery()->getResult();
 

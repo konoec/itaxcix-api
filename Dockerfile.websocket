@@ -1,44 +1,41 @@
-FROM php:8.2-cli
+# Etapa 1: build con Composer y dependencias
+FROM php:8.2-cli AS builder
 
-# Instalamos dependencias y extensiones necesarias
 RUN apt-get update && apt-get install -y \
-    libpq-dev \
-    zip \
-    unzip \
-    git \
-    libjpeg-dev \
-    libpng-dev \
-    libfreetype6-dev \
-    libwebp-dev \
-    && docker-php-ext-configure gd \
-        --with-jpeg \
-        --with-freetype \
-        --with-webp \
-    && docker-php-ext-install \
-        sockets \
-        pdo_pgsql \
-        pcntl \
-        gd \
-    && docker-php-ext-enable \
-        sockets \
-        pcntl \
-        gd
+    libpq-dev zip unzip libjpeg-dev libpng-dev libfreetype6-dev libwebp-dev git libzip-dev \
+    && docker-php-ext-configure gd --with-jpeg --with-freetype --with-webp \
+    && docker-php-ext-install pdo_pgsql opcache gd pcntl zip \
+    && pecl install redis \
+    && docker-php-ext-enable redis gd pcntl zip \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Configuramos Git para permitir el directorio
-RUN git config --global --add safe.directory /var/www/html
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Instalamos Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+WORKDIR /app
 
-# Configuramos directorio de trabajo
-WORKDIR /var/www/html
+COPY composer.json ./
 
-# Copiamos archivos del proyecto
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
 COPY . .
 
-# Instalamos dependencias con --ignore-platform-reqs para evitar problemas
-RUN composer install --no-scripts --no-autoloader --ignore-platform-reqs \
-    && composer dump-autoload --optimize
+# Final
+FROM php:8.2-cli
 
-# Comando para iniciar el servidor WebSocket
-CMD ["php", "ws/ws-server.php"]
+RUN apt-get update && apt-get install -y \
+    libpq-dev libjpeg-dev libpng-dev libfreetype6-dev libwebp-dev libzip-dev \
+    zip unzip git \
+    && docker-php-ext-configure gd --with-jpeg --with-freetype --with-webp \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && docker-php-ext-install pdo pdo_pgsql sockets gd zip \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /var/www/html
+
+COPY --from=builder /app /var/www/html
+COPY --from=builder /usr/local/bin/composer /usr/local/bin/composer
+
+EXPOSE 8080
+
+CMD ["php", "bin/websocket-server.php"]
