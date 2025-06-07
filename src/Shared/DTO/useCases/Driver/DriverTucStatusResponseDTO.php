@@ -6,6 +6,6 @@ readonly class DriverTucStatusResponseDTO
 {
     public function __construct(
         public int $driverId,
-        public bool $available
+        public bool $hasActiveTuc
     ) {}
 }
