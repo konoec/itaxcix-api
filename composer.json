@@ -36,7 +36,8 @@
         "db:create": "php bin/doctrine orm:schema-tool:create",
         "db:drop": "php bin/doctrine orm:schema-tool:drop --force",
         "db:update": "php bin/doctrine orm:schema-tool:update --force",
-        "generate-swagger": "openapi src -o public/openapi.json"
+        "generate-swagger": "openapi src -o public/openapi.json",
+        "generate-asyncapi": "php bin/generate-asyncapi.php"
     },
     "minimum-stability": "stable",
     "prefer-stable": true,

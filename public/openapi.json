@@ -1996,12 +1996,6 @@
                         "type": "string",
                         "example": "Pérez"
                     },
-                    "availabilityStatus": {
-                        "description": "Estado de disponibilidad",
-                        "type": "boolean",
-                        "example": true,
-                        "nullable": true
-                    },
                     "roles": {
                         "type": "array",
                         "items": {
@@ -2208,5 +2202,9 @@
             "name": "Driver",
             "description": "Driver"
         }
-    ]
+    ],
+    "externalDocs": {
+        "description": "Documentación de WebSockets",
+        "url": "/web/v1/websocket-docs"
+    }
 }

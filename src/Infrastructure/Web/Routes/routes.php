@@ -46,8 +46,9 @@ return function (RouteCollector $r) {
     });
 
     // Web Routes v1
-    $r -> addGroup('/web/v1', function ($r) {
+    $r->addGroup('/web/v1', function ($r) {
         // Documentation routes
         $r->get('/docs', [DocsController::class, 'index']);
+        $r->get('/websocket-docs', [DocsController::class, 'websocketDocs']);
     });
 };

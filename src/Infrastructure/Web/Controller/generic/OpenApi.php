@@ -12,4 +12,10 @@ use OpenApi\Attributes as OA;
     bearerFormat: "JWT",
     scheme: "bearer"
 )]
+
+// Añadir documentación sobre WebSockets
+#[OA\ExternalDocumentation(
+    description: "Documentación de WebSockets",
+    url: "/web/v1/websocket-docs"
+)]
 class OpenApi {}

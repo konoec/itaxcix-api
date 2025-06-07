@@ -12,4 +12,11 @@ class DocsController {
         $response = new Response(200, ['Content-Type' => 'text/html'], $html);
         return $response;
     }
+
+    public function websocketDocs(ServerRequestInterface $request): ResponseInterface
+    {
+        $html = file_get_contents(__DIR__ . '/../../../../../public/asyncapi-docs/index.html');
+        $response = new Response(200, ['Content-Type' => 'text/html'], $html);
+        return $response;
+    }
 }

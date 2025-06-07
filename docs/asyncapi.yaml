@@ -1,0 +1,188 @@
+asyncapi: '2.6.0'
+info:
+  title: iTaxCix WebSocket API
+  version: '1.0.0'
+  description: API de WebSocket para seguimiento de conductores en tiempo real
+
+servers:
+  production:
+    url: wss://api.itaxcix.com/ws
+    protocol: wss
+  development:
+    url: ws://localhost:8080
+    protocol: ws
+
+channels:
+  /:
+    publish:
+      summary: Mensajes enviados por clientes al servidor
+      message:
+        oneOf:
+          - $ref: '#/components/messages/IdentifyMessage'
+          - $ref: '#/components/messages/UpdateLocationMessage'
+    subscribe:
+      summary: Mensajes enviados por el servidor a los clientes
+      message:
+        oneOf:
+          - $ref: '#/components/messages/InitialDriversMessage'
+          - $ref: '#/components/messages/NewDriverMessage'
+          - $ref: '#/components/messages/DriverLocationUpdateMessage'
+          - $ref: '#/components/messages/DriverOfflineMessage'
+
+components:
+  messages:
+    IdentifyMessage:
+      name: identify
+      summary: Mensaje de identificación de cliente
+      payload:
+        $ref: '#/components/schemas/IdentifyPayload'
+    UpdateLocationMessage:
+      name: update_location
+      summary: Actualización de ubicación del conductor
+      payload:
+        $ref: '#/components/schemas/UpdateLocationPayload'
+    InitialDriversMessage:
+      name: initial_drivers
+      summary: Lista inicial de conductores activos
+      payload:
+        $ref: '#/components/schemas/InitialDriversPayload'
+    NewDriverMessage:
+      name: new_driver
+      summary: Nuevo conductor conectado
+      payload:
+        $ref: '#/components/schemas/DriverEventPayload'
+    DriverLocationUpdateMessage:
+      name: driver_location_update
+      summary: Actualización de ubicación de un conductor
+      payload:
+        $ref: '#/components/schemas/LocationUpdatePayload'
+    DriverOfflineMessage:
+      name: driver_offline
+      summary: Conductor desconectado
+      payload:
+        $ref: '#/components/schemas/DriverOfflinePayload'
+
+  schemas:
+    IdentifyPayload:
+      type: object
+      required:
+        - type
+        - clientType
+        - userId
+      properties:
+        type:
+          type: string
+          const: identify
+        clientType:
+          type: string
+          enum: [driver, citizen]
+        userId:
+          type: string
+        driverData:
+          type: object
+          properties:
+            fullName:
+              type: string
+            location:
+              $ref: '#/components/schemas/Location'
+            image:
+              type: string
+            rating:
+              type: number
+
+    UpdateLocationPayload:
+      type: object
+      required:
+        - type
+        - location
+      properties:
+        type:
+          type: string
+          const: update_location
+        location:
+          $ref: '#/components/schemas/Location'
+
+    InitialDriversPayload:
+      type: object
+      required:
+        - type
+        - drivers
+      properties:
+        type:
+          type: string
+          const: initial_drivers
+        drivers:
+          type: array
+          items:
+            $ref: '#/components/schemas/DriverInfo'
+
+    DriverEventPayload:
+      type: object
+      required:
+        - type
+        - data
+      properties:
+        type:
+          type: string
+          const: new_driver
+        data:
+          $ref: '#/components/schemas/DriverInfo'
+
+    LocationUpdatePayload:
+      type: object
+      required:
+        - type
+        - data
+      properties:
+        type:
+          type: string
+          const: driver_location_update
+        data:
+          type: object
+          properties:
+            id:
+              type: string
+            location:
+              $ref: '#/components/schemas/Location'
+
+    DriverOfflinePayload:
+      type: object
+      required:
+        - type
+        - data
+      properties:
+        type:
+          type: string
+          const: driver_offline
+        data:
+          type: object
+          properties:
+            id:
+              type: string
+
+    DriverInfo:
+      type: object
+      properties:
+        id:
+          type: string
+        fullName:
+          type: string
+        image:
+          type: string
+        location:
+          $ref: '#/components/schemas/Location'
+        rating:
+          type: number
+        timestamp:
+          type: integer
+
+    Location:
+      type: object
+      required:
+        - lat
+        - lng
+      properties:
+        lat:
+          type: number
+        lng:
+          type: number
