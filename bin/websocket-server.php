@@ -5,7 +5,7 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 use Ratchet\Server\IoServer;
 use Ratchet\Http\HttpServer;
 use Ratchet\WebSocket\WsServer;
-use itaxcix\Infrastructure\Websocket\DriverLocationHandler;
+use itaxcix\Infrastructure\WebSocket\DriverLocationHandler;
 use Predis\Client as RedisClient;
 use Dotenv\Dotenv;
 
