@@ -21,12 +21,12 @@ class UserProfilePhotoUploadValidator
         }
 
         // Validar imageBase64
-        if (!isset($data['imageBase64'])) {
+        if (!isset($data['base64Image'])) {
             $errors['imageBase64'] = 'La imagen es requerida.';
         } else {
-            $imageErrors = Base64ImageValidator::validate($data['imageBase64']);
+            $imageErrors = Base64ImageValidator::validate($data['base64Image']);
             if (!empty($imageErrors)) {
-                $errors['imageBase64'] = reset($imageErrors);
+                $errors['base64Image'] = reset($imageErrors);
             }
         }
 
