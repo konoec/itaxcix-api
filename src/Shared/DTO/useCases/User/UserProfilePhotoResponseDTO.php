@@ -6,6 +6,6 @@ readonly class UserProfilePhotoResponseDTO
 {
     public function __construct(
         public int $userId,
-        public string $imageBase64
+        public string $base64Image
     ) {}
 }
