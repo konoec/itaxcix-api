@@ -21,6 +21,7 @@ services:
     volumes:
       - ./:/var/www/html
       - vendor_data:/var/www/html/vendor
+      - uploads_data:/var/www/html/uploads
     environment:
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
@@ -78,6 +79,7 @@ volumes:
   data:
   redis_data:
   vendor_data:
+  uploads_data:
 
 networks:
   app-network:

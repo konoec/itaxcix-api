@@ -15,6 +15,8 @@ use itaxcix\Core\Handler\Auth\VehicleValidationValidatorUseCaseHandler;
 use itaxcix\Core\Handler\Auth\VerificationCodeUseCaseHandler;
 use itaxcix\Core\Handler\Auth\VerifyRecoveryCodeUseCaseHandler;
 use itaxcix\Core\Handler\Driver\DriverTucStatusUseCaseHandler;
+use itaxcix\Core\Handler\User\UserProfilePhotoUploadUseCaseHandler;
+use itaxcix\Core\Handler\User\UserProfilePhotoUseCaseHandler;
 use itaxcix\Core\UseCases\Admission\ApproveDriverAdmissionUseCase;
 use itaxcix\Core\UseCases\Admission\GetDriverDetailsUseCase;
 use itaxcix\Core\UseCases\Admission\GetPendingDriversUseCase;
@@ -30,6 +32,8 @@ use itaxcix\Core\UseCases\Auth\VehicleValidationValidatorUseCase;
 use itaxcix\Core\UseCases\Auth\VerificationCodeUseCase;
 use itaxcix\Core\UseCases\Auth\VerifyRecoveryCodeUseCase;
 use itaxcix\Core\UseCases\Driver\DriverTucStatusUseCase;
+use itaxcix\Core\UseCases\User\UserProfilePhotoUploadUseCase;
+use itaxcix\Core\UseCases\User\UserProfilePhotoUseCase;
 use function DI\autowire;
 
 return [
@@ -53,4 +57,8 @@ return [
 
     // Driver Use Cases
     DriverTucStatusUseCase::class => autowire(DriverTucStatusUseCaseHandler::class),
+
+    // User Use Cases
+    UserProfilePhotoUploadUseCase::class => autowire(UserProfilePhotoUploadUseCaseHandler::class),
+    UserProfilePhotoUseCase::class => autowire(UserProfilePhotoUseCaseHandler::class),
 ];

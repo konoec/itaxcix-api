@@ -29,6 +29,7 @@ class DoctrinePersonRepository implements PersonRepositoryInterface
             documentType: $this->documentTypeRepository->toDomain($entity->getDocumentType()),
             document: $entity->getDocument(),
             validationDate: $entity->getValidationDate(),
+            image: $entity->getImage(),
             active: $entity->isActive()
         );
     }
@@ -69,6 +70,7 @@ class DoctrinePersonRepository implements PersonRepositoryInterface
         $entity->setDocument($personModel->getDocument());
         $entity->setValidationDate($personModel->getValidationDate());
         $entity->setActive($personModel->isActive());
+        $entity->setImage($personModel->getImage());
 
         $this->entityManager->persist($entity);
         $this->entityManager->flush();

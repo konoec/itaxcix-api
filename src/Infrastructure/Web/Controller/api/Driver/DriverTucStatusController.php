@@ -21,6 +21,7 @@ class DriverTucStatusController extends AbstractController
         operationId: "checkDriverHasActiveTuc",
         description: "Verifica si el conductor tiene una TUC activa.",
         summary: "Verificar TUC activa del conductor",
+        security: [["bearerAuth" => []]],
         tags: ["Driver"],
         parameters: [
             new OA\Parameter(

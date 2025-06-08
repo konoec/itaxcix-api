@@ -25,7 +25,7 @@ class PersonEntity {
     #[ORM\Column(name: 'pers_fecha_validacion', type: 'datetime', nullable: true)]
     private ?DateTime $validationDate;
     #[ORM\Column(name: 'pers_imagen', type: 'string', length: 255, nullable: true)]
-    private ?string $image = null;
+    private ?string $image;
     #[ORM\Column(name: 'pers_activo', type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $active = true;
 

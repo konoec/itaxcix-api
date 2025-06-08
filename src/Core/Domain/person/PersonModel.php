@@ -12,7 +12,7 @@ class PersonModel {
     private ?DocumentTypeModel $documentType = null;
     private string $document;
     private ?DateTime $validationDate;
-    private ?string $image = null;
+    private ?string $image;
     private bool $active = true;
 
     public function __construct(

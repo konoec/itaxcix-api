@@ -2,7 +2,6 @@
 
 namespace itaxcix\Core\Interfaces\person;
 
-use DateTime;
 use itaxcix\Core\Domain\person\PersonModel;
 
 interface PersonRepositoryInterface

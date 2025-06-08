@@ -12,11 +12,13 @@ use itaxcix\Infrastructure\Web\Controller\api\Auth\RecoveryController;
 use itaxcix\Infrastructure\Web\Controller\api\Auth\RegistrationController;
 use itaxcix\Infrastructure\Web\Controller\api\Auth\VehicleValidationController;
 use itaxcix\Infrastructure\Web\Controller\api\Driver\DriverTucStatusController;
+use itaxcix\Infrastructure\Web\Controller\api\User\UserProfilePhotoController;
+use itaxcix\Infrastructure\Web\Controller\api\User\UserProfilePhotoUploadController;
 use itaxcix\Infrastructure\Web\Controller\docs\DocsController;
 
 return function (RouteCollector $r) {
     // API Routes v1
-    $r->addGroup('/api/v1', function ($r) {
+    $r->addGroup('/api/v1', callback: function ($r) {
         // Auth Routes
         $r->post('/auth/login', [AuthController::class, 'login']);
 
@@ -43,6 +45,10 @@ return function (RouteCollector $r) {
 
         // Driver Routes
         $r->get('/drivers/{id}/has-active-tuc', [JwtPermissionMiddleware::class, 'INICIO CONDUCTOR', [DriverTucStatusController::class, 'hasActiveTuc']]);
+
+        // User Routes
+        $r->get('/users/{id}/profile-photo', [JwtMiddleware::class, [UserProfilePhotoController::class, 'getProfilePhoto']]);
+        $r->post('/users/{id}/profile-photo', [JwtMiddleware::class, [UserProfilePhotoUploadController::class, 'uploadProfilePhoto']]);
     });
 
     // Web Routes v1

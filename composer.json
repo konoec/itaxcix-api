@@ -25,7 +25,8 @@
         "cboden/ratchet": "^0.4.4",
         "predis/predis": "^3.0",
         "ext-redis": "*",
-        "clue/redis-react": "^2.8"
+        "clue/redis-react": "^2.8",
+        "ext-fileinfo": "*"
     },
     "autoload": {
         "psr-4": {
