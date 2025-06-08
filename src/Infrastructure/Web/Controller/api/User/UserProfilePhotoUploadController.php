@@ -100,7 +100,7 @@ class UserProfilePhotoUploadController extends AbstractController
             // 3. Crear el DTO de solicitud
             $requestDTO = new UserProfilePhotoUploadRequestDTO(
                 $userId,
-                $data['imageBase64']
+                $data['base64Image']
             );
 
             // 4. Ejecutar el caso de uso
