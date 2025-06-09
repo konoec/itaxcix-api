@@ -26,7 +26,8 @@
         "predis/predis": "^3.0",
         "ext-redis": "*",
         "clue/redis-react": "^2.8",
-        "ext-fileinfo": "*"
+        "ext-fileinfo": "*",
+        "ext-pcntl": "*"
     },
     "autoload": {
         "psr-4": {

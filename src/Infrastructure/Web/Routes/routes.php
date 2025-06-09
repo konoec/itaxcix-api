@@ -12,6 +12,7 @@ use itaxcix\Infrastructure\Web\Controller\api\Auth\RecoveryController;
 use itaxcix\Infrastructure\Web\Controller\api\Auth\RegistrationController;
 use itaxcix\Infrastructure\Web\Controller\api\Auth\VehicleValidationController;
 use itaxcix\Infrastructure\Web\Controller\api\Driver\DriverTucStatusController;
+use itaxcix\Infrastructure\Web\Controller\api\Travel\TravelStatusController;
 use itaxcix\Infrastructure\Web\Controller\api\User\UserProfilePhotoController;
 use itaxcix\Infrastructure\Web\Controller\api\User\UserProfilePhotoUploadController;
 use itaxcix\Infrastructure\Web\Controller\docs\DocsController;
@@ -49,6 +50,13 @@ return function (RouteCollector $r) {
         // User Routes
         $r->get('/users/{id}/profile-photo', [JwtMiddleware::class, [UserProfilePhotoController::class, 'getProfilePhoto']]);
         $r->post('/users/{id}/profile-photo', [JwtMiddleware::class, [UserProfilePhotoUploadController::class, 'uploadProfilePhoto']]);
+
+        // Travel Routes
+        $r->post('/travels', [JwtPermissionMiddleware::class, 'INICIO CIUDADANO', [TravelStatusController::class, 'requestTravel']]);
+        $r->patch('/travels/{travelId}/respond', [JwtPermissionMiddleware::class, 'INICIO CONDUCTOR', [TravelStatusController::class, 'respondToRequest']]);
+        $r->patch('/travels/{travelId}/start', [JwtPermissionMiddleware::class, 'INICIO CONDUCTOR', [TravelStatusController::class, 'startTravel']]);
+        $r->patch('/travels/{travelId}/complete', [JwtPermissionMiddleware::class, 'INICIO CONDUCTOR', [TravelStatusController::class, 'completeTravel']]);
+        $r->patch('/travels/{travelId}/cancel', [JwtMiddleware::class, [TravelStatusController::class, 'cancelTravel']]);
     });
 
     // Web Routes v1

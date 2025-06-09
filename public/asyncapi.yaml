@@ -2,7 +2,13 @@ asyncapi: '2.6.0'
 info:
   title: iTaxCix WebSocket API
   version: '1.0.0'
-  description: API de WebSocket para seguimiento de conductores en tiempo real
+  description: |
+    API de WebSocket para seguimiento de conductores en tiempo real y notificaciones de viajes.
+    
+    ## Flujo de conexión actualizado:
+    - Los clientes se conectan al WebSocket
+    - Los clientes se identifican (ciudadano o conductor)
+    - Solo después de identificarse como ciudadano, reciben la lista de conductores activos
 
 servers:
   production:
@@ -28,6 +34,9 @@ channels:
           - $ref: '#/components/messages/NewDriverMessage'
           - $ref: '#/components/messages/DriverLocationUpdateMessage'
           - $ref: '#/components/messages/DriverOfflineMessage'
+          - $ref: '#/components/messages/TripRequestMessage'
+          - $ref: '#/components/messages/TripResponseMessage'
+          - $ref: '#/components/messages/TripStatusUpdateMessage'
 
 components:
   messages:
@@ -43,24 +52,39 @@ components:
         $ref: '#/components/schemas/UpdateLocationPayload'
     InitialDriversMessage:
       name: initial_drivers
-      summary: Lista inicial de conductores activos
+      summary: Lista inicial de conductores activos (enviada solo después de identificación como ciudadano)
       payload:
         $ref: '#/components/schemas/InitialDriversPayload'
     NewDriverMessage:
       name: new_driver
-      summary: Nuevo conductor conectado
+      summary: Nuevo conductor conectado (enviado solo a ciudadanos)
       payload:
         $ref: '#/components/schemas/DriverEventPayload'
     DriverLocationUpdateMessage:
       name: driver_location_update
-      summary: Actualización de ubicación de un conductor
+      summary: Actualización de ubicación de un conductor (enviado solo a ciudadanos)
       payload:
         $ref: '#/components/schemas/LocationUpdatePayload'
     DriverOfflineMessage:
       name: driver_offline
-      summary: Conductor desconectado
+      summary: Conductor desconectado (enviado solo a ciudadanos)
       payload:
         $ref: '#/components/schemas/DriverOfflinePayload'
+    TripRequestMessage:
+      name: trip_request
+      summary: Solicitud de viaje enviada al conductor
+      payload:
+        $ref: '#/components/schemas/TripRequestPayload'
+    TripResponseMessage:
+      name: trip_response
+      summary: Respuesta del conductor a una solicitud de viaje
+      payload:
+        $ref: '#/components/schemas/TripResponsePayload'
+    TripStatusUpdateMessage:
+      name: trip_status_update
+      summary: Actualización del estado del viaje
+      payload:
+        $ref: '#/components/schemas/TripStatusUpdatePayload'
 
   schemas:
     IdentifyPayload:
@@ -159,6 +183,83 @@ components:
           properties:
             id:
               type: string
+
+    TripRequestPayload:
+      type: object
+      required:
+        - type
+        - data
+      properties:
+        type:
+          type: string
+          const: trip_request
+        data:
+          type: object
+          properties:
+            tripId:
+              type: string
+            passengerId:
+              type: string
+            origin:
+              $ref: '#/components/schemas/Location'
+            destination:
+              $ref: '#/components/schemas/Location'
+            passengerName:
+              type: string
+            passengerRating:
+              type: number
+            price:
+              type: number
+            distance:
+              type: number
+
+    TripResponsePayload:
+      type: object
+      required:
+        - type
+        - data
+      properties:
+        type:
+          type: string
+          const: trip_response
+        data:
+          type: object
+          required:
+            - tripId
+            - accepted
+          properties:
+            tripId:
+              type: string
+            accepted:
+              type: boolean
+            driverId:
+              type: string
+            driverName:
+              type: string
+            estimatedArrival:
+              type: integer
+              description: Tiempo estimado de llegada en segundos
+
+    TripStatusUpdatePayload:
+      type: object
+      required:
+        - type
+        - data
+      properties:
+        type:
+          type: string
+          const: trip_status_update
+        data:
+          type: object
+          required:
+            - tripId
+            - status
+          properties:
+            tripId:
+              type: string
+            status:
+              type: string
+              enum: [driver_arriving, started, completed, canceled]
 
     DriverInfo:
       type: object

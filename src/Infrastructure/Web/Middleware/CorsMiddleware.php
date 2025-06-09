@@ -10,7 +10,7 @@ use Psr\Http\Message\ResponseInterface;
 readonly class CorsMiddleware implements MiddlewareInterface
 {
     public function __construct(
-        private readonly array $corsConfig = [
+        private array $corsConfig = [
             'origin' => '*',
             'methods' => 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
             'headers' => 'Origin, X-Requested-With, Content-Type, Accept, Authorization',

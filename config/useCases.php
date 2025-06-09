@@ -15,6 +15,11 @@ use itaxcix\Core\Handler\Auth\VehicleValidationValidatorUseCaseHandler;
 use itaxcix\Core\Handler\Auth\VerificationCodeUseCaseHandler;
 use itaxcix\Core\Handler\Auth\VerifyRecoveryCodeUseCaseHandler;
 use itaxcix\Core\Handler\Driver\DriverTucStatusUseCaseHandler;
+use itaxcix\Core\Handler\Travel\CancelTravelUseCaseHandler;
+use itaxcix\Core\Handler\Travel\CompleteTravelUseCaseHandler;
+use itaxcix\Core\Handler\Travel\RequestNewTravelUseCaseHandler;
+use itaxcix\Core\Handler\Travel\RespondToTravelRequestUseCaseHandler;
+use itaxcix\Core\Handler\Travel\StartAcceptedTravelUseCaseHandler;
 use itaxcix\Core\Handler\User\UserProfilePhotoUploadUseCaseHandler;
 use itaxcix\Core\Handler\User\UserProfilePhotoUseCaseHandler;
 use itaxcix\Core\UseCases\Admission\ApproveDriverAdmissionUseCase;
@@ -32,6 +37,11 @@ use itaxcix\Core\UseCases\Auth\VehicleValidationValidatorUseCase;
 use itaxcix\Core\UseCases\Auth\VerificationCodeUseCase;
 use itaxcix\Core\UseCases\Auth\VerifyRecoveryCodeUseCase;
 use itaxcix\Core\UseCases\Driver\DriverTucStatusUseCase;
+use itaxcix\Core\UseCases\Travel\CancelTravelUseCase;
+use itaxcix\Core\UseCases\Travel\CompleteTravelUseCase;
+use itaxcix\Core\UseCases\Travel\RequestNewTravelUseCase;
+use itaxcix\Core\UseCases\Travel\RespondToTravelRequestUseCase;
+use itaxcix\Core\UseCases\Travel\StartAcceptedTravelUseCase;
 use itaxcix\Core\UseCases\User\UserProfilePhotoUploadUseCase;
 use itaxcix\Core\UseCases\User\UserProfilePhotoUseCase;
 use function DI\autowire;
@@ -61,4 +71,11 @@ return [
     // User Use Cases
     UserProfilePhotoUploadUseCase::class => autowire(UserProfilePhotoUploadUseCaseHandler::class),
     UserProfilePhotoUseCase::class => autowire(UserProfilePhotoUseCaseHandler::class),
+
+    // Travel Use Cases
+    CancelTravelUseCase::class => autowire(CancelTravelUseCaseHandler::class),
+    CompleteTravelUseCase::class => autowire(CompleteTravelUseCaseHandler::class),
+    RequestNewTravelUseCase::class => autowire(RequestNewTravelUseCaseHandler::class),
+    StartAcceptedTravelUseCase::class => autowire(StartAcceptedTravelUseCaseHandler::class),
+    RespondToTravelRequestUseCase::class => autowire(RespondToTravelRequestUseCaseHandler::class),
 ];

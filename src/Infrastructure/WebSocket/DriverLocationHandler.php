@@ -12,13 +12,104 @@ class DriverLocationHandler implements MessageComponentInterface
     protected $redisClient;
     protected $activeDrivers = [];
 
+    // En el constructor actual, añadir:
     public function __construct(RedisClient $redisClient)
     {
         $this->clients = new \SplObjectStorage;
         $this->redisClient = $redisClient;
-
-        // Cargar conductores activos desde Redis al inicio
         $this->loadActiveDriversFromRedis();
+    }
+
+    // Método nuevo para configurar la suscripción Redis
+    protected function subscribeToTripNotifications()
+    {
+        // Crear un cliente Redis separado para PubSub para evitar bloquear el cliente principal
+        $pubsubClient = new RedisClient([
+            'scheme' => 'tcp',
+            'host'   => $_ENV['REDIS_HOST'] ?? 'redis',
+            'port'   => $_ENV['REDIS_PORT'] ?? 6379,
+            'read_write_timeout' => -1, // No timeout para conexiones pubsub
+        ]);
+
+        try {
+            $pubsub = $pubsubClient->pubSubLoop();
+
+            // Suscribirse al canal de notificaciones de viajes
+            $pubsub->subscribe('trip_notifications');
+
+            // Usar el loop de eventos de React que viene con Ratchet
+            $loop = \React\EventLoop\Factory::create();
+
+            // Agregar un manejador periódico para procesar mensajes de Redis
+            $loop->addPeriodicTimer(0.1, function() use ($pubsub) {
+                try {
+                    // Solo procesar un mensaje a la vez para evitar bloqueo
+                    $message = $pubsub->current();
+                    if ($message && $message->kind === 'message') {
+                        $this->handleTripNotification($message->payload);
+                    }
+                    $pubsub->next();
+                } catch (\Exception $e) {
+                    echo "Error en PubSub: " . $e->getMessage() . "\n";
+                }
+            });
+
+            // En lugar de bloquear con run(), devolvemos el loop para que
+            // el servidor principal lo gestione
+            return $loop;
+        } catch (\Exception $e) {
+            echo "Error al iniciar subscripción a Redis: " . $e->getMessage() . "\n";
+            return null;
+        }
+    }
+
+// Reemplaza el método startListening
+    public function startListening()
+    {
+        return $this->subscribeToTripNotifications();
+    }
+
+    // Procesar notificaciones de viajes
+    public function handleTripNotification(string $payload)
+    {
+        $notification = json_decode($payload, true);
+
+        if (!$notification || !isset($notification['type'])) {
+            return;
+        }
+
+        // Extraer el destinatario y el mensaje
+        $recipientType = $notification['recipientType'] ?? null;  // 'driver' o 'citizen'
+        $recipientId = $notification['recipientId'] ?? null;
+        $data = $notification['data'] ?? [];
+
+        if (!$recipientType || !$recipientId) {
+            echo "Notificación de viaje mal formateada\n";
+            return;
+        }
+
+        // Enviar la notificación al destinatario específico
+        $this->sendTripNotification($recipientType, $recipientId, $notification['type'], $data);
+    }
+
+    // Enviar la notificación al cliente específico
+    protected function sendTripNotification(string $recipientType, string $recipientId, string $type, array $data)
+    {
+        $message = json_encode([
+            'type' => $type,
+            'data' => $data
+        ]);
+
+        foreach ($this->clients as $client) {
+            if (isset($client->clientType) && $client->clientType === $recipientType &&
+                isset($client->userId) && $client->userId === $recipientId) {
+                $client->send($message);
+                echo "Notificación de viaje enviada a $recipientType: $recipientId\n";
+                return;
+            }
+        }
+
+        echo "Destinatario $recipientType:$recipientId no encontrado para la notificación\n";
     }
 
     public function onOpen(ConnectionInterface $conn)
@@ -28,14 +119,6 @@ class DriverLocationHandler implements MessageComponentInterface
         $conn->clientType = null; // Se establecerá cuando el cliente envíe su identificación
 
         echo "Nueva conexión! ({$conn->resourceId})\n";
-
-        // Enviar conductores activos al nuevo cliente
-        if (!empty($this->activeDrivers)) {
-            $conn->send(json_encode([
-                'type' => 'initial_drivers',
-                'drivers' => array_values($this->activeDrivers)
-            ]));
-        }
     }
 
     public function onMessage(ConnectionInterface $from, $msg)
@@ -54,6 +137,15 @@ class DriverLocationHandler implements MessageComponentInterface
 
                 if ($from->clientType === 'driver' && isset($data['driverData'])) {
                     $this->registerDriver($from, $data['driverData']);
+                }
+                elseif ($from->clientType === 'citizen') {
+                    // Enviar lista de conductores activos solo cuando un ciudadano se identifica
+                    if (!empty($this->activeDrivers)) {
+                        $from->send(json_encode([
+                            'type' => 'initial_drivers',
+                            'drivers' => array_values($this->activeDrivers)
+                        ]));
+                    }
                 }
                 break;
 

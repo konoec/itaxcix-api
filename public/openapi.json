@@ -1846,6 +1846,444 @@
                 ]
             }
         },
+        "/travels": {
+            "post": {
+                "tags": [
+                    "Travels"
+                ],
+                "summary": "Crear una nueva solicitud de viaje",
+                "description": "Solicitar un nuevo viaje",
+                "operationId": "requestTravel",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RequestTravelDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Solicitud de viaje creada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/TravelResponseDTO"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Errores de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petición inválida"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Datos de viaje incorrectos"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error interno del servidor"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Ocurrió un error inesperado"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/travels/{travelId}/respond": {
+            "patch": {
+                "tags": [
+                    "Travels"
+                ],
+                "summary": "Responder a una solicitud de viaje",
+                "description": "El conductor acepta o rechaza una solicitud de viaje",
+                "operationId": "respondToRequest",
+                "parameters": [
+                    {
+                        "name": "travelId",
+                        "in": "path",
+                        "description": "ID del viaje",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RespondToRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Respuesta registrada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/TravelResponseDTO"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Errores de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petición inválida"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Datos incorrectos"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/travels/{travelId}/start": {
+            "patch": {
+                "tags": [
+                    "Travels"
+                ],
+                "summary": "Iniciar viaje",
+                "description": "Iniciar un viaje previamente aceptado",
+                "operationId": "startTravel",
+                "parameters": [
+                    {
+                        "name": "travelId",
+                        "in": "path",
+                        "description": "ID del viaje",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Viaje iniciado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/TravelResponseDTO"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Viaje no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No encontrado"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "El viaje no existe o no está disponible"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/travels/{travelId}/complete": {
+            "patch": {
+                "tags": [
+                    "Travels"
+                ],
+                "summary": "Completar viaje",
+                "description": "Finalizar un viaje en curso",
+                "operationId": "completeTravel",
+                "parameters": [
+                    {
+                        "name": "travelId",
+                        "in": "path",
+                        "description": "ID del viaje",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Viaje completado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/TravelResponseDTO"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Estado incorrecto",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petición inválida"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "El viaje no está en curso"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/travels/{travelId}/cancel": {
+            "patch": {
+                "tags": [
+                    "Travels"
+                ],
+                "summary": "Cancelar viaje",
+                "description": "Cancelar un viaje",
+                "operationId": "cancelTravel",
+                "parameters": [
+                    {
+                        "name": "travelId",
+                        "in": "path",
+                        "description": "ID del viaje",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Viaje cancelado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/TravelResponseDTO"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Cancelación no permitida",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petición inválida"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "No se puede cancelar el viaje en este estado"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/users/{id}/profile-photo": {
             "get": {
                 "tags": [
@@ -1952,7 +2390,7 @@
                                 ],
                                 "properties": {
                                     "base64Image": {
-                                        "description": "Imagen en formato base64 con o sin prefijo data:image/*;base64,",
+                                        "description": "Imagen en formato base64 (data:image/jpeg;base64,...)",
                                         "type": "string"
                                     }
                                 },
@@ -2363,6 +2801,91 @@
                     }
                 },
                 "type": "object"
+            },
+            "RequestTravelDTO": {
+                "description": "DTO de solicitud de viaje",
+                "properties": {
+                    "citizenId": {
+                        "description": "id",
+                        "type": "integer",
+                        "example": 12345
+                    },
+                    "driverId": {
+                        "description": "id del conductor",
+                        "type": "integer",
+                        "example": 67890
+                    },
+                    "originLatitude": {
+                        "description": "Latitud de origen",
+                        "type": "number",
+                        "format": "float",
+                        "example": "12.345678"
+                    },
+                    "originLongitude": {
+                        "description": "Longitud de origen",
+                        "type": "number",
+                        "format": "float",
+                        "example": "-12.345678"
+                    },
+                    "originDistrict": {
+                        "description": "Distrito de origen",
+                        "type": "string",
+                        "example": "Distrito Central"
+                    },
+                    "destinationLatitude": {
+                        "description": "Latitud de destino",
+                        "type": "number",
+                        "format": "float",
+                        "example": "12.345678"
+                    },
+                    "destinationLongitude": {
+                        "description": "Longitud de destino",
+                        "type": "number",
+                        "format": "float",
+                        "example": "-12.345678"
+                    },
+                    "destinationDistrict": {
+                        "description": "Distrito de destino",
+                        "type": "string",
+                        "example": "Distrito Sur"
+                    }
+                },
+                "type": "object"
+            },
+            "RespondToRequestDTO": {
+                "description": "Datos de respuesta a solicitud de viaje",
+                "properties": {
+                    "travelId": {
+                        "description": "ID del viaje",
+                        "type": "integer",
+                        "example": "12345"
+                    },
+                    "accepted": {
+                        "description": "Enum de estado de respuesta",
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "TravelIdDTO": {
+                "description": "Datos del ID de viaje"
+            },
+            "TravelResponseDTO": {
+                "description": "Datos de respuesta tras iniciar sesión",
+                "properties": {
+                    "message": {
+                        "description": "Mensaje de respuesta",
+                        "type": "string",
+                        "example": "Viaje cancelado correctamente"
+                    },
+                    "travelId": {
+                        "description": "ID del viaje",
+                        "type": "integer",
+                        "example": 12
+                    }
+                },
+                "type": "object"
             }
         },
         "securitySchemes": {
@@ -2397,6 +2920,10 @@
         {
             "name": "Driver",
             "description": "Driver"
+        },
+        {
+            "name": "Travels",
+            "description": "Travels"
         },
         {
             "name": "User",
