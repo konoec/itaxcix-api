@@ -43,7 +43,6 @@ class RejectDriverAdmissionUseCaseHandler implements RejectDriverAdmissionUseCas
         $newDriverProfie = new DriverProfileModel(
             id: $driverProfile->getId(),
             user: $driverProfile->getUser(),
-            available: $driverProfile->isAvailable(),
             status: $driverStatus,
             averageRating: $driverProfile->getAverageRating(),
             ratingCount: $driverProfile->getRatingCount()
