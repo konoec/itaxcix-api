@@ -19,14 +19,22 @@ class UIController {
         this.modalDni = document.getElementById('modal-dni');
         this.modalPlaca = document.getElementById('modal-placa');
         this.modalContacto = document.getElementById('modal-contacto');
-        this.modalEstadoTuc = document.getElementById('modal-estado');
-        this.modalAvatar = document.getElementById('modal-avatar');
-        // Eliminamos las referencias a modalAccept y modalReject
+        this.modalEstadoTuc = document.getElementById('modal-estado');        this.modalAvatar = document.getElementById('modal-avatar');
+        
+        // Referencias para el sidebar
         this.sidebar = document.getElementById('sidebar');
         this.openSidebarBtn = document.getElementById('open-sidebar');
         this.closeSidebarBtn = document.getElementById('close-sidebar');
         this.mainContent = document.querySelector('.main-content');
-    }    // Método principal que inicializa la aplicación - CORREGIDO
+        
+        // Referencias para el modal de confirmación
+        this.confirmationModal = document.getElementById('confirmation-modal');
+        this.confirmationTitle = document.getElementById('confirmation-title');
+        this.confirmationMessage = document.getElementById('confirmation-message');
+        this.confirmationIcon = document.getElementById('confirmation-icon');
+        this.confirmationCancel = document.getElementById('confirmation-cancel');
+        this.confirmationConfirm = document.getElementById('confirmation-confirm');
+    }// Método principal que inicializa la aplicación - CORREGIDO
     // Es async porque realiza operaciones asíncronas (como cargar datos de la API)
     async init() {
         try {
@@ -203,11 +211,24 @@ class UIController {
         };
         
         this.modal.style.display = 'block';
-    }
-
-    // Método para aprobar conductor - NUEVO
+    }    // Método para aprobar conductor - CON CONFIRMACIÓN
     async aprobarConductor(driverId) {
         try {
+            // Obtener datos del conductor para mostrar en la confirmación
+            const conductor = await this.conductorService.obtenerConductorPendientePorId(driverId);
+            const nombreConductor = conductor ? conductor.fullName || 'el conductor' : 'el conductor';
+            
+            const confirmed = await this.showConfirmation({
+                title: 'Aprobar Conductor',
+                message: `¿Está seguro de que desea aprobar a "${nombreConductor}"?`,
+                icon: 'fas fa-check-circle',
+                iconClass: 'success',
+                confirmText: 'Aprobar',
+                confirmClass: 'success'
+            });
+            
+            if (!confirmed) return;
+            
             this.showLoading(true);
             
             const response = await this.conductorService.aprobarConductor(driverId);
@@ -228,15 +249,23 @@ class UIController {
             this.showToast('Error al aprobar conductor: ' + error.message, 'error');
             this.showLoading(false);
         }
-    }
-
-    // Método para rechazar conductor - RESTAURADO
+    }    // Método para rechazar conductor - CON CONFIRMACIÓN
     async rechazarConductor(driverId) {
         try {
-            // Confirmar acción
-            if (!confirm('¿Está seguro de que desea rechazar este conductor?')) {
-                return;
-            }
+            // Obtener datos del conductor para mostrar en la confirmación
+            const conductor = await this.conductorService.obtenerConductorPendientePorId(driverId);
+            const nombreConductor = conductor ? conductor.fullName || 'el conductor' : 'el conductor';
+            
+            const confirmed = await this.showConfirmation({
+                title: 'Rechazar Conductor',
+                message: `¿Está seguro de que desea rechazar a "${nombreConductor}"?`,
+                icon: 'fas fa-times-circle',
+                iconClass: 'danger',
+                confirmText: 'Rechazar',
+                confirmClass: 'danger'
+            });
+            
+            if (!confirmed) return;
             
             this.showLoading(true);
             
@@ -308,9 +337,71 @@ class UIController {
     // Método para alternar la visibilidad del sidebar
     toggleSidebar() {
         this.sidebar.classList.toggle('active');
-        if (window.innerWidth > 992) {
-            this.mainContent.classList.toggle('sidebar-active');
+        if (window.innerWidth > 992) {        this.mainContent.classList.toggle('sidebar-active');
         }
+    }
+
+    // Método para mostrar modal de confirmación personalizado
+    showConfirmation(options = {}) {
+        return new Promise((resolve) => {
+            // Configuración por defecto
+            const config = {
+                title: 'Confirmar Acción',
+                message: '¿Está seguro de que desea realizar esta acción?',
+                icon: 'fas fa-question-circle',
+                iconClass: 'warning',
+                confirmText: 'Confirmar',
+                cancelText: 'Cancelar',
+                confirmClass: 'danger',
+                ...options
+            };
+            
+            // Configurar el modal
+            this.confirmationTitle.textContent = config.title;
+            this.confirmationMessage.textContent = config.message;
+            this.confirmationIcon.className = `${config.icon}`;
+            this.confirmationIcon.parentElement.className = `confirmation-icon ${config.iconClass}`;
+            
+            // Configurar botones
+            this.confirmationConfirm.innerHTML = `<i class="fas fa-check"></i> ${config.confirmText}`;
+            this.confirmationCancel.innerHTML = `<i class="fas fa-times"></i> ${config.cancelText}`;
+            
+            // Aplicar clase al botón de confirmar
+            this.confirmationConfirm.className = `btn-confirmation btn-confirm ${config.confirmClass}`;
+            
+            // Limpiar event listeners anteriores
+            const newCancelBtn = this.confirmationCancel.cloneNode(true);
+            const newConfirmBtn = this.confirmationConfirm.cloneNode(true);
+            this.confirmationCancel.parentNode.replaceChild(newCancelBtn, this.confirmationCancel);
+            this.confirmationConfirm.parentNode.replaceChild(newConfirmBtn, this.confirmationConfirm);
+            
+            // Actualizar referencias
+            this.confirmationCancel = newCancelBtn;
+            this.confirmationConfirm = newConfirmBtn;
+            
+            // Event listeners
+            const handleCancel = () => {
+                this.confirmationModal.style.display = 'none';
+                resolve(false);
+            };
+            
+            const handleConfirm = () => {
+                this.confirmationModal.style.display = 'none';
+                resolve(true);
+            };
+            
+            // Agregar event listeners
+            this.confirmationCancel.addEventListener('click', handleCancel);
+            this.confirmationConfirm.addEventListener('click', handleConfirm);
+            
+            // Mostrar el modal
+            this.confirmationModal.style.display = 'block';
+            
+            // Enfocar el botón de cancelar por defecto
+            setTimeout(() => {
+                this.confirmationCancel.focus();
+            }, 100);
+        });
     }
 }
 

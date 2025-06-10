@@ -100,13 +100,7 @@
             </div>
 
             <!-- Contenedor principal de la tabla de conductores -->
-            <div class="content">
-                <div class="panel">
-                    <!-- Indicador de carga -->                    <div id="loading-indicator" class="loading-indicator">
-                        <div class="spinner"></div>
-                        <p>Cargando conductores...</p>
-                    </div>
-
+            <div class="content">                <div class="panel">
                     <!-- Contenedor responsive de la tabla -->
                     <div class="table-container">
                         <!-- Tabla de conductores -->
@@ -120,6 +114,17 @@
                                     <th>Acciones</th> <!-- Cambiar de vacío a "Acciones" -->
                                 </tr>
                             </thead>
+                            <!-- Indicador de carga posicionado debajo del header -->
+                            <tbody id="loading-row" class="loading-row">
+                                <tr>
+                                    <td colspan="5">
+                                        <div id="loading-indicator" class="loading-indicator">
+                                            <div class="spinner"></div>
+                                            <p>Cargando conductores...</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
                             <tbody id="drivers-list">
                                 <!-- Datos dinámicos cargados por JavaScript -->
                             </tbody>
@@ -191,11 +196,34 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Sistema de notificaciones toast -->
+    </div>    <!-- Sistema de notificaciones toast -->
     <div id="toast" class="toast">
         <div id="toast-message">Conductor aprobado exitosamente</div>
+    </div>
+
+    <!-- Modal de confirmación personalizado -->
+    <div id="confirmation-modal" class="confirmation-modal">
+        <div class="confirmation-content">
+            <div class="confirmation-header">
+                <h3 id="confirmation-title">Confirmar Acción</h3>
+            </div>
+            <div class="confirmation-body">
+                <div class="confirmation-icon">
+                    <i id="confirmation-icon" class="fas fa-question-circle"></i>
+                </div>
+                <p id="confirmation-message">¿Está seguro de que desea realizar esta acción?</p>
+            </div>
+            <div class="confirmation-footer">
+                <button id="confirmation-cancel" class="btn-confirmation btn-cancel">
+                    <i class="fas fa-times"></i>
+                    Cancelar
+                </button>
+                <button id="confirmation-confirm" class="btn-confirmation btn-confirm">
+                    <i class="fas fa-check"></i>
+                    Confirmar
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- Carga de scripts en orden específico para manejar dependencias -->

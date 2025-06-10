@@ -5,11 +5,10 @@ class LoginController {
         this.submitBtn = this.form.querySelector('.btn-ingresar');
         this.btnText = this.submitBtn.querySelector('.btn-text');
         this.btnLoading = this.submitBtn.querySelector('.btn-loading');        this.loginService = window.LoginService;
-
-        this.baseUrl = window.location.hostname.includes('github.io')
-            ? '/itaxCix'
-            : '/PanelWeb';
-
+        
+          this.baseUrl = window.location.hostname.includes('github.io') 
+            ? '/PanelWeb'
+            : '';
         this.init();
     }    init() {
         // Prevenir comportamiento por defecto del formulario
@@ -104,30 +103,36 @@ class LoginController {
                 sessionStorage.setItem("userFullName", `${response.firstName || ""} ${response.lastName || ""}`.trim());
                 sessionStorage.setItem("userRating", response.rating?.toString() || "0");
                 
-                sessionStorage.setItem("loginTime", Date.now().toString());
-
-                // Prevenir navegación hacia atrás y redirigir
+                sessionStorage.setItem("loginTime", Date.now().toString());                // Prevenir navegación hacia atrás y redirigir
                 window.history.pushState(null, '', window.location.href);
-                window.location.replace(`${this.baseUrl}/pages/usuarios/ControlAdmisionConductores.html`);
+                window.location.replace(`${this.baseUrl}/pages/Admision/ControlAdmisionConductores.html`);
             } else {
                 this.showError("Error en la respuesta del servidor. Inténtalo de nuevo.");
             }        } catch (error) {
             console.error('Error durante el login:', error);
-            
-            // Mapear errores a mensajes amigables para el usuario
+              // Mapear errores a mensajes amigables para el usuario
             let errorMessage = "Error inesperado. Inténtalo de nuevo.";
             
             if (error.message) {
                 const msg = error.message.toLowerCase();
                 
-                if (msg.includes('documento o contraseña incorrectos') || 
-                    msg.includes('credenciales inválidas') ||
-                    msg.includes('credenciales incorrectas')) {
-                    errorMessage = "Documento o contraseña incorrectos. Verifica tus datos.";
+                // Manejar errores específicos de la API mejorados
+                if (msg.includes('documento o contraseña') && msg.includes('incorrectos')) {
+                    errorMessage = "El documento o contraseña ingresados son incorrectos. Verifica tus datos.";
+                } else if (msg.includes('credenciales') && (msg.includes('inválidas') || msg.includes('incorrectas'))) {
+                    errorMessage = "Las credenciales proporcionadas no son válidas. Intenta nuevamente.";
+                } else if (msg.includes('datos enviados no son válidos') || msg.includes('formato del documento')) {
+                    errorMessage = "Los datos enviados no son válidos. Verifica el formato del documento (8 dígitos).";
+                } else if (msg.includes('error interno del servidor') || msg.includes('ocurrió un error inesperado')) {
+                    errorMessage = "Error interno del servidor. Intenta más tarde o contacta al administrador.";
                 } else if (msg.includes('usuario y contraseña son requeridos')) {
                     errorMessage = "Por favor, completa todos los campos.";
-                } else if (msg.includes('error interno del servidor')) {
-                    errorMessage = "El servidor no está disponible. Inténtalo más tarde.";
+                } else if (msg.includes('acceso denegado') || msg.includes('no tienes permisos')) {
+                    errorMessage = "Acceso denegado. No tienes permisos para acceder.";
+                } else if (msg.includes('servicio no encontrado') || msg.includes('verifica la configuración')) {
+                    errorMessage = "Servicio no disponible. Contacta al administrador.";
+                } else if (msg.includes('servidor no disponible temporalmente')) {
+                    errorMessage = "El servidor no está disponible temporalmente. Intenta más tarde.";
                 } else if (msg.includes('certificado ssl') || 
                           msg.includes('certificate') ||
                           msg.includes('ssl') ||
@@ -138,7 +143,8 @@ class LoginController {
                 } else if (msg.includes('error en la comunicación') || 
                           msg.includes('network') || 
                           msg.includes('fetch') ||
-                          msg.includes('conexión')) {
+                          msg.includes('conexión') ||
+                          msg.includes('failed to fetch')) {
                     errorMessage = "Error de conexión. Verifica tu internet o que el servidor esté disponible.";
                 } else if (msg.includes('respuesta del servidor incompleta')) {
                     errorMessage = "Error en la respuesta del servidor.";
