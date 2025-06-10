@@ -1,0 +1,954 @@
+/* Estilos generales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', 'SF Pro Display', 'Helvetica Neue', 'Arial', sans-serif;
+}
+
+body {
+    background-image: url("../../assets/Recourse/Imagenes/loginFondo.png");
+    background-size: auto;
+    backdrop-filter: blur(0px);
+    line-height: 1.6;
+    height: 100vh;
+    overflow: hidden;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+}
+
+/* Layout principal */
+.layout {
+    display: flex;
+    height: 100vh;
+}
+
+/* Contenido principal */
+.main-content {
+    flex: 1;
+    margin-left: 250px;
+    transition: margin-left 0.3s ease;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 250px); /* Ancho ajustable según el sidebar */
+}
+
+/* Cuando el sidebar está colapsado */
+.sidebar.collapsed ~ .main-content {
+    margin-left: 0;
+    width: 100%;
+}
+
+/* Barra superior */
+.top-bar {
+    background-color: #2b396296;
+    backdrop-filter: blur(20px);
+    padding: 4.2px 20px;
+    display: flex;
+    align-items: center;
+    position: sticky;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.074);
+    box-shadow: 0 5px 20px rgba(47, 47, 47, 0.408);
+    top: 0;
+    z-index: 10;
+}
+
+.top-bar h1 {
+    margin-left: 20px;
+    font-size: 1.5rem;
+    flex: 1;
+    color: #ffffff;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+}
+
+.top-bar h3 {
+    margin-left: 20px;
+    font-size: 1.1rem; /* Reducir tamaño para mejor proporción */
+    flex: 1;
+    color: #ffffff !important;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    white-space: nowrap; /* Evitar salto de línea */
+    overflow: hidden; /* Ocultar desborde */
+    text-overflow: ellipsis; /* Mostrar ... si es muy largo */
+}
+
+/* Contenedor de perfil en top-bar */
+.top-bar .profile-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.2s ease;
+    min-width: 300px; /* Incrementar más para nombres largos */
+    max-width: 500px; /* Incrementar máximo para nombres muy largos */
+    margin-left: auto; /* Empujar a la derecha */
+    flex-shrink: 0; /* Evitar que se reduzca */
+}
+
+.top-bar .profile-container:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+}
+
+/* Imagen de perfil en top-bar */
+.top-bar .profile-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(43, 57, 98, 0.8) 0%, rgba(31, 42, 73, 0.8) 100%);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    flex-shrink: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    order: 2; /* Mover imagen a la derecha */
+    align-self: center; /* Centrar verticalmente */
+}
+
+/* Información del usuario */
+.top-bar .user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    min-width: 0;
+    flex: 1;
+    order: 1; /* Mantener texto a la izquierda */
+    height: 44px; /* Altura fija para centrado vertical */
+}
+
+.top-bar .user-info span {
+    display: block;
+    color: #ffffff;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: visible; /* Permitir que el texto se vea completo */
+    width: auto; /* Ancho automático para ajustarse al contenido */
+    font-weight: 500;
+    margin: 0; /* Resetear márgenes */
+}
+
+.top-bar .user-info span:first-child {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 1px; /* Reducir margen entre líneas */
+}
+
+.top-bar .user-info span:last-child {
+    font-size: 12px;
+    opacity: 0.9;
+    font-weight: 400;
+    margin-top: 1px; /* Pequeño margen superior para equilibrar */
+}
+
+.top-bar .user-display {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 2px;
+    max-width: 180px; /* Aumentar para nombres más largos */
+}
+
+.top-bar .user-role {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 400;
+}
+
+/* Contenido */
+.content {
+    padding: 20px;
+    flex: 1;
+    overflow-x: visible; /* Cambiar de auto a visible */
+    overflow-y: hidden;
+    scrollbar-width: thin;
+  
+}
+
+/* Contenido sin barras de desplazamiento horizontal */
+
+
+
+/* Panel principal */
+.panel {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(15px);
+    border-radius: 8px;
+    overflow: visible; /* Cambiar para eliminar scroll */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Contenedor de tabla responsive */
+.table-container {
+    overflow-x: visible; /* Cambiar de auto a visible */
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Tabla de conductores */
+.drivers-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: transparent;
+    border-spacing: 0; /* Asegurar que no haya espaciado extra */
+}
+
+.drivers-table th {
+    padding: 15px 20px;
+    text-align: left;
+    font-weight: 600;
+    vertical-align: middle;
+    color: #ffffff;
+    background: linear-gradient(135deg, rgba(43, 57, 98, 0.9) 0%, rgba(31, 42, 73, 0.9) 100%);
+    border: none; /* Eliminar bordes que causan divisiones */
+    letter-spacing: 0.025em;
+    font-size: 0.95em;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+/* Definir anchos específicos mejorados */
+.drivers-table th:nth-child(1) { width: 35%; min-width: 250px; } /* Nombre */
+.drivers-table th:nth-child(2) { width: 15%; min-width: 120px; } /* DNI */
+.drivers-table th:nth-child(3) { width: 15%; min-width: 100px; } /* Placa */
+.drivers-table th:nth-child(4) { width: 20%; min-width: 180px; } /* Contacto */
+.drivers-table th:nth-child(5) { width: 15%; min-width: 150px; } /* Acciones */
+
+.drivers-table td {
+    padding: 15px 20px;
+    border: none; /* Eliminar bordes individuales */
+    border-bottom: 1px solid rgba(229, 231, 235, 0.5); /* Solo borde inferior sutil */
+    vertical-align: middle;
+    height: auto; /* Cambiar de altura fija a auto */
+    min-height: 60px;
+    background: transparent;
+    color: #374151;
+}
+
+.driver-row {
+    background: rgba(255, 255, 255, 0.8);
+    transition: all 0.2s ease;
+}
+
+.driver-row:nth-child(even) {
+    background: rgba(248, 250, 252, 0.8);
+}
+
+.driver-row:hover {
+    background: rgba(241, 245, 249, 0.9);
+    transform: none;
+}
+
+/* Columna de nombre con avatar mejorada */
+.driver-name {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    min-height: 50px;
+}
+
+.avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(43, 57, 98, 0.8) 0%, rgba(31, 42, 73, 0.8) 100%);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.driver-name span {
+    flex: 1;
+    font-weight: 500;
+    color: #374151;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: 0.01em;
+    font-size: 14px;
+}
+
+/* Botones de acción mejorados */
+.actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    white-space: nowrap;
+    padding: 0;
+}
+
+.actions .btn {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    margin: 0;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.actions .btn i {
+    font-size: 14px;
+    line-height: 1;
+    position: relative;
+    z-index: 1;
+}
+
+/* Botón Detalles */
+.btn-details {
+    background: rgba(43, 57, 98, 0.7);
+    backdrop-filter: blur(10px);
+    color: white;
+    border: 1px solid rgba(43, 57, 98, 0.7);
+    border-left: 2px solid rgba(255, 255, 255, 0.074);
+    border-right: 2px solid rgba(255, 255, 255, 0.074);
+    box-shadow: 0 3px 10px rgba(47, 47, 47, 0.2);
+}
+
+.btn-details:hover {
+    background: rgba(31, 42, 73, 0.8);
+    backdrop-filter: blur(15px);
+    transform: none;
+}
+
+/* Botón Aprobar */
+.btn-approve {
+    background: #10b981;
+    color: white;
+    border: 1px solid #10b981;
+}
+
+.btn-approve:hover {
+    background: #059669;
+    transform: none;
+}
+
+/* Botón Rechazar */
+.btn-reject {
+    background: #ef4444;
+    color: white;
+    border: 1px solid #ef4444;
+}
+
+.btn-reject:hover {
+    background: #dc2626;
+    transform: none;
+}
+
+/* Modal de detalles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background: #ffffff;
+    margin: 3% auto;
+    padding: 0;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 650px;
+    max-height: 85vh;
+    overflow: hidden;
+    position: relative;
+    border-left: 2px solid rgba(255, 255, 255, 0.074);
+    border-right: 2px solid rgba(255, 255, 255, 0.074);
+    box-shadow: 0 5px 20px rgba(47, 47, 47, 0.408);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Header del modal */
+.modal-content h2 {
+    background: rgba(43, 57, 98, 0.8);
+    backdrop-filter: blur(15px);
+    color: #ffffff;
+    margin: 0;
+    padding: 20px 70px 20px 25px; /* Más padding a la derecha para el botón X */
+    font-size: 1.3em;
+    font-weight: 600;
+    text-align: center;
+    position: relative; /* Asegurar posicionamiento relativo para el botón X */
+    border-radius: 8px 8px 0 0;
+    letter-spacing: 0.025em;
+    z-index: 1; /* Z-index bajo para no interferir con el botón close */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-modal {
+    color: rgba(255, 255, 255, 0.9);
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.15);
+    z-index: 10; /* Z-index más bajo pero suficiente dentro del contexto del header */
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    text-shadow: none; /* Remover text-shadow que puede causar problemas */
+}
+
+.close-modal:hover {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-50%) scale(1.1);
+    border-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+/* Contenido del modal */
+.driver-details {
+    padding: 25px;
+    overflow-y: auto;
+    max-height: calc(85vh - 80px);
+}
+
+.driver-profile {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e5e7eb;
+    position: relative;
+    text-align: left;
+}
+
+.driver-profile::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;    width: 60px;
+    height: 2px;
+    background: rgba(43, 57, 98, 0.7);
+    border-radius: 1px;
+}
+
+.avatar-large {
+    width: 90px;
+    height: 90px;
+    position: relative;
+    flex-shrink: 0; /* Evita que se reduzca */
+}
+
+.avatar-large::before {
+    content: '';    position: absolute;
+    inset: -3px;
+    background: rgba(43, 57, 98, 0.85);
+    backdrop-filter: blur(5px);
+    border-radius: 50%;
+    z-index: -1;
+    border: 2px solid rgba(255, 255, 255, 0.074);
+    box-shadow: 0 5px 15px rgba(47, 47, 47, 0.4);
+}
+
+.avatar-large img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid white;
+}
+
+.driver-profile-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.driver-profile h3 {
+    margin: 0;
+    color: #1f2a49;
+    font-size: 1.5em;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+}
+
+/* Grid de información */
+.driver-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    padding: 16px 18px;    background: #ffffff;
+    border-radius: 8px;    border: 1px solid #e5e7eb;
+    border-left: 3px solid rgba(43, 57, 98, 0.9);
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.info-item:nth-child(even) {
+    background: #f8fafc;
+    border-left-color: rgba(31, 42, 73, 0.6);
+}
+
+.info-item:hover {
+    transform: none;
+    border-left-color: rgba(31, 42, 73, 0.7);
+}
+
+.info-item label {
+    font-weight: 600;
+    color: rgba(43, 57, 98, 0.7);
+    font-size: 0.85em;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    position: relative;
+}
+
+.info-item span {
+    color: #374151;
+    font-size: 1.05em;
+    font-weight: 450;
+    word-break: break-word;
+    line-height: 1.4;
+    letter-spacing: 0.01em;
+}
+
+/* Botones de acción del modal */
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.modal-actions .btn {
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+    min-width: 140px;
+    justify-content: center;
+    letter-spacing: 0.025em;
+}
+
+.modal-actions .btn-accept {
+    background: #10b981;
+    color: white;
+}
+
+.modal-actions .btn-accept:hover {
+    background: #059669;
+    transform: none;
+}
+
+.modal-actions .btn-reject {
+    background: #ef4444;
+    color: white;
+}
+
+.modal-actions .btn-reject:hover {
+    background: #dc2626;
+    transform: none;
+}
+
+/* Toast de notificación */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #374151;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    z-index: 1001;
+    display: none;
+    animation: fadeIn 0.3s, fadeOut 0.3s 2.7s;
+    animation-fill-mode: forwards;
+}
+
+.toast.success {
+    background-color: #10b981;
+}
+
+.toast.error {
+    background-color: #ef4444;
+}
+
+.toast.warning {
+    background-color: #f59e0b;
+    color: #ffffff;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(20px); }
+}
+
+/* Mensaje cuando no hay datos */
+.no-data {
+    text-align: center !important;
+    padding: 40px 20px !important;
+    color: #6b7280 !important;
+    font-size: 16px;
+    font-weight: 500;
+    background: #f9fafb !important;
+    border: none !important;
+}
+
+.no-data i {
+    font-size: 24px;
+    margin-right: 10px;
+    color: rgba(43, 57, 98, 0.8);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .content {
+        padding: 15px;
+    }
+
+    .panel {
+        margin: 0;
+        border-radius: 8px;
+    }
+    
+    .drivers-table th,
+    .drivers-table td {
+        padding: 12px 15px;
+    }
+    
+    .avatar {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Reducir padding del top-bar en móvil */
+    .top-bar {
+        padding: 4px 15px; /* Menos padding horizontal */
+    }
+    
+    /* Ajustar título para pantallas pequeñas */
+    .top-bar h3 {
+        font-size: 0.9rem; /* Reducir más en móvil */
+        margin-left: 10px; /* Menos margen */
+        letter-spacing: 0.01em; /* Menos espaciado entre letras */
+    }
+    
+    /* Ocultar información del usuario en móviles, solo mostrar imagen */
+    .top-bar .user-info {
+        display: none !important;
+    }
+    
+    /* Contenedor del perfil solo para la imagen */
+    .top-bar .profile-container {
+        min-width: auto !important;
+        max-width: 48px !important; /* Solo el tamaño de la imagen + padding */
+        width: 48px !important;
+        padding: 4px !important;
+        gap: 0 !important;
+        margin-left: auto !important; /* Mantener a la derecha */
+        justify-content: center !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .top-bar .profile-image {
+        width: 36px !important;
+        height: 36px !important;
+        order: 0 !important; /* Resetear order en móvil */
+        margin: 0 !important;
+    }
+    
+    /* Ocultar columna de contacto */
+    .drivers-table th:nth-child(4),
+    .drivers-table td:nth-child(4) {
+        display: none;
+    }
+    
+    /* Reajustar anchos */
+    .drivers-table th:nth-child(1) { width: 45%; min-width: 200px; }
+    .drivers-table th:nth-child(2) { width: 20%; min-width: 100px; }
+    .drivers-table th:nth-child(3) { width: 20%; min-width: 80px; }
+    .drivers-table th:nth-child(5) { width: 15%; min-width: 120px; }
+    
+    .drivers-table th,
+    .drivers-table td {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+    
+    .avatar {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .driver-name span {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 640px) {
+    /* Título más pequeño para pantallas muy pequeñas */
+    .top-bar h3 {
+        font-size: 0.8rem; /* Aún más pequeño */
+        margin-left: 8px;
+        letter-spacing: 0;
+    }
+    
+    /* Continuar ocultando información del usuario */
+    .top-bar .user-info {
+        display: none !important;
+    }
+    
+    .top-bar .profile-container {
+        min-width: auto !important;
+        max-width: 44px !important;
+        width: 44px !important;
+        padding: 4px !important;
+        justify-content: center !important;
+    }
+    
+    .top-bar .profile-image {
+        width: 32px !important;
+        height: 32px !important;
+    }
+    
+    /* Ocultar también la columna de placa */
+    .drivers-table th:nth-child(3),
+    .drivers-table td:nth-child(3) {
+        display: none;
+    }
+    
+    /* Solo mostrar nombre, DNI y acciones */
+    .drivers-table th:nth-child(1) { width: 60%; min-width: 180px; }
+    .drivers-table th:nth-child(2) { width: 25%; min-width: 80px; }
+    .drivers-table th:nth-child(5) { width: 15%; min-width: 100px; }
+    
+    .drivers-table th,
+    .drivers-table td {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+    
+    .avatar {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .driver-name {
+        gap: 10px;
+    }
+    
+    .driver-name span {
+        font-size: 12px;
+    }
+    
+    .actions .btn {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .actions .btn i {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Título mínimo para pantallas muy pequeñas */
+    .top-bar h3 {
+        font-size: 0.75rem; /* Tamaño mínimo */
+        margin-left: 5px;
+        letter-spacing: -0.01em; /* Espaciado negativo para ahorrar espacio */
+    }
+    
+    /* Continuar ocultando información del usuario */
+    .top-bar .user-info {
+        display: none !important;
+    }
+    
+    .top-bar .profile-container {
+        min-width: auto !important;
+        max-width: 40px !important;
+        width: 40px !important;
+        padding: 4px !important;
+        justify-content: center !important;
+    }
+    
+    .top-bar .profile-image {
+        width: 28px !important;
+        height: 28px !important;
+    }
+    
+    .drivers-table th,
+    .drivers-table td {
+        padding: 6px 8px;
+        font-size: 11px;
+    }
+    
+    .avatar {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .driver-name span {
+        font-size: 11px;
+    }
+    
+    .actions .btn {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .actions .btn i {
+        font-size: 10px;
+    }
+}
+
+/* Mejoras adicionales para responsividad */
+
+/* Texto truncado para nombres largos en móvil */
+@media (max-width: 640px) {
+    .driver-name span {
+        max-width: 200px; /* Aumentar límite con el nuevo sistema */
+    }
+}
+
+/* Mejoras para interacción touch */
+@media (hover: none) and (pointer: coarse) {
+    .actions .btn {
+        min-height: 44px; /* Tamaño mínimo recomendado para touch */
+        min-width: 44px;
+    }
+    
+    .drivers-table td {
+        min-height: 44px; /* Área de toque adecuada */
+    }
+}
+
+/* Mejoras para modo landscape en móviles */
+@media (max-height: 500px) and (orientation: landscape) {
+    .top-bar {
+        padding: 2px 15px;
+    }
+    
+    .top-bar h1 {
+        font-size: 1rem;
+    }
+    
+    /* Ocultar información del usuario en landscape */
+    .top-bar .user-info {
+        display: none;
+    }
+    
+    .top-bar .profile-container {
+        min-width: auto;
+        padding: 2px;
+    }
+    
+    .top-bar .profile-image {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .content {
+        padding: 8px;
+    }
+    
+    .drivers-table th,
+    .drivers-table td {
+        padding: 4px 6px;
+        font-size: 11px;
+    }
+    
+    .drivers-table td {
+        height: 35px;
+    }
+    
+    .avatar {
+        width: 24px;
+        height: 24px;
+    }    .actions .btn {
+        width: 22px;
+        height: 22px;
+    }
+    
+    .modal-content {
+        max-height: 95vh;
+    }
+}

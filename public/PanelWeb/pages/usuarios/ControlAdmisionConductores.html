@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Configuración básica del documento -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Configuración de caché para prevenir almacenamiento de datos sensibles -->
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <title>Panel de Administración - Aprobación de Conductores</title>    <!-- Hojas de estilo -->
+    <link rel="stylesheet" href="../../assets/css/sidebar.css">
+    <link rel="stylesheet" href="../../assets/css/ControlAdmision.css">
+    <link rel="stylesheet" href="../../assets/css/profile.css">
+    <!-- Font Awesome para iconografía -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Contenedor principal del layout -->
+    <div class="layout">
+        <!-- Barra lateral de navegación -->
+        <div class="sidebar" id="sidebar">
+            <!-- Encabezado del sidebar con título y botón de cierre -->
+            <div class="sidebar-header">
+                <h2>iTaxCix Panel</h2>
+                <button id="close-sidebar" class="sidebar-toggle">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Menú de navegación principal -->
+            <div class="sidebar-menu">
+                <ul>
+                    <!-- Módulo de Admisión de conductores -->
+                    <li class="active">
+                        <a class="module-admision" href="javascript:void(0)">
+                            <i class="fas fa-user-check"></i>
+                            Admisión de conductores
+                        </a>
+                    </li>
+
+                    <!-- Módulo de Tablas maestras -->
+                    <li class="has-submenu">
+                        <a href="javascript:void(0)" class="module-tablas">
+                            <i class="fas fa-table"></i>
+                            Tablas maestras
+                            <span class="submenu-arrow"></span>
+                        </a>                        <ul class="submenu">
+                            <li><a href="javascript:void(0)"><i class="fas fa-car"></i>Tabla Maestra 1</a></li>
+                            <li><a href="javascript:void(0)"><i class="fas fa-users"></i>Tabla Maestra 2</a></li>
+                            <li><a href="javascript:void(0)"><i class="fas fa-id-card"></i>Tabla Maestra 3</a></li>
+                            <li><a href="javascript:void(0)"><i class="fas fa-route"></i>Tabla Maestra 4</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Módulo de Auditoría -->
+                    <li>
+                        <a href="javascript:void(0)" class="module-auditoria">
+                            <i class="fas fa-search"></i>
+                            Auditoría
+                        </a>
+                    </li>
+
+                    <!-- Módulo de Configuración -->
+                    <li>
+                        <a href="javascript:void(0)" class="module-config">
+                            <i class="fas fa-cog"></i>
+                            Configuración
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Pie del sidebar con botón de cierre de sesión -->
+            <div class="sidebar-footer">
+                <button class="logout-btn">
+                    <i class="fas fa-power-off"></i>
+                    Cerrar sesión
+                </button>
+            </div>
+        </div>
+
+        <!-- Contenido principal de la página -->
+        <div class="main-content">
+            <!-- Barra superior con controles y información de usuario -->
+            <div class="top-bar">
+                <button id="open-sidebar" class="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>  
+                 <h3>ADMISION DE CONDUCTORES</h3>
+                <div class="profile-container">
+                    <div class="profile-image" id="profile-image"></div>
+                    <div class="user-info">
+                        <span class="user-display" id="user-display">Admin</span>
+                        <span class="user-role">Administrador</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenedor principal de la tabla de conductores -->
+            <div class="content">
+                <div class="panel">
+                    <!-- Indicador de carga -->                    <div id="loading-indicator" class="loading-indicator">
+                        <div class="spinner"></div>
+                        <p>Cargando conductores...</p>
+                    </div>
+
+                    <!-- Contenedor responsive de la tabla -->
+                    <div class="table-container">
+                        <!-- Tabla de conductores -->
+                        <table class="drivers-table">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>DNI</th>
+                                    <th>Placa</th>
+                                    <th>Contacto</th>
+                                    <th>Acciones</th> <!-- Cambiar de vacío a "Acciones" -->
+                                </tr>
+                            </thead>
+                            <tbody id="drivers-list">
+                                <!-- Datos dinámicos cargados por JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    <!-- Modal para mostrar detalles del conductor -->
+    <div id="driver-modal" class="modal">
+        <div class="modal-content">
+            <h2>
+                Detalles del Conductor
+                <span class="close-modal">&times;</span>
+            </h2>
+            
+            <!-- Contenido del modal -->
+            <div class="driver-details">
+                <!-- Perfil del conductor -->
+                <div class="driver-profile">
+                    <div class="avatar-large">
+                        <img id="modal-avatar" src="" alt="Foto de perfil">
+                    </div>
+                    <div class="driver-profile-info">
+                        <h3 id="modal-name">Nombre del Conductor</h3>
+                    </div>
+                </div>
+                
+                <!-- Información detallada del conductor -->
+                <div class="driver-info">
+                    <div class="info-item">
+                        <label>DNI:</label>
+                        <span id="modal-dni">12345678</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Placa:</label>
+                        <span id="modal-placa">ABC123</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Contacto:</label>
+                        <span id="modal-contacto">987654321</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Estado TUC:</label>
+                        <span id="modal-estado">Pendiente</span>
+                    </div>
+                    
+                    <!-- Nuevos campos agregados -->
+                    <div class="info-item">
+                        <label>RUC Empresa:</label>
+                        <span id="modal-ruc">No disponible</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Fecha Emisión TUC:</label>
+                        <span id="modal-tuc-issue">No disponible</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Fecha Vencimiento TUC:</label>
+                        <span id="modal-tuc-expiration">No disponible</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Modalidad TUC:</label>
+                        <span id="modal-tuc-modality">No disponible</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Tipo TUC:</label>
+                        <span id="modal-tuc-type">No disponible</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sistema de notificaciones toast -->
+    <div id="toast" class="toast">
+        <div id="toast-message">Conductor aprobado exitosamente</div>
+    </div>
+
+    <!-- Carga de scripts en orden específico para manejar dependencias -->
+    <!-- 1. Utilidades y herramientas base -->
+    <script src="../../assets/js/utils/auth-checker.js"></script>
+    <script src="../../assets/js/utils/route-guard.js"></script>
+    <script>
+        // Inicializa RouteGuard para proteger la página
+        window.routeGuard = new RouteGuard("../../index.html");
+    </script>
+
+    <!-- 2. Modelos de datos -->
+    <script src="../../assets/js/api/models/conductor.js"></script>
+      <!-- 3. Servicios de API -->
+    <script src="../../assets/js/api/services/conductor-service.js"></script>
+    <script src="../../assets/js/api/services/profile-service.js"></script>
+    
+    <!-- 4. Controladores de UI -->
+    <script src="../../assets/js/ui/controllers/sidebar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/profile-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/ui-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/app-initializer.js"></script>
+    
+    <!-- 5. Utilidades de sesión -->
+    <script src="../../assets/js/utils/session-cleaner.js"></script>
+    <script src="../../assets/js/utils/auth-checker.js"></script>
+</body>
+</html>

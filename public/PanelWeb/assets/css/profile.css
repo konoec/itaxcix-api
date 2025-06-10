@@ -1,0 +1,256 @@
+/* Estilos para el perfil del usuario */
+
+/* Contenedor del perfil */
+.profile-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 80px;
+    transition: background-color 0.2s ease;
+    min-width: 500px; /* Garantizar espacio mínimo */
+}
+
+.profile-container:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Imagen de perfil */
+.profile-image {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    background-color: #6366f1;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Estados de la imagen */
+.profile-image.profile-loading {
+    background-color: #e5e7eb;
+    border-color: #d1d5db;
+}
+
+.profile-image.profile-loading::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent
+    );
+    animation: shimmer 1.5s infinite;
+}
+
+.profile-image.profile-loaded {
+    border-color: #10b981;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+/* Animación de loading */
+@keyframes shimmer {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+/* Imagen dentro del contenedor */
+.profile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* Información del usuario */
+.user-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0; /* Para permitir text-overflow */
+}
+.user-info span {
+    display: block;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.2;
+   color:rgb(255, 255, 255)
+}
+
+.user-display {
+    font-weight: 600;
+    color: white;
+    font-size: 14px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px; /* Aumentar el ancho máximo */
+    margin-left: -4px; /* Mover ligeramente a la izquierda */
+}
+
+.user-role {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.2;
+}
+
+/* Variantes de tamaño */
+.profile-container.small .profile-image {
+    width: 36px;
+    height: 36px;
+}
+
+.profile-container.small .user-display {
+    font-size: 13px;
+    max-width: 150px; /* Más espacio para variante small */
+    margin-left: -2px;
+}
+
+.profile-container.large .profile-image {
+    width: 56px;
+    height: 56px;
+}
+
+.profile-container.large .user-display {
+    font-size: 16px;
+    max-width: 200px; /* Más espacio para variante large */
+}
+
+/* Estados de error */
+.profile-image.error {
+    background-color: #ef4444;
+    border-color: #dc2626;
+}
+
+.profile-image.error::after {
+    content: '!';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/* Dropdown del perfil (opcional para futuras funcionalidades) */
+.profile-dropdown {
+    position: relative;
+}
+
+.profile-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    min-width: 200px;
+    padding: 8px 0;
+    z-index: 1000;
+    display: none;
+}
+
+.profile-dropdown.active .profile-dropdown-menu {
+    display: block;
+}
+
+.profile-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    color: #374151;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.profile-dropdown-item:hover {
+    background-color: #f3f4f6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .profile-container {
+        gap: 6px;
+        padding: 4px 6px;
+        min-width: 160px; /* Menos espacio en móvil pero aún funcional */
+    }
+    
+    .profile-image {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .user-display {
+        font-size: 13px;
+        max-width: 120px;
+    }
+}
+
+/* Integración con sidebar */
+.sidebar .profile-container {
+    margin: 12px 16px;
+    padding: 12px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar .profile-container:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Integración con navbar */
+.navbar .profile-container,
+.top-bar .profile-container {
+    margin-left: auto;
+    min-width: 220px; /* Más espacio en la barra superior */
+}
+
+.top-bar .profile-container .user-display {
+    max-width: 200px; /* Permitir nombres más largos en la barra superior */
+}
+
+/* Avatar por defecto mejorado */
+.profile-image.default-avatar {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Indicador de estado online */
+.profile-image::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 12px;
+    height: 12px;
+    background-color: #10b981;
+    border: 2px solid white;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.profile-image.online::after {
+    opacity: 1;
+}

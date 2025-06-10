@@ -1,0 +1,311 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* LOGIN CSS - Version Limpia */
+
+body {
+  background-image: url("../../assets/Recourse/Imagenes/loginFondo.png");
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Inter', 'SF Pro Display', 'Helvetica Neue', 'Arial', sans-serif;
+  padding: 0;
+  box-sizing: border-box;
+  border-image-slice: 0%;
+}
+
+/* El contenedor del formulario */
+.login-container {
+  font-family: 'Inter', 'SF Pro Display', 'Helvetica Neue', 'Arial', sans-serif;
+  background-color: #2b39627a;
+  padding: 30px 25px;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(47, 47, 47, 0.408);
+  width: 90%;
+  max-width: 350px;
+  height: auto;
+  text-align: center;
+  margin: 0 auto;
+  border-left: 2px solid rgba(255, 255, 255, 0.074);
+  border-right: 2px solid rgba(255, 255, 255, 0.074);
+  padding-top: 15px;
+}
+
+/* Logo principal */
+.logo {
+  width: 120px;
+  height: auto;
+  display: block;
+  margin: 0 0 15px 0;
+  padding: 0;
+  align-self: flex-start;
+  position: relative;
+  left: -10px;
+}
+
+.login-container .logo {
+  align-self: flex-start;
+  margin-left: 10px;
+  margin-top: 10px;
+}
+
+.imagen {
+  width: 80%;
+  max-width: 180px;
+  height: auto;
+  display: block;
+  margin: 0 auto 15px auto;
+  padding: 10px;
+}
+
+.login-container h2 {
+  padding: 10px 0;
+  margin: 0 0 15px 0;
+  font-size: 1.5rem;
+}
+
+.login-form {
+  height: auto;
+  width: 100%;
+  padding: 0;
+}
+
+/* Estilo del formulario */
+.login-form input {
+  background-color: #f2f2f2;
+  border: 1px solid #ccc;
+  padding: 12px 15px;
+  width: 100%;
+  display: block;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+/* ========================================
+   CONTENEDOR DE CONTRASEÑA CON OJO
+   ======================================== */
+
+/* Contenedor para el input de contraseña con el botón del ojo */
+.password-input-container {
+  position: relative;
+  margin-bottom: 15px;
+  display: block;
+  width: 100%;
+}
+
+.password-input-container input {
+  margin-bottom: 0 !important;
+  padding-right: 45px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Icono del ojo para mostrar/ocultar contraseña */
+#eye-icon {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  color: #666;
+  font-size: 16px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  z-index: 10;
+}
+
+#eye-icon:hover {
+  color: #333;
+}
+
+#eye-icon:active {
+  color: #007bff;
+}
+
+/* ========================================
+   FIN CONTENEDOR DE CONTRASEÑA
+   ======================================== */
+
+/* Botón ingresar */
+.login-form button,
+.btn-ingresar {
+  background: linear-gradient(135deg, #527AF2, #2575fc 100%);
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 14px 0;
+  width: 100%;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(1, 69, 125, 0.448);
+  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+  margin-top: 20px;
+  position: relative;
+}
+
+.login-form button:hover,
+.btn-ingresar:hover {
+  background: linear-gradient(135deg, #259bfc 0%, #118acb 100%);
+  box-shadow: 0 6px 20px rgba(37, 117, 252, 0.6);
+  transform: translateY(-3px);
+}
+
+.login-form button:active,
+.btn-ingresar:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(37, 117, 252, 0.3);
+}
+
+.btn-ingresar:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.btn-loading {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+.marco {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100%;
+  max-width: 850px;
+  height: auto;
+  min-height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  overflow: hidden;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Mensaje de error */
+#error-msg {
+  color: #e74c3c;
+  font-size: 14px;
+  margin-top: 15px;
+  font-weight: 500;
+}
+
+.contraseña-olvidada {
+  text-align: right;
+  margin-top: 8px;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #abc2fe;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  font-weight: 500;
+}
+
+.contraseña-olvidada:hover {
+  color: #3981ff;
+  text-decoration: underline;
+}
+
+/* ========================================
+   MEDIA QUERIES - RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 768px) {
+  .marco {
+    min-height: 400px;
+    background-size: cover;
+    width: 95%;
+    height: auto;
+    border-radius: 15px;
+    padding: 15px;
+  }
+
+  .login-container {
+    max-width: 320px;
+    width: 100%;
+    padding: 25px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    align-items: center;
+    padding: 15px;
+  }
+
+  .marco {
+    min-height: auto;
+    border-radius: 10px;
+    width: 100%;
+    margin: 0;
+    padding: 10px;
+  }
+
+  .login-container {
+    width: 100%;
+    max-width: 100%;
+    padding: 20px 15px;
+  }
+
+  .login-container .logo {
+    width: 100px;
+  }
+
+  .imagen {
+    padding: 5px;
+    width: 70%;
+    max-width: 180px;
+  }
+
+  .login-form button,
+  .btn-ingresar {
+    font-size: 1rem;
+    padding: 15px 0;
+  }
+
+  .login-form input {
+    padding: 12px 10px;
+    font-size: 16px;
+  }
+
+  .password-input-container input {
+    padding-right: 45px !important;
+  }
+  
+  #eye-icon {
+    right: 12px;
+    font-size: 18px;
+  }
+
+  .login-container h2 {
+    font-size: 1.3rem;
+    padding: 5px 0;
+  }
+}
+
+@media (max-width: 360px) {
+  .marco {
+    padding: 5px;
+  }
+  
+  .login-container .logo {
+    width: 90px;
+    margin-left: 5px;
+    margin-top: 5px;
+  }
+  
+  .imagen {
+    width: 60%;
+    max-width: 150px;
+  }
+}

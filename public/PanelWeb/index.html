@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <!-- Meta tags existentes -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <!-- Meta tags actualizados para control de caché más estricto -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, private">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  
+  <!-- Prevenir navegación con botón atrás -->
+  <script>
+    window.history.forward();
+    function noBack() {
+        window.history.forward();
+    }
+  </script>
+  
+  <!-- Google Fonts - Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome para el icono del ojo -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+  <title>Login - Panel iTaxCix</title>
+  <link rel="stylesheet" href="assets/css/login.css">
+  <link rel="stylesheet" href="assets/css/password-recovery.css">
+</head>
+<body onload="noBack();" onpageshow="if (event.persisted) noBack();" onunload="">
+ <div class="marco">
+  <div class="login-container">    <!-- Logo -->
+    <img src="assets/Recourse/Logo/2.png" alt="Logo de la Municipalidad" class="logo">
+    <img src="assets/Recourse/Imagenes/register_validation_admin.webp" alt="Logo de la Municipalidad" class="imagen">    <!-- Formulario de login -->
+    <form class="login-form" id="login-form">
+      <input id="documentValue" type="text" placeholder="Documento (8 dígitos)" maxlength="8" pattern="[0-9]{8}" inputmode="numeric" />
+      <div class="password-input-container">
+        <input id="password" type="password" placeholder="Contraseña" />
+        
+          <i class="fas fa-eye" id="eye-icon"></i>
+        
+      </div>
+      <button class="btn-ingresar" type="submit">
+        <span class="btn-text">Ingresar</span>
+        <span class="btn-loading" style="display: none;">Verificando...</span>
+      </button>
+    </form>
+
+    <!-- Enlace para recuperar contraseña -->
+    <div class="forgot-password-link">
+      <a href="#" id="forgot-password-btn">¿Olvidaste tu contraseña?</a>
+    </div>
+
+    <!-- Mensaje de error -->
+    <p id="error-msg" style="color: red; display: none;">Usuario o contraseña incorrectos</p>  </div>
+</div>
+
+<!-- Modal para recuperar contraseña -->
+<div id="forgot-password-modal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Recuperar Contraseña</h3>
+      <span class="close-btn" id="close-modal">&times;</span>
+    </div>    <div class="modal-body">
+      <p>Selecciona cómo quieres recibir el código de recuperación:</p>
+        <!-- Mensaje informativo sobre disponibilidad de servicios -->
+      <div class="service-info">
+        <small class="info-text">
+          <i class="fas fa-info-circle"></i>
+          Revisa tu bandeja de entrada y spam. El código puede tardar unos minutos en llegar.
+        </small>
+      </div>
+      
+      <form id="forgot-password-form">
+        <!-- Selector de tipo de contacto -->
+        <div class="contact-type-selector">
+          <label>
+            <input type="radio" name="contactType" value="email" checked>
+            <span class="radio-label">Correo electrónico</span>
+          </label>
+          <label>
+            <input type="radio" name="contactType" value="phone">
+            <span class="radio-label">Número de teléfono</span>
+          </label>
+        </div>
+        
+        <!-- Input dinámico que cambia según la selección -->
+        <input 
+          id="recovery-contact" 
+          type="email" 
+          placeholder="Correo electrónico" 
+          required
+        />
+        
+        <button type="submit" class="btn-recovery">
+          <span class="btn-text">Enviar código</span>
+          <span class="btn-loading" style="display: none;">Enviando...</span>
+        </button>
+      </form>
+      <p id="recovery-message" style="display: none;"></p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para verificar código de recuperación -->
+<div id="verify-code-modal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <div class="verify-code-header">
+      <button class="back-btn" id="back-to-recovery" title="Volver">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <h3>Verificar Código</h3>
+    </div>
+    
+    <div class="verify-code-body">
+      <div class="verification-info">
+        <p>Ingresa el código de verificación que enviamos a:</p>
+        <div class="contact-display" id="contact-display"></div>
+      </div>
+      
+      <form id="verify-code-form">
+        <div class="code-input-container">
+          <input 
+            id="verification-code" 
+            type="text" 
+            placeholder="Ingresa el código" 
+            maxlength="8"
+            required
+            autocomplete="off"
+          />
+        </div>
+        
+        <div class="resend-code-container">
+          <button type="button" class="resend-code-btn" id="resend-code-btn">
+            Reenviar código
+          </button>
+          <span class="resend-timer" id="resend-timer" style="display: none;"></span>
+        </div>
+        
+        <button type="submit" class="btn-verify">
+          <span class="btn-text">Verificar código</span>
+          <span class="btn-loading" style="display: none;">Verificando...</span>
+        </button>
+      </form>
+        <p id="verification-message" style="display: none;"></p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para cambiar contraseña -->
+<div id="change-password-modal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <div class="change-password-header">
+      <button class="back-btn" id="back-to-verification" title="Volver">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <h3>Nueva Contraseña</h3>
+    </div>
+    
+    <div class="change-password-body">
+      <p>Ingresa tu nueva contraseña para completar la recuperación:</p>
+      
+      <form id="change-password-form">
+        <div class="password-input-container">
+          <input 
+            id="new-password" 
+            type="password" 
+            placeholder="Nueva contraseña" 
+            required
+            minlength="8"
+          />
+          <i class="fas fa-eye" id="new-password-eye"></i>
+        </div>
+        
+        <div class="password-input-container">
+          <input 
+            id="repeat-password" 
+            type="password" 
+            placeholder="Repetir contraseña" 
+            required
+            minlength="8"
+          />
+          <i class="fas fa-eye" id="repeat-password-eye"></i>
+        </div>
+        
+        <div class="password-requirements">
+          <p>La contraseña debe tener:</p>
+          <ul>
+            <li id="length-req">Mínimo 8 caracteres</li>
+            <li id="uppercase-req">Al menos una letra mayúscula</li>
+            <li id="lowercase-req">Al menos una letra minúscula</li>
+            <li id="number-req">Al menos un número</li>
+            <li id="special-req">Al menos un carácter especial (@$!%*?&)</li>
+          </ul>
+        </div>
+        
+        <button type="submit" class="btn-change-password">
+          <span class="btn-text">Cambiar contraseña</span>
+          <span class="btn-loading" style="display: none;">Cambiando...</span>
+        </button>
+      </form>
+      
+      <p id="change-password-message" style="display: none;"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('pageshow', function(event) {
+    if (event.persisted) {
+        // Fuerza recarga real desde el servidor
+        window.location.reload();
+    }
+});
+</script>
+<!-- Cargar el archivo JavaScript externo -->
+<script src="./assets/js/utils/session-cleaner.js"></script>
+<script src="./assets/js/api/services/login-service.js"></script>
+<script src="./assets/js/api/services/password-recovery-service.js"></script>
+<script src="./assets/js/ui/controllers/login-controller.js"></script>
+<script src="./assets/js/ui/controllers/password-recovery-controller.js"></script>
+<script src="../../assets/js/utils/route-guard.js"></script>
+
+
+</body>
+</html>

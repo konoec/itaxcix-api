@@ -1,0 +1,401 @@
+body {
+  background-image: url("../../assets/Recourse/Imagenes/loginFondo.png");
+  margin: 0;
+  min-height: 100vh;
+  display: flex;  justify-content: center;
+  align-items: center;
+  font-family: 'Inter', 'SF Pro Display', 'Helvetica Neue', 'Arial', sans-serif;
+  padding: 0;
+  box-sizing: border-box;
+  border-image-slice: 0%;
+}
+
+/* El contenedor del formulario */
+.login-container {
+  font-family: 'Inter', 'SF Pro Display', 'Helvetica Neue', 'Arial', sans-serif;
+  background-color: #2b3962b6;/* Aumentado la opacidad para mejor legibilidad */
+  padding: 30px 25px; /* Cambiado a valores fijos más adecuados */
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(47, 47, 47, 0.408); /* Sombra más pronunciada */
+  width: 90%;
+  max-width: 350px;
+  height: auto;
+  text-align: center;
+  margin: 0 auto; /* Centrado horizontal */
+}
+/* Logo principal (más pequeño y con menos espacio superior) */
+.logo {
+  width: 120px; /* Tamaño fijo */
+  height: auto;
+  display: block;
+  margin: 0 0 15px 0; /* Eliminar margen izquierdo completamente */
+  padding: 0;
+  align-self: flex-start; /* Alinear a la izquierda */
+  position: relative;
+  left: -10px; /* Mover 10px más a la izquierda (puedes ajustar este valor)
+}
+.login-container .logo {
+  align-self: flex-start; /* Forzar alineación a la izquierda */
+  margin-left: 10px; /* Espacio desde el borde izquierdo */
+  margin-top: 10px; /* Espacio desde el borde superior */
+}
+
+/* Media queries para ajustar el logo en pantallas pequeñas */
+@media (max-width: 480px) {
+  .login-container .logo {
+    width: 100px; /* Ligeramente más pequeño en móviles */
+  }
+}
+
+@media (max-width: 360px) {
+  .login-container .logo {
+    width: 90px; /* Aún más pequeño en pantallas muy pequeñas */
+    margin-left: 5px; /* Menos margen en pantallas pequeñas */
+    margin-top: 5px;
+  }
+}
+
+
+/* Ajuste del padding superior del contenedor */
+.login-container {
+  padding-top: 15px; /* Reducido de 30px */
+  border-left: 2px solid rgba(255, 255, 255, 0.074);
+  border-right: 2px solid rgba(255, 255, 255, 0.074);
+}
+.imagen {
+  width: 80%;
+  max-width: 180px; /* Reducido ligeramente */
+  height: auto;
+  display: block;
+  margin: 0 auto 15px auto;
+  padding: 10px;
+}
+
+.login-container h2 {
+  padding: 10px 0;
+  margin: 0 0 15px 0;
+  font-size: 1.5rem; /* Tamaño de fuente explícito */
+}
+
+.login-form {
+  height: auto;
+  width: 100%;
+  padding: 0;
+}
+
+/* Estilo del formulario */
+.login-form input {
+  background-color: #f2f2f2;
+  border: 1px solid #ccc;
+  padding: 12px 15px; /* Aumentado el padding para mejor toque en móvil */
+  width: 100%;
+  display: block;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  box-sizing: border-box;
+  font-size: 16px; /* Tamaño mínimo para evitar zoom en iOS */
+}
+
+/* ========================================
+   CONTENEDOR DE CONTRASEÑA CON OJO
+   ======================================== */
+
+/* Contenedor para el input de contraseña con el botón del ojo */
+.password-input-container {
+  position: relative;
+  margin-bottom: 15px;
+  display: block;
+  width: 100%;
+}
+
+.password-input-container input {
+  margin-bottom: 0 !important;
+  padding-right: 45px !important; /* Espacio para el botón del ojo */
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Icono del ojo para mostrar/ocultar contraseña */
+#eye-icon {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  color: #666;
+  font-size: 16px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  z-index: 10;
+}
+
+#eye-icon:hover {
+  color: #333;
+}
+
+#eye-icon:active {
+  color: #007bff;
+}
+
+/* ========================================
+   RESPONSIVE PARA CONTRASEÑA
+   ======================================== */
+
+@media (max-width: 480px) {
+  .password-input-container input {
+    padding-right: 45px; /* Ajustado para móviles */
+  }
+  
+  #eye-icon {
+    right: 12px;
+    font-size: 18px;
+  }
+}
+
+/* ========================================
+   FIN CONTENEDOR DE CONTRASEÑA
+   ======================================== */
+
+/* Botón ingresar */
+.login-form button,
+.btn-ingresar {
+  background: linear-gradient(135deg,  #527AF2, #2575fc 100%);
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 14px 0; /* Aumentado para mejor área de toque */
+  width: 100%;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(1, 69, 125, 0.448);
+  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+  margin-top: 20px;
+  position: relative;
+}
+
+.login-form button:hover,
+.btn-ingresar:hover {
+  background: linear-gradient(135deg, #259bfc 0%, #118acb 100%);
+  box-shadow: 0 6px 20px rgba(37, 117, 252, 0.6);
+  transform: translateY(-3px);
+}
+
+.login-form button:active,
+.btn-ingresar:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(37, 117, 252, 0.3);
+}
+
+.btn-ingresar:disabled {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+.btn-loading {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+.marco {
+  background-size: cover; /* Cambiado de 900px a cover */
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100%; /* Cambiado de 850px a 100% */
+  max-width: 850px; /* Añadido max-width */
+  height: auto; /* Cambiado de 600px a auto */
+  min-height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px; /* Reducido de 60px */
+  overflow: hidden;
+  margin: 0 auto;
+  padding: 20px; /* Añadido padding */
+  box-sizing: border-box;
+}
+
+/* Mensaje de error */
+#error-msg {
+  color: #e74c3c;
+  font-size: 14px;
+  margin-top: 15px;
+  font-weight: 500;
+}
+
+.contraseña-olvidada {
+  text-align: right;
+  margin-top: 8px;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #abc2fe; /* Color azul que coincide con el botón */
+  cursor: pointer;
+  transition: color 0.2s ease;
+  font-weight: 500; /* Semi-bold para mejor legibilidad */
+}
+.contraseña-olvidada:hover {
+  color: #3981ff; /* Un tono más claro al pasar el mouse */
+  text-decoration: underline;
+}
+
+/* Media queries para diferentes tamaños de pantalla */
+@media (max-width: 768px) {
+  .marco {
+    min-height: 400px;
+    background-size: cover;
+    width: 95%;
+    height: auto;
+    border-radius: 15px; /* Reducido aún más */
+    padding: 15px;
+  }
+
+  .login-container {
+    max-width: 320px;
+    width: 100%;
+    padding: 25px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    align-items: center;
+    padding: 15px; /* Añadido padding al body */
+  }
+
+  .marco {
+    min-height: auto; /* Cambiado de 100vh a auto */
+    border-radius: 10px; /* Bordes más pequeños pero no eliminados */
+    width: 100%;
+    margin: 0;
+    padding: 10px;
+  }
+
+  .login-container {
+    width: 100%; /* Cambiado de 85% a 100% */
+    max-width: 100%; /* Ocupar todo el ancho disponible */
+    padding: 20px 15px;
+  }
+
+  .imagen {
+    padding: 5px;
+    width: 70%; /* Reducido de 90% */
+    max-width: 180px; /* Reducido de 280px */
+  }
+
+  .login-form button,
+  .btn-ingresar {
+    font-size: 1rem; /* Reducido ligeramente */
+    padding: 15px 0;
+  }
+
+  .login-form input {
+    padding: 12px 10px;
+    font-size: 16px;
+  }
+
+  .login-container h2 {
+    font-size: 1.3rem; /* Reducido el tamaño */
+    padding: 5px 0;
+  }
+}
+
+/* Media query adicional para pantallas muy pequeñas */
+@media (max-width: 360px) {
+  .marco {
+    padding: 5px;
+  }
+  .imagen {
+    width: 60%;
+    max-width: 150px;
+  }
+}
+.contraseña-olvidada {
+  text-align: right;
+  margin-top: 8px;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #abc2fe; /* Color azul que coincide con el botón */
+  cursor: pointer;
+  transition: color 0.2s ease;
+  font-weight: 500; /* Semi-bold para mejor legibilidad */
+}
+.contraseña-olvidada:hover {
+  color: #3981ff; /* Un tono más claro al pasar el mouse */
+  text-decoration: underline;
+}
+
+/* Media queries para diferentes tamaños de pantalla */
+@media (max-width: 768px) {
+  .marco {
+    min-height: 400px;
+    background-size: cover;
+    width: 95%;
+    height: auto;
+    border-radius: 15px; /* Reducido aún más */
+    padding: 15px;
+  }
+
+  .login-container {
+    max-width: 320px;
+    width: 100%;
+    padding: 25px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    align-items: center;
+    padding: 15px; /* Añadido padding al body */
+  }
+
+  .marco {
+    min-height: auto; /* Cambiado de 100vh a auto */
+    border-radius: 10px; /* Bordes más pequeños pero no eliminados */
+    width: 100%;
+    margin: 0;
+    padding: 10px;
+  }
+
+  .login-container {
+    width: 100%; /* Cambiado de 85% a 100% */
+    max-width: 100%; /* Ocupar todo el ancho disponible */
+    padding: 20px 15px;
+  }
+
+  .imagen {
+    padding: 5px;
+    width: 70%; /* Reducido de 90% */
+    max-width: 180px; /* Reducido de 280px */
+  }
+
+  .login-form button,
+  .btn-ingresar {
+    font-size: 1rem; /* Reducido ligeramente */
+    padding: 15px 0;
+  }
+
+  .login-form input {
+    padding: 12px 10px;
+    font-size: 16px;
+  }
+
+  .login-container h2 {
+    font-size: 1.3rem; /* Reducido el tamaño */
+    padding: 5px 0;
+  }
+}
+
+/* Media query adicional para pantallas muy pequeñas */
+@media (max-width: 360px) {
+  .marco {
+    padding: 5px;
+  }
+  .imagen {
+    width: 60%;
+    max-width: 150px;
+  }
+}
