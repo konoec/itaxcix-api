@@ -35,4 +35,99 @@ class TravelEntity {
     #[ORM\ManyToOne(targetEntity: TravelStatusEntity::class)]
     #[ORM\JoinColumn(name: 'viaj_estado_id', referencedColumnName: 'esta_id')]
     private TravelStatusEntity $status;
+
+    public function __construct()
+    {
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getCitizen(): ?UserEntity
+    {
+        return $this->citizen;
+    }
+
+    public function setCitizen(?UserEntity $citizen): void
+    {
+        $this->citizen = $citizen;
+    }
+
+    public function getDriver(): ?UserEntity
+    {
+        return $this->driver;
+    }
+
+    public function setDriver(?UserEntity $driver): void
+    {
+        $this->driver = $driver;
+    }
+
+    public function getOrigin(): ?CoordinatesEntity
+    {
+        return $this->origin;
+    }
+
+    public function setOrigin(?CoordinatesEntity $origin): void
+    {
+        $this->origin = $origin;
+    }
+
+    public function getDestination(): ?CoordinatesEntity
+    {
+        return $this->destination;
+    }
+
+    public function setDestination(?CoordinatesEntity $destination): void
+    {
+        $this->destination = $destination;
+    }
+
+    public function getStartDate(): ?DateTime
+    {
+        return $this->startDate;
+    }
+
+    public function setStartDate(?DateTime $startDate): void
+    {
+        $this->startDate = $startDate;
+    }
+
+    public function getEndDate(): ?DateTime
+    {
+        return $this->endDate;
+    }
+
+    public function setEndDate(?DateTime $endDate): void
+    {
+        $this->endDate = $endDate;
+    }
+
+    public function getCreationDate(): DateTime
+    {
+        return $this->creationDate;
+    }
+
+    public function setCreationDate(DateTime $creationDate): void
+    {
+        $this->creationDate = $creationDate;
+    }
+
+    public function getStatus(): TravelStatusEntity
+    {
+        return $this->status;
+    }
+
+    public function setStatus(TravelStatusEntity $status): void
+    {
+        $this->status = $status;
+    }
+
 }

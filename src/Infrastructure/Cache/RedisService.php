@@ -8,6 +8,7 @@ class RedisService
 {
     private Client $client;
 
+    // En RedisService.php
     public function __construct()
     {
         $config = [
@@ -17,12 +18,12 @@ class RedisService
             'read_write_timeout' => 0
         ];
 
-        $this->client = new Client($config);
-
         try {
+            $this->client = new Client($config);
             $this->client->connect();
         } catch (\Exception $e) {
-            // Silenciado
+            echo "Error conectando a Redis: " . $e->getMessage() . "\n";
+            throw $e;
         }
     }
 

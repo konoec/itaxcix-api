@@ -28,7 +28,7 @@ class TravelStatusController extends AbstractController
     private StartAcceptedTravelUseCase $startAcceptedTravelUseCase;
     private RequestNewTravelUseCase $requestNewTravelUseCase;
 
-    private function __construct(
+    public function __construct(
         CancelTravelUseCase $cancelTravelUseCase,
         CompleteTravelUseCase $completeTravelUseCase,
         RespondToTravelRequestUseCase $respondToTravelRequestUseCase,

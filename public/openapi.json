@@ -2832,6 +2832,11 @@
                         "type": "string",
                         "example": "Distrito Central"
                     },
+                    "originAddress": {
+                        "description": "Dirección de origen",
+                        "type": "string",
+                        "example": "Calle Falsa 123"
+                    },
                     "destinationLatitude": {
                         "description": "Latitud de destino",
                         "type": "number",
@@ -2848,6 +2853,11 @@
                         "description": "Distrito de destino",
                         "type": "string",
                         "example": "Distrito Sur"
+                    },
+                    "destinationAddress": {
+                        "description": "Dirección de destino",
+                        "type": "string",
+                        "example": "Avenida Siempre Viva 456"
                     }
                 },
                 "type": "object"

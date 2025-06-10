@@ -1,11 +1,14 @@
 <?php
 
 use itaxcix\Core\Interfaces\company\CompanyRepositoryInterface;
+use itaxcix\Core\Interfaces\location\CoordinatesRepositoryInterface;
 use itaxcix\Core\Interfaces\location\DepartmentRepositoryInterface;
 use itaxcix\Core\Interfaces\location\DistrictRepositoryInterface;
 use itaxcix\Core\Interfaces\location\ProvinceRepositoryInterface;
 use itaxcix\Core\Interfaces\person\DocumentTypeRepositoryInterface;
 use itaxcix\Core\Interfaces\person\PersonRepositoryInterface;
+use itaxcix\Core\Interfaces\travel\TravelRepositoryInterface;
+use itaxcix\Core\Interfaces\travel\TravelStatusRepositoryInterface;
 use itaxcix\Core\Interfaces\user\AdminProfileRepositoryInterface;
 use itaxcix\Core\Interfaces\user\CitizenProfileRepositoryInterface;
 use itaxcix\Core\Interfaces\user\ContactTypeRepositoryInterface;
@@ -36,11 +39,14 @@ use itaxcix\Core\Interfaces\vehicle\VehicleClassRepositoryInterface;
 use itaxcix\Core\Interfaces\vehicle\VehicleRepositoryInterface;
 use itaxcix\Core\Interfaces\vehicle\VehicleUserRepositoryInterface;
 use itaxcix\Infrastructure\Database\Repository\company\DoctrineCompanyRepository;
+use itaxcix\Infrastructure\Database\Repository\location\DoctrineCoordinatesRepository;
 use itaxcix\Infrastructure\Database\Repository\location\DoctrineDepartmentRepository;
 use itaxcix\Infrastructure\Database\Repository\location\DoctrineDistrictRepository;
 use itaxcix\Infrastructure\Database\Repository\location\DoctrineProvinceRepository;
 use itaxcix\Infrastructure\Database\Repository\person\DoctrineDocumentTypeRepository;
 use itaxcix\Infrastructure\Database\Repository\person\DoctrinePersonRepository;
+use itaxcix\Infrastructure\Database\Repository\travel\DoctrineTravelRepository;
+use itaxcix\Infrastructure\Database\Repository\travel\DoctrineTravelStatusRepository;
 use itaxcix\Infrastructure\Database\Repository\user\DoctrineAdminProfileRepository;
 use itaxcix\Infrastructure\Database\Repository\user\DoctrineCitizenProfileRepository;
 use itaxcix\Infrastructure\Database\Repository\user\DoctrineContactTypeRepository;
@@ -103,6 +109,7 @@ return [
 
     CompanyRepositoryInterface::class => autowire(DoctrineCompanyRepository::class),
 
+    CoordinatesRepositoryInterface::class => autowire(DoctrineCoordinatesRepository::class),
     DepartmentRepositoryInterface::class => autowire(DoctrineDepartmentRepository::class),
     DistrictRepositoryInterface::class => autowire(DoctrineDistrictRepository::class),
     ProvinceRepositoryInterface::class => autowire(DoctrineProvinceRepository::class),
@@ -114,4 +121,7 @@ return [
     TucStatusRepositoryInterface::class => autowire(DoctrineTucStatusRepository::class),
     TucProcedureRepositoryInterface::class => autowire(DoctrineTucProcedureRepository::class),
     ProcedureTypeRepositoryInterface::class => autowire(DoctrineProcedureTypeRepository::class),
+
+    TravelStatusRepositoryInterface::class => autowire(DoctrineTravelStatusRepository::class),
+    TravelRepositoryInterface::class => autowire(DoctrineTravelRepository::class),
 ];

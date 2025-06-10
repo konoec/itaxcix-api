@@ -5,156 +5,296 @@ namespace itaxcix\Infrastructure\WebSocket;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 use Predis\Client as RedisClient;
+use React\EventLoop\LoopInterface;
 
 class DriverLocationHandler implements MessageComponentInterface
 {
     protected $clients;
     protected $redisClient;
+    protected $loop;
     protected $activeDrivers = [];
+    protected $activeTrips = [];
 
-    // En el constructor actual, añadir:
-    public function __construct(RedisClient $redisClient)
+    // Llamar en el constructor
+    public function __construct(RedisClient $redisClient, LoopInterface $loop)
     {
         $this->clients = new \SplObjectStorage;
         $this->redisClient = $redisClient;
+        $this->loop = $loop;
         $this->loadActiveDriversFromRedis();
+        echo "Handler inicializado\n";
     }
 
-    // Método nuevo para configurar la suscripción Redis
-    protected function subscribeToTripNotifications()
+    // En DriverLocationHandler.php
+    protected function processRedisNotifications()
     {
-        // Crear un cliente Redis separado para PubSub para evitar bloquear el cliente principal
-        $pubsubClient = new RedisClient([
-            'scheme' => 'tcp',
-            'host'   => $_ENV['REDIS_HOST'] ?? 'redis',
-            'port'   => $_ENV['REDIS_PORT'] ?? 6379,
-            'read_write_timeout' => -1, // No timeout para conexiones pubsub
-        ]);
-
         try {
-            $pubsub = $pubsubClient->pubSubLoop();
+            echo "Verificando mensajes en Redis...\n";
 
-            // Suscribirse al canal de notificaciones de viajes
-            $pubsub->subscribe('trip_notifications');
+            // Listar todos los clientes conectados
+            echo "Clientes conectados:\n";
+            foreach ($this->clients as $client) {
+                echo "- Tipo: " . ($client->clientType ?? 'no definido');
+                echo ", ID: " . ($client->userId ?? 'no definido') . "\n";
+            }
 
-            // Usar el loop de eventos de React que viene con Ratchet
-            $loop = \React\EventLoop\Factory::create();
+            $notification = $this->redisClient->rpop('trip_notifications_queue');
 
-            // Agregar un manejador periódico para procesar mensajes de Redis
-            $loop->addPeriodicTimer(0.1, function() use ($pubsub) {
-                try {
-                    // Solo procesar un mensaje a la vez para evitar bloqueo
-                    $message = $pubsub->current();
-                    if ($message && $message->kind === 'message') {
-                        $this->handleTripNotification($message->payload);
+            if ($notification) {
+                echo "Notificación encontrada: $notification\n";
+                $data = json_decode($notification, true);
+
+                if ($data && isset($data['recipientType']) && isset($data['recipientId'])) {
+                    $found = false;
+                    foreach ($this->clients as $client) {
+                        echo "Comparando con cliente - Tipo: " . ($client->clientType ?? 'none');
+                        echo ", ID: " . ($client->userId ?? 'none') . "\n";
+
+                        if (isset($client->clientType) &&
+                            $client->clientType === $data['recipientType'] &&
+                            isset($client->userId) &&
+                            $client->userId == $data['recipientId']) {
+
+                            echo "¡Destinatario encontrado! Enviando mensaje...\n";
+                            $client->send(json_encode([
+                                'type' => $data['type'],
+                                'data' => $data['data']
+                            ]));
+                            $found = true;
+                            break;
+                        }
                     }
-                    $pubsub->next();
-                } catch (\Exception $e) {
-                    echo "Error en PubSub: " . $e->getMessage() . "\n";
+
+                    if (!$found) {
+                        echo "Destinatario no encontrado, devolviendo mensaje a la cola\n";
+                        $this->redisClient->lpush('trip_notifications_queue', $notification);
+                    }
                 }
-            });
-
-            // En lugar de bloquear con run(), devolvemos el loop para que
-            // el servidor principal lo gestione
-            return $loop;
+            } else {
+                echo "No hay mensajes nuevos en Redis\n";
+            }
         } catch (\Exception $e) {
-            echo "Error al iniciar subscripción a Redis: " . $e->getMessage() . "\n";
-            return null;
+            echo "Error en processRedisNotifications: " . $e->getMessage() . "\n";
         }
-    }
-
-// Reemplaza el método startListening
-    public function startListening()
-    {
-        return $this->subscribeToTripNotifications();
-    }
-
-    // Procesar notificaciones de viajes
-    public function handleTripNotification(string $payload)
-    {
-        $notification = json_decode($payload, true);
-
-        if (!$notification || !isset($notification['type'])) {
-            return;
-        }
-
-        // Extraer el destinatario y el mensaje
-        $recipientType = $notification['recipientType'] ?? null;  // 'driver' o 'citizen'
-        $recipientId = $notification['recipientId'] ?? null;
-        $data = $notification['data'] ?? [];
-
-        if (!$recipientType || !$recipientId) {
-            echo "Notificación de viaje mal formateada\n";
-            return;
-        }
-
-        // Enviar la notificación al destinatario específico
-        $this->sendTripNotification($recipientType, $recipientId, $notification['type'], $data);
     }
 
     // Enviar la notificación al cliente específico
-    protected function sendTripNotification(string $recipientType, string $recipientId, string $type, array $data)
-    {
-        $message = json_encode([
-            'type' => $type,
-            'data' => $data
-        ]);
-
-        foreach ($this->clients as $client) {
-            if (isset($client->clientType) && $client->clientType === $recipientType &&
-                isset($client->userId) && $client->userId === $recipientId) {
-                $client->send($message);
-                echo "Notificación de viaje enviada a $recipientType: $recipientId\n";
-                return;
-            }
-        }
-
-        echo "Destinatario $recipientType:$recipientId no encontrado para la notificación\n";
-    }
-
     public function onOpen(ConnectionInterface $conn)
     {
-        // Almacenar la nueva conexión
         $this->clients->attach($conn);
-        $conn->clientType = null; // Se establecerá cuando el cliente envíe su identificación
+
+        // Enviar mensaje de conexión exitosa
+        $conn->send(json_encode([
+            'type' => 'connection_status',
+            'data' => [
+                'status' => 'connected',
+                'clientId' => $conn->resourceId
+            ]
+        ]));
 
         echo "Nueva conexión! ({$conn->resourceId})\n";
     }
 
+    public function onError(ConnectionInterface $conn, \Exception $e)
+    {
+        echo "Error detallado: {$e->getMessage()}\n";
+        echo "Traza: {$e->getTraceAsString()}\n";
+        $conn->close();
+    }
+
     public function onMessage(ConnectionInterface $from, $msg)
     {
-        $data = json_decode($msg, true);
+        try {
+            echo "Mensaje recibido RAW: $msg\n";
+            $data = json_decode($msg, true);
+            echo "Mensaje decodificado: " . print_r($data, true) . "\n";
 
-        if (!$data || !isset($data['type'])) {
+            if (!$data || !isset($data['type'])) {
+                $from->send(json_encode([
+                    'type' => 'error',
+                    'message' => 'Formato de mensaje inválido'
+                ]));
+                return;
+            }
+
+            switch ($data['type']) {
+                case 'identify':
+                            if (!isset($data['clientType']) || !isset($data['userId'])) {
+                                $from->send(json_encode([
+                                    'type' => 'error',
+                                    'message' => 'Datos de identificación incompletos'
+                                ]));
+                                return;
+                            }
+
+                            $from->clientType = $data['clientType'];
+                            $from->userId = $data['userId'];
+
+                            echo "\n=== Cliente identificado ===\n";
+                            echo "Tipo: {$from->clientType}\n";
+                            echo "ID: {$from->userId}\n";
+
+                            // Confirmar identificación
+                            $from->send(json_encode([
+                                'type' => 'identify_confirm',
+                                'data' => [
+                                    'clientType' => $from->clientType,
+                                    'userId' => $from->userId
+                                ]
+                            ]));
+
+                    if ($from->clientType === 'driver' && isset($data['driverData'])) {
+                        $this->registerDriver($from, $data['driverData']);
+                    }
+                    elseif ($from->clientType === 'citizen') {
+                        $this->sendInitialDriversList($from);
+                    }
+                    break;
+
+                case 'update_location':
+                    if (!isset($from->clientType) || $from->clientType !== 'driver') {
+                        return;
+                    }
+                    if (isset($from->userId) && isset($data['location'])) {
+                        $this->updateDriverLocation($from->userId, $data['location']);
+                    }
+                    break;
+                case 'trip_request':
+                    if (!isset($from->clientType) || $from->clientType !== 'citizen') {
+                        return;
+                    }
+                    $this->handleTripRequest($from, $data['data']);
+                    break;
+
+                case 'trip_response':
+                    if (!isset($from->clientType) || $from->clientType !== 'driver') {
+                        return;
+                    }
+                    $this->handleTripResponse($from, $data['data']);
+                    break;
+
+                case 'trip_status_update':
+                    if (!isset($from->clientType) || !in_array($from->clientType, ['driver', 'citizen'])) {
+                        return;
+                    }
+                    $this->handleTripStatusUpdate($from, $data['data']);
+                    break;
+            }
+        } catch (\Exception $e) {
+            echo "Error procesando mensaje: " . $e->getMessage() . "\n";
+            $from->send(json_encode([
+                'type' => 'error',
+                'message' => 'Error interno del servidor'
+            ]));
+        }
+    }
+
+    protected function handleTripRequest(ConnectionInterface $from, array $tripData)
+    {
+        $tripId = $tripData['tripId'];
+        $targetDriverId = $tripData['driverId'];
+
+        // Guardar el viaje en memoria
+        $this->activeTrips[$tripId] = [
+            'passengerId' => $from->userId,
+            'driverId' => $targetDriverId,
+            'status' => 'pending',
+            'data' => $tripData
+        ];
+
+        // Enviar solicitud al conductor
+        foreach ($this->clients as $client) {
+            if (isset($client->clientType) &&
+                $client->clientType === 'driver' &&
+                isset($client->userId) &&
+                $client->userId === $targetDriverId) {
+
+                $client->send(json_encode([
+                    'type' => 'trip_request',
+                    'data' => $tripData
+                ]));
+                break;
+            }
+        }
+    }
+
+    protected function handleTripResponse(ConnectionInterface $from, array $responseData)
+    {
+        $tripId = $responseData['tripId'];
+
+        if (!isset($this->activeTrips[$tripId])) {
             return;
         }
 
-        switch ($data['type']) {
-            case 'identify':
-                // Cliente identificándose
-                $from->clientType = $data['clientType']; // 'driver' o 'citizen'
-                $from->userId = $data['userId'] ?? null;
+        $passengerId = $this->activeTrips[$tripId]['passengerId'];
 
-                if ($from->clientType === 'driver' && isset($data['driverData'])) {
-                    $this->registerDriver($from, $data['driverData']);
-                }
-                elseif ($from->clientType === 'citizen') {
-                    // Enviar lista de conductores activos solo cuando un ciudadano se identifica
-                    if (!empty($this->activeDrivers)) {
-                        $from->send(json_encode([
-                            'type' => 'initial_drivers',
-                            'drivers' => array_values($this->activeDrivers)
-                        ]));
-                    }
-                }
-                break;
+        // Actualizar estado del viaje
+        $this->activeTrips[$tripId]['status'] = $responseData['accepted'] ? 'accepted' : 'rejected';
 
-            case 'update_location':
-                // Conductor actualizando su ubicación
-                if ($from->clientType === 'driver' && isset($from->userId) && isset($data['location'])) {
-                    $this->updateDriverLocation($from->userId, $data['location']);
-                }
+        // Notificar al pasajero
+        foreach ($this->clients as $client) {
+            if (isset($client->clientType) &&
+                $client->clientType === 'citizen' &&
+                isset($client->userId) &&
+                $client->userId === $passengerId) {
+
+                $client->send(json_encode([
+                    'type' => 'trip_response',
+                    'data' => $responseData
+                ]));
                 break;
+            }
+        }
+    }
+
+    protected function handleTripStatusUpdate(ConnectionInterface $from, array $statusData)
+    {
+        $tripId = $statusData['tripId'];
+
+        if (!isset($this->activeTrips[$tripId])) {
+            return;
+        }
+
+        $trip = $this->activeTrips[$tripId];
+        $recipientType = $from->clientType === 'driver' ? 'citizen' : 'driver';
+        $recipientId = $from->clientType === 'driver' ? $trip['passengerId'] : $trip['driverId'];
+
+        // Actualizar estado del viaje
+        $this->activeTrips[$tripId]['status'] = $statusData['status'];
+
+        // Notificar al otro participante
+        foreach ($this->clients as $client) {
+            if (isset($client->clientType) &&
+                $client->clientType === $recipientType &&
+                isset($client->userId) &&
+                $client->userId === $recipientId) {
+
+                $client->send(json_encode([
+                    'type' => 'trip_status_update',
+                    'data' => $statusData
+                ]));
+                break;
+            }
+        }
+
+        // Limpiar viaje si está completado o cancelado
+        if (in_array($statusData['status'], ['completed', 'canceled'])) {
+            unset($this->activeTrips[$tripId]);
+        }
+    }
+
+    protected function sendInitialDriversList(ConnectionInterface $conn)
+    {
+        if (!empty($this->activeDrivers)) {
+            $conn->send(json_encode([
+                'type' => 'initial_drivers',
+                'drivers' => array_values($this->activeDrivers)
+            ]));
+        } else {
+            $conn->send(json_encode([
+                'type' => 'initial_drivers',
+                'drivers' => []
+            ]));
         }
     }
 
@@ -171,21 +311,31 @@ class DriverLocationHandler implements MessageComponentInterface
         echo "Conexión {$conn->resourceId} cerrada\n";
     }
 
-    public function onError(ConnectionInterface $conn, \Exception $e)
-    {
-        echo "Error: {$e->getMessage()}\n";
-        $conn->close();
-    }
-
     protected function registerDriver(ConnectionInterface $conn, array $driverData)
     {
         $driverId = $conn->userId;
+        echo "Iniciando registro de conductor $driverId\n";
 
-        // Validar datos mínimos requeridos
-        if (!isset($driverData['fullName']) || !isset($driverData['location']) ||
-            !isset($driverData['image']) || !isset($driverData['rating'])) {
-            echo "Datos del conductor incompletos\n";
+        // Verificar datos requeridos
+        if (!isset($driverData['fullName']) || !isset($driverData['image']) ||
+            !isset($driverData['location']) || !isset($driverData['rating'])) {
+            echo "Error: Faltan datos requeridos del conductor\n";
             return;
+        }
+
+        // Verificar si el conductor ya está registrado
+        if (isset($this->activeDrivers[$driverId])) {
+            // Buscar y cerrar la conexión anterior
+            foreach ($this->clients as $client) {
+                if (isset($client->clientType) &&
+                    $client->clientType === 'driver' &&
+                    isset($client->userId) &&
+                    $client->userId === $driverId &&
+                    $client !== $conn) {
+                    $client->close();
+                    break;
+                }
+            }
         }
 
         // Guardar información del conductor
@@ -266,11 +416,78 @@ class DriverLocationHandler implements MessageComponentInterface
             'data' => $data
         ]);
 
+        echo "Enviando broadcast: $message\n"; // Log del broadcast
+
         foreach ($this->clients as $client) {
-            // Solo enviar mensajes a los ciudadanos
             if (isset($client->clientType) && $client->clientType === 'citizen') {
+                echo "Enviando a ciudadano ID: {$client->userId}\n";
                 $client->send($message);
             }
+        }
+    }
+
+    public function checkRedisNotifications()
+    {
+        try {
+            // Verificar conexión a Redis
+            if (!$this->redisClient->isConnected()) {
+                echo "⚠️ Reconectando a Redis...\n";
+                $this->redisClient->connect();
+            }
+
+            // Verificar si hay mensajes
+            $len = $this->redisClient->llen('trip_notifications_queue');
+            echo "📊 Mensajes en cola: $len\n";
+
+            if ($len == 0) {
+                return;
+            }
+
+            // Obtener notificación
+            $notification = $this->redisClient->rpop('trip_notifications_queue');
+            if (!$notification) {
+                return;
+            }
+
+            echo "📩 Procesando notificación: $notification\n";
+
+            $data = json_decode($notification, true);
+            if (!$data) {
+                echo "❌ Error decodificando JSON\n";
+                return;
+            }
+
+            // Imprimir estado actual
+            echo "\nClientes conectados:\n";
+            foreach ($this->clients as $client) {
+                echo "- Tipo: " . ($client->clientType ?? 'none');
+                echo ", ID: " . ($client->userId ?? 'none') . "\n";
+            }
+
+            // Buscar destinatario
+            foreach ($this->clients as $client) {
+                if (!isset($client->clientType) || !isset($client->userId)) {
+                    continue;
+                }
+
+                if ($client->clientType === $data['recipientType'] &&
+                    (string)$client->userId === $data['recipientId']) {
+
+                    echo "✅ Enviando a {$client->clientType} {$client->userId}\n";
+                    $client->send(json_encode([
+                        'type' => $data['type'],
+                        'data' => $data['data']
+                    ]));
+                    return;
+                }
+            }
+
+            echo "⚠️ Destinatario no encontrado, devolviendo a la cola\n";
+            $this->redisClient->lpush('trip_notifications_queue', $notification);
+
+        } catch (\Exception $e) {
+            echo "❌ Error: " . $e->getMessage() . "\n";
+            echo "Traza: " . $e->getTraceAsString() . "\n";
         }
     }
 }
