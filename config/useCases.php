@@ -15,6 +15,8 @@ use itaxcix\Core\Handler\Auth\VehicleValidationValidatorUseCaseHandler;
 use itaxcix\Core\Handler\Auth\VerificationCodeUseCaseHandler;
 use itaxcix\Core\Handler\Auth\VerifyRecoveryCodeUseCaseHandler;
 use itaxcix\Core\Handler\Driver\DriverTucStatusUseCaseHandler;
+use itaxcix\Core\Handler\Emergency\EmergencyNumberGetUseCaseHandler;
+use itaxcix\Core\Handler\Emergency\EmergencyNumberSaveUseCaseHandler;
 use itaxcix\Core\Handler\Travel\CancelTravelUseCaseHandler;
 use itaxcix\Core\Handler\Travel\CompleteTravelUseCaseHandler;
 use itaxcix\Core\Handler\Travel\RequestNewTravelUseCaseHandler;
@@ -37,6 +39,8 @@ use itaxcix\Core\UseCases\Auth\VehicleValidationValidatorUseCase;
 use itaxcix\Core\UseCases\Auth\VerificationCodeUseCase;
 use itaxcix\Core\UseCases\Auth\VerifyRecoveryCodeUseCase;
 use itaxcix\Core\UseCases\Driver\DriverTucStatusUseCase;
+use itaxcix\Core\UseCases\Emergency\EmergencyNumberGetUseCase;
+use itaxcix\Core\UseCases\Emergency\EmergencyNumberSaveUseCase;
 use itaxcix\Core\UseCases\Travel\CancelTravelUseCase;
 use itaxcix\Core\UseCases\Travel\CompleteTravelUseCase;
 use itaxcix\Core\UseCases\Travel\RequestNewTravelUseCase;
@@ -78,4 +82,8 @@ return [
     RequestNewTravelUseCase::class => autowire(RequestNewTravelUseCaseHandler::class),
     StartAcceptedTravelUseCase::class => autowire(StartAcceptedTravelUseCaseHandler::class),
     RespondToTravelRequestUseCase::class => autowire(RespondToTravelRequestUseCaseHandler::class),
+
+    // Emergency Use Cases
+    EmergencyNumberGetUseCase::class => autowire(EmergencyNumberGetUseCaseHandler::class),
+    EmergencyNumberSaveUseCase::class => autowire(EmergencyNumberSaveUseCaseHandler::class),
 ];

@@ -1,6 +1,7 @@
 <?php
 
 use itaxcix\Core\Interfaces\company\CompanyRepositoryInterface;
+use itaxcix\Core\Interfaces\configuration\ConfigurationRepositoryInterface;
 use itaxcix\Core\Interfaces\location\CoordinatesRepositoryInterface;
 use itaxcix\Core\Interfaces\location\DepartmentRepositoryInterface;
 use itaxcix\Core\Interfaces\location\DistrictRepositoryInterface;
@@ -39,6 +40,7 @@ use itaxcix\Core\Interfaces\vehicle\VehicleClassRepositoryInterface;
 use itaxcix\Core\Interfaces\vehicle\VehicleRepositoryInterface;
 use itaxcix\Core\Interfaces\vehicle\VehicleUserRepositoryInterface;
 use itaxcix\Infrastructure\Database\Repository\company\DoctrineCompanyRepository;
+use itaxcix\Infrastructure\Database\Repository\configuration\DoctrineConfigurationRepository;
 use itaxcix\Infrastructure\Database\Repository\location\DoctrineCoordinatesRepository;
 use itaxcix\Infrastructure\Database\Repository\location\DoctrineDepartmentRepository;
 use itaxcix\Infrastructure\Database\Repository\location\DoctrineDistrictRepository;
@@ -124,4 +126,6 @@ return [
 
     TravelStatusRepositoryInterface::class => autowire(DoctrineTravelStatusRepository::class),
     TravelRepositoryInterface::class => autowire(DoctrineTravelRepository::class),
+
+    ConfigurationRepositoryInterface::class => autowire(DoctrineConfigurationRepository::class),
 ];

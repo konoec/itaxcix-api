@@ -1846,6 +1846,132 @@
                 ]
             }
         },
+        "/emergency/number": {
+            "get": {
+                "tags": [
+                    "Emergency"
+                ],
+                "summary": "Obtiene el número de emergencia actual.",
+                "description": "Obtiene el número de emergencia configurado.",
+                "operationId": "getEmergencyNumber",
+                "responses": {
+                    "200": {
+                        "description": "Número de emergencia encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "number": {
+                                                    "type": "string",
+                                                    "example": "+51999999999"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Número de emergencia no configurado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No encontrado"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "No hay número de emergencia configurado."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Emergency"
+                ],
+                "summary": "Guarda o actualiza el número de emergencia.",
+                "description": "Guarda o actualiza el número de emergencia.",
+                "operationId": "saveEmergencyNumber",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "number": {
+                                        "type": "string",
+                                        "example": "+51999999999"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Número de emergencia guardado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/travels": {
             "post": {
                 "tags": [
@@ -2802,6 +2928,28 @@
                 },
                 "type": "object"
             },
+            "EmergencyNumberRequestDTO": {
+                "description": "Datos necesarios para guardar el número de emergencia",
+                "properties": {
+                    "number": {
+                        "description": "Número de emergencia",
+                        "type": "string",
+                        "example": "+51999999999"
+                    }
+                },
+                "type": "object"
+            },
+            "EmergencyNumberResponseDTO": {
+                "description": "Respuesta con el número de emergencia configurado",
+                "properties": {
+                    "number": {
+                        "description": "Número de emergencia",
+                        "type": "string",
+                        "example": "+51999999999"
+                    }
+                },
+                "type": "object"
+            },
             "RequestTravelDTO": {
                 "description": "DTO de solicitud de viaje",
                 "properties": {
@@ -2930,6 +3078,10 @@
         {
             "name": "Driver",
             "description": "Driver"
+        },
+        {
+            "name": "Emergency",
+            "description": "Emergency"
         },
         {
             "name": "Travels",

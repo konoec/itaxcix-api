@@ -98,3 +98,6 @@ VALUES ('CHICLAYO', '140101', 1),
        ('SALAS', '140310', 3),
        ('SAN JOSE', '140311', 3),
        ('TUCUME', '140312', 3);
+
+INSERT INTO tb_configuracion (conf_clave, conf_valor, conf_activo)
+VALUES ('ITAXCIX_NUMERO_EMERGENCIA', '911', TRUE);

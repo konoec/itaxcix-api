@@ -12,6 +12,7 @@ use itaxcix\Infrastructure\Web\Controller\api\Auth\RecoveryController;
 use itaxcix\Infrastructure\Web\Controller\api\Auth\RegistrationController;
 use itaxcix\Infrastructure\Web\Controller\api\Auth\VehicleValidationController;
 use itaxcix\Infrastructure\Web\Controller\api\Driver\DriverTucStatusController;
+use itaxcix\Infrastructure\Web\Controller\api\Emergency\EmergencyNumberController;
 use itaxcix\Infrastructure\Web\Controller\api\Travel\TravelStatusController;
 use itaxcix\Infrastructure\Web\Controller\api\User\UserProfilePhotoController;
 use itaxcix\Infrastructure\Web\Controller\api\User\UserProfilePhotoUploadController;
@@ -57,6 +58,10 @@ return function (RouteCollector $r) {
         $r->patch('/travels/{travelId}/start', [JwtPermissionMiddleware::class, 'INICIO CONDUCTOR', [TravelStatusController::class, 'startTravel']]);
         $r->patch('/travels/{travelId}/complete', [JwtPermissionMiddleware::class, 'INICIO CONDUCTOR', [TravelStatusController::class, 'completeTravel']]);
         $r->patch('/travels/{travelId}/cancel', [JwtMiddleware::class, [TravelStatusController::class, 'cancelTravel']]);
+
+        // Emergency Routes
+        $r->get('/emergency/number', [JwtMiddleware::class, [EmergencyNumberController::class, 'getEmergencyNumber']]);
+        $r->post('/emergency/number', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [EmergencyNumberController::class, 'saveEmergencyNumber']]);
     });
 
     // Web Routes v1
