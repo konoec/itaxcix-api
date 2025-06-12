@@ -7,12 +7,19 @@
     gap: 8px;
     padding: 6px 8px;
     border-radius: 80px;
-    transition: background-color 0.2s ease;
     min-width: 500px; /* Garantizar espacio mínimo */
+    cursor: pointer !important;
+    transition: all 0.2s ease;
 }
 
 .profile-container:hover {
     background-color: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15) !important;
+    transform: translateY(-1px) !important;
+}
+
+.profile-container:active {
+    transform: translateY(0) !important;
 }
 
 /* Imagen de perfil */
@@ -182,75 +189,230 @@
     background-color: #f3f4f6;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .profile-container {
-        gap: 6px;
-        padding: 4px 6px;
-        min-width: 160px; /* Menos espacio en móvil pero aún funcional */
-    }
-    
-    .profile-image {
-        width: 40px;
-        height: 40px;
-    }
-    
-    .user-display {
-        font-size: 13px;
-        max-width: 120px;
-    }
+/* Modal de perfil - usar los mismos estilos que el modal de conductor */
+#profile-modal .modal-content {
+    max-width: 600px;
 }
 
-/* Integración con sidebar */
-.sidebar .profile-container {
-    margin: 12px 16px;
-    padding: 12px;
-    background-color: rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+#profile-modal .driver-profile h3 {
+    color: #1f2a49;
+    font-size: 1.3em;
 }
 
-.sidebar .profile-container:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+#profile-modal .info-item label {
+    color: rgba(43, 57, 98, 0.8);
+    font-weight: 600;
 }
 
-/* Integración con navbar */
-.navbar .profile-container,
-.top-bar .profile-container {
-    margin-left: auto;
-    min-width: 220px; /* Más espacio en la barra superior */
+#profile-modal .modal-actions {
+    justify-content: center;
 }
 
-.top-bar .profile-container .user-display {
-    max-width: 200px; /* Permitir nombres más largos en la barra superior */
+#profile-modal .modal-actions .btn {
+    min-width: 120px;
 }
 
-/* Avatar por defecto mejorado */
-.profile-image.default-avatar {
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+/* ========================================
+   FUNCIONALIDAD DE SUBIDA DE FOTOS
+   ======================================== */
+
+/* Estilos para cambio de foto de perfil */
+.avatar-large {
+    position: relative;
+    overflow: hidden;
+}
+
+.avatar-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
-    font-weight: bold;
-    font-size: 16px;
-}
-
-/* Indicador de estado online */
-.profile-image::after {
-    content: '';
-    position: absolute;
-    bottom: 2px;
-    right: 2px;
-    width: 12px;
-    height: 12px;
-    background-color: #10b981;
-    border: 2px solid white;
-    border-radius: 50%;
     opacity: 0;
     transition: opacity 0.3s ease;
+    border-radius: 50%;
 }
 
-.profile-image.online::after {
+.avatar-large:hover .avatar-overlay {
     opacity: 1;
 }
+
+.change-photo-btn {
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 16px;
+    color: #2b3962;
+}
+
+.change-photo-btn:hover {
+    background: white;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.change-photo-btn:active {
+    transform: scale(0.95);
+}
+
+/* Estado de carga para el avatar */
+.avatar-loading {
+    position: relative;
+}
+
+.avatar-loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    z-index: 10;
+}
+
+.avatar-loading::before {
+    content: '🔄';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    z-index: 11;
+    animation: spin 1s linear infinite;
+}
+
+/* ========================================
+   RESPONSIVE PARA MODAL DE PERFIL
+   ======================================== */
+
+/* Responsive para modal de perfil */
+@media (max-width: 768px) {
+    /* Responsive para modals en tablet */
+    #profile-modal .modal-content {
+        width: 95%;
+        max-width: 550px;
+    }
+    
+    #profile-modal .admin-info {
+        grid-template-columns: 1fr; /* Una columna en tablet */
+        gap: 15px;
+    }
+    
+    /* Ajustar avatar en tablet */
+    .avatar-large {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .change-photo-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 640px) {
+    #profile-modal .modal-content {
+        width: 98%;
+        max-width: 95vw;
+        margin: 10px;
+    }
+    
+    #profile-modal .driver-details {
+        padding: 20px;
+    }
+    
+    #profile-modal .driver-profile {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    
+    #profile-modal .admin-info {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    /* Avatar más pequeño en móvil */
+    .avatar-large {
+        width: 70px;
+        height: 70px;
+        margin: 0 auto;
+    }
+    
+    .change-photo-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 12px;
+    }
+    
+    #profile-modal .driver-profile h3 {
+        font-size: 1.1em;
+        margin-top: 10px;
+    }
+    
+    #profile-modal .info-item {
+        padding: 12px 14px;
+    }
+    
+    #profile-modal .info-item label {
+        font-size: 0.8em;
+    }
+    
+    #profile-modal .info-item span {
+        font-size: 1em;
+    }
+}
+
+@media (max-width: 480px) {
+    #profile-modal .modal-content {
+        width: 100%;
+        height: 100vh;
+        border-radius: 0;
+        margin: 0;
+        max-height: 100vh;
+    }
+    
+    #profile-modal .driver-details {
+        padding: 15px;
+        max-height: calc(100vh - 120px);
+    }
+    
+    /* Avatar mínimo en móvil pequeño */
+    .avatar-large {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .change-photo-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 11px;
+    }
+    
+    #profile-modal .modal-actions .btn {
+        min-width: 100px;
+        padding: 10px 16px;
+        font-size: 0.85em;
+    }
+}
+
+/* ========================================
+   FIN ESTILOS MODAL DE PERFIL
+   ======================================== */

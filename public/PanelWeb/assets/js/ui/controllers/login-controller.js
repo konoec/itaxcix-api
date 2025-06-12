@@ -7,8 +7,8 @@ class LoginController {
         this.btnLoading = this.submitBtn.querySelector('.btn-loading');        this.loginService = window.LoginService;
         
           this.baseUrl = window.location.hostname.includes('github.io') 
-            ? '/PanelWeb'
-            : '';
+            ? '/itaxCix'
+            : '/PanelWeb';
         this.init();
     }    init() {
         // Prevenir comportamiento por defecto del formulario

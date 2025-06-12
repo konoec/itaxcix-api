@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Independencia - Conductores vs Perfil</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; border-color: #c3e6cb; }
+        .error { background: #f8d7da; border-color: #f5c6cb; }
+        .warning { background: #fff3cd; border-color: #ffeaa7; }
+        .loading { background: #cce7ff; border-color: #b3d9ff; }
+        
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        .status.loading { background: #007bff; color: white; }
+        .status.success { background: #28a745; color: white; }
+        .status.error { background: #dc3545; color: white; }
+        
+        .timeline {
+            margin: 10px 0;
+        }
+        .timeline-item {
+            margin: 5px 0;
+            padding: 5px;
+            background: #f8f9fa;
+            border-left: 3px solid #007bff;
+            padding-left: 10px;
+        }
+        
+        #test-results {
+            margin-top: 20px;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔬 Test de Independencia: Conductores vs Perfil</h1>
+        <p>Este test verifica que la carga de conductores sea completamente independiente de la carga del perfil de usuario.</p>
+        
+        <div class="test-section">
+            <h3>📊 Estado de Carga</h3>
+            <div>
+                <strong>Perfil de Usuario:</strong> <span id="profile-status" class="status loading">CARGANDO</span>
+            </div>
+            <div>
+                <strong>Lista de Conductores:</strong> <span id="conductors-status" class="status loading">CARGANDO</span>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>⏱️ Timeline de Carga</h3>
+            <div id="timeline" class="timeline">
+                <div class="timeline-item">🚀 Test iniciado...</div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🎯 Resultados del Test</h3>
+            <div id="test-results">
+                <p>⏳ Ejecutando test...</p>
+            </div>
+        </div>
+        
+        <div>
+            <button onclick="runTest()">🔄 Ejecutar Test Nuevamente</button>
+            <button onclick="simulateSlowProfile()">🐌 Simular Perfil Lento</button>
+            <button onclick="window.location.href='ControlAdmisionConductores.html'">🏠 Volver al Panel</button>
+        </div>
+    </div>
+
+    <!-- Scripts necesarios -->
+    <script src="../../assets/js/utils/auth-checker.js"></script>
+    <script src="../../assets/js/api/models/conductor.js"></script>
+    <script src="../../assets/js/api/services/conductor-service.js"></script>
+    <script src="../../assets/js/api/services/profile-service.js"></script>
+    
+    <script>
+        let startTime = Date.now();
+        let profileLoadTime = null;
+        let conductorsLoadTime = null;
+        
+        function addTimeline(message) {
+            const timeline = document.getElementById('timeline');
+            const elapsed = Date.now() - startTime;
+            const item = document.createElement('div');
+            item.className = 'timeline-item';
+            item.innerHTML = `⏱️ ${elapsed}ms: ${message}`;
+            timeline.appendChild(item);
+        }
+        
+        function updateStatus(elementId, status, text) {
+            const element = document.getElementById(elementId);
+            element.className = `status ${status}`;
+            element.textContent = text;
+        }
+        
+        async function testProfileLoading() {
+            try {
+                addTimeline('🧑 Iniciando carga del perfil...');
+                const profileService = new ProfileService();
+                const userId = sessionStorage.getItem("userId");
+                
+                if (!userId) {
+                    throw new Error('No hay userId en sessionStorage');
+                }
+                
+                const profileImage = await profileService.getProfilePhoto(userId);
+                profileLoadTime = Date.now() - startTime;
+                
+                addTimeline(`✅ Perfil cargado en ${profileLoadTime}ms`);
+                updateStatus('profile-status', 'success', 'COMPLETADO');
+                
+                return true;
+            } catch (error) {
+                profileLoadTime = Date.now() - startTime;
+                addTimeline(`❌ Error en perfil: ${error.message}`);
+                updateStatus('profile-status', 'error', 'ERROR');
+                return false;
+            }
+        }
+        
+        async function testConductorsLoading() {
+            try {
+                addTimeline('🚗 Iniciando carga de conductores...');
+                const conductorService = new ConductorService();
+                
+                const conductors = await conductorService.obtenerConductoresPendientes(0, 5);
+                conductorsLoadTime = Date.now() - startTime;
+                
+                addTimeline(`✅ Conductores cargados en ${conductorsLoadTime}ms (${conductors.length} encontrados)`);
+                updateStatus('conductors-status', 'success', 'COMPLETADO');
+                
+                return true;
+            } catch (error) {
+                conductorsLoadTime = Date.now() - startTime;
+                addTimeline(`❌ Error en conductores: ${error.message}`);
+                updateStatus('conductors-status', 'error', 'ERROR');
+                return false;
+            }
+        }
+        
+        async function runTest() {
+            // Reset
+            startTime = Date.now();
+            profileLoadTime = null;
+            conductorsLoadTime = null;
+            
+            document.getElementById('timeline').innerHTML = '<div class="timeline-item">🚀 Test iniciado...</div>';
+            updateStatus('profile-status', 'loading', 'CARGANDO');
+            updateStatus('conductors-status', 'loading', 'CARGANDO');
+            document.getElementById('test-results').innerHTML = '<p>⏳ Ejecutando test...</p>';
+            
+            // Ejecutar ambas cargas EN PARALELO (esto es clave)
+            const [profileResult, conductorsResult] = await Promise.allSettled([
+                testProfileLoading(),
+                testConductorsLoading()
+            ]);
+            
+            // Analizar resultados
+            let testResult = '';
+            const maxTime = Math.max(profileLoadTime || 0, conductorsLoadTime || 0);
+            const timeDiff = Math.abs((profileLoadTime || 0) - (conductorsLoadTime || 0));
+            
+            if (profileResult.status === 'fulfilled' && conductorsResult.status === 'fulfilled') {
+                if (timeDiff < 100) {
+                    testResult = `
+                        <div class="success">
+                            <h4>✅ TEST EXITOSO - INDEPENDENCIA CONFIRMADA</h4>
+                            <p><strong>Perfil:</strong> ${profileLoadTime}ms</p>
+                            <p><strong>Conductores:</strong> ${conductorsLoadTime}ms</p>
+                            <p><strong>Diferencia:</strong> ${timeDiff}ms (≤100ms indica carga paralela)</p>
+                            <p>🎉 Los conductores se cargan independientemente del perfil!</p>
+                        </div>
+                    `;
+                } else {
+                    testResult = `
+                        <div class="warning">
+                            <h4>⚠️ POSIBLE DEPENDENCIA DETECTADA</h4>
+                            <p><strong>Perfil:</strong> ${profileLoadTime}ms</p>
+                            <p><strong>Conductores:</strong> ${conductorsLoadTime}ms</p>
+                            <p><strong>Diferencia:</strong> ${timeDiff}ms (>100ms puede indicar dependencia)</p>
+                            <p>Revisar si aún existe algún await que bloquee la carga.</p>
+                        </div>
+                    `;
+                }
+            } else {
+                testResult = `
+                    <div class="error">
+                        <h4>❌ TEST CON ERRORES</h4>
+                        <p><strong>Perfil:</strong> ${profileResult.status === 'fulfilled' ? 'OK' : 'ERROR'}</p>
+                        <p><strong>Conductores:</strong> ${conductorsResult.status === 'fulfilled' ? 'OK' : 'ERROR'}</p>
+                        <p>Revisar los errores en la timeline para más detalles.</p>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('test-results').innerHTML = testResult;
+            addTimeline(`🏁 Test completado en ${maxTime}ms`);
+        }
+        
+        async function simulateSlowProfile() {
+            addTimeline('🐌 Simulando perfil lento (agregando 2s de delay)...');
+            
+            // Simular perfil lento
+            setTimeout(async () => {
+                await testProfileLoading();
+            }, 2000);
+            
+            // Cargar conductores inmediatamente
+            await testConductorsLoading();
+            
+            addTimeline('💡 Si los conductores cargaron antes que el perfil, la independencia está funcionando!');
+        }
+        
+        // Verificar autenticación y ejecutar test automáticamente
+        if (sessionStorage.getItem("authToken")) {
+            addTimeline('🔐 Usuario autenticado, ejecutando test...');
+            setTimeout(runTest, 1000);
+        } else {
+            document.getElementById('test-results').innerHTML = `
+                <div class="error">
+                    <h4>❌ NO AUTENTICADO</h4>
+                    <p>Debe estar logueado para ejecutar este test.</p>
+                    <button onclick="window.location.href='../../index.html'">Ir al Login</button>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

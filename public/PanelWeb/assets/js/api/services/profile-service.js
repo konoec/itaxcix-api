@@ -1,17 +1,31 @@
-// Clase para manejar el perfil del usuario
+// Servicio para manejar el perfil del usuario
 class ProfileService {
     constructor() {
-        this.baseUrl = 'https://149.130.161.148/api/v1'; // URL base de la API
+        this.baseUrl = 'https://149.130.161.148/api/v1';
+        
+        // Cache para optimizar rendimiento
+        this.imageCache = new Map();
+        this.defaultAvatarCache = null;
+        
+        console.log('📋 ProfileService inicializado con base URL:', this.baseUrl);
     }
 
     /**
      * Obtiene la foto de perfil del usuario
      * @param {string} userId - ID del usuario
-     * @returns {Promise<string>} - Base64 de la imagen o null si no existe
+     * @returns {Promise<string|null>} - Base64 de la imagen o null si no existe
      */
     async getProfilePhoto(userId) {
         if (!userId) {
-            throw new Error('ID de usuario requerido');
+            console.warn('⚠️ getProfilePhoto: userId requerido');
+            return null;
+        }
+
+        // Verificar cache primero
+        const cacheKey = `profile_photo_${userId}`;
+        if (this.imageCache.has(cacheKey)) {
+            console.log('📸 Usando foto de perfil desde cache');
+            return this.imageCache.get(cacheKey);
         }
 
         try {
@@ -19,54 +33,198 @@ class ProfileService {
 
             const token = sessionStorage.getItem("authToken");
             if (!token) {
-                throw new Error('No hay token de autenticación');
+                console.warn('⚠️ No hay token de autenticación');
+                return null;
             }
 
-            // Intentar múltiples estrategias para manejar problemas SSL
-            let response;
-            let lastError;
+            // Timeout optimizado para mejor UX
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 3000);
 
-            // Estrategia 1: HTTPS normal
             try {
-                console.log('🔒 Intentando HTTPS...');
-                response = await fetch(`${this.baseUrl}/users/${userId}/profile-photo`, {
+                const response = await fetch(`${this.baseUrl}/users/${userId}/profile-photo`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Accept': 'application/json'
-                    }
+                    },
+                    signal: controller.signal
                 });
-                console.log('✅ HTTPS exitoso');
-            } catch (sslError) {
-                console.warn('❌ HTTPS falló (problema SSL):', sslError.message);
-                lastError = sslError;
 
-                // Estrategia 2: HTTP
-                const httpUrl = this.baseUrl.replace('https://', 'http://');
-                try {
-                    console.log('🔓 Intentando HTTP...');
-                    response = await fetch(`${httpUrl}/users/${userId}/profile-photo`, {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Accept': 'application/json'
-                        }
-                    });
-                    console.log('✅ HTTP exitoso');
-                } catch (httpError) {
-                    console.warn('❌ HTTP también falló:', httpError.message);
-                    throw new Error('Error de conexión al servidor');
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        console.log('📸 No se encontró foto de perfil');
+                        this.imageCache.set(cacheKey, null);
+                        return null;
+                    }
+                    
+                    if (response.status === 401) {
+                        console.warn('⚠️ Token inválido para obtener foto');
+                        return null;
+                    }
+
+                    throw new Error(`Error del servidor: ${response.status}`);
                 }
+
+                const data = await response.json();
+
+                if (data.success && data.data && data.data.base64Image) {
+                    console.log('✅ Foto de perfil obtenida exitosamente');
+                    
+                    // Guardar en cache
+                    this.imageCache.set(cacheKey, data.data.base64Image);
+                    
+                    return data.data.base64Image;
+                } else {
+                    console.log('📸 Respuesta sin imagen válida');
+                    this.imageCache.set(cacheKey, null);
+                    return null;
+                }
+
+            } catch (error) {
+                clearTimeout(timeoutId);
+                
+                if (error.name === 'AbortError') {
+                    console.log('📸 Timeout al cargar foto de perfil');
+                    return null;
+                }
+                
+                throw error;
             }
+
+        } catch (error) {
+            console.log('📸 Error al obtener foto de perfil:', error.message);
+            return null;
+        }
+    }
+
+    /**
+     * Sube una nueva foto de perfil
+     * @param {string} userId - ID del usuario
+     * @param {string} base64Image - Imagen en formato base64
+     * @returns {Promise<Object>} - Resultado de la operación
+     */
+    async uploadProfilePhoto(userId, base64Image) {
+        if (!userId) {
+            return { success: false, message: 'ID de usuario requerido' };
+        }
+
+        if (!base64Image) {
+            return { success: false, message: 'Imagen requerida' };
+        }
+
+        try {
+            console.log(`📤 Subiendo foto de perfil para usuario ${userId}...`);
+
+            const token = sessionStorage.getItem("authToken");
+            if (!token) {
+                return { success: false, message: 'No hay token de autenticación' };
+            }
+
+            // Preparar imagen en formato requerido por el servidor
+            let processedImage = base64Image;
+            
+            // Si no tiene prefijo, agregarlo (formato JPEG por defecto)
+            if (!base64Image.startsWith('data:image/')) {
+                processedImage = `data:image/jpeg;base64,${base64Image}`;
+            }
+
+            const requestBody = {
+                base64Image: processedImage
+            };
+
+            const response = await fetch(`${this.baseUrl}/users/${userId}/profile-photo`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) {
+                let errorMessage = `Error del servidor: ${response.status}`;
+                
+                try {
+                    const errorData = await response.json();
+                    if (errorData.message) {
+                        errorMessage = errorData.message;
+                    }
+                } catch (e) {
+                    // Si no se puede parsear el error, usar el mensaje por defecto
+                }
+
+                if (response.status === 401) {
+                    errorMessage = 'Token de autenticación inválido';
+                } else if (response.status === 404) {
+                    errorMessage = 'Usuario no encontrado';
+                } else if (response.status === 400) {
+                    errorMessage = 'Datos de imagen inválidos';
+                }
+
+                return { success: false, message: errorMessage };
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                console.log('✅ Foto de perfil subida exitosamente');
+                
+                // Limpiar cache para forzar recarga
+                const cacheKey = `profile_photo_${userId}`;
+                this.imageCache.delete(cacheKey);
+                
+                return { success: true, message: data.message || 'Foto actualizada correctamente' };
+            } else {
+                return { success: false, message: data.message || 'Error al procesar la imagen' };
+            }
+
+        } catch (error) {
+            console.error('❌ Error al subir foto de perfil:', error);
+            return { success: false, message: 'Error de conexión al servidor' };
+        }
+    }
+
+    /**
+     * Obtiene información del perfil del usuario
+     * @param {string} userId - ID del usuario
+     * @returns {Promise<Object|null>} - Datos del perfil o null
+     */
+    async getUserProfile(userId) {
+        if (!userId) {
+            console.warn('⚠️ getUserProfile: userId requerido');
+            return null;
+        }
+
+        try {
+            console.log(`👤 Obteniendo datos de perfil para usuario ${userId}...`);
+
+            const token = sessionStorage.getItem("authToken");
+            if (!token) {
+                console.warn('⚠️ No hay token de autenticación');
+                return null;
+            }
+
+            const response = await fetch(`${this.baseUrl}/users/${userId}/profile`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json'
+                }
+            });
 
             if (!response.ok) {
                 if (response.status === 404) {
-                    console.log('📸 No se encontró foto de perfil para el usuario');
-                    return null; // No hay foto, esto es normal
+                    console.log('👤 Perfil no encontrado, usando datos locales');
+                    return null;
                 }
                 
                 if (response.status === 401) {
-                    throw new Error('Token de autenticación inválido');
+                    console.warn('⚠️ Token inválido para obtener perfil');
+                    return null;
                 }
 
                 throw new Error(`Error del servidor: ${response.status}`);
@@ -74,156 +232,170 @@ class ProfileService {
 
             const data = await response.json();
 
-            if (!data.success) {
-                console.log('📸 Respuesta del servidor:', data.message || 'Foto no encontrada');
-                return null; // No hay foto disponible
-            }
-
-            if (!data.data || !data.data.base64Image) {
-                console.log('📸 No se recibió imagen en la respuesta');
+            if (data.success && data.data) {
+                console.log('✅ Datos de perfil obtenidos exitosamente');
+                return data.data;
+            } else {
+                console.log('👤 Respuesta sin datos válidos');
                 return null;
             }
-
-            console.log('✅ Foto de perfil obtenida exitosamente');
-            return data.data.base64Image;
 
         } catch (error) {
-            console.error('❌ Error al obtener foto de perfil:', error);
-            
-            // Si es un error de red, es mejor no mostrar error al usuario
-            if (error.message.includes('Failed to fetch') || 
-                error.message.includes('conexión') ||
-                error.message.includes('certificado') ||
-                error.message.includes('SSL')) {
-                console.log('📸 Error de red, usando avatar por defecto');
-                return null;
-            }
-
-            throw error;
+            console.log('👤 Error al obtener datos de perfil:', error.message);
+            return null;
         }
-    }    /**
-     * Convierte una imagen base64 a URL de datos
+    }
+
+    /**
+     * Convierte una imagen base64 a URL de datos válida
      * @param {string} base64String - String base64 de la imagen
-     * @returns {string} - URL de datos para usar en src de img
+     * @returns {string|null} - URL de datos o null si es inválida
      */
     base64ToImageUrl(base64String) {
         if (!base64String) {
             return null;
         }
 
-        // Si ya tiene el prefijo data:image, devolverlo tal como está
+        // Si ya tiene el prefijo data:image, devolverlo como está
         if (base64String.startsWith('data:image/')) {
-            console.log('📸 Base64 ya tiene formato data URL completo');
             return base64String;
         }
 
-        // Extraer solo la parte base64 si viene con prefijo parcial
+        // Extraer contenido base64 puro
         let cleanBase64 = base64String;
         if (base64String.includes('base64,')) {
             cleanBase64 = base64String.split('base64,')[1];
-            console.log('📸 Extraído contenido base64 puro');
         }
 
-        // Detectar el tipo de imagen (por defecto JPEG)
-        let mimeType = 'image/jpeg';
-        
-        // Detectar PNG
+        // Detectar tipo de imagen por firma
+        let mimeType = 'image/jpeg'; // Por defecto
+
         if (cleanBase64.startsWith('iVBORw0KGgo')) {
             mimeType = 'image/png';
-        }
-        // Detectar GIF
-        else if (cleanBase64.startsWith('R0lGODlh')) {
+        } else if (cleanBase64.startsWith('R0lGODlh')) {
             mimeType = 'image/gif';
-        }
-        // Detectar WebP
-        else if (cleanBase64.startsWith('UklGR')) {
+        } else if (cleanBase64.startsWith('UklGR')) {
             mimeType = 'image/webp';
-        }
-        // Detectar JPEG (múltiples firmas posibles)
-        else if (cleanBase64.startsWith('/9j/') || cleanBase64.startsWith('iVBORw0KGgoAAAANSUhEUgAA')) {
+        } else if (cleanBase64.startsWith('/9j/')) {
             mimeType = 'image/jpeg';
         }
 
-        console.log(`📸 Tipo de imagen detectado: ${mimeType}`);
         return `data:${mimeType};base64,${cleanBase64}`;
     }
 
     /**
-     * Obtiene la URL de avatar por defecto
+     * Obtiene la URL del avatar por defecto
      * @returns {string} - URL del avatar por defecto
      */
     getDefaultAvatarUrl() {
-        return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiM2MzczZDAiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTEwIDMyYzAtNS41MjMgNC40NzctMTAgMTAtMTBzMTAgNC40NzcgMTAgMTAiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo=';
+        // Cache del avatar por defecto para mejor rendimiento
+        if (!this.defaultAvatarCache) {
+            this.defaultAvatarCache = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiM2MzczZDAiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTEwIDMyYzAtNS41MjMgNC40NzctMTAgMTAtMTBzMTAgNC40NzcgMTAgMTAiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo=';
+        }
+        
+        return this.defaultAvatarCache;
     }
 
     /**
-     * Método de prueba para validar el formato base64 recibido
-     * @param {string} base64Data - Datos base64 recibidos de la API
-     * @returns {Object} - Información sobre el formato detectado
+     * Valida si una imagen base64 es válida
+     * @param {string} base64String - String base64 a validar
+     * @returns {Object} - Resultado de la validación
      */
-    validateBase64Format(base64Data) {
+    validateBase64Image(base64String) {
         const result = {
-            original: base64Data,
-            hasDataPrefix: false,
-            detectedType: 'unknown',
             isValid: false,
-            processedUrl: null
+            error: null,
+            sizeKB: 0,
+            format: 'unknown'
         };
 
-        if (!base64Data) {
+        if (!base64String) {
+            result.error = 'No se proporcionó imagen';
             return result;
         }
 
-        // Verificar si ya tiene prefijo data:
-        result.hasDataPrefix = base64Data.startsWith('data:image/');
-        
-        // Si ya es un data URL completo, usarlo directamente
-        if (result.hasDataPrefix) {
-            result.detectedType = 'complete-data-url';
+        try {
+            // Extraer contenido base64 puro
+            let cleanBase64 = base64String;
+            if (base64String.includes('base64,')) {
+                cleanBase64 = base64String.split('base64,')[1];
+            }
+
+            if (!cleanBase64) {
+                result.error = 'Base64 vacío';
+                return result;
+            }
+
+            // Validar formato base64
+            try {
+                atob(cleanBase64);
+            } catch (e) {
+                result.error = 'Formato base64 inválido';
+                return result;
+            }
+
+            // Calcular tamaño aproximado
+            result.sizeKB = Math.round((cleanBase64.length * 3) / 4 / 1024);
+
+            // Detectar formato
+            if (cleanBase64.startsWith('/9j/')) {
+                result.format = 'JPEG';
+            } else if (cleanBase64.startsWith('iVBORw0KGgo')) {
+                result.format = 'PNG';
+            } else if (cleanBase64.startsWith('R0lGODlh')) {
+                result.format = 'GIF';
+            } else if (cleanBase64.startsWith('UklGR')) {
+                result.format = 'WebP';
+            }
+
+            // Validar tamaño (máximo 5MB)
+            if (result.sizeKB > 5120) {
+                result.error = `Imagen muy grande (${result.sizeKB}KB). Máximo: 5MB`;
+                return result;
+            }
+
+            // Validar tamaño mínimo (1KB)
+            if (result.sizeKB < 1) {
+                result.error = `Imagen muy pequeña (${result.sizeKB}KB). Mínimo: 1KB`;
+                return result;
+            }
+
             result.isValid = true;
-            result.processedUrl = base64Data;
+            return result;
+
+        } catch (error) {
+            result.error = 'Error al validar la imagen';
             return result;
         }
+    }
 
-        // Extraer contenido base64 puro
-        let cleanBase64 = base64Data;
-        if (base64Data.includes('base64,')) {
-            cleanBase64 = base64Data.split('base64,')[1];
-        }
+    /**
+     * Limpia el cache de imágenes
+     */
+    clearCache() {
+        this.imageCache.clear();
+        console.log('🧹 Cache de imágenes limpiado');
+    }
 
-        // Detectar tipo por firma
-        if (cleanBase64.startsWith('/9j/')) {
-            result.detectedType = 'jpeg';
-            result.isValid = true;
-        } else if (cleanBase64.startsWith('iVBORw0KGgo')) {
-            result.detectedType = 'png';
-            result.isValid = true;
-        } else if (cleanBase64.startsWith('R0lGODlh')) {
-            result.detectedType = 'gif';
-            result.isValid = true;
-        } else if (cleanBase64.startsWith('UklGR')) {
-            result.detectedType = 'webp';
-            result.isValid = true;
-        }
-
-        // Generar URL procesada
-        if (result.isValid) {
-            const mimeType = result.detectedType === 'jpeg' ? 'image/jpeg' :
-                           result.detectedType === 'png' ? 'image/png' :
-                           result.detectedType === 'gif' ? 'image/gif' :
-                           result.detectedType === 'webp' ? 'image/webp' : 'image/jpeg';
-            
-            result.processedUrl = `data:${mimeType};base64,${cleanBase64}`;
-        }
-
-        return result;
+    /**
+     * Obtiene estadísticas del cache
+     * @returns {Object} - Estadísticas del cache
+     */
+    getCacheStats() {
+        return {
+            imageCount: this.imageCache.size,
+            hasDefaultAvatar: !!this.defaultAvatarCache
+        };
     }
 }
 
-// Exportar la clase para que esté disponible en otros archivos
-if (typeof module !== "undefined" && module.exports) {
+// Exportar para uso en navegador
+if (typeof module !== 'undefined' && module.exports) {
     module.exports = ProfileService;
 } else {
-    // Para navegadores sin soporte de módulos
+    // Exportar tanto clase como instancia para máxima compatibilidad
     window.ProfileService = new ProfileService();
+    window.ProfileServiceClass = ProfileService;
+    
+    console.log('✅ ProfileService exportado globalmente');
 }

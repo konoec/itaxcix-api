@@ -544,19 +544,17 @@ class PasswordRecoveryController {
             this.setChangePasswordLoading(true);
             this.clearChangePasswordMessage();
 
-            const result = await this.recoveryService.changePassword(this.currentUserId, newPassword, repeatPassword, this.currentToken);
-
-            if (result.success) {
+            const result = await this.recoveryService.changePassword(this.currentUserId, newPassword, repeatPassword, this.currentToken);            if (result.success) {
                 this.showChangePasswordMessage('¡Contraseña cambiada exitosamente!', 'success');
                 
-                // Cerrar modal y resetear flujo después de 2 segundos
+                // Cerrar modal y resetear flujo después de 1.5 segundos
                 setTimeout(() => {
                     this.closeChangePasswordModal();
                     this.resetRecoveryFlow();
                     
-                    // Opcional: mostrar mensaje de éxito en la página principal
-                    alert('Contraseña cambiada exitosamente. Ya puedes iniciar sesión con tu nueva contraseña.');
-                }, 2000);
+                    // Mostrar notificación personalizada
+                    this.showSuccessToast('Contraseña cambiada con éxito, ya puedes iniciar sesión');
+                }, 1500);
             } else {
                 this.showChangePasswordMessage(result.message, 'error');
             }
@@ -667,10 +665,32 @@ class PasswordRecoveryController {
         this.currentContactValue = null;
         this.currentContactType = null;
         this.currentToken = null;
-        
-        if (this.resendTimeout) {
+          if (this.resendTimeout) {
             clearInterval(this.resendTimeout);
             this.resendTimeout = null;
+        }
+    }
+
+    // Método para mostrar notificación toast personalizada
+    showSuccessToast(message) {
+        const toast = document.getElementById('recovery-toast');
+        const toastMessage = document.getElementById('recovery-toast-message');
+        
+        if (toast && toastMessage) {
+            // Configurar el mensaje
+            toastMessage.textContent = message;
+            
+            // Mostrar la notificación
+            toast.classList.add('show');
+            
+            // Ocultar automáticamente después de 4 segundos
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        } else {
+            // Fallback en caso de que no se encuentre el elemento
+            console.warn('Toast element not found, using alert fallback');
+            alert(message);
         }
     }
 }

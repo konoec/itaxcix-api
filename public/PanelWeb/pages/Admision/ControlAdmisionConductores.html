@@ -88,9 +88,8 @@
             <div class="top-bar">
                 <button id="open-sidebar" class="sidebar-toggle">
                     <i class="fas fa-bars"></i>
-                </button>  
-                 <h3>ADMISION DE CONDUCTORES</h3>
-                <div class="profile-container">
+                </button>                 <h3>ADMISION DE CONDUCTORES</h3>
+                <div class="profile-container" id="profile-container" style="cursor: pointer;" title="Ver mi perfil">
                     <div class="profile-image" id="profile-image"></div>
                     <div class="user-info">
                         <span class="user-display" id="user-display">Admin</span>
@@ -193,6 +192,74 @@
                         <label>Tipo TUC:</label>
                         <span id="modal-tuc-type">No disponible</span>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>    <!-- Modal para mostrar perfil del usuario -->
+    <div id="profile-modal" class="modal">
+        <div class="modal-content">
+            <h2>
+                Mi Perfil
+                <span class="close-modal" id="close-profile-modal">&times;</span>
+            </h2>
+            
+            <!-- Contenido del modal -->
+            <div class="driver-details">                <!-- Perfil del usuario -->
+                <div class="driver-profile">
+                    <div class="avatar-large">
+                        <img id="profile-modal-avatar" src="" alt="Foto de perfil">
+                        <div class="avatar-overlay" id="avatar-overlay">
+                            <button class="change-photo-btn" id="change-photo-btn" title="Cambiar foto">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
+                        <input type="file" id="photo-input" accept="image/*" style="display: none;">
+                    </div>
+                    <div class="driver-profile-info">
+                        <h3 id="profile-modal-name">Nombre del Usuario</h3>
+                    </div>
+                </div>
+                  <!-- Información detallada del usuario -->
+                <div class="admin-info">
+                    <div class="info-item">
+                        <label>Nombre:</label>
+                        <span id="profile-modal-firstname">No disponible</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Apellido:</label>
+                        <span id="profile-modal-lastname">No disponible</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Tipo de Documento:</label>
+                        <span id="profile-modal-doctype">No disponible</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Documento:</label>
+                        <span id="profile-modal-document">No disponible</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Área:</label>
+                        <span id="profile-modal-area">No disponible</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Cargo:</label>
+                        <span id="profile-modal-position">No disponible</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Correo Electrónico:</label>
+                        <span id="profile-modal-email">No disponible</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Celular:</label>
+                        <span id="profile-modal-phone">No disponible</span>
+                    </div>
+                </div>
+
+                <!-- Botones de acción del modal -->
+                <div class="modal-actions">
+                    <button class="btn btn-cancel" id="profile-modal-close">
+                        <i class="fas fa-times"></i> Cerrar
+                    </button>
                 </div>
             </div>
         </div>

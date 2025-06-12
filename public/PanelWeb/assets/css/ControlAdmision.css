@@ -9,7 +9,7 @@
 body {
     background-image: url("../../assets/Recourse/Imagenes/loginFondo.png");
     background-size: auto;
-    backdrop-filter: blur(0px);
+    /* backdrop-filter: blur(0px); - Eliminado para prevenir problemas de renderizado */
     line-height: 1.6;
     height: 100vh;
     overflow: hidden;
@@ -28,7 +28,7 @@ body {
     flex: 1;
     margin-left: 250px;
     transition: margin-left 0.3s ease;
-    height: 100vh;
+    min-height: 100vh; /* Cambiar de height fijo a min-height */
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -43,8 +43,8 @@ body {
 
 /* Barra superior */
 .top-bar {
-    background-color: #2b396296;
-    backdrop-filter: blur(20px);
+    background-color: #2b3962ce;
+    backdrop-filter: blur(10px);
     padding: 4.2px 20px;
     display: flex;
     align-items: center;
@@ -129,7 +129,7 @@ body {
 .top-bar .user-info span {
     display: block;
     color: #ffffff;
-    line-height: 1.2;
+    line-height: 1.1; /* Reducir line-height para eliminar espacios extra */
     white-space: nowrap;
     overflow: visible; /* Permitir que el texto se vea completo */
     width: auto; /* Ancho automático para ajustarse al contenido */
@@ -140,14 +140,14 @@ body {
 .top-bar .user-info span:first-child {
     font-size: 14px;
     font-weight: 600;
-    margin-bottom: 1px; /* Reducir margen entre líneas */
+    margin-bottom: 0; /* Eliminar margen que causa línea visual */
 }
 
 .top-bar .user-info span:last-child {
     font-size: 12px;
     opacity: 0.9;
     font-weight: 400;
-    margin-top: 1px; /* Pequeño margen superior para equilibrar */
+    margin-top: 0; /* Eliminar margen que causa línea visual */
 }
 
 .top-bar .user-display {
@@ -166,24 +166,20 @@ body {
 /* Contenido */
 .content {
     padding: 20px;
-    flex: 1;
-    overflow-x: visible; /* Cambiar de auto a visible */
-    overflow-y: hidden;
+    flex: 1; /* Permitir que se expanda */
+    overflow-x: auto;
+    overflow-y: visible; /* Cambiar a visible para que no corte contenido */
     scrollbar-width: thin;
-  
+    min-height: 0; /* Permitir que el contenido determine la altura */
 }
-
-/* Contenido sin barras de desplazamiento horizontal */
-
-
 
 /* Panel principal */
 .panel {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(15px);
+    background: rgba(255, 255, 255, 0.95);
+    /* backdrop-filter: blur(15px); - Eliminado para solucionar sombreado sobre contenedor */
     border-radius: 0px;
     overflow: visible; /* Cambiar para eliminar scroll */
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); - Eliminado para solucionar sombreado sobre contenedor */
 }
 
 /* Contenedor de tabla responsive */
@@ -197,7 +193,7 @@ body {
 .drivers-table {
     width: 100%;
     border-collapse: collapse;
-    background: transparent;
+    background: rgba(255, 255, 255, 0.95);
     border-spacing: 0; /* Asegurar que no haya espaciado extra */
     border: none; /* Eliminar cualquier borde de la tabla */
 }
@@ -227,7 +223,7 @@ body {
 .drivers-table td {
     padding: 15px 20px;
     border: none; /* Eliminar bordes individuales */
-    border-bottom: 1px solid rgba(229, 231, 235, 0.5); /* Solo borde inferior sutil */
+    border-bottom: 1px solid rgba(229, 231, 235, 0); /* Solo borde inferior sutil */
     vertical-align: middle;
     height: auto; /* Cambiar de altura fija a auto */
     min-height: 60px;
@@ -240,9 +236,7 @@ body {
     transition: all 0.2s ease;
 }
 
-.driver-row:nth-child(even) {
-    background: rgba(248, 250, 252, 0.8);
-}
+
 
 .driver-row:hover {
     background: rgba(241, 245, 249, 0.9);
@@ -255,7 +249,7 @@ body {
     align-items: center;
     gap: 15px;
     width: 100%;
-    min-height: 50px;
+    min-height: 50px;;
 }
 
 .avatar {
@@ -569,11 +563,12 @@ body {
     font-weight: 600;
     letter-spacing: 0.02em;
     line-height: 1.2;
-    font-family: 'Inter', 'SF Pro Display', 'Helvetica Neue', 'Arial', sans-serif;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
 }
 
 /* Grid de información */
-.driver-info {
+.driver-info,
+.admin-info {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 18px;
@@ -649,7 +644,7 @@ body {
     min-width: 120px;
     justify-content: center;
     letter-spacing: 0.01em;
-    font-family: 'Inter', 'SF Pro Display', 'Helvetica Neue', 'Arial', sans-serif;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
 }
 
 .modal-actions .btn-accept {
@@ -699,13 +694,13 @@ body {
     justify-content: center;
     padding: 40px 20px;
     background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(15px);
+    /* backdrop-filter: blur(15px); - Eliminado para prevenir overlay sobre tabla */
     border-radius: 8px;
     text-align: center;
     min-height: 150px;
     margin: 8px;
     border: 1px solid rgba(43, 57, 98, 0.1);
-    box-shadow: 0 2px 8px rgba(43, 57, 98, 0.1);
+    /* box-shadow: 0 2px 8px rgba(43, 57, 98, 0.1); - Eliminado para reducir efectos visuales */
 }
 
 .loading-indicator p {
@@ -714,7 +709,7 @@ body {
     font-size: 1.1em;
     font-weight: 500;
     letter-spacing: 0.025em;
-    font-family: 'Inter', 'SF Pro Display', 'Helvetica Neue', 'Arial', sans-serif;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
 }
 
 /* Spinner animado */
@@ -841,7 +836,7 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.2);
     animation: confirmationSlideIn 0.3s ease-out;
     overflow: hidden;
-    font-family: 'Inter', 'SF Pro Display', 'Helvetica Neue', 'Arial', sans-serif;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
 }
 
 @keyframes confirmationSlideIn {
@@ -869,7 +864,7 @@ body {
     font-size: 1em;
     font-weight: 600;
     letter-spacing: 0.025em;
-    font-family: 'Inter', 'SF Pro Display', 'Helvetica Neue', 'Arial', sans-serif;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
 }
 
 .confirmation-body {
@@ -906,7 +901,7 @@ body {
     font-size: 0.95em;
     line-height: 1.4;
     max-width: 280px;
-    font-family: 'Inter', 'SF Pro Display', 'Helvetica Neue', 'Arial', sans-serif;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
     font-weight: 400;
 }
 
@@ -932,7 +927,7 @@ body {
     gap: 6px;
     min-width: 100px;
     justify-content: center;
-    font-family: 'Inter', 'SF Pro Display', 'Helvetica Neue', 'Arial', sans-serif;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
     letter-spacing: 0.01em;
 }
 
@@ -970,6 +965,10 @@ body {
     box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
 }
 
+
+
+
+
 /* Responsive */
 @media (max-width: 992px) {
     .main-content {
@@ -978,7 +977,7 @@ body {
     }
     
     .content {
-        padding: 15px;
+        padding: 10px;
     }
 
     .panel {
@@ -1059,8 +1058,7 @@ body {
     
     .driver-name span {
         font-size: 13px;
-    }
-      /* Responsive para modals en tablet */
+    }    /* Responsive para modals en tablet */
     .modal-content {
         width: 90%;
         max-width: 600px;
@@ -1093,11 +1091,7 @@ body {
         margin-left: 8px;
         letter-spacing: 0;
     }
-    
-    /* Continuar ocultando información del usuario */
-    .top-bar .user-info {
-        display: none !important;
-    }
+      /* Continuar ocultando información del usuario */
     
     .top-bar .profile-container {
         min-width: auto !important;
@@ -1136,6 +1130,7 @@ body {
     
     .driver-name span {
         font-size: 12px;
+        max-width: 200px; /* Aumentar límite con el nuevo sistema */
     }
     
     .actions .btn {
@@ -1153,13 +1148,9 @@ body {
     .top-bar h3 {
         font-size: 0.75rem; /* Tamaño mínimo */
         margin-left: 5px;
-        letter-spacing: -0.01em; /* Espaciado negativo para ahorrar espacio */
-    }
+        letter-spacing: -0.01em; /* Espaciado negativo para ahorrar espacio */    }
     
     /* Continuar ocultando información del usuario */
-    .top-bar .user-info {
-        display: none !important;
-    }
     
     .top-bar .profile-container {
         min-width: auto !important;
@@ -1201,13 +1192,6 @@ body {
 
 /* Mejoras adicionales para responsividad */
 
-/* Texto truncado para nombres largos en móvil */
-@media (max-width: 640px) {
-    .driver-name span {
-        max-width: 200px; /* Aumentar límite con el nuevo sistema */
-    }
-}
-
 /* Mejoras para interacción touch */
 @media (hover: none) and (pointer: coarse) {
     .actions .btn {
@@ -1227,13 +1211,7 @@ body {
     }
     
     .top-bar h1 {
-        font-size: 1rem;
-    }
-    
-    /* Ocultar información del usuario en landscape */
-    .top-bar .user-info {
-        display: none;
-    }
+        font-size: 1rem;    }
     
     .top-bar .profile-container {
         min-width: auto;
@@ -1256,16 +1234,17 @@ body {
     }
     
     .drivers-table td {
-        height: 35px;
+        height: 5px;
     }
     
     .avatar {
         width: 24px;
         height: 24px;
-    }    .actions .btn {
-        width: 22px;
+    }    .actions .btn {        width: 22px;
         height: 22px;
-    }    .modal-content {
+    }
+    
+    .modal-content {
         max-height: 95vh;
     }
       /* Responsive para loading indicator en landscape */
@@ -1279,48 +1258,8 @@ body {
         font-size: 0.9em;
         margin-top: 12px;
     }
-    
-    .spinner {
+      .spinner {
         width: 35px;
         height: 35px;
-    }
-    
-    /* Responsive para confirmation modal */
-    .confirmation-content {
-        width: 300px;
-        max-width: 95vw;
-    }
-    
-    /* Responsive para details modal */
-    .modal-content {
-        width: 95%;
-        max-width: 95vw;
-        max-height: 90vh;
-    }
-    
-    .driver-details {
-        padding: 20px;
-        max-height: calc(90vh - 100px);
-    }
-    
-    .driver-info {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-    
-    .driver-profile {
-        flex-direction: column;
-        text-align: center;
-        gap: 15px;
-    }
-    
-    .modal-actions {
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .modal-actions .btn {
-        width: 100%;
-        min-width: auto;
     }
 }
