@@ -26,4 +26,26 @@ class IncidentEntity {
     private ?string $comment = null;
     #[ORM\Column(name: 'inci_activo', type: 'boolean', options: ['default' => true])]
     private bool $active = true;
+
+    public function __construct()
+    {
+    }
+
+    public function getId(): ?int { return $this->id; }
+    public function setId(?int $id): void { $this->id = $id; }
+
+    public function getUser(): ?UserEntity { return $this->user; }
+    public function setUser(?UserEntity $user): void { $this->user = $user; }
+
+    public function getTravel(): ?TravelEntity { return $this->travel; }
+    public function setTravel(?TravelEntity $travel): void { $this->travel = $travel; }
+
+    public function getType(): ?IncidentTypeEntity { return $this->type; }
+    public function setType(?IncidentTypeEntity $type): void { $this->type = $type; }
+
+    public function getComment(): ?string { return $this->comment; }
+    public function setComment(?string $comment): void { $this->comment = $comment; }
+
+    public function isActive(): bool { return $this->active; }
+    public function setActive(bool $active): void { $this->active = $active; }
 }

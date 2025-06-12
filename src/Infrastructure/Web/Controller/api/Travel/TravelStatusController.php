@@ -46,8 +46,8 @@ class TravelStatusController extends AbstractController
     #[OA\Post(
         path: "/travels",
         operationId: "requestTravel",
-        description: "Solicitar un nuevo viaje",
-        summary: "Crear una nueva solicitud de viaje",
+        description: "Solicita un nuevo viaje. El usuario debe ser un ciudadano registrado. Elige un conductor y define origen y destino.",
+        summary: "Solicitar un nuevo viaje",
         security: [["bearerAuth" => []]],
         requestBody: new OA\RequestBody(
             required: true,
@@ -62,20 +62,20 @@ class TravelStatusController extends AbstractController
             properties: [
                 new OA\Property(property: "success", type: "boolean", example: true),
                 new OA\Property(property: "message", type: "string", example: "OK"),
-                new OA\Property(property: "data", ref: TravelResponseDTO::class),
+                new OA\Property(property: "data", ref: TravelResponseDTO::class)
             ],
             type: "object"
         )
     )]
     #[OA\Response(
         response: 400,
-        description: "Errores de validación",
+        description: "Petición inválida o error de validación",
         content: new OA\JsonContent(
             properties: [
                 new OA\Property(property: "success", type: "boolean", example: false),
                 new OA\Property(property: "message", type: "string", example: "Petición inválida"),
                 new OA\Property(property: "error", properties: [
-                    new OA\Property(property: "message", type: "string", example: "Datos de viaje incorrectos")
+                    new OA\Property(property: "message", type: "string", example: "Conductor o ciudadano no encontrado")
                 ], type: "object")
             ],
             type: "object"
@@ -136,7 +136,7 @@ class TravelStatusController extends AbstractController
     #[OA\Patch(
         path: "/travels/{travelId}/respond",
         operationId: "respondToRequest",
-        description: "El conductor acepta o rechaza una solicitud de viaje",
+        description: "El conductor acepta o rechaza una solicitud de viaje. El parámetro 'accepted' debe ser booleano.",
         summary: "Responder a una solicitud de viaje",
         security: [["bearerAuth" => []]],
         requestBody: new OA\RequestBody(
@@ -159,20 +159,20 @@ class TravelStatusController extends AbstractController
             properties: [
                 new OA\Property(property: "success", type: "boolean", example: true),
                 new OA\Property(property: "message", type: "string", example: "OK"),
-                new OA\Property(property: "data", ref: TravelResponseDTO::class),
+                new OA\Property(property: "data", ref: TravelResponseDTO::class)
             ],
             type: "object"
         )
     )]
     #[OA\Response(
         response: 400,
-        description: "Errores de validación",
+        description: "Petición inválida o error de validación",
         content: new OA\JsonContent(
             properties: [
                 new OA\Property(property: "success", type: "boolean", example: false),
                 new OA\Property(property: "message", type: "string", example: "Petición inválida"),
                 new OA\Property(property: "error", properties: [
-                    new OA\Property(property: "message", type: "string", example: "Datos incorrectos")
+                    new OA\Property(property: "message", type: "string", example: "El viaje no está en estado SOLICITADO")
                 ], type: "object")
             ],
             type: "object"
@@ -212,7 +212,7 @@ class TravelStatusController extends AbstractController
     #[OA\Patch(
         path: "/travels/{travelId}/start",
         operationId: "startTravel",
-        description: "Iniciar un viaje previamente aceptado",
+        description: "Inicia un viaje previamente aceptado. Solo el conductor asignado puede iniciar el viaje.",
         summary: "Iniciar viaje",
         security: [["bearerAuth" => []]],
         tags: ["Travels"]
@@ -231,20 +231,20 @@ class TravelStatusController extends AbstractController
             properties: [
                 new OA\Property(property: "success", type: "boolean", example: true),
                 new OA\Property(property: "message", type: "string", example: "OK"),
-                new OA\Property(property: "data", ref: TravelResponseDTO::class),
+                new OA\Property(property: "data", ref: TravelResponseDTO::class)
             ],
             type: "object"
         )
     )]
     #[OA\Response(
-        response: 404,
-        description: "Viaje no encontrado",
+        response: 400,
+        description: "Petición inválida o error de validación",
         content: new OA\JsonContent(
             properties: [
                 new OA\Property(property: "success", type: "boolean", example: false),
-                new OA\Property(property: "message", type: "string", example: "No encontrado"),
+                new OA\Property(property: "message", type: "string", example: "Petición inválida"),
                 new OA\Property(property: "error", properties: [
-                    new OA\Property(property: "message", type: "string", example: "El viaje no existe o no está disponible")
+                    new OA\Property(property: "message", type: "string", example: "El viaje no está en estado ACEPTADO")
                 ], type: "object")
             ],
             type: "object"
@@ -280,7 +280,7 @@ class TravelStatusController extends AbstractController
     #[OA\Patch(
         path: "/travels/{travelId}/complete",
         operationId: "completeTravel",
-        description: "Finalizar un viaje en curso",
+        description: "Finaliza un viaje en curso. Solo el conductor asignado puede completar el viaje.",
         summary: "Completar viaje",
         security: [["bearerAuth" => []]],
         tags: ["Travels"]
@@ -299,14 +299,14 @@ class TravelStatusController extends AbstractController
             properties: [
                 new OA\Property(property: "success", type: "boolean", example: true),
                 new OA\Property(property: "message", type: "string", example: "OK"),
-                new OA\Property(property: "data", ref: TravelResponseDTO::class),
+                new OA\Property(property: "data", ref: TravelResponseDTO::class)
             ],
             type: "object"
         )
     )]
     #[OA\Response(
         response: 400,
-        description: "Estado incorrecto",
+        description: "Petición inválida o error de validación",
         content: new OA\JsonContent(
             properties: [
                 new OA\Property(property: "success", type: "boolean", example: false),
@@ -348,7 +348,7 @@ class TravelStatusController extends AbstractController
     #[OA\Patch(
         path: "/travels/{travelId}/cancel",
         operationId: "cancelTravel",
-        description: "Cancelar un viaje",
+        description: "Cancela un viaje. Solo el ciudadano o el conductor asignado pueden cancelar el viaje si está permitido por el estado actual.",
         summary: "Cancelar viaje",
         security: [["bearerAuth" => []]],
         tags: ["Travels"]
@@ -367,20 +367,20 @@ class TravelStatusController extends AbstractController
             properties: [
                 new OA\Property(property: "success", type: "boolean", example: true),
                 new OA\Property(property: "message", type: "string", example: "OK"),
-                new OA\Property(property: "data", ref: TravelResponseDTO::class),
+                new OA\Property(property: "data", ref: TravelResponseDTO::class)
             ],
             type: "object"
         )
     )]
     #[OA\Response(
         response: 400,
-        description: "Cancelación no permitida",
+        description: "Petición inválida o error de validación",
         content: new OA\JsonContent(
             properties: [
                 new OA\Property(property: "success", type: "boolean", example: false),
                 new OA\Property(property: "message", type: "string", example: "Petición inválida"),
                 new OA\Property(property: "error", properties: [
-                    new OA\Property(property: "message", type: "string", example: "No se puede cancelar el viaje en este estado")
+                    new OA\Property(property: "message", type: "string", example: "El viaje ya está cancelado")
                 ], type: "object")
             ],
             type: "object"

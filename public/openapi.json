@@ -1972,13 +1972,79 @@
                 ]
             }
         },
+        "/incidents/register": {
+            "post": {
+                "tags": [
+                    "Incident"
+                ],
+                "summary": "Registrar incidente",
+                "description": "Registra un nuevo incidente asociado a un viaje y usuario.",
+                "operationId": "registerIncident",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterIncidentRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Incidente registrado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RegisterIncidentResponseDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Errores de validación o lógica",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petición inválida"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "El usuario no está relacionado con el viaje."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/travels": {
             "post": {
                 "tags": [
                     "Travels"
                 ],
-                "summary": "Crear una nueva solicitud de viaje",
-                "description": "Solicitar un nuevo viaje",
+                "summary": "Solicitar un nuevo viaje",
+                "description": "Solicita un nuevo viaje. El usuario debe ser un ciudadano registrado. Elige un conductor y define origen y destino.",
                 "operationId": "requestTravel",
                 "requestBody": {
                     "required": true,
@@ -2015,7 +2081,7 @@
                         }
                     },
                     "400": {
-                        "description": "Errores de validación",
+                        "description": "Petición inválida o error de validación",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2032,7 +2098,7 @@
                                             "properties": {
                                                 "message": {
                                                     "type": "string",
-                                                    "example": "Datos de viaje incorrectos"
+                                                    "example": "Conductor o ciudadano no encontrado"
                                                 }
                                             },
                                             "type": "object"
@@ -2086,7 +2152,7 @@
                     "Travels"
                 ],
                 "summary": "Responder a una solicitud de viaje",
-                "description": "El conductor acepta o rechaza una solicitud de viaje",
+                "description": "El conductor acepta o rechaza una solicitud de viaje. El parámetro 'accepted' debe ser booleano.",
                 "operationId": "respondToRequest",
                 "parameters": [
                     {
@@ -2134,7 +2200,7 @@
                         }
                     },
                     "400": {
-                        "description": "Errores de validación",
+                        "description": "Petición inválida o error de validación",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2151,7 +2217,7 @@
                                             "properties": {
                                                 "message": {
                                                     "type": "string",
-                                                    "example": "Datos incorrectos"
+                                                    "example": "El viaje no está en estado SOLICITADO"
                                                 }
                                             },
                                             "type": "object"
@@ -2176,7 +2242,7 @@
                     "Travels"
                 ],
                 "summary": "Iniciar viaje",
-                "description": "Iniciar un viaje previamente aceptado",
+                "description": "Inicia un viaje previamente aceptado. Solo el conductor asignado puede iniciar el viaje.",
                 "operationId": "startTravel",
                 "parameters": [
                     {
@@ -2213,8 +2279,8 @@
                             }
                         }
                     },
-                    "404": {
-                        "description": "Viaje no encontrado",
+                    "400": {
+                        "description": "Petición inválida o error de validación",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2225,13 +2291,13 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "No encontrado"
+                                            "example": "Petición inválida"
                                         },
                                         "error": {
                                             "properties": {
                                                 "message": {
                                                     "type": "string",
-                                                    "example": "El viaje no existe o no está disponible"
+                                                    "example": "El viaje no está en estado ACEPTADO"
                                                 }
                                             },
                                             "type": "object"
@@ -2256,7 +2322,7 @@
                     "Travels"
                 ],
                 "summary": "Completar viaje",
-                "description": "Finalizar un viaje en curso",
+                "description": "Finaliza un viaje en curso. Solo el conductor asignado puede completar el viaje.",
                 "operationId": "completeTravel",
                 "parameters": [
                     {
@@ -2294,7 +2360,7 @@
                         }
                     },
                     "400": {
-                        "description": "Estado incorrecto",
+                        "description": "Petición inválida o error de validación",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2336,7 +2402,7 @@
                     "Travels"
                 ],
                 "summary": "Cancelar viaje",
-                "description": "Cancelar un viaje",
+                "description": "Cancela un viaje. Solo el ciudadano o el conductor asignado pueden cancelar el viaje si está permitido por el estado actual.",
                 "operationId": "cancelTravel",
                 "parameters": [
                     {
@@ -2374,7 +2440,7 @@
                         }
                     },
                     "400": {
-                        "description": "Cancelación no permitida",
+                        "description": "Petición inválida o error de validación",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2391,7 +2457,7 @@
                                             "properties": {
                                                 "message": {
                                                     "type": "string",
-                                                    "example": "No se puede cancelar el viaje en este estado"
+                                                    "example": "El viaje ya está cancelado"
                                                 }
                                             },
                                             "type": "object"
@@ -2950,6 +3016,49 @@
                 },
                 "type": "object"
             },
+            "RegisterIncidentRequestDTO": {
+                "description": "Datos necesarios para registrar un incidente",
+                "properties": {
+                    "userId": {
+                        "description": "ID del usuario que reporta el incidente",
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "travelId": {
+                        "description": "ID del viaje asociado al incidente",
+                        "type": "integer",
+                        "example": 20
+                    },
+                    "typeName": {
+                        "description": "Nombre del tipo de incidencia",
+                        "type": "string",
+                        "example": "ROBO"
+                    },
+                    "comment": {
+                        "description": "Comentario adicional",
+                        "type": "string",
+                        "example": "Se reporta robo de pertenencias",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "RegisterIncidentResponseDTO": {
+                "description": "Respuesta al registrar un incidente",
+                "properties": {
+                    "incidentId": {
+                        "description": "ID del incidente registrado",
+                        "type": "integer",
+                        "example": 123
+                    },
+                    "message": {
+                        "description": "Mensaje de confirmación",
+                        "type": "string",
+                        "example": "Incidente registrado correctamente."
+                    }
+                },
+                "type": "object"
+            },
             "RequestTravelDTO": {
                 "description": "DTO de solicitud de viaje",
                 "properties": {
@@ -3082,6 +3191,10 @@
         {
             "name": "Emergency",
             "description": "Emergency"
+        },
+        {
+            "name": "Incident",
+            "description": "Incident"
         },
         {
             "name": "Travels",

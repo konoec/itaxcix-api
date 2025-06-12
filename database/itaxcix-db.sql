@@ -101,3 +101,11 @@ VALUES ('CHICLAYO', '140101', 1),
 
 INSERT INTO tb_configuracion (conf_clave, conf_valor, conf_activo)
 VALUES ('ITAXCIX_NUMERO_EMERGENCIA', '911', TRUE);
+
+INSERT INTO tb_tipo_incidencia(tipo_nombre, tipo_activo)
+VALUES ('FALTA DE RESPETO', TRUE),
+       ('FALTA DE PUNTUALIDAD', TRUE),
+       ('FALTA DE HIGIENE', TRUE),
+       ('FALTA DE SEGURIDAD', TRUE),
+       ('FALTA DE CUMPLIMIENTO', TRUE),
+       ('OTRO', TRUE);

@@ -2,6 +2,8 @@
 
 use itaxcix\Core\Interfaces\company\CompanyRepositoryInterface;
 use itaxcix\Core\Interfaces\configuration\ConfigurationRepositoryInterface;
+use itaxcix\Core\Interfaces\incident\IncidentRepositoryInterface;
+use itaxcix\Core\Interfaces\incident\IncidentTypeRepositoryInterface;
 use itaxcix\Core\Interfaces\location\CoordinatesRepositoryInterface;
 use itaxcix\Core\Interfaces\location\DepartmentRepositoryInterface;
 use itaxcix\Core\Interfaces\location\DistrictRepositoryInterface;
@@ -39,8 +41,11 @@ use itaxcix\Core\Interfaces\vehicle\VehicleCategoryRepositoryInterface;
 use itaxcix\Core\Interfaces\vehicle\VehicleClassRepositoryInterface;
 use itaxcix\Core\Interfaces\vehicle\VehicleRepositoryInterface;
 use itaxcix\Core\Interfaces\vehicle\VehicleUserRepositoryInterface;
+use itaxcix\Infrastructure\Database\Entity\incident\IncidentTypeEntity;
 use itaxcix\Infrastructure\Database\Repository\company\DoctrineCompanyRepository;
 use itaxcix\Infrastructure\Database\Repository\configuration\DoctrineConfigurationRepository;
+use itaxcix\Infrastructure\Database\Repository\incident\DoctrineIncidentRepository;
+use itaxcix\Infrastructure\Database\Repository\incident\DoctrineIncidentTypeRepository;
 use itaxcix\Infrastructure\Database\Repository\location\DoctrineCoordinatesRepository;
 use itaxcix\Infrastructure\Database\Repository\location\DoctrineDepartmentRepository;
 use itaxcix\Infrastructure\Database\Repository\location\DoctrineDistrictRepository;
@@ -128,4 +133,7 @@ return [
     TravelRepositoryInterface::class => autowire(DoctrineTravelRepository::class),
 
     ConfigurationRepositoryInterface::class => autowire(DoctrineConfigurationRepository::class),
+
+    IncidentRepositoryInterface::class => autowire(DoctrineIncidentRepository::class),
+    IncidentTypeRepositoryInterface::class => autowire(DoctrineIncidentTypeRepository::class),
 ];
