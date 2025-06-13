@@ -2,6 +2,7 @@
 
 namespace itaxcix\Core\Handler\Travel;
 
+use DateTimeImmutable;
 use InvalidArgumentException;
 use itaxcix\Core\Interfaces\travel\TravelRepositoryInterface;
 use itaxcix\Core\Interfaces\travel\TravelStatusRepositoryInterface;
@@ -42,6 +43,7 @@ class StartAcceptedTravelUseCaseHandler implements StartAcceptedTravelUseCase
         }
 
         $travel->setStatus($travelStatus);
+        $travel->setStartDate(new \DateTime());
         $updatedTravel = $this->travelRepository->saveTravel($travel);
 
         // Crear notificación según el schema TripStatusUpdatePayload

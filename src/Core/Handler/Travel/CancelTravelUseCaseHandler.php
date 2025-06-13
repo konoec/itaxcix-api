@@ -56,6 +56,7 @@ class CancelTravelUseCaseHandler implements CancelTravelUseCase
         }
 
         $travel->setStatus($cancelledStatus);
+        $travel->setEndDate(new \DateTime());
         $updatedTravel = $this->travelRepository->saveTravel($travel);
 
         // Notificar al conductor

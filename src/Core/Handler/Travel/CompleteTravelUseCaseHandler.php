@@ -40,6 +40,7 @@ class CompleteTravelUseCaseHandler implements CompleteTravelUseCase
         }
 
         $travel->setStatus($completedStatus);
+        $travel->setEndDate(new \DateTime());
         $savedTravel = $this->travelRepository->saveTravel($travel);
 
         // Enviar notificación a través de Redis
