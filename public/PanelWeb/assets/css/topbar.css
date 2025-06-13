@@ -1,0 +1,225 @@
+/* ===== TOP BAR STYLES ===== */
+
+/* Barra superior */
+.top-bar {
+    background-color: #2b3962ce;
+    backdrop-filter: blur(10px);
+    padding: 4.2px 20px;
+    display: flex;
+    align-items: center;
+    position: sticky;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.074);
+    box-shadow: 0 5px 20px rgba(47, 47, 47, 0.408);
+    top: 0;
+    z-index: 10;
+}
+
+.top-bar h1 {
+    margin-left: 20px;
+    font-size: 1.5rem;
+    flex: 1;
+    color: #ffffff;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+}
+
+.top-bar h3 {
+    margin-left: 20px;
+    font-size: 1.1rem; /* Reducir tamaño para mejor proporción */
+    flex: 1;
+    color: #ffffff !important;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    white-space: nowrap; /* Evitar salto de línea */
+    overflow: hidden; /* Ocultar desborde */
+    text-overflow: ellipsis; /* Mostrar ... si es muy largo */
+}
+
+/* Contenedor de perfil en top-bar */
+.top-bar .profile-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.2s ease;
+    min-width: 300px; /* Incrementar más para nombres largos */
+    max-width: 500px; /* Incrementar máximo para nombres muy largos */
+    margin-left: auto; /* Empujar a la derecha */
+    flex-shrink: 0; /* Evitar que se reduzca */
+}
+
+.top-bar .profile-container:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+}
+
+/* Imagen de perfil en top-bar */
+.top-bar .profile-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(43, 57, 98, 0.8) 0%, rgba(31, 42, 73, 0.8) 100%);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    flex-shrink: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    order: 2; /* Mover imagen a la derecha */
+    align-self: center; /* Centrar verticalmente */
+}
+
+/* Información del usuario */
+.top-bar .user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    min-width: 0;
+    flex: 1;
+    order: 1; /* Mantener texto a la izquierda */
+    height: 44px; /* Altura fija para centrado vertical */
+}
+
+.top-bar .user-info span {
+    display: block;
+    color: #ffffff;
+    line-height: 1.1; /* Reducir line-height para eliminar espacios extra */
+    white-space: nowrap;
+    overflow: visible; /* Permitir que el texto se vea completo */
+    width: auto; /* Ancho automático para ajustarse al contenido */
+    font-weight: 500;
+    margin: 0; /* Resetear márgenes */
+}
+
+.top-bar .user-info span:first-child {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 0; /* Eliminar margen que causa línea visual */
+}
+
+.top-bar .user-info span:last-child {
+    font-size: 12px;
+    opacity: 0.9;
+    font-weight: 400;
+    margin-top: 0; /* Eliminar margen que causa línea visual */
+}
+
+.top-bar .user-display {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 2px;
+    max-width: 180px; /* Aumentar para nombres más largos */
+}
+
+.top-bar .user-role {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 400;
+}
+
+/* Botón del sidebar en el top-bar - Oculto por defecto, solo visible en móviles */
+.top-bar .sidebar-toggle {
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    display: none; /* Oculto por defecto */
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+}
+
+.top-bar .sidebar-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.05);
+}
+
+.top-bar .sidebar-toggle:active {
+    transform: scale(0.95);
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Tablet */
+@media (max-width: 1024px) {
+    .top-bar .profile-container {
+        min-width: 250px;
+        max-width: 350px;
+    }
+    
+    .top-bar .user-display {
+        max-width: 150px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    /* Mostrar el botón hamburguesa en móviles */
+    .top-bar .sidebar-toggle {
+        display: flex !important;
+    }
+    
+    /* Reducir padding del top-bar en móvil */
+    .top-bar {
+        padding: 4px 15px; /* Menos padding horizontal */
+    }
+    
+    /* Ajustar título para pantallas pequeñas */
+    .top-bar h3 {
+        font-size: 0.9rem; /* Reducir más en móvil */
+        margin-left: 10px; /* Menos margen */
+        letter-spacing: 0.01em; /* Menos espaciado entre letras */
+    }
+    
+    /* Ocultar información del usuario en móviles, solo mostrar imagen */
+    .top-bar .user-info {
+        display: none !important;
+    }
+    
+    /* Contenedor del perfil solo para la imagen */
+    .top-bar .profile-container {
+        min-width: auto !important;
+        max-width: 48px !important; /* Solo el tamaño de la imagen + padding */
+        width: 48px !important;
+        padding: 4px !important;
+        gap: 2px !important;
+        margin-left: auto !important; /* Mantener a la derecha */
+        justify-content: center !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .top-bar .profile-image {
+        width: 36px !important;
+        height: 36px !important;
+        order: 0 !important; /* Resetear order en móvil */
+        margin: 0 !important;
+    }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+    .top-bar {
+        padding: 4px 10px;
+    }
+    
+    .top-bar h3 {
+        font-size: 0.8rem;
+        margin-left: 8px;
+    }
+    
+    .top-bar .sidebar-toggle {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+    }
+}

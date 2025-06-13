@@ -1,14 +1,56 @@
 class SidebarController {
     constructor() {
+        console.log('🏗️ Construyendo SidebarController...');
         this.sidebar = document.getElementById('sidebar');
         this.closeButton = document.getElementById('close-sidebar');
         this.logoutButton = document.querySelector('.logout-btn');
+        
+        console.log('🔍 Elementos encontrados:');
+        console.log('  - Sidebar:', this.sidebar);
+        console.log('  - Close button:', this.closeButton);
+        console.log('  - Logout button:', this.logoutButton);
+        
         this.init();
+    }    init() {
+        this.setupEventListeners();
+        this.initializeSubmenu();
+        this.setupCustomEventListeners(); // Agregar listeners para eventos personalizados
+        this.initializeMobileState(); // Inicializar estado móvil
     }
 
-    init() {
-        this.setupEventListeners();
-        this.initializeSubmenu(); // AGREGAR ESTA LÍNEA
+    /**
+     * Inicializa el estado del sidebar para móviles
+     */
+    initializeMobileState() {
+        // Detectar si estamos en móvil
+        if (window.innerWidth <= 768) {
+            // Asegurar que el sidebar comience colapsado en móviles
+            if (this.sidebar && !this.sidebar.classList.contains('collapsed')) {
+                this.sidebar.classList.add('collapsed');
+                console.log('📱 Sidebar inicializado como colapsado en móvil');
+            }
+        } else {
+            // En desktop, asegurar que no esté colapsado
+            if (this.sidebar && this.sidebar.classList.contains('collapsed')) {
+                this.sidebar.classList.remove('collapsed');
+                console.log('🖥️ Sidebar inicializado como expandido en desktop');
+            }
+        }
+
+        // Escuchar cambios de tamaño de ventana
+        window.addEventListener('resize', () => {
+            if (window.innerWidth <= 768) {
+                // Cambió a móvil - colapsar
+                if (this.sidebar && !this.sidebar.classList.contains('collapsed')) {
+                    this.sidebar.classList.add('collapsed');
+                }
+            } else {
+                // Cambió a desktop - expandir
+                if (this.sidebar && this.sidebar.classList.contains('collapsed')) {
+                    this.sidebar.classList.remove('collapsed');
+                }
+            }
+        });
     }
 
     setupEventListeners() {
@@ -58,12 +100,66 @@ class SidebarController {
                 console.log('Submenu toggled:', isOpen ? 'closed' : 'opened');
             });
         });
+    }    /**
+     * Método para alternar (toggle) el estado del sidebar
+     * Utilizado por el TopBarController cuando se hace clic en el botón hamburguesa
+     */
+    toggle() {
+        console.log('🔄 Toggle sidebar llamado');
+        console.log('🔍 Sidebar element:', this.sidebar);
+        
+        if (this.sidebar) {
+            const wasCollapsed = this.sidebar.classList.contains('collapsed');
+            this.sidebar.classList.toggle('collapsed');
+            const isCollapsed = this.sidebar.classList.contains('collapsed');
+            
+            console.log(`� Sidebar cambió de ${wasCollapsed ? 'colapsado' : 'expandido'} a ${isCollapsed ? 'colapsado' : 'expandido'}`);
+            console.log('🎨 Clases CSS actuales:', this.sidebar.className);
+        } else {
+            console.error('❌ Sidebar element not found in toggle()');
+        }
+    }
+
+    /**
+     * Método para abrir el sidebar
+     */
+    open() {
+        if (this.sidebar) {
+            this.sidebar.classList.remove('collapsed');
+            console.log('📂 Sidebar opened');
+        }
+    }
+
+    /**
+     * Método para cerrar el sidebar
+     */
+    close() {
+        if (this.sidebar) {
+            this.sidebar.classList.add('collapsed');
+            console.log('📁 Sidebar closed');
+        }
+    }
+
+    /**
+     * Configura event listeners para eventos personalizados
+     * Sirve como fallback cuando no hay referencia directa desde otros controladores
+     */
+    setupCustomEventListeners() {
+        // Escuchar evento personalizado para toggle del sidebar
+        document.addEventListener('toggleSidebar', () => {
+            console.log('📡 Evento personalizado toggleSidebar recibido');
+            this.toggle();
+        });
     }
 }
 
+// NOTA: La inicialización automática está comentada para evitar doble inicialización
+// El SidebarController debe ser inicializado por el inicializador específico de cada página
+/*
 // Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
     if (!window.sidebarControllerInstance) {
         window.sidebarControllerInstance = new SidebarController();
     }
 });
+*/

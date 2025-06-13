@@ -8,16 +8,21 @@
     color: #ecf0f1;
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: 100vh; /* Altura completa de la ventana */
     position: fixed;
-    left: 0; /* Cambiamos transform por left */
+    left: 0; /* Siempre visible en desktop */
     top: 0;
     z-index: 100;
     box-shadow: 0 5px 20px rgba(47, 47, 47, 0.408);
     overflow: hidden;
-    transition: left 0.3s ease; /* Cambiamos la transición */
+    transition: left 0.3s ease;
     border-left: 2px solid rgba(255, 255, 255, 0.074);
     border-right: 2px solid rgba(255, 255, 255, 0.074);
+}
+
+/* Estado colapsado - comportamiento diferente en desktop vs móvil */
+.sidebar.collapsed {
+    left: -250px; /* Para desktop - solo se oculta parcialmente pero no se usa realmente */
 }
 
 /* Encabezado del sidebar */
@@ -215,76 +220,21 @@
     background: rgba(255, 255, 255, 0.03);
 }
 
-/* Ajuste para el botón hamburguesa */
+/* Ajuste para el botón hamburguesa - oculto por defecto en desktop */
 .sidebar-toggle {
-    display: none; /* Oculto por defecto */
+    display: none; /* Oculto por defecto en desktop */
     background: none;
     border: none;
     color: #ffffff;
     font-size: 1.5rem;
     cursor: pointer;
     padding: 10px;
+    transition: all 0.2s ease;
 }
 
-/* Responsive */
-@media (max-width: 992px) {
-    .sidebar {
-        left: -250px;
-        transition: left 0.3s ease;
-    }
-
-    .sidebar.active {
-        left: 0;
-    }
-
-    /* Solo mostrar el botón hamburguesa en pantallas pequeñas */
-    .sidebar-toggle {
-        display: block;
-    }
-
-    /* Ocultar el botón de cierre cuando el sidebar está cerrado */
-    #close-sidebar {
-        display: none;
-    }
-
-    .sidebar.active #close-sidebar {
-        display: block;
-    }
-
-    .main-content {
-        margin-left: 0;
-        width: 100%;
-    }
-
-    /* Mejorar submenús en tablets */
-    .sidebar-menu .submenu {
-        margin-left: 15px;
-        margin-right: 15px;
-        width: auto;
-        padding-left: 0;
-    }
-
-    .submenu li a {
-        padding: 10px 15px 10px 35px;
-        margin: 2px 8px;
-        font-size: 14px;
-    }
-
-    /* Fondo oscuro cuando el menú está abierto en móvil */
-    .sidebar-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 99;
-    }
-
-    .sidebar-overlay.active {
-        display: block;
-    }
+.sidebar-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
 }
 
 /* Ajustes para pantallas muy pequeñas */
@@ -406,5 +356,84 @@
         padding: 14px 16px;
         font-size: 0.9rem;
         border-radius: 10px;
+    }
+}
+
+/* Estado colapsado del sidebar */
+.sidebar.collapsed {
+    left: -250px; /* Ocultar completamente hacia la izquierda */
+}
+
+/* Cuando el sidebar está colapsado, el contenido principal debe ocupar todo el ancho */
+.sidebar.collapsed ~ .main-content {
+    margin-left: 0;
+    width: 100%;
+}
+
+/* Responsive - en pantallas pequeñas el sidebar comienza colapsado */
+@media (max-width: 768px) {
+    /* Mostrar el botón de cerrar (X) en móviles */
+    .sidebar-toggle {
+        display: block !important;
+    }
+    
+    /* En móviles, el sidebar ocupa toda la pantalla y comienza oculto */
+    .sidebar {
+        width: 100vw !important; /* Ancho completo de la ventana */
+        left: -100vw !important; /* Oculto completamente hacia la izquierda */
+        z-index: 1000; /* Mayor z-index en móviles para estar sobre todo el contenido */
+        transition: left 0.3s ease;
+        height: 100vh !important; /* Altura completa de la pantalla */
+        border-radius: 0 !important; /* Sin bordes redondeados en móvil */
+    }
+    
+    /* Cuando se abre en móvil - ocupa toda la pantalla */
+    .sidebar:not(.collapsed) {
+        left: 0 !important;
+        width: 100vw !important;
+    }
+    
+    /* Estado específicamente colapsado en móvil */
+    .sidebar.collapsed {
+        left: -100vw !important; /* Completamente oculto */
+    }
+    
+    /* El contenido principal siempre ocupa todo el ancho en móviles */
+    .main-content {
+        margin-left: 0 !important;
+        width: 100vw !important;
+    }
+    
+    /* Prevenir scroll horizontal */
+    body {
+        overflow-x: hidden;
+    }
+    
+    html {
+        overflow-x: hidden;
+    }
+}
+
+/* Desktop - el sidebar siempre está visible */
+@media (min-width: 769px) {
+    /* Ocultar el botón de cerrar (X) en desktop */
+    .sidebar-toggle {
+        display: none !important;
+    }
+    
+    /* En desktop, el sidebar siempre está visible */
+    .sidebar {
+        left: 0 !important;
+    }
+    
+    /* Prevenir que se colapse en desktop */
+    .sidebar.collapsed {
+        left: 0 !important;
+    }
+    
+    /* El contenido principal siempre debe tener margen para el sidebar */
+    .main-content {
+        margin-left: 250px !important;
+        width: calc(100% - 250px) !important;
     }
 }
