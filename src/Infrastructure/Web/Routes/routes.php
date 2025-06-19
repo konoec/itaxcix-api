@@ -14,6 +14,7 @@ use itaxcix\Infrastructure\Web\Controller\api\Auth\VehicleValidationController;
 use itaxcix\Infrastructure\Web\Controller\api\Driver\DriverTucStatusController;
 use itaxcix\Infrastructure\Web\Controller\api\Emergency\EmergencyNumberController;
 use itaxcix\Infrastructure\Web\Controller\api\Incident\RegisterIncidentController;
+use itaxcix\Infrastructure\Web\Controller\api\Travel\TravelController;
 use itaxcix\Infrastructure\Web\Controller\api\Travel\TravelStatusController;
 use itaxcix\Infrastructure\Web\Controller\api\User\UserProfilePhotoController;
 use itaxcix\Infrastructure\Web\Controller\api\User\UserProfilePhotoUploadController;
@@ -52,6 +53,7 @@ return function (RouteCollector $r) {
         // User Routes
         $r->get('/users/{id}/profile-photo', [JwtMiddleware::class, [UserProfilePhotoController::class, 'getProfilePhoto']]);
         $r->post('/users/{id}/profile-photo', [JwtMiddleware::class, [UserProfilePhotoUploadController::class, 'uploadProfilePhoto']]);
+        $r->get('/users/{userId}/travels/history', [JwtMiddleware::class, [TravelController::class, 'getTravelHistory']]);
 
         // Travel Routes
         $r->post('/travels', [JwtPermissionMiddleware::class, 'INICIO CIUDADANO', [TravelStatusController::class, 'requestTravel']]);
@@ -59,6 +61,8 @@ return function (RouteCollector $r) {
         $r->patch('/travels/{travelId}/start', [JwtPermissionMiddleware::class, 'INICIO CONDUCTOR', [TravelStatusController::class, 'startTravel']]);
         $r->patch('/travels/{travelId}/complete', [JwtPermissionMiddleware::class, 'INICIO CONDUCTOR', [TravelStatusController::class, 'completeTravel']]);
         $r->patch('/travels/{travelId}/cancel', [JwtMiddleware::class, [TravelStatusController::class, 'cancelTravel']]);
+        $r->post('/travels/{travelId}/rate', [JwtMiddleware::class, [TravelController::class, 'rateTravel']]);
+        $r->get('/travels/{travelId}/ratings', [JwtMiddleware::class, [TravelController::class, 'getTravelRatingsByTravel']]);
 
         // Emergency Routes
         $r->get('/emergency/number', [JwtMiddleware::class, [EmergencyNumberController::class, 'getEmergencyNumber']]);

@@ -20,6 +20,9 @@ use itaxcix\Core\Handler\Emergency\EmergencyNumberSaveUseCaseHandler;
 use itaxcix\Core\Handler\Incident\RegisterIncidentUseCaseHandler;
 use itaxcix\Core\Handler\Travel\CancelTravelUseCaseHandler;
 use itaxcix\Core\Handler\Travel\CompleteTravelUseCaseHandler;
+use itaxcix\Core\Handler\Travel\GetTravelHistoryUseCaseHandler;
+use itaxcix\Core\Handler\Travel\GetTravelRatingsByTravelUseCaseHandler;
+use itaxcix\Core\Handler\Travel\RateTravelUseCaseHandler;
 use itaxcix\Core\Handler\Travel\RequestNewTravelUseCaseHandler;
 use itaxcix\Core\Handler\Travel\RespondToTravelRequestUseCaseHandler;
 use itaxcix\Core\Handler\Travel\StartAcceptedTravelUseCaseHandler;
@@ -45,6 +48,9 @@ use itaxcix\Core\UseCases\Emergency\EmergencyNumberSaveUseCase;
 use itaxcix\Core\UseCases\Incident\RegisterIncidentUseCase;
 use itaxcix\Core\UseCases\Travel\CancelTravelUseCase;
 use itaxcix\Core\UseCases\Travel\CompleteTravelUseCase;
+use itaxcix\Core\UseCases\Travel\GetTravelHistoryUseCase;
+use itaxcix\Core\UseCases\Travel\GetTravelRatingsByTravelUseCase;
+use itaxcix\Core\UseCases\Travel\RateTravelUseCase;
 use itaxcix\Core\UseCases\Travel\RequestNewTravelUseCase;
 use itaxcix\Core\UseCases\Travel\RespondToTravelRequestUseCase;
 use itaxcix\Core\UseCases\Travel\StartAcceptedTravelUseCase;
@@ -84,6 +90,9 @@ return [
     RequestNewTravelUseCase::class => autowire(RequestNewTravelUseCaseHandler::class),
     StartAcceptedTravelUseCase::class => autowire(StartAcceptedTravelUseCaseHandler::class),
     RespondToTravelRequestUseCase::class => autowire(RespondToTravelRequestUseCaseHandler::class),
+    GetTravelHistoryUseCase::class => autowire(GetTravelHistoryUseCaseHandler::class),
+    RateTravelUseCase::class => autowire(RateTravelUseCaseHandler::class),
+    GetTravelRatingsByTravelUseCase::class => autowire(GetTravelRatingsByTravelUseCaseHandler::class),
 
     // Emergency Use Cases
     EmergencyNumberGetUseCase::class => autowire(EmergencyNumberGetUseCaseHandler::class),

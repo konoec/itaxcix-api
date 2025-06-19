@@ -26,4 +26,69 @@ class RatingEntity {
     private int $score;
     #[ORM\Column(name: 'cali_comentario', type: 'string', length: 255, nullable: true)]
     private ?string $comment = null;
+
+    public function __construct()
+    {
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getRater(): ?UserEntity
+    {
+        return $this->rater;
+    }
+
+    public function setRater(?UserEntity $rater): void
+    {
+        $this->rater = $rater;
+    }
+
+    public function getRated(): ?UserEntity
+    {
+        return $this->rated;
+    }
+
+    public function setRated(?UserEntity $rated): void
+    {
+        $this->rated = $rated;
+    }
+
+    public function getTravel(): ?TravelEntity
+    {
+        return $this->travel;
+    }
+
+    public function setTravel(?TravelEntity $travel): void
+    {
+        $this->travel = $travel;
+    }
+
+    public function getScore(): int
+    {
+        return $this->score;
+    }
+
+    public function setScore(int $score): void
+    {
+        $this->score = $score;
+    }
+
+    public function getComment(): ?string
+    {
+        return $this->comment;
+    }
+
+    public function setComment(?string $comment): void
+    {
+        $this->comment = $comment;
+    }
+
 }

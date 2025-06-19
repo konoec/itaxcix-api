@@ -10,6 +10,7 @@ use itaxcix\Core\Interfaces\location\DistrictRepositoryInterface;
 use itaxcix\Core\Interfaces\location\ProvinceRepositoryInterface;
 use itaxcix\Core\Interfaces\person\DocumentTypeRepositoryInterface;
 use itaxcix\Core\Interfaces\person\PersonRepositoryInterface;
+use itaxcix\Core\Interfaces\rating\RatingRepositoryInterface;
 use itaxcix\Core\Interfaces\travel\TravelRepositoryInterface;
 use itaxcix\Core\Interfaces\travel\TravelStatusRepositoryInterface;
 use itaxcix\Core\Interfaces\user\AdminProfileRepositoryInterface;
@@ -52,6 +53,7 @@ use itaxcix\Infrastructure\Database\Repository\location\DoctrineDistrictReposito
 use itaxcix\Infrastructure\Database\Repository\location\DoctrineProvinceRepository;
 use itaxcix\Infrastructure\Database\Repository\person\DoctrineDocumentTypeRepository;
 use itaxcix\Infrastructure\Database\Repository\person\DoctrinePersonRepository;
+use itaxcix\Infrastructure\Database\Repository\rating\DoctrineRatingRepository;
 use itaxcix\Infrastructure\Database\Repository\travel\DoctrineTravelRepository;
 use itaxcix\Infrastructure\Database\Repository\travel\DoctrineTravelStatusRepository;
 use itaxcix\Infrastructure\Database\Repository\user\DoctrineAdminProfileRepository;
@@ -131,6 +133,8 @@ return [
 
     TravelStatusRepositoryInterface::class => autowire(DoctrineTravelStatusRepository::class),
     TravelRepositoryInterface::class => autowire(DoctrineTravelRepository::class),
+
+    RatingRepositoryInterface::class => autowire(DoctrineRatingRepository::class),
 
     ConfigurationRepositoryInterface::class => autowire(DoctrineConfigurationRepository::class),
 

@@ -8,4 +8,6 @@ interface TravelRepositoryInterface
 {
     public function saveTravel(TravelModel $travelModel): TravelModel;
     public function findTravelById(int $id): ?TravelModel;
+    public function findTravelsByUserId(int $userId, int $page, int $perPage): array;
+    public function countTravelsByUserId(int $userId): int;
 }

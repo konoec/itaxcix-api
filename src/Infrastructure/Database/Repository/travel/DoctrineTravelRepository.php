@@ -114,4 +114,32 @@ class DoctrineTravelRepository implements TravelRepositoryInterface
 
         return $entity ? $this->toDomain($entity) : null;
     }
+
+    public function findTravelsByUserId(int $userId, int $page, int $perPage): array
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('t')
+            ->from(TravelEntity::class, 't')
+            ->where('t.citizen = :userId OR t.driver = :userId')
+            ->setParameter('userId', $userId)
+            ->setFirstResult($page * $perPage)
+            ->setMaxResults($perPage)
+            ->getQuery();
+
+        $entities = $query->getResult();
+
+        return array_map([$this, 'toDomain'], $entities);
+    }
+
+    public function countTravelsByUserId(int $userId): int
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('COUNT(t.id)')
+            ->from(TravelEntity::class, 't')
+            ->where('t.citizen = :userId OR t.driver = :userId')
+            ->setParameter('userId', $userId)
+            ->getQuery();
+
+        return (int) $query->getSingleScalarResult();
+    }
 }

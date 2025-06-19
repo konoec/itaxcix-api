@@ -2038,6 +2038,190 @@
                 ]
             }
         },
+        "/travels/{travelId}/rate": {
+            "post": {
+                "tags": [
+                    "Travels"
+                ],
+                "summary": "Calificar un viaje",
+                "description": "Permite a un usuario calificar un viaje finalizado. Se debe indicar el usuario que califica (raterId).",
+                "operationId": "rateTravel",
+                "parameters": [
+                    {
+                        "name": "travelId",
+                        "in": "path",
+                        "description": "ID del viaje",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RateTravelRequestDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Calificación registrada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Petición inválida o error de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petición inválida"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "El viaje no puede ser calificado"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/users/{userId}/travels/history": {
+            "get": {
+                "tags": [
+                    "Travels",
+                    "User"
+                ],
+                "summary": "Historial de viajes por usuario",
+                "description": "Obtiene el historial de viajes de un usuario con paginación.",
+                "operationId": "getTravelHistory",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "description": "ID del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número de página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "perPage",
+                        "in": "query",
+                        "description": "Cantidad de elementos por página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Historial de viajes paginado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TravelHistoryResponseDto"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/travels/{travelId}/ratings": {
+            "get": {
+                "tags": [
+                    "Travels"
+                ],
+                "summary": "Historial de calificaciones por viaje",
+                "description": "Obtiene las calificaciones del conductor y ciudadano para un viaje.",
+                "operationId": "getTravelRatingsByTravel",
+                "parameters": [
+                    {
+                        "name": "travelId",
+                        "in": "path",
+                        "description": "ID del viaje",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Calificaciones del viaje",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TravelRatingsByTravelResponseDto"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/travels": {
             "post": {
                 "tags": [
@@ -3059,6 +3243,33 @@
                 },
                 "type": "object"
             },
+            "RateTravelRequestDto": {
+                "description": "Datos necesarios para calificar un viaje",
+                "properties": {
+                    "travelId": {
+                        "description": "ID del viaje",
+                        "type": "integer",
+                        "example": 123
+                    },
+                    "raterId": {
+                        "description": "ID del usuario que califica",
+                        "type": "integer",
+                        "example": 456
+                    },
+                    "score": {
+                        "description": "Puntaje otorgado (1-5)",
+                        "type": "integer",
+                        "example": 5
+                    },
+                    "comment": {
+                        "description": "Comentario opcional",
+                        "type": "string",
+                        "example": "Buen viaje",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
             "RequestTravelDTO": {
                 "description": "DTO de solicitud de viaje",
                 "properties": {
@@ -3135,8 +3346,120 @@
                 },
                 "type": "object"
             },
+            "TravelHistoryItemDto": {
+                "description": "Elemento del historial de viajes",
+                "properties": {
+                    "id": {
+                        "description": "ID del viaje",
+                        "type": "integer",
+                        "example": 123
+                    },
+                    "startDate": {
+                        "description": "Fecha de inicio",
+                        "type": "string",
+                        "example": "2025-06-19T10:00:00Z"
+                    },
+                    "origin": {
+                        "description": "Origen",
+                        "type": "string",
+                        "example": "Avenida Siempre Viva 123"
+                    },
+                    "destination": {
+                        "description": "Destino",
+                        "type": "string",
+                        "example": "Calle Falsa 456"
+                    },
+                    "status": {
+                        "description": "Estado del viaje",
+                        "type": "string",
+                        "example": "finalizado"
+                    }
+                },
+                "type": "object"
+            },
+            "TravelHistoryResponseDto": {
+                "description": "Respuesta paginada del historial de viajes",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TravelHistoryItemDto"
+                        }
+                    },
+                    "meta": {
+                        "$ref": "itaxcix\\Shared\\DTO\\generic\\PaginationMetaDTO"
+                    }
+                },
+                "type": "object"
+            },
             "TravelIdDTO": {
                 "description": "Datos del ID de viaje"
+            },
+            "TravelRatingItemDto": {
+                "description": "Calificación de un viaje",
+                "properties": {
+                    "id": {
+                        "description": "ID de la calificación",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "travelId": {
+                        "description": "ID del viaje",
+                        "type": "integer",
+                        "example": 123
+                    },
+                    "raterId": {
+                        "description": "ID del usuario que califica",
+                        "type": "integer",
+                        "example": 456
+                    },
+                    "ratedId": {
+                        "description": "ID del usuario calificado",
+                        "type": "integer",
+                        "example": 789
+                    },
+                    "score": {
+                        "description": "Puntaje otorgado (1-5)",
+                        "type": "integer",
+                        "example": 5
+                    },
+                    "comment": {
+                        "description": "Comentario",
+                        "type": "string",
+                        "example": "Buen viaje",
+                        "nullable": true
+                    },
+                    "createdAt": {
+                        "description": "Fecha de creación",
+                        "type": "string",
+                        "example": "2025-06-19T10:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "TravelRatingsByTravelResponseDto": {
+                "description": "Calificaciones del viaje (conductor y ciudadano)",
+                "properties": {
+                    "driverRating": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/TravelRatingItemDto"
+                            }
+                        ],
+                        "nullable": true,
+                        "description": "Calificación dada por el conductor"
+                    },
+                    "citizenRating": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/TravelRatingItemDto"
+                            }
+                        ],
+                        "nullable": true,
+                        "description": "Calificación dada por el ciudadano"
+                    }
+                },
+                "type": "object"
             },
             "TravelResponseDTO": {
                 "description": "Datos de respuesta tras iniciar sesión",
