@@ -15,6 +15,11 @@ class DriverLocationHandler implements MessageComponentInterface
     protected $activeDrivers = [];
     protected $activeTrips = [];
 
+    // TTLs en segundos
+    const TTL_TRIP_REQUEST = 30;
+    const TTL_TRIP_RESPONSE = 30;
+    const TTL_DRIVER_LOCATION_UPDATE = 10;
+
     // Llamar en el constructor
     public function __construct(RedisClient $redisClient, LoopInterface $loop)
     {
@@ -30,8 +35,6 @@ class DriverLocationHandler implements MessageComponentInterface
     {
         try {
             echo "Verificando mensajes en Redis...\n";
-
-            // Listar todos los clientes conectados
             echo "Clientes conectados:\n";
             foreach ($this->clients as $client) {
                 echo "- Tipo: " . ($client->clientType ?? 'no definido');
@@ -44,7 +47,31 @@ class DriverLocationHandler implements MessageComponentInterface
                 echo "Notificación encontrada: $notification\n";
                 $data = json_decode($notification, true);
 
-                if ($data && isset($data['recipientType']) && isset($data['recipientId'])) {
+                // Validar timestamp y tipo
+                $now = time();
+                $type = $data['type'] ?? null;
+                $timestamp = $data['timestamp'] ?? null;
+                $shouldDeliver = true;
+
+                if ($type === 'trip_request' && $timestamp) {
+                    if ($now - $timestamp > self::TTL_TRIP_REQUEST) {
+                        echo "Descartando trip_request por antigüedad.\n";
+                        $shouldDeliver = false;
+                    }
+                } elseif ($type === 'trip_response' && $timestamp) {
+                    if ($now - $timestamp > self::TTL_TRIP_RESPONSE) {
+                        echo "Descartando trip_response por antigüedad.\n";
+                        $shouldDeliver = false;
+                    }
+                } elseif ($type === 'driver_location_update' && $timestamp) {
+                    if ($now - $timestamp > self::TTL_DRIVER_LOCATION_UPDATE) {
+                        echo "Descartando driver_location_update por antigüedad.\n";
+                        $shouldDeliver = false;
+                    }
+                }
+                // trip_status_update siempre se entrega
+
+                if ($shouldDeliver && $data && isset($data['recipientType']) && isset($data['recipientId'])) {
                     $found = false;
                     foreach ($this->clients as $client) {
                         echo "Comparando con cliente - Tipo: " . ($client->clientType ?? 'none');
@@ -69,6 +96,8 @@ class DriverLocationHandler implements MessageComponentInterface
                         echo "Destinatario no encontrado, devolviendo mensaje a la cola\n";
                         $this->redisClient->lpush('trip_notifications_queue', $notification);
                     }
+                } else if (!$shouldDeliver) {
+                    echo "Notificación descartada por antigüedad.\n";
                 }
             } else {
                 echo "No hay mensajes nuevos en Redis\n";
@@ -357,27 +386,36 @@ class DriverLocationHandler implements MessageComponentInterface
         echo "Conductor registrado: $driverId - {$driverData['fullName']}\n";
     }
 
-    protected function updateDriverLocation(string $driverId, array $location)
+    protected function updateDriverLocation($driverId, $location)
     {
-        if (!isset($this->activeDrivers[$driverId])) {
-            echo "Intentando actualizar ubicación de conductor no registrado: $driverId\n";
-            return;
-        }
-
-        // Actualizar ubicación
+        $now = time();
         $this->activeDrivers[$driverId]['location'] = $location;
-        $this->activeDrivers[$driverId]['timestamp'] = time();
+        $this->activeDrivers[$driverId]['timestamp'] = $now;
 
-        // Actualizar en Redis
-        $this->redisClient->hset('active_drivers', $driverId, json_encode($this->activeDrivers[$driverId]));
-
-        // Notificar a los ciudadanos
-        $this->broadcastToClients('driver_location_update', [
-            'id' => $driverId,
-            'location' => $location
-        ]);
-
-        echo "Ubicación actualizada para conductor: $driverId\n";
+        // Notificar a ciudadanos conectados
+        foreach ($this->clients as $client) {
+            if (isset($client->clientType) && $client->clientType === 'citizen') {
+                $client->send(json_encode([
+                    'type' => 'driver_location_update',
+                    'data' => [
+                        'id' => $driverId,
+                        'location' => $location,
+                        'timestamp' => $now
+                    ]
+                ]));
+            }
+        }
+        // Si quieres encolar en Redis para otros procesos, incluye el timestamp
+        // $this->redisClient->lpush('trip_notifications_queue', json_encode([
+        //     'type' => 'driver_location_update',
+        //     'recipientType' => 'citizen',
+        //     'recipientId' => 'broadcast',
+        //     'data' => [
+        //         'id' => $driverId,
+        //         'location' => $location
+        //     ],
+        //     'timestamp' => $now
+        // ]));
     }
 
     protected function removeDriver(string $driverId)

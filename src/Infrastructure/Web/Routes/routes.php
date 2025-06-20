@@ -14,6 +14,7 @@ use itaxcix\Infrastructure\Web\Controller\api\Auth\VehicleValidationController;
 use itaxcix\Infrastructure\Web\Controller\api\Driver\DriverTucStatusController;
 use itaxcix\Infrastructure\Web\Controller\api\Emergency\EmergencyNumberController;
 use itaxcix\Infrastructure\Web\Controller\api\Incident\RegisterIncidentController;
+use itaxcix\Infrastructure\Web\Controller\api\Profile\ProfileController;
 use itaxcix\Infrastructure\Web\Controller\api\Travel\TravelController;
 use itaxcix\Infrastructure\Web\Controller\api\Travel\TravelStatusController;
 use itaxcix\Infrastructure\Web\Controller\api\User\UserProfilePhotoController;
@@ -54,6 +55,11 @@ return function (RouteCollector $r) {
         $r->get('/users/{id}/profile-photo', [JwtMiddleware::class, [UserProfilePhotoController::class, 'getProfilePhoto']]);
         $r->post('/users/{id}/profile-photo', [JwtMiddleware::class, [UserProfilePhotoUploadController::class, 'uploadProfilePhoto']]);
         $r->get('/users/{userId}/travels/history', [JwtMiddleware::class, [TravelController::class, 'getTravelHistory']]);
+
+        // Profile Routes
+        $r->get('/profile/admin/{userId}', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [ProfileController::class, 'getAdminProfile']]);
+        $r->get('/profile/citizen/{userId}', [JwtPermissionMiddleware::class, 'PERFIL CIUDADANO', [ProfileController::class, 'getCitizenProfile']]);
+        $r->get('/profile/driver/{userId}', [JwtPermissionMiddleware::class, 'PERFIL CONDUCTOR', [ProfileController::class, 'getDriverProfile']]);
 
         // Travel Routes
         $r->post('/travels', [JwtPermissionMiddleware::class, 'INICIO CIUDADANO', [TravelStatusController::class, 'requestTravel']]);

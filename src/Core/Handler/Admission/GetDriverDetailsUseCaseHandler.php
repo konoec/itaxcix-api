@@ -57,7 +57,7 @@ class GetDriverDetailsUseCaseHandler implements GetDriverDetailsUseCase
             throw new InvalidArgumentException('El contacto del usuario no está verificado.');
         }
 
-        $tuc = $this->tucProcedureRepository->findTucProcedureByVehicleId($vehicleUser->getVehicle()->getId());
+        $tuc = $this->tucProcedureRepository->findTucProcedureWithMaxExpirationDateByVehicleId($vehicleUser->getVehicle()->getId());
 
         return new PendingDriverDetailsResponseDTO(
             driverId: $driverProfile->getId(),

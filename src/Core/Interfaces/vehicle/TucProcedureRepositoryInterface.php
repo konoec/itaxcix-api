@@ -9,4 +9,5 @@ interface TucProcedureRepositoryInterface
     public function findTucProceduresByVehicleIdAndStatusId(int $vehicleId, int $statusId): ?array;
     public function findTucProcedureByVehicleId(int $vehicleId): ?TucProcedureModel;
     public function saveTucProcedure(TucProcedureModel $tucProcedureModel): TucProcedureModel;
+    public function findTucProcedureWithMaxExpirationDateByVehicleId(int $vehicleId): ?TucProcedureModel;
 }

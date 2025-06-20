@@ -55,4 +55,18 @@ class DoctrineAdminProfileRepository implements AdminProfileRepositoryInterface
 
         return $this->toDomain($entity);
     }
+
+    public function findAdminProfileByUserId(int $userId): ?AdminProfileModel
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('ap')
+            ->from(AdminProfileEntity::class, 'ap')
+            ->join('ap.user', 'u')
+            ->where('u.id = :userId')
+            ->setParameter('userId', $userId)
+            ->getQuery();
+
+        $entity = $query->getOneOrNullResult();
+        return $entity ? $this->toDomain($entity) : null;
+    }
 }

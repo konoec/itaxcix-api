@@ -6,4 +6,5 @@ use itaxcix\Core\Domain\user\AdminProfileModel;
 
 interface AdminProfileRepositoryInterface {
     public function saveAdminProfile(AdminProfileModel $adminProfileModel): AdminProfileModel;
+    public function findAdminProfileByUserId(int $userId): ?AdminProfileModel;
 }

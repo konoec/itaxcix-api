@@ -5,6 +5,13 @@ info:
   description: |
     API de WebSocket para seguimiento de conductores en tiempo real y notificaciones de viajes.
     
+    ## Políticas de expiración de notificaciones (TTL)
+    - Las notificaciones de tipo `trip_request` y `trip_response` expiran si no son entregadas en **30 segundos**.
+    - Las notificaciones de tipo `driver_location_update` expiran si no son entregadas en **10 segundos**.
+    - Las notificaciones de tipo `trip_status_update` (por ejemplo, `canceled`, `completed`) **siempre se entregan**, sin importar su antigüedad.
+    
+    Esto garantiza que los usuarios reciban solo información relevante y actualizada.
+    
     ## Flujo de conexión actualizado:
     - Los clientes se conectan al WebSocket
     - Los clientes se identifican (ciudadano o conductor)

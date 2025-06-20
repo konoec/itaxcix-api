@@ -153,4 +153,24 @@ class DoctrineTucProcedureRepository implements TucProcedureRepositoryInterface 
 
         return array_map([$this, 'toDomain'], $results);
     }
+
+    public function findTucProcedureWithMaxExpirationDateByVehicleId(int $vehicleId): ?TucProcedureModel
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('tp')
+            ->from(TucProcedureEntity::class, 'tp')
+            ->join('tp.vehicle', 'v')
+            ->where('v.id = :vehicleId')
+            ->orderBy('tp.expirationDate', 'DESC')
+            ->setParameter('vehicleId', $vehicleId)
+            ->setMaxResults(1);
+
+        $result = $qb->getQuery()->getOneOrNullResult();
+
+        if ($result === null) {
+            return null;
+        }
+
+        return $this->toDomain($result);
+    }
 }

@@ -2038,6 +2038,102 @@
                 ]
             }
         },
+        "/profile/admin/{userId}": {
+            "get": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Perfil de administrador",
+                "description": "Obtiene el perfil del administrador.",
+                "operationId": "getAdminProfile",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Perfil de administrador",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminProfileResponseDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/citizen/{userId}": {
+            "get": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Perfil de ciudadano",
+                "description": "Obtiene el perfil del ciudadano.",
+                "operationId": "getCitizenProfile",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Perfil de ciudadano",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CitizenProfileResponseDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/driver/{userId}": {
+            "get": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Perfil de conductor",
+                "description": "Obtiene el perfil del conductor.",
+                "operationId": "getDriverProfile",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Perfil de conductor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DriverProfileResponseDTO"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/travels/{travelId}/rate": {
             "post": {
                 "tags": [
@@ -3243,6 +3339,161 @@
                 },
                 "type": "object"
             },
+            "AdminProfileResponseDTO": {
+                "description": "Datos de respuesta del perfil de administrador",
+                "properties": {
+                    "firstName": {
+                        "description": "Nombre",
+                        "type": "string",
+                        "example": "Juan"
+                    },
+                    "lastName": {
+                        "description": "Apellido",
+                        "type": "string",
+                        "example": "Pérez"
+                    },
+                    "documentType": {
+                        "description": "Tipo de Documento",
+                        "type": "string",
+                        "example": "DNI"
+                    },
+                    "document": {
+                        "description": "Documento",
+                        "type": "string",
+                        "example": "12345678"
+                    },
+                    "area": {
+                        "description": "Área",
+                        "type": "string",
+                        "example": "Recursos Humanos"
+                    },
+                    "position": {
+                        "description": "Cargo",
+                        "type": "string",
+                        "example": "Administrador"
+                    },
+                    "email": {
+                        "description": "Correo Electrónico",
+                        "type": "string",
+                        "example": "admin@correo.com"
+                    },
+                    "phone": {
+                        "description": "Celular",
+                        "type": "string",
+                        "example": "987654321"
+                    }
+                },
+                "type": "object"
+            },
+            "CitizenProfileResponseDTO": {
+                "description": "Datos de respuesta del perfil de ciudadano",
+                "properties": {
+                    "firstName": {
+                        "description": "Nombre",
+                        "type": "string",
+                        "example": "Carlos"
+                    },
+                    "lastName": {
+                        "description": "Apellido",
+                        "type": "string",
+                        "example": "Ramírez"
+                    },
+                    "documentType": {
+                        "description": "Tipo de Documento",
+                        "type": "string",
+                        "example": "DNI"
+                    },
+                    "document": {
+                        "description": "Documento",
+                        "type": "string",
+                        "example": "87654321"
+                    },
+                    "email": {
+                        "description": "Correo Electrónico",
+                        "type": "string",
+                        "example": "ciudadano@correo.com"
+                    },
+                    "phone": {
+                        "description": "Celular",
+                        "type": "string",
+                        "example": "912345678"
+                    },
+                    "averageRating": {
+                        "description": "Calificación Promedio",
+                        "type": "number",
+                        "format": "float",
+                        "example": 4.8
+                    },
+                    "ratingsCount": {
+                        "description": "Número de calificaciones",
+                        "type": "integer",
+                        "example": 25
+                    }
+                },
+                "type": "object"
+            },
+            "DriverProfileResponseDTO": {
+                "description": "Datos de respuesta del perfil de conductor",
+                "properties": {
+                    "firstName": {
+                        "description": "Nombre",
+                        "type": "string",
+                        "example": "Luis"
+                    },
+                    "lastName": {
+                        "description": "Apellido",
+                        "type": "string",
+                        "example": "García"
+                    },
+                    "documentType": {
+                        "description": "Tipo de Documento",
+                        "type": "string",
+                        "example": "DNI"
+                    },
+                    "document": {
+                        "description": "Documento",
+                        "type": "string",
+                        "example": "11223344"
+                    },
+                    "email": {
+                        "description": "Correo Electrónico",
+                        "type": "string",
+                        "example": "conductor@correo.com"
+                    },
+                    "phone": {
+                        "description": "Celular",
+                        "type": "string",
+                        "example": "923456789"
+                    },
+                    "averageRating": {
+                        "description": "Calificación Promedio",
+                        "type": "number",
+                        "format": "float",
+                        "example": 4.7
+                    },
+                    "ratingsCount": {
+                        "description": "Número de calificaciones",
+                        "type": "integer",
+                        "example": 40
+                    },
+                    "carPlate": {
+                        "description": "Placa del carro",
+                        "type": "string",
+                        "example": "ABC-123"
+                    },
+                    "tucStatus": {
+                        "description": "Estado de TUC",
+                        "type": "string",
+                        "example": "Vigente"
+                    },
+                    "tucExpirationDate": {
+                        "description": "Fecha de vencimiento de TUC",
+                        "type": "string",
+                        "example": "2025-12-31"
+                    }
+                },
+                "type": "object"
+            },
             "RateTravelRequestDto": {
                 "description": "Datos necesarios para calificar un viaje",
                 "properties": {
@@ -3518,6 +3769,10 @@
         {
             "name": "Incident",
             "description": "Incident"
+        },
+        {
+            "name": "Profile",
+            "description": "Profile"
         },
         {
             "name": "Travels",
