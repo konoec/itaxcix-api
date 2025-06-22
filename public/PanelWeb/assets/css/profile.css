@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 /* Estilos para el perfil del usuario */
 
 /* Contenedor del perfil */
@@ -189,36 +191,12 @@
     background-color: #f3f4f6;
 }
 
-/* Modal de perfil - usar los mismos estilos que el modal de conductor */
-#profile-modal .modal-content {
-    max-width: 600px;
-    display: flex;
-    flex-direction: column;
-    max-height: 90vh;
-    overflow: hidden;
-}
+/* ========================================
+   ESTILOS ESPECÍFICOS PARA MODAL DE PERFIL DEL ADMINISTRADOR
+   ======================================== */
 
-#profile-modal .driver-profile h3 {
-    color: #1f2a49;
-    font-size: 1.3em;
-}
-
-#profile-modal .info-item label {
-    color: rgba(43, 57, 98, 0.8);
-    font-weight: 600;
-}
-
-#profile-modal .modal-actions {
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-#profile-modal .modal-actions .btn {
-    min-width: 120px;
-}
-
-/* ====== MODAL DE PERFIL DEL ADMINISTRADOR (EXTRAÍDO DE ControlAdmision.css) ====== */
-.modal {
+/* Modal principal del administrador */
+.admin-profile-modal {
     display: none;
     position: fixed;
     z-index: 1000;
@@ -231,15 +209,16 @@
     animation: fadeIn 0.2s ease-out;
 }
 
-.modal-content {
+/* Contenido del modal del administrador */
+.admin-profile-content {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(15px);
     margin: 0;
     padding: 0;
     border-radius: 8px;
     width: 90%;
-    max-width: 650px;
-    max-height: 85vh;
+    max-width: 600px;
+    max-height: 95vh;
     overflow: hidden;
     position: fixed;
     top: 50%;
@@ -249,20 +228,12 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
     animation: modalSlideIn 0.3s ease-out;
     font-family: 'Inter', 'SF Pro Display', 'Helvetica Neue', 'Arial', sans-serif;
+    display: flex;
+    flex-direction: column;
 }
 
-@keyframes modalSlideIn {
-    from {
-        opacity: 0;
-        transform: translate(-50%, -50%) translateY(-20px) scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: translate(-50%, -50%) translateY(0) scale(1);
-    }
-}
-
-.modal-content h2 {
+/* Header del modal */
+.admin-profile-content h2 {
     background: rgba(43, 57, 98, 0.9);
     backdrop-filter: blur(20px);
     color: #ffffff;
@@ -282,117 +253,283 @@
     font-family: 'Inter', 'SF Pro Display', 'Helvetica Neue', 'Arial', sans-serif;
 }
 
-.close-modal {
-    color: rgba(255, 255, 255, 0.9);
+/* Contenedor de detalles del administrador */
+.admin-profile-details {
+    flex: 1;
+    overflow-y: auto;
+    padding: 30px;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    position: relative;
+}
+
+/* Scrollbar para el contenedor de detalles */
+.admin-profile-details::-webkit-scrollbar {
+    width: 6px;
+}
+
+.admin-profile-details::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+    margin: 5px 0;
+}
+
+.admin-profile-details::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+        to bottom,
+        rgba(43, 57, 98, 0.6) 0%,
+        rgba(43, 57, 98, 0.8) 50%,
+        rgba(43, 57, 98, 0.6) 100%
+    );
+    border-radius: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.admin-profile-details::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(
+        to bottom,
+        rgba(43, 57, 98, 0.8) 0%,
+        rgba(43, 57, 98, 1) 50%,
+        rgba(43, 57, 98, 0.8) 100%
+    );
+}
+
+/* Header del perfil del administrador */
+.admin-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    padding-bottom: 25px;
+    position: relative;
+}
+
+.admin-profile-header::after {
+    content: '';
     position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 24px;
-    font-weight: bold;
-    cursor: pointer;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(43, 57, 98, 0.3) 20%,
+        rgba(43, 57, 98, 0.6) 50%,
+        rgba(43, 57, 98, 0.3) 80%,
+        transparent 100%
+    );
+    border-radius: 1px;
+}
+
+/* Información del header del perfil */
+.admin-profile-header-info {
+    flex: 1;
+    text-align: center;
+}
+
+.admin-profile-header h3 {
+    color: #1f2a49;
+    font-size: 1.3em;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: 0.02em;
+    text-shadow: 0 1px 2px rgba(31, 42, 73, 0.1);
+}
+
+/* Información detallada del administrador */
+.admin-profile-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    max-width: 100%;
+}
+
+.admin-profile-info .info-item {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(43, 57, 98, 0.1);
+    border-radius: 8px;
+    padding: 16px 20px;
     transition: all 0.2s ease;
-    width: 36px;
-    height: 36px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 8px rgba(43, 57, 98, 0.08);
+}
+
+.admin-profile-info .info-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(43, 57, 98, 0.15);
+    border-color: rgba(43, 57, 98, 0.2);
+}
+
+.admin-profile-info .info-item label {
+    display: block;
+    color: rgba(43, 57, 98, 0.8);
+    font-size: 0.85em;
+    font-weight: 600;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.admin-profile-info .info-item span {
+    display: block;
+    color: #1f2a49;
+    font-size: 1em;
+    font-weight: 500;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+/* Button variants for profile modal */
+.modal-actions .btn-primary {
+    background: linear-gradient(135deg, #2b3962 0%, #1e2a4a 100%);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.modal-actions .btn-primary:hover {
+    background: linear-gradient(135deg, #1e2a4a 0%, #2b3962 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(43, 57, 98, 0.3);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.modal-actions .btn-secondary {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%);
+    color: #2b3962;
+    border: 1px solid rgba(43, 57, 98, 0.2);
+}
+
+.modal-actions .btn-secondary:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(43, 57, 98, 0.15);
+    border-color: rgba(43, 57, 98, 0.3);
+    color: #1e2a4a;
+}
+
+.modal-actions .btn:active {
+    transform: translateY(0);
+}
+
+/* ====== MODAL DE PERFIL DEL ADMINISTRADOR (EXTRAÍDO DE ControlAdmision.css) ====== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(12px);
+    animation: fadeIn 0.3s ease-out;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+    backdrop-filter: blur(20px);
+    margin: 0;
+    padding: 0;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 700px;
+    max-height: 90vh;
+    overflow: hidden;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 8px 32px rgba(43, 57, 98, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) translateY(-30px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) translateY(0) scale(1);
+    }
+}
+
+.modal-content h2 {
+    background: linear-gradient(135deg, #2b3962 0%, #1e2a4a 100%);
+    backdrop-filter: blur(20px);
+    color: #ecf0f1;
+    margin: 0;
+    padding: 24px 80px 24px 32px;
+    font-size: 1.25em;
+    font-weight: 700;
+    text-align: center;
+    position: relative;
+    border-radius: 16px 16px 0 0;
+    letter-spacing: 0.5px;
+    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 6px;
-    background-color: rgba(255, 255, 255, 0.15);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.close-modal {
+    color: #ecf0f1;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 24px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     z-index: 10;
-    border: 1px solid rgba(255, 255, 255, 0.3);
     text-shadow: none;
 }
 
 .close-modal:hover {
-    color: white;
-    background-color: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.2);
     transform: translateY(-50%) scale(1.05);
-    border-color: rgba(255, 255, 255, 0.5);
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 16px rgba(255, 255, 255, 0.15);
 }
 
-.driver-details {
-    padding: 25px;
-    overflow-y: auto;
-    max-height: calc(85vh - 120px);
-    background: rgba(255, 255, 255, 0.95);
-    scrollbar-width: thin;
-    scrollbar-color: rgba(43, 57, 98, 0.2) transparent;
-}
 
-.driver-details::-webkit-scrollbar {
-    width: 8px;
-}
 
-.driver-details::-webkit-scrollbar-track {
-    background: rgba(43, 57, 98, 0.05);
-    border-radius: 10px;
-    margin: 10px 0;
-}
 
-.driver-details::-webkit-scrollbar-thumb {
-    background: linear-gradient(
-        180deg,
-        rgba(43, 57, 98, 0.15) 0%,
-        rgba(43, 57, 98, 0.25) 50%,
-        rgba(43, 57, 98, 0.15) 100%
-    );
-    border-radius: 10px;
-    border: 1px solid rgba(43, 57, 98, 0.1);
-    backdrop-filter: blur(5px);
-    transition: all 0.3s ease;
-}
-
-.driver-details::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(
-        180deg,
-        rgba(43, 57, 98, 0.25) 0%,
-        rgba(43, 57, 98, 0.35) 50%,
-        rgba(43, 57, 98, 0.25) 100%
-    );
-    border-color: rgba(43, 57, 98, 0.2);
-}
-
-.driver-profile {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 25px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid rgba(229, 231, 235, 0.3);
-    position: relative;
-    text-align: left;
-}
-
-.driver-profile::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    width: 60px;
-    height: 2px;
-    background: rgba(43, 57, 98, 0.7);
-    border-radius: 1px;
-}
 
 .avatar-large {
-    width: 90px;
-    height: 90px;
+    width: 100px;
+    height: 100px;
     position: relative;
     flex-shrink: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(135deg, #2b3962 0%, #1e2a4a 100%);
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15), inset 0 2px 4px rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease;
 }
 
-.avatar-large::before {
-    content: '';
-    position: absolute;
-    inset: -3px;
-    background: rgba(43, 57, 98, 0.85);
-    backdrop-filter: blur(5px);
-    border-radius: 50%;
-    z-index: -1;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 25px rgba(43, 57, 98, 0.3);
+.avatar-large:hover {
+    transform: scale(1.02);
 }
 
 .avatar-large img {
@@ -400,103 +537,116 @@
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid rgba(255, 255, 255, 0.8);
+    border: none;
 }
 
-.driver-profile-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
 
-.driver-profile h3 {
-    margin: 0;
-    color: #1f2a49;
-    font-size: 1.4em;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    line-height: 1.2;
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-}
 
-.driver-info,
-.admin-info {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
-    margin-bottom: 25px;
-}
 
 .info-item {
     display: flex;
     flex-direction: column;
-    padding: 16px 18px;
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: 8px;
-    border: 1px solid rgba(229, 231, 235, 0.3);
-    border-left: 3px solid rgba(43, 57, 98, 0.9);
+    padding: 20px 24px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.8) 100%);
+    border-radius: 12px;
+    border: 1px solid rgba(43, 57, 98, 0.1);
     position: relative;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(5px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 }
 
-.info-item:nth-child(even) {
-    background: rgba(248, 250, 252, 0.8);
-    border-left-color: rgba(31, 42, 73, 0.6);
-}
+
 
 .info-item:hover {
-    transform: none;
-    border-left-color: rgba(31, 42, 73, 0.7);
-    background: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 4px 12px rgba(43, 57, 98, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
 }
 
 .info-item label {
-    font-weight: 600;
-    color: rgba(43, 57, 98, 0.7);
-    font-size: 0.85em;
-    margin-bottom: 8px;
+    font-weight: 700;
+    color: #2b3962;
+    font-size: 0.8em;
+    margin-bottom: 10px;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 1px;
     position: relative;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .info-item span {
     color: #374151;
-    font-size: 1.05em;
-    font-weight: 450;
+    font-size: 1.1em;
+    font-weight: 500;
     word-break: break-word;
     line-height: 1.4;
-    letter-spacing: 0.01em;
+    letter-spacing: 0.3px;
 }
 
 .modal-actions {
     display: flex;
     justify-content: center;
-    gap: 15px;
-    margin-top: 25px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(229, 231, 235, 0.3);
+    gap: 16px;
+    margin-top: 32px;
+    padding: 24px 32px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(248, 250, 252, 0.8) 100%);
+    backdrop-filter: blur(10px);
+    border-radius: 0 0 16px 16px;
 }
 
 .modal-actions .btn {
-    padding: 12px 24px;
-    font-size: 0.9em;
-    font-weight: 500;
+    padding: 14px 28px;
+    font-size: 0.95em;
+    font-weight: 600;
     border: none;
-    border-radius: 6px;
+    border-radius: 10px;
     cursor: pointer;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    transition: all 0.2s ease;
+    gap: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 0.3px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     min-width: 120px;
     justify-content: center;
-    letter-spacing: 0.01em;
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Button variants for profile modal */
+.modal-actions .btn-primary {
+    background: linear-gradient(135deg, #2b3962 0%, #1e2a4a 100%);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.modal-actions .btn-primary:hover {
+    background: linear-gradient(135deg, #1e2a4a 0%, #2b3962 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(43, 57, 98, 0.3);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.modal-actions .btn-secondary {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%);
+    color: #2b3962;
+    border: 1px solid rgba(43, 57, 98, 0.2);
+}
+
+.modal-actions .btn-secondary:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(43, 57, 98, 0.15);
+    border-color: rgba(43, 57, 98, 0.3);
+    color: #1e2a4a;
+}
+
+.modal-actions .btn:active {
+    transform: translateY(0);
 }
 
 /* ========================================
@@ -588,15 +738,18 @@
    RESPONSIVE PARA MODAL DE PERFIL
    ======================================== */
 
-/* Responsive para modal de perfil */
+/* ========================================
+   MEDIA QUERIES PARA MODAL DE PERFIL DEL ADMINISTRADOR
+   ======================================== */
+
 @media (max-width: 768px) {
     /* Responsive para modals en tablet */
-    #profile-modal .modal-content {
+    .admin-profile-content {
         width: 95%;
         max-width: 550px;
     }
     
-    #profile-modal .admin-info {
+    .admin-profile-info {
         grid-template-columns: 1fr; /* Una columna en tablet */
         gap: 15px;
     }
@@ -615,23 +768,23 @@
 }
 
 @media (max-width: 640px) {
-    #profile-modal .modal-content {
+    .admin-profile-content {
         width: 98%;
         max-width: 95vw;
         margin: 10px;
-    }
+    }    
     
-    #profile-modal .driver-details {
+    .admin-profile-details {
         padding: 20px;
     }
     
-    #profile-modal .driver-profile {
+    .admin-profile-header {
         flex-direction: column;
         text-align: center;
         gap: 15px;
     }
     
-    #profile-modal .admin-info {
+    .admin-profile-info {
         grid-template-columns: 1fr;
         gap: 12px;
     }
@@ -649,26 +802,26 @@
         font-size: 12px;
     }
     
-    #profile-modal .driver-profile h3 {
+    .admin-profile-header h3 {
         font-size: 1.1em;
         margin-top: 10px;
     }
     
-    #profile-modal .info-item {
+    .admin-profile-info .info-item {
         padding: 12px 14px;
     }
     
-    #profile-modal .info-item label {
+    .admin-profile-info .info-item label {
         font-size: 0.8em;
     }
     
-    #profile-modal .info-item span {
+    .admin-profile-info .info-item span {
         font-size: 1em;
     }
 }
 
 @media (max-width: 480px) {
-    #profile-modal .modal-content {
+    .admin-profile-content {
         width: 100%;
         height: 100vh;
         border-radius: 0;
@@ -676,7 +829,7 @@
         max-height: 100vh;
     }
     
-    #profile-modal .driver-details {
+    .admin-profile-details {
         padding: 15px;
         max-height: calc(100vh - 120px);
     }
@@ -687,113 +840,12 @@
         height: 60px;
     }
     
-    .change-photo-btn {
-        width: 28px;
+    .change-photo-btn {        width: 28px;
         height: 28px;
-        font-size: 11px;
-    }
-    
-    #profile-modal .modal-actions .btn {
-        min-width: 100px;
-        padding: 10px 16px;
-        font-size: 0.85em;
+        font-size: 10px;
     }
 }
 
 /* ========================================
    FIN ESTILOS MODAL DE PERFIL
    ======================================== */
-
-/* ========================================
-   CONFIGURACIÓN DE SCROLL PARA MODAL
-   ======================================== */
-
-/* Estructura principal del modal para permitir scroll */
-#profile-modal .modal-content {
-    display: flex;
-    flex-direction: column;
-    max-height: 90vh;
-    overflow: hidden;
-}
-
-/* Cabecera fija del modal - usando el h2 como header */
-#profile-modal .modal-content h2 {
-    flex-shrink: 0;
-    margin: 0;
-    padding: 15px 20px;
-    background-color: #2b3962;
-    color: white;
-    position: relative;
-    border-radius: 8px 8px 0 0;
-}
-
-/* Cuerpo del modal con scroll - usando driver-details */
-#profile-modal .driver-details {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px;
-    background-color: #f8fafc;
-    max-height: 70vh; /* Limitar altura para forzar scroll si hay mucho contenido */
-}
-
-/* Scrollbar personalizada */
-#profile-modal .driver-details::-webkit-scrollbar {
-    width: 10px;
-}
-
-#profile-modal .driver-details::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 5px;
-}
-
-#profile-modal .driver-details::-webkit-scrollbar-thumb {
-    background: #2b3962;
-    border-radius: 5px;
-}
-
-#profile-modal .driver-details::-webkit-scrollbar-thumb:hover {
-    background: #1f2a49;
-}
-
-/* Footer fijo del modal */
-#profile-modal .modal-actions {
-    flex-shrink: 0;
-    background-color: #f8fafc;
-    border-top: 1px solid #e2e8f0;
-    padding: 15px;
-    border-radius: 0 0 8px 8px;
-}
-
-/* ========================================
-   AJUSTES ADICIONALES PARA GARANTIZAR EL SCROLL
-   ======================================== */
-
-/* Inicialmente oculto, pero cuando activo usa flex */
-#profile-modal {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    overflow: hidden;
-}
-
-#profile-modal.active {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Eliminar cualquier overflow que pueda estar interfiriendo */
-.driver-profile {
-    overflow: visible;
-}
-
-/* Quitar scroll interno de admin-info */
-.admin-info {
-    max-height: none !important;
-    overflow-y: visible !important;
-}

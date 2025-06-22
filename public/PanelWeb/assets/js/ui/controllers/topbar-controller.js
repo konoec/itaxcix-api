@@ -159,17 +159,16 @@ class TopBarController {
             // Fallback: disparar evento personalizado
             document.dispatchEvent(new CustomEvent('toggleSidebar'));
         }
-    }
-
-    /**
+    }    /**
      * Maneja el clic en el perfil
      */
     handleProfileClick() {
         console.log('👤 Clic en perfil desde TopBar');
         
-        if (this.profileController && typeof this.profileController.showModal === 'function') {
-            this.profileController.showModal();
+        if (this.profileController && typeof this.profileController.showProfileModal === 'function') {
+            this.profileController.showProfileModal();
         } else {
+            console.warn('⚠️ ProfileController no disponible o método showProfileModal no encontrado');
             // Fallback: disparar evento personalizado
             document.dispatchEvent(new CustomEvent('showProfile'));
         }

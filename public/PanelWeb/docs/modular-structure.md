@@ -1,9 +1,9 @@
 # Estructura Modular del Sistema iTaxCix Panel
 
 ## Descripción General
-### 5. `emergency-config-controller.js` - Controlador de Configuración de Emergencia
-**Ubicación:** `assets/js/ui/controllers/emergency-config-controller.js`
-**Propósito:** Controlador específico para la página de configuración de emergencia.
+### 5. `configuration-controller.js` - Controlador de Configuration
+**Ubicación:** `assets/js/ui/controllers/configuration-controller.js`
+**Propósito:** Controlador específico para la página de configuración general.
 
 ### 6. `control-admision-controller.js` - Controlador de Control de Admisión
 **Ubicación:** `assets/js/ui/controllers/control-admision-controller.js`
@@ -15,9 +15,9 @@
 **Ubicación:** `assets/js/ui/controllers/app-initializer.js`
 **Propósito:** Inicializador genérico que solo carga controladores base comunes (sidebar, topbar, profile).
 
-### 2. `emergency-config-initializer.js` - Inicializador de Configuración de Emergencia
-**Ubicación:** `assets/js/ui/controllers/emergency-config-initializer.js`
-**Propósito:** Inicializador específico para la página de configuración de emergencia.
+### 2. `configuracion-initializer.js` - Inicializador de Configuración
+**Ubicación:** `assets/js/ui/controllers/configuracion-initializer.js`
+**Propósito:** Inicializador específico para la página de configuración general.
 
 ### 3. `control-admision-initializer.js` - Inicializador de Control de Admisión
 **Ubicación:** `assets/js/ui/controllers/control-admision-initializer.js`
@@ -61,9 +61,9 @@
 **Ubicación:** `assets/css/drivers-table.css`
 **Propósito:** Estilos específicos para la tabla de conductores y sus acciones.
 
-### 7. `emergency-config.css` - Configuración de Emergencia
-**Ubicación:** `assets/css/emergency-config.css`
-**Propósito:** Estilos específicos para la página de configuración de emergencia.
+### 7. `configuration.css` - Configuration
+**Ubicación:** `assets/css/configuration.css`
+**Propósito:** Estilos específicos para la página de configuración general.
 
 ## Archivos JavaScript Modulares
 
@@ -71,9 +71,9 @@
 **Ubicación:** `assets/js/ui/controllers/app-initializer.js`
 **Propósito:** Inicializa solo los controladores base comunes (sidebar, topbar, profile). Se recomienda usar inicializadores específicos por página.
 
-### 2. `emergency-config-initializer.js` - Inicializador de Configuración de Emergencia
-**Ubicación:** `assets/js/ui/controllers/emergency-config-initializer.js`
-**Propósito:** Inicializador específico para la página de configuración de emergencia.
+### 2. `configuration-initializer.js` - Inicializador de Configuration
+**Ubicación:** `assets/js/ui/controllers/configuration-initializer.js`
+**Propósito:** Inicializador específico para la página de configuración general.
 
 ### 3. `control-admision-initializer.js` - Inicializador de Control de Admisión
 **Ubicación:** `assets/js/ui/controllers/control-admision-initializer.js`
@@ -91,9 +91,9 @@
 **Ubicación:** `assets/js/ui/controllers/profile-controller.js`
 **Propósito:** Maneja la funcionalidad del perfil de usuario.
 
-### 7. `emergency-config-controller.js` - Controlador de Configuración de Emergencia
-**Ubicación:** `assets/js/ui/controllers/emergency-config-controller.js`
-**Propósito:** Controlador específico para la página de configuración de emergencia.
+### 7. `configuration-controller.js` - Controlador de Configuration
+**Ubicación:** `assets/js/ui/controllers/configuration-controller.js`
+**Propósito:** Controlador específico para la página de configuración general.
 
 ## Cómo Crear una Nueva Página
 
@@ -120,7 +120,7 @@
       <!-- CSS OPCIONAL según funcionalidad -->
     <link rel="stylesheet" href="../../assets/css/confirmation-modal.css">
     <link rel="stylesheet" href="../../assets/css/drivers-table.css">
-    <link rel="stylesheet" href="../../assets/css/emergency-config.css">
+    <link rel="stylesheet" href="../../assets/css/configuration.css">
     <link rel="stylesheet" href="../../assets/css/[nombre-pagina].css">
     
     <!-- Font Awesome -->
@@ -312,10 +312,10 @@ document.addEventListener('DOMContentLoaded', [NombrePagina]Initializer.init);
   - Inicializador: `control-admision-initializer.js`
   - CSS específico: `drivers-table.css`
 
-- **Configuración de Emergencia:** `pages/Configuracion/Emergency-config.html`
-  - Controlador: `emergency-config-controller.js`
-  - Inicializador: `emergency-config-initializer.js`
-  - CSS específico: `emergency-config.css`
+- **Configuration:** `pages/Configuration/Configuration.html`
+  - Controlador: `configuration-controller.js`
+  - Inicializador: `configuration-initializer.js`
+  - CSS específico: `configuration.css`
 
 ## Mantenimiento
 

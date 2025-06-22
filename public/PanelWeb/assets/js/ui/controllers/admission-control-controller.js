@@ -1,8 +1,8 @@
-// Controlador específico para la página de Control de Admisión de Conductores
+// Controlador específico para la página de Admission Control
 // Maneja toda la funcionalidad relacionada con la aprobación/rechazo de conductores
 
-// Clase principal que controla la interfaz de usuario del control de admisión
-class ControlAdmisionController {
+// Clase principal que controla la interfaz de usuario del admission control
+class AdmissionControlController {
     constructor() {
         // Instancia del servicio de conductores que maneja la comunicación con la API real
         this.conductorService = new ConductorService();
@@ -35,15 +35,16 @@ class ControlAdmisionController {
         this.confirmationConfirm = document.getElementById('confirmation-confirm');
     }// Método principal que inicializa la aplicación - CORREGIDO
     // Es async porque realiza operaciones asíncronas (como cargar datos de la API)
-    async init() {
-        try {
-            this.showLoading(true);
-
-            const conductoresData = await this.conductorService.obtenerConductoresPendientes(0, 10);
+    async init() {        try {
+            this.showLoading(true);            const conductoresData = await this.conductorService.obtenerConductoresPendientes(0, 8);
             console.log('Respuesta de la API conductores:', conductoresData);
 
+            // LIMITAR A 8 CONDUCTORES EN EL FRONTEND (ya que la API no respeta el parámetro)
+            const conductoresLimitados = conductoresData.slice(0, 8);
+            console.log(`🔧 Limitando conductores de ${conductoresData.length} a ${conductoresLimitados.length}`);
+
             // CONVERTIR A INSTANCIAS DE LA CLASE CONDUCTOR
-            const conductores = conductoresData.map(data => Conductor.fromApiData(data));
+            const conductores = conductoresLimitados.map(data => Conductor.fromApiData(data));
 
             // Verificar si hay conductores pendientes
             if (conductores.length === 0) {
@@ -289,9 +290,13 @@ class ControlAdmisionController {
     }    // Método para recargar conductores - NUEVO
     async recargarConductores() {
         try {
-            this.driversList.innerHTML = '';
-            const conductoresData = await this.conductorService.obtenerConductoresPendientes(0, 10);
-            const conductores = conductoresData.map(data => Conductor.fromApiData(data));
+            this.driversList.innerHTML = '';            const conductoresData = await this.conductorService.obtenerConductoresPendientes(0, 8);
+            
+            // LIMITAR A 8 CONDUCTORES EN EL FRONTEND (ya que la API no respeta el parámetro)
+            const conductoresLimitados = conductoresData.slice(0, 8);
+            console.log(`🔧 Recarga: Limitando conductores de ${conductoresData.length} a ${conductoresLimitados.length}`);
+            
+            const conductores = conductoresLimitados.map(data => Conductor.fromApiData(data));
             
             // Verificar si hay conductores pendientes
             if (conductores.length === 0) {
@@ -405,10 +410,9 @@ class ControlAdmisionController {
 }
 
 // Exportar la clase para que esté disponible en otros archivos
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = ControlAdmisionController;
+if (typeof module !== 'undefined' && module.exports) {    module.exports = AdmissionControlController;
 } else {
-    window.ControlAdmisionController = ControlAdmisionController;
+    window.AdmissionControlController = AdmissionControlController;
 }
 
 // Verificar y mostrar datos de autenticación en la consola

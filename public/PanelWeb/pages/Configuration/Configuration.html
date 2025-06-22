@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>                    <!-- Módulo de Admisión de conductores -->
+                    <li id="menu-admission">
+                        <a class="module-admission" href="../Admission/AdmissionControl.html">
+                            <i class="fas fa-user-check"></i>
+                            Admisión de conductores
+                        </a>
+                    </li>-- Configuración básica del documento -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Configuración de caché para prevenir almacenamiento de datos sensibles -->
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+      <title>Panel de Administración - Configuration</title>    <!-- Hojas de estilo -->
+    <link rel="stylesheet" href="../../assets/css/base.css">
+    <link rel="stylesheet" href="../../assets/css/sidebar.css">
+    <link rel="stylesheet" href="../../assets/css/topbar.css">
+    <link rel="stylesheet" href="../../assets/css/profile.css">
+    <link rel="stylesheet" href="../../assets/css/confirmation-modal.css">
+    <link rel="stylesheet" href="../../assets/css/configuration.css">
+    <link rel="stylesheet" href="../../assets/css/permissions.css">
+    <!-- Font Awesome para iconografía -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></head>
+<body>
+    <!-- Contenedor principal del layout -->
+    <div class="layout">
+        <!-- Barra lateral de navegación -->
+        <div class="sidebar" id="sidebar">
+            <!-- Encabezado del sidebar con título y botón de cierre -->
+          <div class="sidebar-header">
+                <h2 class="logoSidebar"><span class="sidebar-logo-img"></span></h2>
+                <button id="close-sidebar" class="sidebar-toggle">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>            <!-- Menú de navegación principal -->
+            <div class="sidebar-menu">
+                <ul>                    <!-- Inicio -->
+                    <li id="menu-inicio">
+                        <a href="../Inicio/Inicio.html" class="module-inicio">
+                            <i class="fas fa-home"></i>
+                            Inicio
+                        </a>
+                    </li>                    <!-- Módulo de Admisión de conductores -->
+                    <li  id="menu-admission">
+                        <a class="module-admission" href="../Admission/AdmissionControl.html">
+                            <i class="fas fa-user-check"></i>
+                            Admisión de conductores
+                        </a>
+                    </li>
+
+                    <!-- Módulo de Tablas maestras -->
+                    <li class="has-submenu" id="menu-tablas">
+                        <a href="javascript:void(0)" class="module-tablas">
+                            <i class="fas fa-table"></i>
+                            Tablas maestras
+                            <span class="submenu-arrow"></span>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="javascript:void(0)"><i class="fas fa-car"></i>Tabla Maestra 1</a></li>
+                            <li><a href="javascript:void(0)"><i class="fas fa-users"></i>Tabla Maestra 2</a></li>
+                            <li><a href="javascript:void(0)"><i class="fas fa-id-card"></i>Tabla Maestra 3</a></li>
+                            <li><a href="javascript:void(0)"><i class="fas fa-route"></i>Tabla Maestra 4</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Módulo de Auditoría -->
+                    <li id="menu-auditoria">
+                        <a href="javascript:void(0)" class="module-auditoria">
+                            <i class="fas fa-search"></i>
+                            Auditoría
+                        </a>
+                    </li>
+
+                    <!-- Módulo de Configuración -->
+                    <li class="active" id="menu-configuracion">
+                        <a href="../Configuration/Configuration.html" class="module-config">
+                            <i class="fas fa-cog"></i>
+                            Configuración
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Pie del sidebar con botón de cierre de sesión -->
+            <div class="sidebar-footer">
+                <button class="logout-btn">
+                    <i class="fas fa-power-off"></i>
+                    Cerrar sesión
+                </button>
+            </div>
+        </div>
+
+        <!-- Contenido principal de la página -->
+        <div class="main-content">
+            <!-- Barra superior con controles y información de usuario -->
+            <div class="top-bar">
+                <button id="open-sidebar" class="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h3>CONFIGURACION</h3>
+                <div class="profile-container" id="profile-container" style="cursor: pointer;" title="Ver mi perfil">
+                    <div class="profile-image" id="profile-image"></div>
+                    <div class="user-info">
+                        <span class="user-display" id="user-display">Admin</span>
+                        <span class="user-role">Administrador</span>
+                    </div>
+                </div>
+            </div>            <!-- Contenido de configuration -->
+            <div class="content configuration">
+                <!-- Contenedor principal de configuraciones -->
+                <div class="config-sections">
+                    <!-- Contenedor rectangular de configuración de emergencia -->
+                    <div class="emergency-config-container" id="emergency-config-container">
+                    <div class="emergency-config-header" id="emergency-config-header">
+                        <h3>
+                            <i class="fas fa-phone-alt icon"></i>
+                            Configuración de Emergencia
+                        </h3>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <div class="emergency-config-content" id="emergency-config-content">
+                        <div class="emergency-config-content-inner">
+                            <form id="emergency-inline-form" autocomplete="off">
+                                <div class="form-group emergency-number-group">
+                                    <label for="emergency-inline-number">Número de emergencia:</label>
+                                    <div class="input-prefix-group">
+                                        <input type="tel" id="emergency-inline-number" name="emergency-number" placeholder="Ej: 999999999 o +51999999999" maxlength="15" required>
+                                    </div>
+                                </div>
+                                <div class="emergency-modal-actions">
+                                    <button type="button" class="btn btn-cancel" id="cancel-inline-emergency">Cancelar</button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Guardar
+                                    </button>
+                                </div>
+                                <div id="emergency-inline-message" class="form-message"></div>
+                            </form>                        </div>
+                    </div>
+                    
+                    <!-- Aquí se pueden agregar más secciones de configuración -->
+                    <!-- Ejemplo: 
+                    <div class="config-container">
+                        <div class="config-header">
+                            <h3><i class="fas fa-cog"></i> Otra Configuración</h3>
+                        </div>
+                    </div>
+                    -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para configurar número de emergencia -->
+    <div id="emergency-modal" class="modal">
+        <div class="modal-content emergency-modal-content">
+            <h2>
+                <i class="fas fa-phone-alt"></i> Número de Emergencia
+                <span class="close-modal" id="close-emergency-modal">&times;</span>
+            </h2>
+            
+            <div class="emergency-modal-body">
+                <form id="emergency-number-form" autocomplete="off">
+                    <div class="form-group emergency-number-group">
+                        <label for="emergency-number">Número de emergencia:</label>
+                        <div class="input-prefix-group">
+                            <input type="tel" id="emergency-number" name="emergency-number" placeholder="Ej: 999999999 o +51999999999" maxlength="15" required>
+                        </div>
+                    </div>
+                    <div class="emergency-modal-actions">
+                        <button type="button" class="btn btn-cancel" id="cancel-emergency">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Guardar
+                        </button>
+                    </div>
+                    <div id="emergency-number-message" class="form-message"></div>
+                </form>
+            </div>
+        </div>
+    </div>    <!-- Modal para mostrar perfil del usuario -->
+    <div id="profile-modal" class="admin-profile-modal">
+        <div class="admin-profile-content">
+            <h2>
+                Mi Perfil
+                <span class="close-modal" id="close-profile-modal">&times;</span>
+            </h2>
+              <!-- Contenido del modal -->
+            <div class="admin-profile-details">                <!-- Perfil del usuario -->
+                <div class="admin-profile-header">
+                    <div class="avatar-large">
+                        <img id="profile-modal-avatar" src="" alt="Foto de perfil">
+                        <div class="avatar-overlay" id="avatar-overlay">
+                            <button class="change-photo-btn" id="change-photo-btn" title="Cambiar foto">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
+                        <input type="file" id="photo-input" accept="image/*" style="display: none;">
+                    </div>                    <div class="admin-profile-header-info">
+                        <h3 id="profile-modal-name">Nombre del Usuario</h3>
+                    </div>
+                </div>
+                
+                <!-- Información detallada del usuario -->
+                <div class="admin-profile-info">
+                    <div class="info-item">
+                        <label>Nombre:</label>
+                        <span id="profile-modal-firstname">No disponible</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Apellido:</label>
+                        <span id="profile-modal-lastname">No disponible</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Tipo de Documento:</label>
+                        <span id="profile-modal-doctype">No disponible</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Documento:</label>
+                        <span id="profile-modal-document">No disponible</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Área:</label>
+                        <span id="profile-modal-area">No disponible</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Cargo:</label>
+                        <span id="profile-modal-position">No disponible</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Correo Electrónico:</label>
+                        <span id="profile-modal-email">No disponible</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Celular:</label>
+                        <span id="profile-modal-phone">No disponible</span>
+                    </div>
+                </div>
+
+                <!-- Botones de acción del modal -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Sistema de notificaciones toast -->
+    <div id="toast" class="toast">
+        <div id="toast-message">Configuration saved successfully</div>
+    </div>    <!-- Carga de scripts en orden específico para manejar dependencias -->
+    <!-- 1. Utilidades y herramientas base -->
+    <script src="../../assets/js/auth/auth-checker.js"></script>
+    <script src="../../assets/js/auth/permissions.js"></script>
+    <script src="../../assets/js/auth/route-guard.js"></script>
+    
+    <!-- DEBUG: Script de testing temporal (REMOVER EN PRODUCCIÓN) -->
+    
+    <script>
+        // Inicializa RouteGuard para proteger la página y verificar permisos
+        window.routeGuard = new RouteGuard("../../index.html");
+        
+        // Debug de permisos (remover en producción)
+        setTimeout(() => {
+            console.log('🐛 DEBUG - Estado del RouteGuard:');
+            if (window.routeGuard) {
+                window.routeGuard.debug();
+            }
+            
+            console.log('🐛 DEBUG - Estado de PermissionsService:');
+            if (window.PermissionsService) {
+                window.PermissionsService.debugCurrentState();
+            }
+        }, 1000);
+    </script>
+
+    <!-- 2. Servicios de API -->
+    <script src="../../assets/js/api/services/profile-service.js"></script>
+    <script src="../../assets/js/api/services/configuration-service.js"></script>
+    <!-- El controlador modular se encarga de la lógica -->    <!-- 3. Controladores de UI -->
+    <script src="../../assets/js/ui/controllers/sidebar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/topbar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/profile-controller.js"></script>     <script src="../../assets/js/ui/controllers/configuration-controller.js"></script>
+    <script src="../../assets/js/ui/initializers/configuration-initializer.js"></script>
+      <!-- 4. Utilidades de sesión -->
+    <script src="../../assets/js/auth/session-cleaner.js"></script>
+    
+    <script>
+        // Verificar acceso específico al módulo de Configuración
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('⚙️ Verificando acceso al módulo de Configuración...');
+            
+            // Configurar menú de permisos inmediatamente
+            if (window.PermissionsService) {
+                console.log('🔧 Configurando menú según permisos...');
+                window.PermissionsService.configureMenuPermissions();
+            }
+            
+            setTimeout(() => {
+                if (window.routeGuard && typeof window.routeGuard.hasPermission === 'function') {
+                    // Verificar si tiene permiso para este módulo específico
+                    const hasConfigAccess = window.routeGuard.hasPermission('CONFIGURACIÓN');
+                    
+                    console.log(`🔍 Permiso para Configuración: ${hasConfigAccess}`);
+                    
+                    if (!hasConfigAccess) {
+                        console.warn('🚫 Usuario no tiene acceso al módulo de Configuración');
+                        
+                        // Buscar una ruta autorizada
+                        if (window.PermissionsService) {
+                            const authorizedRoute = window.PermissionsService.getFirstAvailableRoute();
+                            if (authorizedRoute) {
+                                console.log(`🔄 Redirigiendo a: ${authorizedRoute}`);
+                                window.location.replace(`../../${authorizedRoute}`);
+                            } else {
+                                console.log('🔄 No hay rutas autorizadas, volviendo al login');
+                                window.location.replace('../../index.html');
+                            }
+                        } else {
+                            window.location.replace('../../index.html');
+                        }
+                    } else {
+                        console.log('✅ Usuario autorizado para Configuración');
+                    }
+                } else {
+                    console.warn('⚠️ RouteGuard o método hasPermission no disponible');
+                }
+            }, 500); // Dar tiempo para que se carguen todos los servicios
+        });
+    </script>
+</body>
+</html>

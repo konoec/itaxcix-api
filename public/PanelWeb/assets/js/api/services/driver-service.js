@@ -52,10 +52,11 @@ class ConductorService {
      * @param {number} page - Número de página (empezando en 0)
      * @param {number} perPage - Cantidad de elementos por página
      * @returns {Promise<Array>} - Array de conductores pendientes
-     */
-    async obtenerConductoresPendientes(page = 0, perPage = 10) {
+     */    async obtenerConductoresPendientes(page = 0, perPage = 8) {
         try {
+            console.log(`🔍 Solicitando conductores: page=${page}, perPage=${perPage}`);
             const url = `${this.apiUrl}/drivers/pending?page=${page}&perPage=${perPage}`;
+            console.log(`📡 URL completa: ${url}`);
             const token = sessionStorage.getItem('authToken');
             const response = await fetch(url, {
                 method: 'GET',
@@ -78,9 +79,9 @@ class ConductorService {
             if (responseData.success === false) {
                 throw new Error(responseData.message || 'No se encontraron conductores pendientes');
             }
-            
-            // Extraer el array de conductores del objeto data.items
+              // Extraer el array de conductores del objeto data.items
             if (responseData.data && responseData.data.items && Array.isArray(responseData.data.items)) {
+                console.log(`✅ Conductores recibidos: ${responseData.data.items.length} de ${perPage} solicitados`);
                 return responseData.data.items;
             }
             

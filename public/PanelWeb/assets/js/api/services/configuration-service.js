@@ -1,4 +1,4 @@
-// Servicio para la configuración del número de emergencia
+// Servicio para la configuración general del sistema
 const API_BASE_URL = 'https://149.130.161.148/api/v1';
 
 function getAuthToken() {
@@ -6,7 +6,7 @@ function getAuthToken() {
     return sessionStorage.getItem('token') || sessionStorage.getItem('authToken');
 }
 
-class EmergencyConfigService {
+class ConfigurationService {
     static async getEmergencyNumber() {
         try {
             const token = getAuthToken();
@@ -42,4 +42,7 @@ class EmergencyConfigService {
 }
 
 // Para compatibilidad con proyectos sin módulos ES6
-typeof window !== 'undefined' && (window.EmergencyConfigService = EmergencyConfigService);
+typeof window !== 'undefined' && (window.ConfigurationService = ConfigurationService);
+// Mantener compatibilidad con el nombre anterior temporalmente
+typeof window !== 'undefined' && (window.ConfiguracionService = ConfigurationService);
+typeof window !== 'undefined' && (window.EmergencyConfigService = ConfigurationService);

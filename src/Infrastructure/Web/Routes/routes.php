@@ -57,7 +57,7 @@ return function (RouteCollector $r) {
         $r->get('/users/{userId}/travels/history', [JwtMiddleware::class, [TravelController::class, 'getTravelHistory']]);
 
         // Profile Routes
-        $r->get('/profile/admin/{userId}', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [ProfileController::class, 'getAdminProfile']]);
+        $r->get('/profile/admin/{userId}', [JwtMiddleware::class, [ProfileController::class, 'getAdminProfile']]);
         $r->get('/profile/citizen/{userId}', [JwtPermissionMiddleware::class, 'PERFIL CIUDADANO', [ProfileController::class, 'getCitizenProfile']]);
         $r->get('/profile/driver/{userId}', [JwtPermissionMiddleware::class, 'PERFIL CONDUCTOR', [ProfileController::class, 'getDriverProfile']]);
 

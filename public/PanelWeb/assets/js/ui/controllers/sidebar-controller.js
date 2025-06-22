@@ -1,5 +1,4 @@
-class SidebarController {
-    constructor() {
+class SidebarController {    constructor() {
         console.log('🏗️ Construyendo SidebarController...');
         this.sidebar = document.getElementById('sidebar');
         this.closeButton = document.getElementById('close-sidebar');
@@ -10,8 +9,13 @@ class SidebarController {
         console.log('  - Close button:', this.closeButton);
         console.log('  - Logout button:', this.logoutButton);
         
+        // Verificar estado de routeGuard
+        console.log('🔍 Estado de RouteGuard:');
+        console.log('  - window.routeGuard:', typeof window.routeGuard);
+        console.log('  - RouteGuard class:', typeof RouteGuard);
+        
         this.init();
-    }    init() {
+    }init() {
         this.setupEventListeners();
         this.initializeSubmenu();
         this.setupCustomEventListeners(); // Agregar listeners para eventos personalizados
@@ -59,13 +63,27 @@ class SidebarController {
             this.closeButton.addEventListener('click', () => {
                 this.sidebar.classList.toggle('collapsed');
             });
-        }
-
-        // Evento para cerrar sesión
+        }        // Evento para cerrar sesión
         if (this.logoutButton) {
             this.logoutButton.addEventListener('click', function(e) {
                 e.preventDefault();
-                routeGuard.logout();
+                console.log('🚪 Botón de logout clicado');
+                
+                // Verificar si routeGuard está disponible
+                if (typeof window.routeGuard !== 'undefined' && window.routeGuard) {
+                    console.log('✅ RouteGuard encontrado, ejecutando logout...');
+                    window.routeGuard.logout();
+                } else if (typeof RouteGuard !== 'undefined') {
+                    console.log('✅ Clase RouteGuard encontrada, creando instancia...');
+                    const tempGuard = new RouteGuard("../../index.html");
+                    tempGuard.logout();
+                } else {
+                    console.log('⚠️ RouteGuard no encontrado, ejecutando logout manual...');
+                    // Fallback manual
+                    sessionStorage.clear();
+                    localStorage.clear();
+                    window.location.replace("../../index.html");
+                }
             });
         }
     }

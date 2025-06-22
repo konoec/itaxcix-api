@@ -1,38 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 /* ===== TOP BAR STYLES ===== */
 
 /* Barra superior */
 .top-bar {
-    background-color: #2b3962ce;
-    backdrop-filter: blur(10px);
-    padding: 4.2px 20px;
+    background: linear-gradient(180deg, #2b3962 0%, #1e2a4a 100%);
+    backdrop-filter: blur(12px);
+    padding: 5.6px 20px;
     display: flex;
     align-items: center;
     position: sticky;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.074);
-    box-shadow: 0 5px 20px rgba(47, 47, 47, 0.408);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3), 0 8px 32px rgba(43, 57, 98, 0.2);
     top: 0;
     z-index: 10;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #ecf0f1;
+    overflow: hidden;
+    width: 100%;
+    left: 0;
+    right: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.top-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    pointer-events: none;
+    z-index: 1;
 }
 
 .top-bar h1 {
     margin-left: 20px;
     font-size: 1.5rem;
     flex: 1;
-    color: #ffffff;
-    font-weight: 600;
-    letter-spacing: 0.025em;
+    color: #ecf0f1;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 2;
 }
 
 .top-bar h3 {
     margin-left: 20px;
-    font-size: 1.1rem; /* Reducir tamaño para mejor proporción */
+    font-size: 1.1rem;
     flex: 1;
-    color: #ffffff !important;
+    color: #ecf0f1 !important;
     font-weight: 600;
-    letter-spacing: 0.025em;
-    white-space: nowrap; /* Evitar salto de línea */
-    overflow: hidden; /* Ocultar desborde */
-    text-overflow: ellipsis; /* Mostrar ... si es muy largo */
+    letter-spacing: 0.3px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative;
+    z-index: 2;
 }
 
 /* Contenedor de perfil en top-bar */
@@ -40,37 +69,46 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 8px 12px;
-    border-radius: 8px;
+    padding: 6px 12px;
+    border-radius: 10px;
     background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    transition: all 0.2s ease;
-    min-width: 300px; /* Incrementar más para nombres largos */
-    max-width: 500px; /* Incrementar máximo para nombres muy largos */
-    margin-left: auto; /* Empujar a la derecha */
-    flex-shrink: 0; /* Evitar que se reduzca */
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3), 0 8px 32px rgba(43, 57, 98, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 280px;
+    max-width: 450px;
+    margin-left: auto;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 2;
 }
 
 .top-bar .profile-container:hover {
     background: rgba(255, 255, 255, 0.15);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3), 0 8px 32px rgba(43, 57, 98, 0.2);
 }
 
 /* Imagen de perfil en top-bar */
 .top-bar .profile-image {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    background: linear-gradient(135deg, rgba(43, 57, 98, 0.8) 0%, rgba(31, 42, 73, 0.8) 100%);
+    background: linear-gradient(135deg, rgba(43, 57, 98, 0.9) 0%, rgba(31, 42, 73, 0.9) 100%);
     border: 2px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), inset 0 2px 4px rgba(255, 255, 255, 0.1);
     flex-shrink: 0;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    order: 2; /* Mover imagen a la derecha */
-    align-self: center; /* Centrar verticalmente */
+    order: 2;
+    align-self: center;
+    transition: transform 0.3s ease;
+}
+
+.top-bar .profile-image:hover {
+    transform: scale(1.05);
 }
 
 /* Información del usuario */
@@ -81,19 +119,20 @@
     justify-content: center;
     min-width: 0;
     flex: 1;
-    order: 1; /* Mantener texto a la izquierda */
-    height: 44px; /* Altura fija para centrado vertical */
+    order: 1;
+    height: 40px;
 }
 
 .top-bar .user-info span {
     display: block;
-    color: #ffffff;
-    line-height: 1.1; /* Reducir line-height para eliminar espacios extra */
+    color: #ecf0f1;
+    line-height: 1.2;
     white-space: nowrap;
-    overflow: visible; /* Permitir que el texto se vea completo */
-    width: auto; /* Ancho automático para ajustarse al contenido */
+    overflow: visible;
+    width: auto;
     font-weight: 500;
-    margin: 0; /* Resetear márgenes */
+    margin: 0;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .top-bar .user-info span:first-child {
@@ -118,34 +157,39 @@
 
 .top-bar .user-role {
     font-size: 12px;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(236, 240, 241, 0.8);
     font-weight: 400;
 }
 
 /* Botón del sidebar en el top-bar - Oculto por defecto, solo visible en móviles */
 .top-bar .sidebar-toggle {
-    background: none;
-    border: none;
-    color: #ffffff;
-    font-size: 18px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ecf0f1;
+    font-size: 16px;
     cursor: pointer;
     padding: 8px;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-    display: none; /* Oculto por defecto */
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3), 0 8px 32px rgba(43, 57, 98, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: none;
     align-items: center;
     justify-content: center;
     width: 36px;
     height: 36px;
+    position: relative;
+    z-index: 2;
 }
 
 .top-bar .sidebar-toggle:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3), 0 8px 32px rgba(43, 57, 98, 0.2);
 }
 
 .top-bar .sidebar-toggle:active {
-    transform: scale(0.95);
+    transform: translateY(0) scale(0.95);
 }
 
 /* ===== RESPONSIVE DESIGN ===== */
@@ -169,9 +213,15 @@
         display: flex !important;
     }
     
-    /* Reducir padding del top-bar en móvil */
+    /* Reducir padding del top-bar en móvil y asegurar ancho completo */
     .top-bar {
         padding: 4px 15px; /* Menos padding horizontal */
+        width: 100vw !important; /* Forzar ancho completo del viewport */
+        max-width: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
     }
     
     /* Ajustar título para pantallas pequeñas */
@@ -210,6 +260,12 @@
 @media (max-width: 480px) {
     .top-bar {
         padding: 4px 10px;
+        width: 100vw !important; /* Forzar ancho completo del viewport */
+        max-width: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
     }
     
     .top-bar h3 {

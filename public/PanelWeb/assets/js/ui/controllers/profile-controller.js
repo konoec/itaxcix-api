@@ -97,9 +97,7 @@ class ProfileController {    constructor() {
             console.error('❌ Error al cargar perfil:', error);
             this.setDefaultProfile();
         }
-    }
-
-    /**
+    }    /**
      * Actualiza el nombre del usuario en la interfaz
      */
     updateUserName() {
@@ -484,7 +482,7 @@ class ProfileController {    constructor() {
                 // Actualizar imagen en la barra superior
                 this.setProfileImage(imageUrl);
                 
-                this.showToast('✅ Foto de perfil actualizada correctamente', 'success');
+                this.showToast('Foto de perfil actualizada correctamente', 'success');
                 console.log('✅ Foto actualizada exitosamente');
             } else {
                 throw new Error(result.message);
@@ -631,63 +629,151 @@ class ProfileController {    constructor() {
                 this.avatarLarge.classList.remove('avatar-loading');
             }
         }
-    }
-
-    /**
-     * Muestra un mensaje toast
+    }    /**
+     * Muestra un mensaje toast usando el mismo diseño que la recuperación de contraseña
      * @param {string} message - Mensaje a mostrar
      * @param {string} type - Tipo: success, error, warning
      */
     showToast(message, type = 'info') {
-        // Buscar elemento toast existente o crear uno nuevo
-        let toast = document.getElementById('toast');
+        // Crear el toast con los mismos estilos que la recuperación de contraseña
+        let toast = document.getElementById('profile-notification-toast');
+        
         if (!toast) {
+            // Crear estructura HTML igual a la de recovery-toast
             toast = document.createElement('div');
-            toast.id = 'toast';
-            toast.className = 'toast';
+            toast.id = 'profile-notification-toast';
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                z-index: 10000;
+                opacity: 0;
+                transform: translateX(100%);
+                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                pointer-events: none;
+            `;
+            
+            const toastContent = document.createElement('div');
+            toastContent.style.cssText = `
+                background: linear-gradient(135deg, #1fb583, #059669);
+                color: white;
+                padding: 16px 20px;
+                border-radius: 8px;
+                box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                min-width: 320px;
+                max-width: 400px;
+                font-family: 'Inter', sans-serif;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            `;
+            
+            const icon = document.createElement('i');
+            icon.style.cssText = `
+                font-size: 20px;
+                color: rgba(255, 255, 255, 0.9);
+                flex-shrink: 0;
+            `;
+            
+            const messageSpan = document.createElement('span');
+            messageSpan.style.cssText = `
+                font-size: 14px;
+                font-weight: 500;
+                line-height: 1.4;
+                letter-spacing: 0.025em;
+            `;
+            
+            toastContent.appendChild(icon);
+            toastContent.appendChild(messageSpan);
+            toast.appendChild(toastContent);
             document.body.appendChild(toast);
         }
-
-        // Configurar mensaje y tipo
-        toast.textContent = message;
-        toast.className = `toast ${type}`;
-        toast.style.display = 'block';
-
-        // Auto-ocultar después de 3 segundos
+        
+        const toastContent = toast.querySelector('div');
+        const icon = toast.querySelector('i');
+        const messageSpan = toast.querySelector('span');
+        
+        // Configurar el mensaje
+        messageSpan.textContent = message;
+        
+        // Configurar colores según el tipo
+        if (type === 'success') {
+            icon.className = 'fas fa-check-circle';
+            toastContent.style.background = 'linear-gradient(135deg, #1fb583, #059669)';
+            toastContent.style.boxShadow = '0 8px 32px rgba(16, 185, 129, 0.3)';
+        } else if (type === 'error') {
+            icon.className = 'fas fa-exclamation-circle';
+            toastContent.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+            toastContent.style.boxShadow = '0 8px 32px rgba(239, 68, 68, 0.3)';
+        } else if (type === 'warning') {
+            icon.className = 'fas fa-exclamation-triangle';
+            toastContent.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+            toastContent.style.boxShadow = '0 8px 32px rgba(245, 158, 11, 0.3)';
+        }
+        
+        // Mostrar el toast
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateX(0)';
+        toast.style.pointerEvents = 'auto';
+        
+        // Ocultar después de 4 segundos
         setTimeout(() => {
-            toast.style.display = 'none';
-        }, 3000);
-    }
-
-    /**
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(100%)';
+            toast.style.pointerEvents = 'none';
+        }, 4000);
+        
+        console.log(`📢 Toast mostrado: ${type} - ${message}`);
+    }    /**
      * Muestra el modal de perfil con la información del usuario
      */
     async showProfileModal() {
         if (!this.profileModal) {
             console.warn('⚠️ Modal de perfil no encontrado');
             return;
-        }        try {
+        }
+
+        try {
             console.log('📋 Abriendo modal de perfil...');
             
-            // Usar datos de sessionStorage como fuente principal
+            // Usar datos de sessionStorage como fuente base
             let userData = this.getUserDataFromSession();
             
-            // Solo intentar API si hay userId y queremos datos adicionales
-            // Por ahora, comentamos la llamada a la API hasta que el endpoint esté disponible
-            /*
-            if (this.currentUserId) {
+            // Intentar obtener datos actualizados de la API
+            if (this.currentUserId && this.profileService) {
                 try {
-                    const apiData = await this.profileService.getUserProfileData(this.currentUserId);
+                    console.log('🌐 Obteniendo datos del perfil desde API...');
+                    const apiData = await this.profileService.getUserProfile(this.currentUserId);
+                    
                     if (apiData) {
+                        console.log('✅ Datos del perfil obtenidos de la API:', apiData);
+                        
                         // Combinar datos de API con sessionStorage (API tiene prioridad)
-                        userData = { ...userData, ...apiData };
+                        userData = {
+                            ...userData,
+                            firstName: apiData.firstName || userData.firstName,
+                            lastName: apiData.lastName || userData.lastName,
+                            documentType: apiData.documentType || userData.documentType,
+                            document: apiData.document || userData.documentValue,
+                            area: apiData.area || userData.area,
+                            position: apiData.position || userData.position,
+                            email: apiData.email || userData.email,
+                            phone: apiData.phone || userData.phone
+                        };
+                        
+                        // Actualizar sessionStorage con los datos más recientes
+                        this.updateSessionStorageWithApiData(apiData);
+                        
+                    } else {
+                        console.log('ℹ️ API no devolvió datos, usando sessionStorage');
                     }
                 } catch (error) {
-                    console.log('ℹ️ API no disponible, usando datos de sessionStorage');
+                    console.log('ℹ️ Error al obtener datos de API, usando sessionStorage:', error.message);
                 }
             }
-            */
-              // Poblar el modal con los datos
+              
+            // Poblar el modal con los datos
             await this.populateProfileModal(userData);
             
             // Mostrar el modal
@@ -764,7 +850,9 @@ class ProfileController {    constructor() {
         }
         
         if (this.modalDocument) {
-            this.modalDocument.textContent = userData.documentValue || 'No disponible';
+            // Usar 'document' primero (de la API), luego 'documentValue' (de sessionStorage)
+            const documentNumber = userData.document || userData.documentValue;
+            this.modalDocument.textContent = documentNumber || 'No disponible';
         }
 
         // Datos laborales
@@ -1056,6 +1144,89 @@ class ProfileController {    constructor() {
             
             img.src = base64Image;
         });
+    }
+
+    /**
+     * Actualiza el sessionStorage con los datos obtenidos de la API
+     * @param {Object} apiData - Datos del perfil desde la API
+     */
+    updateSessionStorageWithApiData(apiData) {
+        if (!apiData) return;
+        
+        try {
+            // Actualizar solo los campos que vienen de la API y no están vacíos
+            if (apiData.firstName) {
+                sessionStorage.setItem("firstName", apiData.firstName);
+            }
+            if (apiData.lastName) {
+                sessionStorage.setItem("lastName", apiData.lastName);
+            }
+            if (apiData.documentType) {
+                sessionStorage.setItem("documentType", apiData.documentType);
+            }
+            if (apiData.document) {
+                sessionStorage.setItem("documentValue", apiData.document);
+            }
+            if (apiData.area) {
+                sessionStorage.setItem("area", apiData.area);
+            }
+            if (apiData.position) {
+                sessionStorage.setItem("position", apiData.position);
+            }
+            if (apiData.email) {
+                sessionStorage.setItem("email", apiData.email);
+                sessionStorage.setItem("userEmail", apiData.email);
+            }
+            if (apiData.phone) {
+                sessionStorage.setItem("phone", apiData.phone);
+                sessionStorage.setItem("userPhone", apiData.phone);
+            }
+            
+            // Actualizar nombre completo si tenemos firstName y lastName
+            if (apiData.firstName && apiData.lastName) {
+                const fullName = `${apiData.firstName} ${apiData.lastName}`;
+                sessionStorage.setItem("userFullName", fullName);
+            }
+            
+            console.log('✅ SessionStorage actualizado con datos de la API');
+            
+        } catch (error) {
+            console.warn('⚠️ Error al actualizar sessionStorage:', error);
+        }
+    }
+    
+    /**
+     * Refresca los datos del perfil desde la API y actualiza la interfaz
+     */
+    async refreshProfileFromApi() {
+        if (!this.currentUserId || !this.profileService) {
+            console.warn('⚠️ No se puede refrescar: sin userId o ProfileService');
+            return false;
+        }
+
+        try {
+            console.log('🔄 Refrescando datos del perfil desde API...');
+            
+            const apiData = await this.profileService.getUserProfile(this.currentUserId);
+            
+            if (apiData) {
+                // Actualizar sessionStorage con los nuevos datos
+                this.updateSessionStorageWithApiData(apiData);
+                
+                // Actualizar el nombre en la interfaz
+                this.updateUserName();
+                
+                console.log('✅ Perfil refrescado desde API exitosamente');
+                return true;
+            } else {
+                console.log('ℹ️ No se obtuvieron datos de la API');
+                return false;
+            }
+            
+        } catch (error) {
+            console.error('❌ Error al refrescar perfil desde API:', error);
+            return false;
+        }
     }
 }
 

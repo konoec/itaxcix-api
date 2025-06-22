@@ -1,79 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 /* ===== ESTILOS ESPECÍFICOS PARA ADMISIÓN DE CONDUCTORES ===== */
 
 /* Tabla específica de conductores */
 .drivers-table {
     width: 100%;
     border-collapse: collapse;
-    background: rgba(255, 255, 255, 0.95);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+    backdrop-filter: blur(16px);
     border-spacing: 0;
     border: none;
+    border-radius: 0px;
+    overflow: hidden;
+    box-shadow: none;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .drivers-table th {
-    padding: 15px 20px;
+    padding:10px 12px;
     text-align: left;
     font-weight: 600;
     vertical-align: middle;
-    color: #ffffff;
-    background: linear-gradient(135deg, rgba(43, 57, 98, 0.9) 0%, rgba(31, 42, 73, 0.9) 100%);
+    color: #ecf0f1;
+    background: linear-gradient(180deg, #314272 0%, #314479 100%);
+    backdrop-filter: blur(16px);
     border: none;
-    letter-spacing: 0.025em;
-    font-size: 0.95em;
+    letter-spacing: 0.5px;
+    font-size: 0.9em;
     position: sticky;
     z-index: 90;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: none;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     -webkit-position: sticky;
 }
 
 /* Definir anchos específicos para tabla de conductores */
-.drivers-table th:nth-child(1) { width: 35%; min-width: 250px; } /* Nombre */
+.drivers-table th:nth-child(1) { width: 30%; min-width: 250px; } /* Nombre */
 .drivers-table th:nth-child(2) { width: 15%; min-width: 120px; } /* DNI */
 .drivers-table th:nth-child(3) { width: 15%; min-width: 100px; } /* Placa */
 .drivers-table th:nth-child(4) { width: 20%; min-width: 180px; } /* Contacto */
 .drivers-table th:nth-child(5) { width: 15%; min-width: 150px; } /* Acciones */
 
 .drivers-table td {
-    padding: 15px 20px;
+    padding: 12px 15px;
     border: none;
-    border-bottom: 1px solid rgba(229, 231, 235, 0);
+    border-bottom: none;
     vertical-align: middle;
     height: auto;
-    min-height: 60px;
+    min-height: 40px;
     background: transparent;
     color: #374151;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .driver-row {
-    background: rgba(255, 255, 255, 0.8);
-    transition: all 0.2s ease;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.8) 100%);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-bottom: none;
 }
 
 .driver-row:hover {
-    background: rgba(241, 245, 249, 0.9);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(241, 245, 249, 0.9) 100%);
     transform: none;
+    box-shadow: none;
 }
 
 /* Columna específica de nombre con avatar para conductores */
 .driver-name {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 19px;
     width: 100%;
-    min-height: 50px;;
+    min-height: 40px;
 }
 
 .avatar {
-    width: 45px;
-    height: 45px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     overflow: hidden;
-    background: linear-gradient(135deg, rgba(43, 57, 98, 0.8) 0%, rgba(31, 42, 73, 0.8) 100%);
+    background: linear-gradient(135deg, #2b3962 0%, #1e2a4a 100%);
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: none;
+    box-shadow: none;
+    transition: transform 0.3s ease;
+}
+
+.avatar:hover {
+    transform: scale(1.05);
 }
 
 .avatar img {
@@ -84,20 +103,21 @@
 
 .driver-name span {
     flex: 1;
-    font-weight: 500;
+    font-weight: 600;
     color: #374151;
     line-height: 1.3;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    letter-spacing: 0.01em;
+    letter-spacing: 0.3px;
     font-size: 14px;
+    text-shadow: none;
 }
 
 /* Botones de acción mejorados */
 .actions {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     justify-content: center;
     align-items: center;
     white-space: nowrap;
@@ -105,8 +125,8 @@
 }
 
 .actions .btn {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     padding: 0;
     margin: 0;
     border: none;
@@ -115,9 +135,11 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
+    backdrop-filter: blur(10px);
+    box-shadow: none;
 }
 
 .actions .btn i {
@@ -125,47 +147,50 @@
     line-height: 1;
     position: relative;
     z-index: 1;
+    transition: transform 0.3s ease;
+}
+
+.actions .btn:hover i {
+    transform: scale(1.1);
 }
 
 /* Botón Detalles */
 .btn-details {
-    background: rgba(43, 57, 98, 0.7);
-    backdrop-filter: blur(10px);
-    color: white;
-    border: 1px solid rgba(43, 57, 98, 0.7);
-    border-left: 2px solid rgba(255, 255, 255, 0.074);
-    border-right: 2px solid rgba(255, 255, 255, 0.074);
-    box-shadow: 0 3px 10px rgba(47, 47, 47, 0.2);
+    background: linear-gradient(135deg, rgba(43, 57, 98, 0.9) 0%, rgba(31, 42, 73, 0.9) 100%);
+    color: #ecf0f1;
+    text-shadow: none;
 }
 
 .btn-details:hover {
-    background: rgba(31, 42, 73, 0.8);
-    backdrop-filter: blur(15px);
+    background: linear-gradient(135deg, #2b3962 0%, #1e2a4a 100%);
     transform: none;
+    box-shadow: none;
 }
 
 /* Botón Aprobar */
 .btn-approve {
-    background: #10b981;
-    color: white;
-    border: 1px solid #10b981;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    text-shadow: none;
 }
 
 .btn-approve:hover {
-    background: #059669;
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
     transform: none;
+    box-shadow: none;
 }
 
 /* Botón Rechazar */
 .btn-reject {
-    background: #ef4444;
-    color: white;
-    border: 1px solid #ef4444;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #ffffff;
+    text-shadow: none;
 }
 
 .btn-reject:hover {
-    background: #dc2626;
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
     transform: none;
+    box-shadow: none;
 }
 
 /* Modal de detalles */
@@ -182,25 +207,7 @@
     animation: fadeIn 0.2s ease-out;
 }
 
-.modal-content {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(15px);
-    margin: 0;
-    padding: 0;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 650px;
-    max-height: 85vh;
-    overflow: hidden;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    animation: modalSlideIn 0.3s ease-out;
-    font-family: 'Inter', 'SF Pro Display', 'Helvetica Neue', 'Arial', sans-serif;
-}
+
 
 @keyframes modalSlideIn {
     from {
@@ -392,23 +399,12 @@
     background: rgba(255, 255, 255, 0.8);
     border-radius: 8px;
     border: 1px solid rgba(229, 231, 235, 0.3);
-    border-left: 3px solid rgba(43, 57, 98, 0.9);
     position: relative;
     transition: all 0.3s ease;
     backdrop-filter: blur(5px);
 }
 
-.info-item:nth-child(even) {
-    background: rgba(248, 250, 252, 0.8);
-    border-left-color: rgba(31, 42, 73, 0.6);
-}
 
-.info-item:hover {
-    transform: none;
-    border-left-color: rgba(31, 42, 73, 0.7);
-    background: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 4px 12px rgba(43, 57, 98, 0.1);
-}
 
 .info-item label {
     font-weight: 600;

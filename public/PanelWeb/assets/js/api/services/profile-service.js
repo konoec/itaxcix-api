@@ -186,10 +186,8 @@ class ProfileService {
             console.error('❌ Error al subir foto de perfil:', error);
             return { success: false, message: 'Error de conexión al servidor' };
         }
-    }
-
-    /**
-     * Obtiene información del perfil del usuario
+    }    /**
+     * Obtiene información del perfil del usuario administrador
      * @param {string} userId - ID del usuario
      * @returns {Promise<Object|null>} - Datos del perfil o null
      */
@@ -200,7 +198,7 @@ class ProfileService {
         }
 
         try {
-            console.log(`👤 Obteniendo datos de perfil para usuario ${userId}...`);
+            console.log(`👤 Obteniendo datos de perfil de administrador para usuario ${userId}...`);
 
             const token = sessionStorage.getItem("authToken");
             if (!token) {
@@ -208,7 +206,7 @@ class ProfileService {
                 return null;
             }
 
-            const response = await fetch(`${this.baseUrl}/users/${userId}/profile`, {
+            const response = await fetch(`${this.baseUrl}/profile/admin/${userId}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -218,7 +216,7 @@ class ProfileService {
 
             if (!response.ok) {
                 if (response.status === 404) {
-                    console.log('👤 Perfil no encontrado, usando datos locales');
+                    console.log('👤 Perfil de administrador no encontrado');
                     return null;
                 }
                 
@@ -230,13 +228,47 @@ class ProfileService {
                 throw new Error(`Error del servidor: ${response.status}`);
             }
 
-            const data = await response.json();
+            const response_data = await response.json();
 
-            if (data.success && data.data) {
-                console.log('✅ Datos de perfil obtenidos exitosamente');
-                return data.data;
+            if (response_data && response_data.success && response_data.data) {
+                console.log('✅ Datos de perfil de administrador obtenidos exitosamente');
+                
+                // Estructura de respuesta esperada:
+                // {
+                //   "success": true,
+                //   "message": "OK",
+                //   "data": {
+                //     "firstName": "Administrador",
+                //     "lastName": "Principal",
+                //     "documentType": "DNI",
+                //     "document": "00000000",
+                //     "area": "Sistemas",
+                //     "position": "Administrador General",
+                //     "email": "itaxcix@gmail.com",
+                //     "phone": "Teléfono no registrado"
+                //   },
+                //   "error": null,
+                //   "timestamp": {...}
+                // }
+                
+                const profileData = response_data.data;
+                
+                return {
+                    firstName: profileData.firstName || '',
+                    lastName: profileData.lastName || '',
+                    documentType: profileData.documentType || '',
+                    document: profileData.document || '',
+                    area: profileData.area || '',
+                    position: profileData.position || '',
+                    email: profileData.email || '',
+                    phone: profileData.phone || ''
+                };
             } else {
-                console.log('👤 Respuesta sin datos válidos');
+                console.log('👤 Respuesta sin datos válidos o con error:', {
+                    success: response_data?.success,
+                    message: response_data?.message,
+                    error: response_data?.error
+                });
                 return null;
             }
 

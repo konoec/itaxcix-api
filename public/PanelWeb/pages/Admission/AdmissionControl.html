@@ -14,8 +14,9 @@
     <link rel="stylesheet" href="../../assets/css/sidebar.css">
     <link rel="stylesheet" href="../../assets/css/topbar.css">
     <link rel="stylesheet" href="../../assets/css/profile.css">
-    <link rel="stylesheet" href="../../assets/css/ControlAdmision.css">
+    <link rel="stylesheet" href="../../assets/css/admission-control.css">
     <link rel="stylesheet" href="../../assets/css/confirmation-modal.css">
+    <link rel="stylesheet" href="../../assets/css/permissions.css">
     <!-- Font Awesome para iconografía -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -25,31 +26,35 @@
         <!-- Barra lateral de navegación -->
         <div class="sidebar" id="sidebar">
             <!-- Encabezado del sidebar con título y botón de cierre -->
-            <div class="sidebar-header">
-                <h2>iTaxCix Panel</h2>
+          <div class="sidebar-header">
+                <h2 class="logoSidebar"><span class="sidebar-logo-img"></span></h2>
                 <button id="close-sidebar" class="sidebar-toggle">
                     <i class="fas fa-times"></i>
                 </button>
-            </div>
-
-            <!-- Menú de navegación principal -->
+            </div>            <!-- Menú de navegación principal -->
             <div class="sidebar-menu">
-                <ul>
-                    <!-- Módulo de Admisión de conductores -->
-                    <li class="active">
-                        <a class="module-admision" href="javascript:void(0)">
+                <ul>                    <!-- Inicio -->
+                    <li id="menu-inicio">
+                        <a href="../Inicio/Inicio.html" class="module-inicio">
+                            <i class="fas fa-home"></i>
+                            Inicio
+                        </a>
+                    </li>                    <!-- Módulo de Admisión de conductores -->
+                    <li class="active" id="menu-admission">
+                        <a class="module-admission" href="javascript:void(0)">
                             <i class="fas fa-user-check"></i>
                             Admisión de conductores
                         </a>
                     </li>
 
                     <!-- Módulo de Tablas maestras -->
-                    <li class="has-submenu">
+                    <li class="has-submenu" id="menu-tablas">
                         <a href="javascript:void(0)" class="module-tablas">
                             <i class="fas fa-table"></i>
                             Tablas maestras
                             <span class="submenu-arrow"></span>
-                        </a>                        <ul class="submenu">
+                        </a>
+                        <ul class="submenu">
                             <li><a href="javascript:void(0)"><i class="fas fa-car"></i>Tabla Maestra 1</a></li>
                             <li><a href="javascript:void(0)"><i class="fas fa-users"></i>Tabla Maestra 2</a></li>
                             <li><a href="javascript:void(0)"><i class="fas fa-id-card"></i>Tabla Maestra 3</a></li>
@@ -58,7 +63,7 @@
                     </li>
 
                     <!-- Módulo de Auditoría -->
-                    <li>
+                    <li id="menu-auditoria">
                         <a href="javascript:void(0)" class="module-auditoria">
                             <i class="fas fa-search"></i>
                             Auditoría
@@ -66,8 +71,8 @@
                     </li>
 
                     <!-- Módulo de Configuración -->
-                    <li>
-                        <a href="../Configuracion/Emergency-config.html" class="module-config">
+                    <li id="menu-configuracion">
+                        <a href="../Configuration/Configuration.html" class="module-config">
                             <i class="fas fa-cog"></i>
                             Configuración
                         </a>
@@ -89,8 +94,7 @@
             <!-- Barra superior con controles y información de usuario -->
             <div class="top-bar">
                 <button id="open-sidebar" class="sidebar-toggle">
-                    <i class="fas fa-bars"></i>
-                </button>                 <h3>ADMISION DE CONDUCTORES</h3>
+                    <i class="fas fa-bars"></i>                </button>                 <h3>ADMISSION CONTROL</h3>
                 <div class="profile-container" id="profile-container" style="cursor: pointer;" title="Ver mi perfil">
                     <div class="profile-image" id="profile-image"></div>
                     <div class="user-info">
@@ -197,17 +201,17 @@
                 </div>
             </div>
         </div>
-    </div>    <!-- Modal para mostrar perfil del usuario -->
-    <div id="profile-modal" class="modal">
-        <div class="modal-content">
+    </div>    
+      <!-- Modal para mostrar perfil del usuario -->
+    <div id="profile-modal" class="admin-profile-modal">
+        <div class="admin-profile-content">
             <h2>
                 Mi Perfil
                 <span class="close-modal" id="close-profile-modal">&times;</span>
             </h2>
-            
-            <!-- Contenido del modal -->
-            <div class="driver-details">                <!-- Perfil del usuario -->
-                <div class="driver-profile">
+              <!-- Contenido del modal -->
+            <div class="admin-profile-details">                <!-- Perfil del usuario -->
+                <div class="admin-profile-header">
                     <div class="avatar-large">
                         <img id="profile-modal-avatar" src="" alt="Foto de perfil">
                         <div class="avatar-overlay" id="avatar-overlay">
@@ -216,13 +220,13 @@
                             </button>
                         </div>
                         <input type="file" id="photo-input" accept="image/*" style="display: none;">
-                    </div>
-                    <div class="driver-profile-info">
+                    </div>                    <div class="admin-profile-header-info">
                         <h3 id="profile-modal-name">Nombre del Usuario</h3>
                     </div>
                 </div>
-                  <!-- Información detallada del usuario -->
-                <div class="admin-info">
+                
+                <!-- Información detallada del usuario -->
+                <div class="admin-profile-info">
                     <div class="info-item">
                         <label>Nombre:</label>
                         <span id="profile-modal-firstname">No disponible</span>
@@ -256,8 +260,11 @@
                         <span id="profile-modal-phone">No disponible</span>
                     </div>
                 </div>
+
+                <!-- Botones de acción del modal -->
             </div>
         </div>
+    </div>
     </div>    <!-- Sistema de notificaciones toast -->
     <div id="toast" class="toast">
         <div id="toast-message">Conductor aprobado exitosamente</div>
@@ -286,32 +293,91 @@
                 </button>
             </div>
         </div>
-    </div>
-
-    <!-- Carga de scripts en orden específico para manejar dependencias -->
+    </div>    <!-- Carga de scripts en orden específico para manejar dependencias -->
     <!-- 1. Utilidades y herramientas base -->
-    <script src="../../assets/js/utils/auth-checker.js"></script>
-    <script src="../../assets/js/utils/route-guard.js"></script>
+    <script src="../../assets/js/auth/auth-checker.js"></script>
+    <script src="../../assets/js/auth/permissions.js"></script>
+    <script src="../../assets/js/auth/route-guard.js"></script>
+    
+    <!-- DEBUG: Script de testing temporal (REMOVER EN PRODUCCIÓN) -->
+
+    
     <script>
-        // Inicializa RouteGuard para proteger la página
+        // Inicializa RouteGuard para proteger la página y verificar permisos
         window.routeGuard = new RouteGuard("../../index.html");
+        
+        // Debug de permisos (remover en producción)
+        setTimeout(() => {
+            console.log('🐛 DEBUG - Estado del RouteGuard:');
+            if (window.routeGuard) {
+                window.routeGuard.debug();
+            }
+            
+            console.log('🐛 DEBUG - Estado de PermissionsService:');
+            if (window.PermissionsService) {
+                window.PermissionsService.debugCurrentState();
+            }
+        }, 1000);
     </script>
 
     <!-- 2. Modelos de datos -->
-    <script src="../../assets/js/api/models/conductor.js"></script>
-      <!-- 3. Servicios de API -->
-    <script src="../../assets/js/api/services/conductor-service.js"></script>
+    <script src="../../assets/js/api/models/driver.js"></script>
+      
+    <!-- 3. Servicios de API -->
+    <script src="../../assets/js/api/services/driver-service.js"></script>
     <script src="../../assets/js/api/services/profile-service.js"></script>
-      <!-- 4. Controladores de UI -->
+        <!-- 4. Controladores de UI -->
     <script src="../../assets/js/ui/controllers/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/profile-controller.js"></script>
-    <script src="../../assets/js/ui/controllers/control-admision-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/admission-control-controller.js"></script>
     
-    <script src="../../assets/js/ui/controllers/control-admision-initializer.js"></script>
+    <script src="../../assets/js/ui/initializers/admission-control-initializer.js"></script>
     
     <!-- 5. Utilidades de sesión -->
-    <script src="../../assets/js/utils/session-cleaner.js"></script>
-    <script src="../../assets/js/utils/auth-checker.js"></script>
+    <script src="../../assets/js/auth/session-cleaner.js"></script>
+      <script>
+        // Verificar acceso específico al módulo de Admisión de Conductores
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📋 Verificando acceso al módulo de Admisión...');
+            
+            // Configurar menú de permisos inmediatamente
+            if (window.PermissionsService) {
+                console.log('🔧 Configurando menú según permisos...');
+                window.PermissionsService.configureMenuPermissions();
+            }
+            
+            setTimeout(() => {
+                if (window.routeGuard && typeof window.routeGuard.hasPermission === 'function') {
+                    // Verificar si tiene permiso para este módulo específico
+                    const hasAdmisionAccess = window.routeGuard.hasPermission('ADMISIÓN DE CONDUCTORES');
+                    
+                    console.log(`🔍 Permiso para Admisión de Conductores: ${hasAdmisionAccess}`);
+                    
+                    if (!hasAdmisionAccess) {
+                        console.warn('🚫 Usuario no tiene acceso al módulo de Admisión de Conductores');
+                        
+                        // Buscar una ruta autorizada
+                        if (window.PermissionsService) {
+                            const authorizedRoute = window.PermissionsService.getFirstAvailableRoute();
+                            if (authorizedRoute) {
+                                console.log(`🔄 Redirigiendo a: ${authorizedRoute}`);
+                                window.location.replace(`../../${authorizedRoute}`);
+                            } else {
+                                console.log('🔄 No hay rutas autorizadas, volviendo al login');
+                                window.location.replace('../../index.html');
+                            }
+                        } else {
+                            window.location.replace('../../index.html');
+                        }
+                    } else {
+                        console.log('✅ Usuario autorizado para Admisión de Conductores');
+                    }
+                } else {
+                    console.warn('⚠️ RouteGuard o método hasPermission no disponible');
+                }
+            }, 500); // Dar tiempo para que se carguen todos los servicios
+        });
+    </script>
 </body>
 </html>

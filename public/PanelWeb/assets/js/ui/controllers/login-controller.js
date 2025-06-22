@@ -7,7 +7,7 @@ class LoginController {
         this.btnLoading = this.submitBtn.querySelector('.btn-loading');        this.loginService = window.LoginService;
         
           this.baseUrl = window.location.hostname.includes('github.io') 
-            ? '/itaxCix'
+            ? '/PanelWeb'
             : '/PanelWeb';
         this.init();
     }    init() {
@@ -85,10 +85,10 @@ class LoginController {
                     rating: response.rating,
                     hasToken: !!response.token
                 });
-                
-                // Limpiar sessionStorage antes de guardar nuevos datos
+                  // Limpiar sessionStorage antes de guardar nuevos datos
                 sessionStorage.clear();
-                  // Guardar datos de autenticación
+                  
+                // Guardar datos de autenticación
                 sessionStorage.setItem("isLoggedIn", "true");
                 sessionStorage.setItem("authToken", response.token);
                 sessionStorage.setItem("userId", response.userId?.toString() || "");
@@ -103,12 +103,33 @@ class LoginController {
                 sessionStorage.setItem("userFullName", `${response.firstName || ""} ${response.lastName || ""}`.trim());
                 sessionStorage.setItem("userRating", response.rating?.toString() || "0");
                 
-                sessionStorage.setItem("loginTime", Date.now().toString());                // Prevenir navegación hacia atrás y redirigir
-                window.history.pushState(null, '', window.location.href);
-                window.location.replace(`${this.baseUrl}/pages/Admision/ControlAdmisionConductores.html`);
+                sessionStorage.setItem("loginTime", Date.now().toString());
+
+                // Verificar permisos y redirigir dinámicamente
+                console.log('🔐 Verificando permisos del usuario...');
+                
+                // Cargar PermissionsService si no está disponible
+                if (typeof window.PermissionsService === 'undefined') {
+                    console.warn('⚠️ PermissionsService no encontrado, cargando...');
+                    
+                    // Crear script para cargar el servicio de permisos
+                    const script = document.createElement('script');
+                    script.src = `${this.baseUrl}/assets/js/auth/permissions.js`;
+                    script.onload = () => {
+                        this.handlePermissionsRedirect();
+                    };
+                    script.onerror = () => {
+                        console.error('❌ Error cargando PermissionsService, usando redirección por defecto');
+                        this.defaultRedirect();
+                    };
+                    document.head.appendChild(script);
+                } else {
+                    this.handlePermissionsRedirect();
+                }
+                
             } else {
                 this.showError("Error en la respuesta del servidor. Inténtalo de nuevo.");
-            }        } catch (error) {
+            }} catch (error) {
             console.error('Error durante el login:', error);
               // Mapear errores a mensajes amigables para el usuario
             let errorMessage = "Error inesperado. Inténtalo de nuevo.";
@@ -158,6 +179,41 @@ class LoginController {
         } finally {
             this.setLoading(false);
         }
+    }
+
+    /**
+     * Maneja la redirección basada en permisos del usuario
+     */
+    handlePermissionsRedirect() {
+        try {
+            const permissionsService = window.PermissionsService;
+            
+            if (!permissionsService) {
+                console.error('❌ PermissionsService no disponible');
+                this.defaultRedirect();
+                return;
+            }            // Obtener la primera ruta disponible según permisos (siempre retorna una ruta)
+            const authorizedRoute = permissionsService.getFirstAvailableRoute();
+            
+            console.log(`✅ Redirigiendo a: ${authorizedRoute}`);
+            
+            // Prevenir navegación hacia atrás y redirigir
+            window.history.pushState(null, '', window.location.href);
+            window.location.replace(`${this.baseUrl}${authorizedRoute}`);
+            
+        } catch (error) {
+            console.error('❌ Error al manejar redirección por permisos:', error);
+            this.defaultRedirect();
+        }
+    }    /**
+     * Redirección por defecto si hay problemas con el sistema de permisos
+     */
+    defaultRedirect() {
+        console.log('🔄 Usando redirección por defecto al inicio');
+        
+        // Prevenir navegación hacia atrás y redirigir al inicio
+        window.history.pushState(null, '', window.location.href);
+        window.location.replace(`${this.baseUrl}/pages/Inicio/Inicio.html`);
     }
 
     showError(message) {

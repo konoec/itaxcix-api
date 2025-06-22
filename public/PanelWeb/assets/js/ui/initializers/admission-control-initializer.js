@@ -26,26 +26,26 @@ class ControlAdmisionInitializer {
             if (!window.profileControllerInstance) {
                 window.profileControllerInstance = new ProfileController();
                 console.log('👤 ProfileController inicializado');
-            }            // Inicializar ControlAdmisionController específico para control de admisión
-            if (!window.controlAdmisionControllerInstance) {
-                // Verificar que ControlAdmisionController existe antes de instanciarlo
-                if (typeof ControlAdmisionController !== 'undefined') {
-                    const app = new ControlAdmisionController();
+            }            // Inicializar AdmissionControlController específico para admission control
+            if (!window.admissionControllerInstance) {
+                // Verificar que AdmissionControlController existe antes de instanciarlo
+                if (typeof AdmissionControlController !== 'undefined') {
+                    const app = new AdmissionControlController();
                     // NO ESPERAR - cargar conductores independientemente del perfil
                     app.init().catch(error => {
                         console.error('❌ Error cargando conductores:', error);
                     });
-                    window.controlAdmisionControllerInstance = app;
-                    console.log('🚗 ControlAdmisionController inicializado');
+                    window.admissionControllerInstance = app;
+                    console.log('🚗 AdmissionControlController inicializado');
                 } else {
-                    console.warn('⚠️ ControlAdmisionController no está definido en esta página');
+                    console.warn('⚠️ AdmissionControlController no está definido en esta página');
                 }
             }
 
             // Configurar verificación de sesión
             setInterval(authChecker.checkTokenExpiration, 60000);
             
-            console.log('✅ Página de Control de Admisión completamente inicializada');
+            console.log('✅ Página de Admission Control completamente inicializada');
         } else {
             console.log('❌ Usuario no autenticado, redirigiendo...');
         }

@@ -1,10 +1,10 @@
 /**
- * Inicializador específico para la página de Configuración de Emergencia
+ * Inicializador específico para la página de Configuration
  * Maneja solo los controladores necesarios para esta página específica
  */
-class EmergencyConfigInitializer {
+class ConfigurationInitializer {
     static async init() {
-        console.log('🚨 Inicializando página de Configuración de Emergencia...');
+        console.log('⚙️ Inicializando página de Configuration...');
         
         if (authChecker.checkAuthentication()) {
             authChecker.updateUserDisplay();
@@ -25,19 +25,16 @@ class EmergencyConfigInitializer {
             // Inicializar ProfileController de forma INDEPENDIENTE
             if (!window.profileControllerInstance) {
                 window.profileControllerInstance = new ProfileController();
-                console.log('👤 ProfileController inicializado');
-            }
-
-            // Inicializar EmergencyConfigController específico de esta página
-            if (!window.emergencyConfigControllerInstance) {
-                window.emergencyConfigControllerInstance = new EmergencyConfigController();
-                console.log('🚨 EmergencyConfigController inicializado');
+                console.log('👤 ProfileController inicializado');            }            // Inicializar ConfigurationController específico de esta página
+            if (!window.configurationController) {
+                window.configurationController = new ConfigurationController();
+                console.log('⚙️ ConfigurationController inicializado');
             }
 
             // Configurar verificación de sesión
             setInterval(authChecker.checkTokenExpiration, 60000);
             
-            console.log('✅ Página de Configuración de Emergencia completamente inicializada');
+            console.log('✅ Página de Configuration completamente inicializada');
         } else {
             console.log('❌ Usuario no autenticado, redirigiendo...');
         }
@@ -45,4 +42,4 @@ class EmergencyConfigInitializer {
 }
 
 // Auto-inicialización cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', EmergencyConfigInitializer.init);
+document.addEventListener('DOMContentLoaded', ConfigurationInitializer.init);
