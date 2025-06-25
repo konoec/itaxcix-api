@@ -6,6 +6,8 @@ use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use itaxcix\Core\Domain\user\UserCodeModel;
 use itaxcix\Core\Interfaces\user\UserCodeRepositoryInterface;
+use itaxcix\Core\Interfaces\user\UserCodeTypeRepositoryInterface;
+use itaxcix\Core\Interfaces\user\UserContactRepositoryInterface;
 use itaxcix\Infrastructure\Database\Entity\user\UserCodeEntity;
 use itaxcix\Infrastructure\Database\Entity\user\UserCodeTypeEntity;
 use itaxcix\Infrastructure\Database\Entity\user\UserContactEntity;
@@ -13,18 +15,21 @@ use itaxcix\Infrastructure\Database\Entity\user\UserContactEntity;
 class DoctrineUserCodeRepository implements UserCodeRepositoryInterface
 {
     private EntityManagerInterface $entityManager;
+    private UserCodeTypeRepositoryInterface $userCodeTypeRepository;
+    private UserContactRepositoryInterface $userContactRepository;
 
-    public function __construct(EntityManagerInterface $entityManager)
-    {
+    public function __construct(EntityManagerInterface $entityManager, UserCodeTypeRepositoryInterface $userCodeTypeRepository, UserContactRepositoryInterface $userContactRepository){
         $this->entityManager = $entityManager;
+        $this->userCodeTypeRepository = $userCodeTypeRepository;
+        $this->userContactRepository = $userContactRepository;
     }
 
     private function toDomain(UserCodeEntity $entity): UserCodeModel
     {
         return new UserCodeModel(
             id: $entity->getId(),
-            type: $entity->getType(),
-            contact: $entity->getContact(),
+            type: $this->userCodeTypeRepository->toDomain($entity->getType()),
+            contact: $this->userContactRepository->toDomain($entity->getContact()),
             code: $entity->getCode(),
             expirationDate: $entity->getExpirationDate(),
             useDate: $entity->getUseDate(),
@@ -96,5 +101,21 @@ class DoctrineUserCodeRepository implements UserCodeRepositoryInterface
         $this->entityManager->flush();
 
         return $this->toDomain($entity);
+    }
+
+    public function findUserCodeByUserIdAndTypeId(int $userId, int $typeId): ?UserCodeModel
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('uc')
+            ->from(UserCodeEntity::class, 'uc')
+            ->join('uc.contact', 'c')
+            ->where('c.user = :userId')
+            ->andWhere('uc.type = :typeId')
+            ->setParameter('userId', $userId)
+            ->setParameter('typeId', $typeId)
+            ->getQuery();
+
+        $entity = $query->getOneOrNullResult();
+        return $entity ? $this->toDomain($entity) : null;
     }
 }

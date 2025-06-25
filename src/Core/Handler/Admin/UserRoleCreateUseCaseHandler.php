@@ -50,8 +50,8 @@ class UserRoleCreateUseCaseHandler implements UserRoleCreateUseCase
         // Crear nueva asignación
         $userRole = new UserRoleModel(
             id: null,
-            user: $user,
             role: $role,
+            user: $user,
             active: $dto->active
         );
 

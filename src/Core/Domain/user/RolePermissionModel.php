@@ -5,12 +5,12 @@ namespace itaxcix\Core\Domain\user;
 use itaxcix\Infrastructure\Database\Entity\user\RolePermissionEntity;
 
 class RolePermissionModel {
-    private int $id;
+    private ?int $id;
     private ?RoleModel $role = null;
     private ?PermissionModel $permission = null;
     private bool $active = true;
 
-    public function __construct(int $id, ?RoleModel $role, ?PermissionModel $permission, bool $active = true)
+    public function __construct(?int $id, ?RoleModel $role, ?PermissionModel $permission, bool $active = true)
     {
         $this->id = $id;
         $this->role = $role;
@@ -18,7 +18,7 @@ class RolePermissionModel {
         $this->active = $active;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }

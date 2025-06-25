@@ -5,12 +5,12 @@ namespace itaxcix\Core\Domain\user;
 use itaxcix\Infrastructure\Database\Entity\user\RoleEntity;
 
 class RoleModel {
-    private int $id;
+    private ?int $id;
     private string $name;
     private bool $active = true;
     private bool $web = false;
 
-    public function __construct(int $id, string $name, bool $active = true, bool $web = false)
+    public function __construct(?int $id, string $name, bool $active = true, bool $web = false)
     {
         $this->id = $id;
         $this->name = $name;
@@ -18,12 +18,12 @@ class RoleModel {
         $this->web = $web;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }

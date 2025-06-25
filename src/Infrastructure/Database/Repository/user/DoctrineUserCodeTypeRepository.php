@@ -16,7 +16,7 @@ class DoctrineUserCodeTypeRepository implements UserCodeTypeRepositoryInterface
         $this->entityManager = $entityManager;
     }
 
-    private function toDomain(UserCodeTypeEntity $entity): UserCodeTypeModel
+    public function toDomain(UserCodeTypeEntity $entity): UserCodeTypeModel
     {
         return new UserCodeTypeModel(
             id: $entity->getId(),

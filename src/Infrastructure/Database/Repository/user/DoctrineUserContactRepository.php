@@ -4,7 +4,10 @@ namespace itaxcix\Infrastructure\Database\Repository\user;
 
 use Doctrine\ORM\EntityManagerInterface;
 use itaxcix\Core\Domain\user\UserContactModel;
+use itaxcix\Core\Interfaces\user\ContactTypeRepositoryInterface;
+use itaxcix\Core\Interfaces\user\UserCodeTypeRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserContactRepositoryInterface;
+use itaxcix\Core\Interfaces\user\UserRepositoryInterface;
 use itaxcix\Infrastructure\Database\Entity\user\UserContactEntity;
 use itaxcix\Infrastructure\Database\Entity\user\ContactTypeEntity;
 use itaxcix\Infrastructure\Database\Entity\user\UserEntity;
@@ -12,18 +15,26 @@ use itaxcix\Infrastructure\Database\Entity\user\UserEntity;
 class DoctrineUserContactRepository implements UserContactRepositoryInterface
 {
     private EntityManagerInterface $entityManager;
+    private ContactTypeRepositoryInterface $contactTypeRepository;
+    private UserRepositoryInterface $userRepository;
 
-    public function __construct(EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        ContactTypeRepositoryInterface $contactTypeRepository,
+        UserRepositoryInterface $userRepository,
+    ){{
         $this->entityManager = $entityManager;
+        $this->contactTypeRepository = $contactTypeRepository;
+        $this->userRepository = $userRepository;
+    }
     }
 
-    private function toDomain(UserContactEntity $entity): UserContactModel
+    public function toDomain(UserContactEntity $entity): UserContactModel
     {
         return new UserContactModel(
             id: $entity->getId(),
-            user: $entity->getUser(),
-            type: $entity->getType(),
+            user: $this->userRepository->toDomain($entity->getUser()),
+            type: $this->contactTypeRepository->toDomain($entity->getType()),
             value: $entity->getValue(),
             confirmed: $entity->isConfirmed(),
             active: $entity->isActive()
@@ -111,5 +122,38 @@ class DoctrineUserContactRepository implements UserContactRepositoryInterface
             $this->entityManager->persist($entity);
             $this->entityManager->flush();
         }
+    }
+
+
+    public function findUserContactByUserId(int $userId): ?UserContactModel
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('uc')
+            ->from(UserContactEntity::class, 'uc')
+            ->where('uc.user = :userId')
+            ->andWhere('uc.active = :active')
+            ->setParameter('userId', $userId)
+            ->setParameter('active', true)
+            ->getQuery();
+
+        $entity = $query->getOneOrNullResult();
+        return $entity ? $this->toDomain($entity) : null;
+    }
+
+    public function findUserContactByUserIdAndContactTypeId(int $userId, int $contactTypeId): ?UserContactModel
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('uc')
+            ->from(UserContactEntity::class, 'uc')
+            ->where('uc.user = :userId')
+            ->andWhere('uc.type = :contactTypeId')
+            ->andWhere('uc.active = :active')
+            ->setParameter('userId', $userId)
+            ->setParameter('contactTypeId', $contactTypeId)
+            ->setParameter('active', true)
+            ->getQuery();
+
+        $entity = $query->getOneOrNullResult();
+        return $entity ? $this->toDomain($entity) : null;
     }
 }

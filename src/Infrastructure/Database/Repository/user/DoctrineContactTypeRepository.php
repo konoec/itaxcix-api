@@ -16,7 +16,7 @@ class DoctrineContactTypeRepository implements ContactTypeRepositoryInterface
         $this->entityManager = $entityManager;
     }
 
-    private function toDomain(ContactTypeEntity $entity): ContactTypeModel
+    public function toDomain(ContactTypeEntity $entity): ContactTypeModel
     {
         return new ContactTypeModel(
             id: $entity->getId(),
