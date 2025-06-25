@@ -8,7 +8,6 @@ use itaxcix\Core\UseCases\Admin\RoleDeleteUseCase;
 use itaxcix\Core\UseCases\Admin\RoleListUseCase;
 use itaxcix\Core\UseCases\Admin\RoleUpdateUseCase;
 use itaxcix\Shared\DTO\useCases\Admin\RoleCreateRequestDTO;
-use itaxcix\Shared\DTO\useCases\Admin\RoleListResponseDTO;
 use itaxcix\Shared\DTO\useCases\Admin\RoleResponseDTO;
 use itaxcix\Shared\DTO\useCases\Admin\RoleUpdateRequestDTO;
 use itaxcix\Shared\DTO\useCases\Admin\RoleDeleteRequestDTO;
@@ -199,6 +198,7 @@ class RoleController extends AbstractController
         description: "Lista todos los roles del sistema.",
         summary: "Listar roles",
         security: [["bearerAuth" => []]],
+        tags: ["Role"],
         parameters: [
             new OA\Parameter(
                 name: "page",
@@ -214,8 +214,7 @@ class RoleController extends AbstractController
                 required: false,
                 schema: new OA\Schema(type: "integer", default: 10)
             )
-        ],
-        tags: ["Role"]
+        ]
     )]
     #[OA\Response(
         response: 200,

@@ -10,7 +10,6 @@ use itaxcix\Core\UseCases\Admin\UserRoleUpdateUseCase;
 use itaxcix\Infrastructure\Web\Controller\generic\AbstractController;
 use itaxcix\Shared\DTO\useCases\Admin\UserRoleCreateRequestDTO;
 use itaxcix\Shared\DTO\useCases\Admin\UserRoleDeleteRequestDTO;
-use itaxcix\Shared\DTO\useCases\Admin\UserRoleListResponseDTO;
 use itaxcix\Shared\DTO\useCases\Admin\UserRoleResponseDTO;
 use itaxcix\Shared\DTO\useCases\Admin\UserRoleUpdateRequestDTO;
 use itaxcix\Shared\Validators\useCases\Admin\UserRoleCreateRequestValidator;
@@ -198,6 +197,7 @@ class UserRoleController extends AbstractController
         description: "Lista todas las asignaciones de roles a usuarios.",
         summary: "Listar asignaciones de roles a usuarios",
         security: [["bearerAuth" => []]],
+        tags: ["UserRole"],
         parameters: [
             new OA\Parameter(
                 name: "page",
@@ -213,8 +213,7 @@ class UserRoleController extends AbstractController
                 required: false,
                 schema: new OA\Schema(type: "integer", default: 10)
             )
-        ],
-        tags: ["UserRole"]
+        ]
     )]
     #[OA\Response(
         response: 200,

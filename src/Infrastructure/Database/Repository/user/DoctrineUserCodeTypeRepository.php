@@ -11,11 +11,13 @@ class DoctrineUserCodeTypeRepository implements UserCodeTypeRepositoryInterface
 {
     private EntityManagerInterface $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager) {
+    public function __construct(EntityManagerInterface $entityManager)
+    {
         $this->entityManager = $entityManager;
     }
 
-    public function toDomain(UserCodeTypeEntity $entity): UserCodeTypeModel {
+    private function toDomain(UserCodeTypeEntity $entity): UserCodeTypeModel
+    {
         return new UserCodeTypeModel(
             id: $entity->getId(),
             name: $entity->getName(),
@@ -35,7 +37,21 @@ class DoctrineUserCodeTypeRepository implements UserCodeTypeRepositoryInterface
             ->getQuery();
 
         $entity = $query->getOneOrNullResult();
+        return $entity ? $this->toDomain($entity) : null;
+    }
 
+    public function findUserCodeTypeById(int $id): ?UserCodeTypeModel
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('uct')
+            ->from(UserCodeTypeEntity::class, 'uct')
+            ->where('uct.id = :id')
+            ->andWhere('uct.active = :active')
+            ->setParameter('id', $id)
+            ->setParameter('active', true)
+            ->getQuery();
+
+        $entity = $query->getOneOrNullResult();
         return $entity ? $this->toDomain($entity) : null;
     }
 }

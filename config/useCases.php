@@ -34,9 +34,12 @@ use itaxcix\Core\Handler\Driver\DriverTucStatusUseCaseHandler;
 use itaxcix\Core\Handler\Emergency\EmergencyNumberGetUseCaseHandler;
 use itaxcix\Core\Handler\Emergency\EmergencyNumberSaveUseCaseHandler;
 use itaxcix\Core\Handler\Incident\RegisterIncidentUseCaseHandler;
+use itaxcix\Core\Handler\Profile\ChangeEmailUseCaseHandler;
+use itaxcix\Core\Handler\Profile\ChangePhoneUseCaseHandler;
 use itaxcix\Core\Handler\Profile\GetAdminProfileUseCaseHandler;
 use itaxcix\Core\Handler\Profile\GetCitizenProfileUseCaseHandler;
 use itaxcix\Core\Handler\Profile\GetDriverProfileUseCaseHandler;
+use itaxcix\Core\Handler\Profile\VerifyEmailChangeUseCaseHandler;
 use itaxcix\Core\Handler\Travel\CancelTravelUseCaseHandler;
 use itaxcix\Core\Handler\Travel\CompleteTravelUseCaseHandler;
 use itaxcix\Core\Handler\Travel\GetTravelHistoryUseCaseHandler;
@@ -81,9 +84,13 @@ use itaxcix\Core\UseCases\Driver\DriverTucStatusUseCase;
 use itaxcix\Core\UseCases\Emergency\EmergencyNumberGetUseCase;
 use itaxcix\Core\UseCases\Emergency\EmergencyNumberSaveUseCase;
 use itaxcix\Core\UseCases\Incident\RegisterIncidentUseCase;
+use itaxcix\Core\UseCases\Profile\ChangeEmailUseCase;
+use itaxcix\Core\UseCases\Profile\ChangePhoneUseCase;
 use itaxcix\Core\UseCases\Profile\GetAdminProfileUseCase;
 use itaxcix\Core\UseCases\Profile\GetCitizenProfileUseCase;
 use itaxcix\Core\UseCases\Profile\GetDriverProfileUseCase;
+use itaxcix\Core\UseCases\Profile\VerifyEmailChangeUseCase;
+use itaxcix\Core\UseCases\Profile\VerifyPhoneChangeUseCase;
 use itaxcix\Core\UseCases\Travel\CancelTravelUseCase;
 use itaxcix\Core\UseCases\Travel\CompleteTravelUseCase;
 use itaxcix\Core\UseCases\Travel\GetTravelHistoryUseCase;
@@ -126,6 +133,10 @@ return array(
     GetAdminProfileUseCase::class => autowire(GetAdminProfileUseCaseHandler::class),
     GetDriverProfileUseCase::class => autowire(GetDriverProfileUseCaseHandler::class),
     GetCitizenProfileUseCase::class => autowire(GetCitizenProfileUseCaseHandler::class),
+    ChangeEmailUseCase::class => autowire(ChangeEmailUseCaseHandler::class),
+    ChangePhoneUseCase::class => autowire(ChangePhoneUseCaseHandler::class),
+    VerifyEmailChangeUseCase::class => autowire(VerifyEmailChangeUseCaseHandler::class),
+    VerifyPhoneChangeUseCase::class => autowire(VerifyPhoneChangeUseCaseHandler::class),
 
     // Travel Use Cases
     CancelTravelUseCase::class => autowire(CancelTravelUseCaseHandler::class),

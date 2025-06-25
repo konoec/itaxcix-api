@@ -18,6 +18,7 @@ use itaxcix\Infrastructure\Web\Controller\api\Auth\VehicleValidationController;
 use itaxcix\Infrastructure\Web\Controller\api\Driver\DriverTucStatusController;
 use itaxcix\Infrastructure\Web\Controller\api\Emergency\EmergencyNumberController;
 use itaxcix\Infrastructure\Web\Controller\api\Incident\RegisterIncidentController;
+use itaxcix\Infrastructure\Web\Controller\api\Profile\ProfileContactController;
 use itaxcix\Infrastructure\Web\Controller\api\Profile\ProfileController;
 use itaxcix\Infrastructure\Web\Controller\api\Travel\TravelController;
 use itaxcix\Infrastructure\Web\Controller\api\Travel\TravelStatusController;
@@ -64,6 +65,12 @@ return function (RouteCollector $r) {
         $r->get('/profile/admin/{userId}', [JwtMiddleware::class, [ProfileController::class, 'getAdminProfile']]);
         $r->get('/profile/citizen/{userId}', [JwtPermissionMiddleware::class, 'PERFIL CIUDADANO', [ProfileController::class, 'getCitizenProfile']]);
         $r->get('/profile/driver/{userId}', [JwtPermissionMiddleware::class, 'PERFIL CONDUCTOR', [ProfileController::class, 'getDriverProfile']]);
+
+        // Profile Contact Routes
+        $r->post('/profile/change-email', [JwtMiddleware::class, [ProfileContactController::class, 'changeEmail']]);
+        $r->post('/profile/verify-email', [JwtMiddleware::class, [ProfileContactController::class, 'verifyEmail']]);
+        $r->post('/profile/change-phone', [JwtMiddleware::class, [ProfileContactController::class, 'changePhone']]);
+        $r->post('/profile/verify-phone', [JwtMiddleware::class, [ProfileContactController::class, 'verifyPhone']]);
 
         // Travel Routes
         $r->post('/travels', [JwtPermissionMiddleware::class, 'INICIO CIUDADANO', [TravelStatusController::class, 'requestTravel']]);

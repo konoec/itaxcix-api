@@ -9,7 +9,6 @@ use itaxcix\Core\UseCases\Admin\RolePermissionDeleteUseCase;
 use itaxcix\Core\UseCases\Admin\RolePermissionListUseCase;
 use itaxcix\Core\UseCases\Admin\RolePermissionUpdateUseCase;
 use itaxcix\Shared\DTO\useCases\Admin\RolePermissionCreateRequestDTO;
-use itaxcix\Shared\DTO\useCases\Admin\RolePermissionListResponseDTO;
 use itaxcix\Shared\DTO\useCases\Admin\RolePermissionResponseDTO;
 use itaxcix\Shared\DTO\useCases\Admin\RolePermissionUpdateRequestDTO;
 use itaxcix\Shared\DTO\useCases\Admin\RolePermissionDeleteRequestDTO;
@@ -199,6 +198,7 @@ class RolePermissionController extends AbstractController
         description: "Lista todas las asignaciones de permisos a roles.",
         summary: "Listar asignaciones de permisos a roles",
         security: [["bearerAuth" => []]],
+        tags: ["RolePermission"],
         parameters: [
             new OA\Parameter(
                 name: "page",
@@ -214,8 +214,7 @@ class RolePermissionController extends AbstractController
                 required: false,
                 schema: new OA\Schema(type: "integer", default: 10)
             )
-        ],
-        tags: ["RolePermission"]
+        ]
     )]
     #[OA\Response(
         response: 200,

@@ -18,6 +18,7 @@ use Psr\Http\Message\ServerRequestInterface;
     operationId: "getAdminProfile",
     description: "Obtiene el perfil del administrador.",
     summary: "Perfil de administrador",
+    security: [["bearerAuth" => []]],
     tags: ["Profile"],
     parameters: [
         new OA\Parameter(
@@ -40,6 +41,7 @@ use Psr\Http\Message\ServerRequestInterface;
     operationId: "getCitizenProfile",
     description: "Obtiene el perfil del ciudadano.",
     summary: "Perfil de ciudadano",
+    security: [["bearerAuth" => []]],
     tags: ["Profile"],
     parameters: [
         new OA\Parameter(
@@ -62,6 +64,7 @@ use Psr\Http\Message\ServerRequestInterface;
     operationId: "getDriverProfile",
     description: "Obtiene el perfil del conductor.",
     summary: "Perfil de conductor",
+    security: [["bearerAuth" => []]],
     tags: ["Profile"],
     parameters: [
         new OA\Parameter(

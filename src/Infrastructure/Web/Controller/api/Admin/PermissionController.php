@@ -8,7 +8,6 @@ use itaxcix\Core\UseCases\Admin\PermissionDeleteUseCase;
 use itaxcix\Core\UseCases\Admin\PermissionListUseCase;
 use itaxcix\Core\UseCases\Admin\PermissionUpdateUseCase;
 use itaxcix\Shared\DTO\useCases\Admin\PermissionCreateRequestDTO;
-use itaxcix\Shared\DTO\useCases\Admin\PermissionListResponseDTO;
 use itaxcix\Shared\DTO\useCases\Admin\PermissionResponseDTO;
 use itaxcix\Shared\DTO\useCases\Admin\PermissionUpdateRequestDTO;
 use itaxcix\Shared\DTO\useCases\Admin\PermissionDeleteRequestDTO;
@@ -199,6 +198,7 @@ class PermissionController extends AbstractController
         description: "Lista todos los permisos del sistema.",
         summary: "Listar permisos",
         security: [["bearerAuth" => []]],
+        tags: ["Permission"],
         parameters: [
             new OA\Parameter(
                 name: "page",
@@ -214,8 +214,7 @@ class PermissionController extends AbstractController
                 required: false,
                 schema: new OA\Schema(type: "integer", default: 10)
             )
-        ],
-        tags: ["Permission"]
+        ]
     )]
     #[OA\Response(
         response: 200,

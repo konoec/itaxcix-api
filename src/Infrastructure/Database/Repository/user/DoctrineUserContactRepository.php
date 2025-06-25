@@ -3,70 +3,31 @@
 namespace itaxcix\Infrastructure\Database\Repository\user;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Exception\ORMException;
 use itaxcix\Core\Domain\user\UserContactModel;
-use itaxcix\Core\Interfaces\user\ContactTypeRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserContactRepositoryInterface;
-use itaxcix\Core\Interfaces\user\UserRepositoryInterface;
-use itaxcix\Infrastructure\Database\Entity\user\ContactTypeEntity;
 use itaxcix\Infrastructure\Database\Entity\user\UserContactEntity;
+use itaxcix\Infrastructure\Database\Entity\user\ContactTypeEntity;
 use itaxcix\Infrastructure\Database\Entity\user\UserEntity;
 
 class DoctrineUserContactRepository implements UserContactRepositoryInterface
 {
     private EntityManagerInterface $entityManager;
-    private UserRepositoryInterface $userRepository;
-    private ContactTypeRepositoryInterface $contactTypeRepository;
 
-    public function __construct(EntityManagerInterface $entityManager, UserRepositoryInterface $userRepository, ContactTypeRepositoryInterface $contactTypeRepository) {
+    public function __construct(EntityManagerInterface $entityManager)
+    {
         $this->entityManager = $entityManager;
-        $this->userRepository = $userRepository;
-        $this->contactTypeRepository = $contactTypeRepository;
     }
 
-    public function toDomain(UserContactEntity $entity): UserContactModel {
+    private function toDomain(UserContactEntity $entity): UserContactModel
+    {
         return new UserContactModel(
             id: $entity->getId(),
-            user: $this->userRepository->toDomain($entity->getUser()),
-            type: $this->contactTypeRepository->toDomain($entity->getType()),
+            user: $entity->getUser(),
+            type: $entity->getType(),
             value: $entity->getValue(),
             confirmed: $entity->isConfirmed(),
             active: $entity->isActive()
         );
-    }
-
-    /**
-     * @throws ORMException
-     */
-    public function saveUserContact(UserContactModel $userContactModel): UserContactModel
-    {
-        // 1. Si tiene id, buscar entidad; si no, crear nueva
-        if ($userContactModel->getId()) {
-            $entity = $this->entityManager->find(UserContactEntity::class, $userContactModel->getId());
-        } else {
-            $entity = new UserContactEntity();
-        }
-
-        // 2. Asignar/actualizar campos
-        $entity->setUser(
-            $this->entityManager->getReference(
-                UserEntity::class, $userContactModel->getUser()->getId()
-            )
-        );
-        $entity->setType(
-            $this->entityManager->getReference(
-                ContactTypeEntity::class, $userContactModel->getType()->getId()
-            )
-        );
-        $entity->setValue($userContactModel->getValue());
-        $entity->setConfirmed($userContactModel->isConfirmed());
-        $entity->setActive($userContactModel->isActive());
-
-        // 3. Persistir y confirmar
-        $this->entityManager->persist($entity);
-        $this->entityManager->flush();
-
-        return $this->toDomain($entity);
     }
 
     public function findAllUserContactByValue(string $value): ?UserContactModel
@@ -75,50 +36,80 @@ class DoctrineUserContactRepository implements UserContactRepositoryInterface
             ->select('uc')
             ->from(UserContactEntity::class, 'uc')
             ->where('uc.value = :value')
-            ->andWhere('uc.confirmed = :confirmed')
+            ->andWhere('uc.active = :active')
             ->setParameter('value', $value)
-            ->setParameter('confirmed', true)
+            ->setParameter('active', true)
             ->getQuery();
 
         $entity = $query->getOneOrNullResult();
-
         return $entity ? $this->toDomain($entity) : null;
     }
 
-    public function findUserContactByUserId(int $userId): ?UserContactModel
+    public function findUserContactByTypeAndUser(int $typeId, int $userId): ?UserContactModel
     {
         $query = $this->entityManager->createQueryBuilder()
             ->select('uc')
             ->from(UserContactEntity::class, 'uc')
-            ->join('uc.user', 'u')
-            ->where('u.id = :userId')
+            ->where('uc.type = :typeId')
+            ->andWhere('uc.user = :userId')
             ->andWhere('uc.active = :active')
+            ->setParameter('typeId', $typeId)
             ->setParameter('userId', $userId)
             ->setParameter('active', true)
             ->getQuery();
 
         $entity = $query->getOneOrNullResult();
-
         return $entity ? $this->toDomain($entity) : null;
     }
 
-    public function findUserContactByUserIdAndContactTypeId(int $userId, int $contactTypeId): ?UserContactModel
+    public function saveUserContact(UserContactModel $contact): UserContactModel
+    {
+        if ($contact->getId()) {
+            $entity = $this->entityManager->find(UserContactEntity::class, $contact->getId());
+        } else {
+            $entity = new UserContactEntity();
+        }
+
+        $entity->setUser(
+            $this->entityManager->getReference(UserEntity::class, $contact->getUser()->getId())
+        );
+        $entity->setType(
+            $this->entityManager->getReference(ContactTypeEntity::class, $contact->getType()->getId())
+        );
+        $entity->setValue($contact->getValue());
+        $entity->setConfirmed($contact->isConfirmed());
+        $entity->setActive($contact->isActive());
+
+        $this->entityManager->persist($entity);
+        $this->entityManager->flush();
+
+        return $this->toDomain($entity);
+    }
+
+    public function findActiveContactByUserAndType(int $userId, int $contactTypeId): ?UserContactModel
     {
         $query = $this->entityManager->createQueryBuilder()
             ->select('uc')
             ->from(UserContactEntity::class, 'uc')
-            ->join('uc.user', 'u')
-            ->join('uc.type', 'ct')
-            ->where('u.id = :userId')
-            ->andWhere('ct.id = :contactTypeId')
+            ->where('uc.user = :userId')
+            ->andWhere('uc.type = :typeId')
             ->andWhere('uc.active = :active')
             ->setParameter('userId', $userId)
-            ->setParameter('contactTypeId', $contactTypeId)
+            ->setParameter('typeId', $contactTypeId)
             ->setParameter('active', true)
             ->getQuery();
 
         $entity = $query->getOneOrNullResult();
-
         return $entity ? $this->toDomain($entity) : null;
+    }
+
+    public function deleteContact(int $contactId): void
+    {
+        $entity = $this->entityManager->find(UserContactEntity::class, $contactId);
+        if ($entity) {
+            $entity->setActive(false);
+            $this->entityManager->persist($entity);
+            $this->entityManager->flush();
+        }
     }
 }

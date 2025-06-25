@@ -3154,6 +3154,259 @@
                 ]
             }
         },
+        "/profile/change-email": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Solicitar cambio de correo",
+                "description": "Solicita el cambio de correo electrónico enviando un código de verificación.",
+                "operationId": "requestEmailChange",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChangeEmailRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Código enviado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Se ha enviado un código de verificación a tu nuevo correo"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Errores de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petición inválida"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "El correo electrónico es inválido"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/profile/verify-email": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Verificar cambio de correo",
+                "description": "Verifica el código enviado para cambiar el correo electrónico.",
+                "operationId": "verifyEmailChange",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/VerifyEmailChangeRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Correo actualizado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Correo electrónico actualizado correctamente"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/profile/change-phone": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Solicitar cambio de teléfono",
+                "description": "Solicita el cambio de número telefónico enviando un código de verificación.",
+                "operationId": "requestPhoneChange",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChangePhoneRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Código enviado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Se ha enviado un código de verificación a tu nuevo número"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/profile/verify-phone": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Verificar cambio de teléfono",
+                "description": "Verifica el código enviado para cambiar el número telefónico.",
+                "operationId": "verifyPhoneChange",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/VerifyPhoneChangeRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Teléfono actualizado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Número telefónico actualizado correctamente"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/profile/admin/{userId}": {
             "get": {
                 "tags": [
@@ -3183,7 +3436,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/profile/citizen/{userId}": {
@@ -3215,7 +3473,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/profile/driver/{userId}": {
@@ -3247,7 +3510,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/travels/{travelId}/rate": {
@@ -4877,6 +5145,38 @@
                 },
                 "type": "object"
             },
+            "ChangeEmailRequestDTO": {
+                "description": "Datos necesarios para solicitar el cambio de correo electrónico",
+                "properties": {
+                    "userId": {
+                        "description": "ID del usuario",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "email": {
+                        "description": "Nuevo correo electrónico",
+                        "type": "string",
+                        "example": "nuevo@ejemplo.com"
+                    }
+                },
+                "type": "object"
+            },
+            "ChangePhoneRequestDTO": {
+                "description": "Datos necesarios para solicitar el cambio de número telefónico",
+                "properties": {
+                    "userId": {
+                        "description": "ID del usuario",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "phone": {
+                        "description": "Nuevo número telefónico",
+                        "type": "string",
+                        "example": "593987654321"
+                    }
+                },
+                "type": "object"
+            },
             "CitizenProfileResponseDTO": {
                 "description": "Datos de respuesta del perfil de ciudadano",
                 "properties": {
@@ -4982,6 +5282,38 @@
                         "description": "Fecha de vencimiento de TUC",
                         "type": "string",
                         "example": "2025-12-31"
+                    }
+                },
+                "type": "object"
+            },
+            "VerifyEmailChangeRequestDTO": {
+                "description": "Datos necesarios para verificar el cambio de correo electrónico",
+                "properties": {
+                    "userId": {
+                        "description": "ID del usuario",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "code": {
+                        "description": "Código de verificación recibido",
+                        "type": "string",
+                        "example": "123456"
+                    }
+                },
+                "type": "object"
+            },
+            "VerifyPhoneChangeRequestDTO": {
+                "description": "Datos necesarios para verificar el cambio de número telefónico",
+                "properties": {
+                    "userId": {
+                        "description": "ID del usuario",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "code": {
+                        "description": "Código de verificación recibido",
+                        "type": "string",
+                        "example": "123456"
                     }
                 },
                 "type": "object"

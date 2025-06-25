@@ -11,16 +11,33 @@ class DoctrineContactTypeRepository implements ContactTypeRepositoryInterface
 {
     private EntityManagerInterface $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager) {
+    public function __construct(EntityManagerInterface $entityManager)
+    {
         $this->entityManager = $entityManager;
     }
 
-    public function toDomain(ContactTypeEntity $entity): ContactTypeModel {
+    private function toDomain(ContactTypeEntity $entity): ContactTypeModel
+    {
         return new ContactTypeModel(
-            $entity->getId(),
-            $entity->getName(),
-            $entity->isActive()
+            id: $entity->getId(),
+            name: $entity->getName(),
+            active: $entity->isActive()
         );
+    }
+
+    public function findContactTypeByName(string $name): ?ContactTypeModel
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('ct')
+            ->from(ContactTypeEntity::class, 'ct')
+            ->where('ct.name = :name')
+            ->andWhere('ct.active = :active')
+            ->setParameter('name', $name)
+            ->setParameter('active', true)
+            ->getQuery();
+
+        $entity = $query->getOneOrNullResult();
+        return $entity ? $this->toDomain($entity) : null;
     }
 
     public function findContactTypeById(int $id): ?ContactTypeModel
@@ -35,7 +52,6 @@ class DoctrineContactTypeRepository implements ContactTypeRepositoryInterface
             ->getQuery();
 
         $entity = $query->getOneOrNullResult();
-
         return $entity ? $this->toDomain($entity) : null;
     }
 }
