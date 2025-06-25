@@ -3,6 +3,10 @@
 use FastRoute\RouteCollector;
 use itaxcix\Infrastructure\Auth\Middleware\JwtMiddleware;
 use itaxcix\Infrastructure\Auth\Middleware\JwtPermissionMiddleware;
+use itaxcix\Infrastructure\Web\Controller\api\Admin\PermissionController;
+use itaxcix\Infrastructure\Web\Controller\api\Admin\RoleController;
+use itaxcix\Infrastructure\Web\Controller\api\Admin\RolePermissionController;
+use itaxcix\Infrastructure\Web\Controller\api\Admin\UserRoleController;
 use itaxcix\Infrastructure\Web\Controller\api\Admission\DriverApprovalController;
 use itaxcix\Infrastructure\Web\Controller\api\Admission\PendingDriversController;
 use itaxcix\Infrastructure\Web\Controller\api\Auth\AuthController;
@@ -76,6 +80,31 @@ return function (RouteCollector $r) {
 
         // Incident Routes
         $r->post('/incidents/register', [JwtMiddleware::class, [RegisterIncidentController::class, 'register']]);
+
+        // Role Routes
+        $r->post('/admin/role/create', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [RoleController::class, 'create']]);
+        $r->put('/admin/role/update', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [RoleController::class, 'update']]);
+        $r->delete('/admin/role/delete', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [RoleController::class, 'delete']]);
+        $r->get('/admin/role/list', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [RoleController::class, 'list']]);
+
+        // Permission Routes
+        $r->post('/admin/permission/create', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [PermissionController::class, 'create']]);
+        $r->put('/admin/permission/update', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [PermissionController::class, 'update']]);
+        $r->delete('/admin/permission/delete', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [PermissionController::class, 'delete']]);
+        $r->get('/admin/permission/list', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [PermissionController::class, 'list']]);
+
+        // RolePermission Routes
+        $r->post('/admin/role-permission/create', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [RolePermissionController::class, 'create']]);
+        $r->put('/admin/role-permission/update', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [RolePermissionController::class, 'update']]);
+        $r->delete('/admin/role-permission/delete', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [RolePermissionController::class, 'delete']]);
+        $r->get('/admin/role-permission/list', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [RolePermissionController::class, 'list']]);
+
+        // UserRole Routes
+        $r->post('/admin/user-role/create', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [UserRoleController::class, 'create']]);
+        $r->put('/admin/user-role/update', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [UserRoleController::class, 'update']]);
+        $r->delete('/admin/user-role/delete', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [UserRoleController::class, 'delete']]);
+        $r->get('/admin/user-role/list', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [UserRoleController::class, 'list']]);
+
     });
 
     // Web Routes v1

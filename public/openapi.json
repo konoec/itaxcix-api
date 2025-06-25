@@ -10,6 +10,1122 @@
         }
     ],
     "paths": {
+        "/admin/permission/create": {
+            "post": {
+                "tags": [
+                    "Permission"
+                ],
+                "summary": "Crear permiso",
+                "description": "Crea un nuevo permiso en el sistema.",
+                "operationId": "createPermission",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PermissionCreateRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Permiso creado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Creado"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/PermissionResponseDTO"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Errores de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petición inválida"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Campos requeridos faltantes"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No autorizado"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Token inválido o expirado"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/permission/update": {
+            "put": {
+                "tags": [
+                    "Permission"
+                ],
+                "summary": "Actualizar permiso",
+                "description": "Actualiza un permiso existente.",
+                "operationId": "updatePermission",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PermissionUpdateRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Permiso actualizado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/PermissionResponseDTO"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/permission/delete": {
+            "delete": {
+                "tags": [
+                    "Permission"
+                ],
+                "summary": "Eliminar permiso",
+                "description": "Elimina un permiso del sistema.",
+                "operationId": "deletePermission",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PermissionDeleteRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Permiso eliminado exitosamente (sin contenido)"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/permission/list": {
+            "get": {
+                "tags": [
+                    "Permission"
+                ],
+                "summary": "Listar permisos",
+                "description": "Lista todos los permisos del sistema.",
+                "operationId": "listPermissions",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número de página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "perPage",
+                        "in": "query",
+                        "description": "Cantidad de elementos por página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Listado exitoso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "items": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/PermissionResponseDTO"
+                                                    }
+                                                },
+                                                "meta": {
+                                                    "properties": {
+                                                        "total": {
+                                                            "type": "integer",
+                                                            "example": 50
+                                                        },
+                                                        "perPage": {
+                                                            "type": "integer",
+                                                            "example": 10
+                                                        },
+                                                        "currentPage": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "lastPage": {
+                                                            "type": "integer",
+                                                            "example": 5
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/role/create": {
+            "post": {
+                "tags": [
+                    "Role"
+                ],
+                "summary": "Crear rol",
+                "description": "Crea un nuevo rol en el sistema.",
+                "operationId": "createRole",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RoleCreateRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Rol creado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Creado"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/RoleResponseDTO"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Errores de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petición inválida"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Campos requeridos faltantes"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No autorizado"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Token inválido o expirado"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/role/update": {
+            "put": {
+                "tags": [
+                    "Role"
+                ],
+                "summary": "Actualizar rol",
+                "description": "Actualiza un rol existente.",
+                "operationId": "updateRole",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RoleUpdateRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Rol actualizado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/RoleResponseDTO"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/role/delete": {
+            "delete": {
+                "tags": [
+                    "Role"
+                ],
+                "summary": "Eliminar rol",
+                "description": "Elimina un rol del sistema.",
+                "operationId": "deleteRole",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RoleDeleteRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Rol eliminado exitosamente (sin contenido)"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/role/list": {
+            "get": {
+                "tags": [
+                    "Role"
+                ],
+                "summary": "Listar roles",
+                "description": "Lista todos los roles del sistema.",
+                "operationId": "listRoles",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número de página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "perPage",
+                        "in": "query",
+                        "description": "Cantidad de elementos por página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Listado exitoso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "items": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/RoleResponseDTO"
+                                                    }
+                                                },
+                                                "meta": {
+                                                    "properties": {
+                                                        "total": {
+                                                            "type": "integer",
+                                                            "example": 50
+                                                        },
+                                                        "perPage": {
+                                                            "type": "integer",
+                                                            "example": 10
+                                                        },
+                                                        "currentPage": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "lastPage": {
+                                                            "type": "integer",
+                                                            "example": 5
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/role-permission/create": {
+            "post": {
+                "tags": [
+                    "RolePermission"
+                ],
+                "summary": "Asignar permiso a rol",
+                "description": "Asigna un permiso a un rol.",
+                "operationId": "createRolePermission",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RolePermissionCreateRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Asignación exitosa",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Creado"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/RolePermissionResponseDTO"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Errores de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petición inválida"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Campos requeridos faltantes"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No autorizado"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Token inválido o expirado"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/role-permission/update": {
+            "put": {
+                "tags": [
+                    "RolePermission"
+                ],
+                "summary": "Actualizar asignación de permiso a rol",
+                "description": "Actualiza la asignación de un permiso a un rol.",
+                "operationId": "updateRolePermission",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RolePermissionUpdateRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Actualización exitosa",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/RolePermissionResponseDTO"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/role-permission/delete": {
+            "delete": {
+                "tags": [
+                    "RolePermission"
+                ],
+                "summary": "Eliminar asignación de permiso a rol",
+                "description": "Elimina la asignación de un permiso a un rol.",
+                "operationId": "deleteRolePermission",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RolePermissionDeleteRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Eliminación exitosa (sin contenido)"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/role-permission/list": {
+            "get": {
+                "tags": [
+                    "RolePermission"
+                ],
+                "summary": "Listar asignaciones de permisos a roles",
+                "description": "Lista todas las asignaciones de permisos a roles.",
+                "operationId": "listRolePermissions",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número de página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "perPage",
+                        "in": "query",
+                        "description": "Cantidad de elementos por página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Listado exitoso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "items": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/RolePermissionResponseDTO"
+                                                    }
+                                                },
+                                                "meta": {
+                                                    "properties": {
+                                                        "total": {
+                                                            "type": "integer",
+                                                            "example": 50
+                                                        },
+                                                        "perPage": {
+                                                            "type": "integer",
+                                                            "example": 10
+                                                        },
+                                                        "currentPage": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "lastPage": {
+                                                            "type": "integer",
+                                                            "example": 5
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/user-role/create": {
+            "post": {
+                "tags": [
+                    "UserRole"
+                ],
+                "summary": "Asignar rol a usuario",
+                "description": "Asigna un rol a un usuario.",
+                "operationId": "createUserRole",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UserRoleCreateRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Asignación exitosa",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Creado"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/UserRoleResponseDTO"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Errores de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petición inválida"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Campos requeridos faltantes"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No autorizado"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Token inválido o expirado"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/user-role/update": {
+            "put": {
+                "tags": [
+                    "UserRole"
+                ],
+                "summary": "Actualizar asignación de rol a usuario",
+                "description": "Actualiza la asignación de un rol a un usuario.",
+                "operationId": "updateUserRole",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UserRoleUpdateRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Actualización exitosa",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/UserRoleResponseDTO"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/user-role/delete": {
+            "delete": {
+                "tags": [
+                    "UserRole"
+                ],
+                "summary": "Eliminar asignación de rol a usuario",
+                "description": "Elimina la asignación de un rol a un usuario.",
+                "operationId": "deleteUserRole",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UserRoleDeleteRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Eliminación exitosa (sin contenido)"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/user-role/list": {
+            "get": {
+                "tags": [
+                    "UserRole"
+                ],
+                "summary": "Listar asignaciones de roles a usuarios",
+                "description": "Lista todas las asignaciones de roles a usuarios.",
+                "operationId": "listUserRoles",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número de página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "perPage",
+                        "in": "query",
+                        "description": "Cantidad de elementos por página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Listado exitoso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "items": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/UserRoleResponseDTO"
+                                                    }
+                                                },
+                                                "meta": {
+                                                    "properties": {
+                                                        "total": {
+                                                            "type": "integer",
+                                                            "example": 50
+                                                        },
+                                                        "perPage": {
+                                                            "type": "integer",
+                                                            "example": 10
+                                                        },
+                                                        "currentPage": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "lastPage": {
+                                                            "type": "integer",
+                                                            "example": 5
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/drivers/approve": {
             "post": {
                 "tags": [
@@ -2943,6 +4059,382 @@
     },
     "components": {
         "schemas": {
+            "PermissionCreateRequestDTO": {
+                "description": "Datos para crear un permiso",
+                "properties": {
+                    "name": {
+                        "description": "Nombre del permiso",
+                        "type": "string",
+                        "example": "Ver usuarios"
+                    },
+                    "active": {
+                        "description": "Si el permiso está activo",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "web": {
+                        "description": "Si el permiso es para web",
+                        "type": "boolean",
+                        "example": false
+                    }
+                },
+                "type": "object"
+            },
+            "PermissionDeleteRequestDTO": {
+                "description": "Datos para eliminar un permiso",
+                "properties": {
+                    "id": {
+                        "description": "ID del permiso",
+                        "type": "integer",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            },
+            "PermissionListResponseDTO": {
+                "description": "Listado de permisos",
+                "properties": {
+                    "permissions": {
+                        "description": "Lista paginada de permisos",
+                        "type": "itaxcix\\Shared\\DTO\\generic\\PaginationResponseDTO"
+                    }
+                },
+                "type": "object"
+            },
+            "PermissionResponseDTO": {
+                "description": "Datos de respuesta de permiso",
+                "properties": {
+                    "id": {
+                        "description": "ID del permiso",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Nombre del permiso",
+                        "type": "string",
+                        "example": "Ver usuarios"
+                    },
+                    "active": {
+                        "description": "Si el permiso está activo",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "web": {
+                        "description": "Si el permiso es para web",
+                        "type": "boolean",
+                        "example": false
+                    }
+                },
+                "type": "object"
+            },
+            "PermissionUpdateRequestDTO": {
+                "description": "Datos para actualizar un permiso",
+                "properties": {
+                    "id": {
+                        "description": "ID del permiso",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Nombre del permiso",
+                        "type": "string",
+                        "example": "Ver usuarios"
+                    },
+                    "active": {
+                        "description": "Si el permiso está activo",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "web": {
+                        "description": "Si el permiso es para web",
+                        "type": "boolean",
+                        "example": false
+                    }
+                },
+                "type": "object"
+            },
+            "RoleCreateRequestDTO": {
+                "description": "Datos para crear un rol",
+                "properties": {
+                    "name": {
+                        "description": "Nombre del rol",
+                        "type": "string",
+                        "example": "Administrador"
+                    },
+                    "active": {
+                        "description": "Si el rol está activo",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "web": {
+                        "description": "Si el rol es para web",
+                        "type": "boolean",
+                        "example": false
+                    }
+                },
+                "type": "object"
+            },
+            "RoleDeleteRequestDTO": {
+                "description": "Datos para eliminar un rol",
+                "properties": {
+                    "id": {
+                        "description": "ID del rol",
+                        "type": "integer",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            },
+            "RoleListResponseDTO": {
+                "description": "Listado de roles",
+                "properties": {
+                    "data": {
+                        "description": "Lista paginada de roles",
+                        "type": "itaxcix\\Shared\\DTO\\generic\\PaginationResponseDTO"
+                    }
+                },
+                "type": "object"
+            },
+            "RolePermissionCreateRequestDTO": {
+                "description": "Datos para crear asignación de permiso a rol",
+                "properties": {
+                    "roleId": {
+                        "description": "ID del rol",
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "permissionId": {
+                        "description": "ID del permiso",
+                        "type": "integer",
+                        "example": 3
+                    },
+                    "active": {
+                        "description": "Si la asignación está activa",
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "RolePermissionDeleteRequestDTO": {
+                "description": "Datos para eliminar asignación de permiso a rol",
+                "properties": {
+                    "id": {
+                        "description": "ID de la asignación",
+                        "type": "integer",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            },
+            "RolePermissionListResponseDTO": {
+                "description": "Listado de asignaciones de permisos a roles",
+                "properties": {
+                    "data": {
+                        "description": "Lista paginada de asignaciones de permisos a roles",
+                        "type": "itaxcix\\Shared\\DTO\\generic\\PaginationResponseDTO"
+                    }
+                },
+                "type": "object"
+            },
+            "RolePermissionResponseDTO": {
+                "description": "Datos de respuesta de asignación de permiso a rol",
+                "properties": {
+                    "id": {
+                        "description": "ID de la asignación",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "roleId": {
+                        "description": "ID del rol",
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "permissionId": {
+                        "description": "ID del permiso",
+                        "type": "integer",
+                        "example": 3
+                    },
+                    "active": {
+                        "description": "Si la asignación está activa",
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "RolePermissionUpdateRequestDTO": {
+                "description": "Datos para actualizar asignación de permiso a rol",
+                "properties": {
+                    "id": {
+                        "description": "ID de la asignación",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "roleId": {
+                        "description": "ID del rol",
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "permissionId": {
+                        "description": "ID del permiso",
+                        "type": "integer",
+                        "example": 3
+                    },
+                    "active": {
+                        "description": "Si la asignación está activa",
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "RoleResponseDTO": {
+                "description": "Datos de respuesta de rol",
+                "properties": {
+                    "id": {
+                        "description": "ID del rol",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Nombre del rol",
+                        "type": "string",
+                        "example": "Administrador"
+                    },
+                    "active": {
+                        "description": "Si el rol está activo",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "web": {
+                        "description": "Si el rol es para web",
+                        "type": "boolean",
+                        "example": false
+                    }
+                },
+                "type": "object"
+            },
+            "RoleUpdateRequestDTO": {
+                "description": "Datos para actualizar un rol",
+                "properties": {
+                    "id": {
+                        "description": "ID del rol",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Nombre del rol",
+                        "type": "string",
+                        "example": "Administrador"
+                    },
+                    "active": {
+                        "description": "Si el rol está activo",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "web": {
+                        "description": "Si el rol es para web",
+                        "type": "boolean",
+                        "example": false
+                    }
+                },
+                "type": "object"
+            },
+            "UserRoleCreateRequestDTO": {
+                "description": "Datos para crear asignación de usuario a rol",
+                "properties": {
+                    "userId": {
+                        "description": "ID del usuario",
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "roleId": {
+                        "description": "ID del rol",
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "active": {
+                        "description": "Si la asignación está activa",
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "UserRoleDeleteRequestDTO": {
+                "description": "Datos para eliminar asignación de usuario a rol",
+                "properties": {
+                    "id": {
+                        "description": "ID de la asignación",
+                        "type": "integer",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            },
+            "UserRoleListResponseDTO": {
+                "description": "Listado de asignaciones de roles a usuarios",
+                "properties": {
+                    "data": {
+                        "description": "Lista paginada de asignaciones de roles a usuarios",
+                        "type": "itaxcix\\Shared\\DTO\\generic\\PaginationResponseDTO"
+                    }
+                },
+                "type": "object"
+            },
+            "UserRoleResponseDTO": {
+                "description": "Datos de respuesta de asignación de usuario a rol",
+                "properties": {
+                    "id": {
+                        "description": "ID de la asignación",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "userId": {
+                        "description": "ID del usuario",
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "roleId": {
+                        "description": "ID del rol",
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "active": {
+                        "description": "Si la asignación está activa",
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "UserRoleUpdateRequestDTO": {
+                "description": "Datos para actualizar asignación de usuario a rol",
+                "properties": {
+                    "id": {
+                        "description": "ID de la asignación",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "userId": {
+                        "description": "ID del usuario",
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "roleId": {
+                        "description": "ID del rol",
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "active": {
+                        "description": "Si la asignación está activa",
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
             "ApproveDriverRequestDto": {
                 "description": "Datos necesarios para aprobar un conductor",
                 "properties": {
@@ -3738,6 +5230,22 @@
         }
     },
     "tags": [
+        {
+            "name": "Permission",
+            "description": "Permission"
+        },
+        {
+            "name": "Role",
+            "description": "Role"
+        },
+        {
+            "name": "RolePermission",
+            "description": "RolePermission"
+        },
+        {
+            "name": "UserRole",
+            "description": "UserRole"
+        },
         {
             "name": "Admission",
             "description": "Admission"

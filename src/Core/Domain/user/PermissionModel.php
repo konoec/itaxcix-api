@@ -5,19 +5,20 @@ namespace itaxcix\Core\Domain\user;
 use itaxcix\Infrastructure\Database\Entity\user\PermissionEntity;
 
 class PermissionModel {
-    private int $id;
+    private ?int $id;
     private string $name;
     private bool $active = true;
     private bool $web = false;
 
-    public function __construct(int $id, string $name, bool $active = true, bool $web = false)
+    public function __construct(?int $id, string $name, bool $active = true, bool $web = false)
     {
         $this->id = $id;
         $this->name = $name;
         $this->active = $active;
         $this->web = $web;
     }
-    public function getId(): int
+
+    public function getId(): ?int
     {
         return $this->id;
     }

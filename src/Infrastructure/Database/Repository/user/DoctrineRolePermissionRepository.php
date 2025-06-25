@@ -52,4 +52,95 @@ class DoctrineRolePermissionRepository implements RolePermissionRepositoryInterf
             return $this->toDomain($item);
         }, $result);
     }
+
+    public function findRolePermissionById(int $id): ?RolePermissionModel
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('rp')
+            ->from(RolePermissionEntity::class, 'rp')
+            ->where('rp.id = :id')
+            ->andWhere('rp.active = :active')
+            ->setParameter('id', $id)
+            ->setParameter('active', true)
+            ->getQuery();
+
+        $entity = $query->getOneOrNullResult();
+        return $entity ? $this->toDomain($entity) : null;
+    }
+
+    public function findByRoleAndPermission(int $roleId, int $permissionId): ?RolePermissionModel
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('rp')
+            ->from(RolePermissionEntity::class, 'rp')
+            ->where('rp.role = :roleId')
+            ->andWhere('rp.permission = :permissionId')
+            ->andWhere('rp.active = :active')
+            ->setParameter('roleId', $roleId)
+            ->setParameter('permissionId', $permissionId)
+            ->setParameter('active', true)
+            ->getQuery();
+
+        $entity = $query->getOneOrNullResult();
+        return $entity ? $this->toDomain($entity) : null;
+    }
+
+    public function findAllRolePermissions(): array
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('rp')
+            ->from(RolePermissionEntity::class, 'rp')
+            ->where('rp.active = :active')
+            ->setParameter('active', true)
+            ->getQuery();
+
+        $results = $query->getResult();
+        return array_map([$this, 'toDomain'], $results);
+    }
+
+    public function hasActiveRolesByPermissionId(int $permissionId): bool
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('COUNT(rp.id)')
+            ->from(RolePermissionEntity::class, 'rp')
+            ->where('rp.permission = :permissionId')
+            ->andWhere('rp.active = :active')
+            ->setParameter('permissionId', $permissionId)
+            ->setParameter('active', true)
+            ->getQuery();
+
+        return ($query->getSingleScalarResult() > 0);
+    }
+
+    public function saveRolePermission(RolePermissionModel $rolePermission): RolePermissionModel
+    {
+        if ($rolePermission->getId()) {
+            $entity = $this->entityManager->find(RolePermissionEntity::class, $rolePermission->getId());
+        } else {
+            $entity = new RolePermissionEntity();
+        }
+
+        $entity->setRole(
+            $this->entityManager->getReference(RoleEntity::class, $rolePermission->getRole()->getId())
+        );
+        $entity->setPermission(
+            $this->entityManager->getReference(PermissionEntity::class, $rolePermission->getPermission()->getId())
+        );
+        $entity->setActive($rolePermission->isActive());
+
+        $this->entityManager->persist($entity);
+        $this->entityManager->flush();
+
+        return $this->toDomain($entity);
+    }
+
+    public function deleteRolePermission(RolePermissionModel $rolePermission): void
+    {
+        $entity = $this->entityManager->find(RolePermissionEntity::class, $rolePermission->getId());
+        if ($entity) {
+            $entity->setActive(false);
+            $this->entityManager->persist($entity);
+            $this->entityManager->flush();
+        }
+    }
 }

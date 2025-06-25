@@ -1,5 +1,21 @@
 <?php
 
+use itaxcix\Core\Handler\Admin\PermissionCreateUseCaseHandler;
+use itaxcix\Core\Handler\Admin\PermissionDeleteUseCaseHandler;
+use itaxcix\Core\Handler\Admin\PermissionListUseCaseHandler;
+use itaxcix\Core\Handler\Admin\PermissionUpdateUseCaseHandler;
+use itaxcix\Core\Handler\Admin\RoleCreateUseCaseHandler;
+use itaxcix\Core\Handler\Admin\RoleDeleteUseCaseHandler;
+use itaxcix\Core\Handler\Admin\RoleListUseCaseHandler;
+use itaxcix\Core\Handler\Admin\RolePermissionCreateUseCaseHandler;
+use itaxcix\Core\Handler\Admin\RolePermissionDeleteUseCaseHandler;
+use itaxcix\Core\Handler\Admin\RolePermissionListUseCaseHandler;
+use itaxcix\Core\Handler\Admin\RolePermissionUpdateUseCaseHandler;
+use itaxcix\Core\Handler\Admin\RoleUpdateUseCaseHandler;
+use itaxcix\Core\Handler\Admin\UserRoleCreateUseCaseHandler;
+use itaxcix\Core\Handler\Admin\UserRoleDeleteUseCaseHandler;
+use itaxcix\Core\Handler\Admin\UserRoleListUseCaseHandler;
+use itaxcix\Core\Handler\Admin\UserRoleUpdateUseCaseHandler;
 use itaxcix\Core\Handler\Admission\ApproveDriverAdmissionUseCaseHandler;
 use itaxcix\Core\Handler\Admission\GetDriverDetailsUseCaseHandler;
 use itaxcix\Core\Handler\Admission\GetPendingDriversUseCaseHandler;
@@ -31,6 +47,22 @@ use itaxcix\Core\Handler\Travel\RespondToTravelRequestUseCaseHandler;
 use itaxcix\Core\Handler\Travel\StartAcceptedTravelUseCaseHandler;
 use itaxcix\Core\Handler\User\UserProfilePhotoUploadUseCaseHandler;
 use itaxcix\Core\Handler\User\UserProfilePhotoUseCaseHandler;
+use itaxcix\Core\UseCases\Admin\PermissionCreateUseCase;
+use itaxcix\Core\UseCases\Admin\PermissionDeleteUseCase;
+use itaxcix\Core\UseCases\Admin\PermissionListUseCase;
+use itaxcix\Core\UseCases\Admin\PermissionUpdateUseCase;
+use itaxcix\Core\UseCases\Admin\RoleCreateUseCase;
+use itaxcix\Core\UseCases\Admin\RoleDeleteUseCase;
+use itaxcix\Core\UseCases\Admin\RoleListUseCase;
+use itaxcix\Core\UseCases\Admin\RolePermissionCreateUseCase;
+use itaxcix\Core\UseCases\Admin\RolePermissionDeleteUseCase;
+use itaxcix\Core\UseCases\Admin\RolePermissionListUseCase;
+use itaxcix\Core\UseCases\Admin\RolePermissionUpdateUseCase;
+use itaxcix\Core\UseCases\Admin\RoleUpdateUseCase;
+use itaxcix\Core\UseCases\Admin\UserRoleCreateUseCase;
+use itaxcix\Core\UseCases\Admin\UserRoleDeleteUseCase;
+use itaxcix\Core\UseCases\Admin\UserRoleListUseCase;
+use itaxcix\Core\UseCases\Admin\UserRoleUpdateUseCase;
 use itaxcix\Core\UseCases\Admission\ApproveDriverAdmissionUseCase;
 use itaxcix\Core\UseCases\Admission\GetDriverDetailsUseCase;
 use itaxcix\Core\UseCases\Admission\GetPendingDriversUseCase;
@@ -64,7 +96,7 @@ use itaxcix\Core\UseCases\User\UserProfilePhotoUploadUseCase;
 use itaxcix\Core\UseCases\User\UserProfilePhotoUseCase;
 use function DI\autowire;
 
-return [
+return array(
     // Auth Use Cases
     LoginUseCase::class => autowire(LoginUseCaseHandler::class),
     DocumentValidationUseCase::class => autowire(DocumentValidationUseCaseHandler::class),
@@ -111,4 +143,25 @@ return [
 
     // Incident Use Cases
     RegisterIncidentUseCase::class => autowire(RegisterIncidentUseCaseHandler::class),
-];
+
+    // Admin Use Cases
+    PermissionCreateUseCase::class => autowire(PermissionCreateUseCaseHandler::class),
+    PermissionDeleteUseCase::class => autowire(PermissionDeleteUseCaseHandler::class),
+    PermissionListUseCase::class => autowire(PermissionListUseCaseHandler::class),
+    PermissionUpdateUseCase::class => autowire(PermissionUpdateUseCaseHandler::class),
+
+    RoleCreateUseCase::class => autowire(RoleCreateUseCaseHandler::class),
+    RoleDeleteUseCase::class => autowire(RoleDeleteUseCaseHandler::class),
+    RoleListUseCase::class => autowire(RoleListUseCaseHandler::class),
+    RoleUpdateUseCase::class => autowire(RoleUpdateUseCaseHandler::class),
+
+    RolePermissionCreateUseCase::class => autowire(RolePermissionCreateUseCaseHandler::class),
+    RolePermissionDeleteUseCase::class => autowire(RolePermissionDeleteUseCaseHandler::class),
+    RolePermissionListUseCase::class => autowire(RolePermissionListUseCaseHandler::class),
+    RolePermissionUpdateUseCase::class => autowire(RolePermissionUpdateUseCaseHandler::class),
+
+    UserRoleCreateUseCase::class => autowire(UserRoleCreateUseCaseHandler::class),
+    UserRoleDeleteUseCase::class => autowire(UserRoleDeleteUseCaseHandler::class),
+    UserRoleListUseCase::class => autowire(UserRoleListUseCaseHandler::class),
+    UserRoleUpdateUseCase::class => autowire(UserRoleUpdateUseCaseHandler::class),
+);

@@ -87,4 +87,73 @@ class DoctrineUserRoleRepository implements UserRoleRepositoryInterface
 
         return $this->toDomain($entity);
     }
+
+    public function findUserRoleById(int $id): ?UserRoleModel
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('ur')
+            ->from(UserRoleEntity::class, 'ur')
+            ->where('ur.id = :id')
+            ->andWhere('ur.active = :active')
+            ->setParameter('id', $id)
+            ->setParameter('active', true)
+            ->getQuery();
+
+        $entity = $query->getOneOrNullResult();
+        return $entity ? $this->toDomain($entity) : null;
+    }
+
+    public function findByUserAndRole(int $userId, int $roleId): ?UserRoleModel
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('ur')
+            ->from(UserRoleEntity::class, 'ur')
+            ->where('ur.user = :userId')
+            ->andWhere('ur.role = :roleId')
+            ->andWhere('ur.active = :active')
+            ->setParameter('userId', $userId)
+            ->setParameter('roleId', $roleId)
+            ->setParameter('active', true)
+            ->getQuery();
+
+        $entity = $query->getOneOrNullResult();
+        return $entity ? $this->toDomain($entity) : null;
+    }
+
+    public function findAllUserRoles(): array
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('ur')
+            ->from(UserRoleEntity::class, 'ur')
+            ->where('ur.active = :active')
+            ->setParameter('active', true)
+            ->getQuery();
+
+        $results = $query->getResult();
+        return array_map([$this, 'toDomain'], $results);
+    }
+
+    public function hasActiveUsersByRoleId(int $roleId): bool
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('COUNT(ur.id)')
+            ->from(UserRoleEntity::class, 'ur')
+            ->where('ur.role = :roleId')
+            ->andWhere('ur.active = :active')
+            ->setParameter('roleId', $roleId)
+            ->setParameter('active', true)
+            ->getQuery();
+
+        return ($query->getSingleScalarResult() > 0);
+    }
+
+    public function deleteUserRole(UserRoleModel $userRole): void
+    {
+        $entity = $this->entityManager->find(UserRoleEntity::class, $userRole->getId());
+        if ($entity) {
+            $entity->setActive(false);
+            $this->entityManager->persist($entity);
+            $this->entityManager->flush();
+        }
+    }
 }
