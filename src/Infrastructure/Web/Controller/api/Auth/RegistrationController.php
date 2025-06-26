@@ -38,7 +38,7 @@ class RegistrationController extends AbstractController {
             required: true,
             content: new OA\JsonContent(ref: RegistrationRequestDTO::class)
         ),
-        tags: ["Auth", "Registration"]
+        tags: ["Registration"]
     )]
     #[OA\Response(
         response: 201,
@@ -149,7 +149,7 @@ class RegistrationController extends AbstractController {
             required: true,
             content: new OA\JsonContent(ref: ResendVerificationCodeRequestDTO::class)
         ),
-        tags: ["Auth","Registration"]
+        tags: ["Registration"]
     )]
     #[OA\Response(
         response: 200,
@@ -213,7 +213,7 @@ class RegistrationController extends AbstractController {
             required: true,
             content: new OA\JsonContent(ref: VerificationCodeRequestDTO::class)
         ),
-        tags: ["Auth", "Registration"]
+        tags: ["Registration"]
     )]
     #[OA\Response(
         response: 200,

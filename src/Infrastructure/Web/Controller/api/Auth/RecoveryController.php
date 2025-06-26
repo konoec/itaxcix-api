@@ -38,7 +38,7 @@ class RecoveryController extends AbstractController {
             required: true,
             content: new OA\JsonContent(ref: RecoveryStartRequestDTO::class)
         ),
-        tags: ["Auth", "Recovery"]
+        tags: ["Recovery"]
     )]
     #[OA\Response(
         response: 200,
@@ -134,7 +134,7 @@ class RecoveryController extends AbstractController {
             required: true,
             content: new OA\JsonContent(ref: VerificationCodeRequestDTO::class)
         ),
-        tags: ["Auth", "Recovery"]
+        tags: ["Recovery"]
     )]
     #[OA\Response(
         response: 200,
@@ -250,7 +250,7 @@ class RecoveryController extends AbstractController {
             required: true,
             content: new OA\JsonContent(ref: PasswordChangeRequestDTO::class)
         ),
-        tags: ["Auth", "Recovery"]
+        tags: ["Recovery"]
     )]
     #[OA\Response(
         response: 200,

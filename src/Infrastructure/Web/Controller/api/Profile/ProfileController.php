@@ -100,64 +100,82 @@ class ProfileController extends AbstractController
 
     public function getAdminProfile(ServerRequestInterface $request): ResponseInterface
     {
-        // 1. Obtener datos
-        $data = ['userId' => $request->getAttribute('userId')];
-
-        // 2. Validar datos
-        if (!isset($data['userId'])) {
-            return $this->error('El ID de usuario es requerido y debe ser un número entero.', 400);
-        }
-
-        // 3. Ejecutar caso de uso
-        $userId = (int)$data['userId'];
-
         try {
-            $profile = $this->getAdminProfileUseCase->execute($userId);
-            return $this->ok($profile);
+            // 1. Obtener datos
+            $userId = (int)$request->getAttribute('userId');
+            if (!$userId) {
+                return $this->error('El ID de usuario es requerido y debe ser un número entero.', 400);
+            }
+
+            // 2. Validar que el usuario autenticado solo pueda ver su propio perfil
+            $payload = $request->getAttribute('user');
+            if (!$payload || !isset($payload['user_id']) || (int)$payload['user_id'] !== $userId) {
+                return $this->error('No autorizado para ver este perfil', 401);
+            }
+
+            // 3. Ejecutar caso de uso
+            try {
+                $profile = $this->getAdminProfileUseCase->execute($userId);
+                return $this->ok($profile);
+            } catch (\Exception $e) {
+                return $this->error($e->getMessage(), 500);
+            }
         } catch (\Exception $e) {
-            return $this->error($e->getMessage(), 500);
+            return $this->error($e->getMessage(), 400);
         }
     }
 
     public function getCitizenProfile(ServerRequestInterface $request): ResponseInterface
     {
-        // 1. Obtener datos
-        $data = ['userId' => $request->getAttribute('userId')];
-
-        // 2. Validar datos
-        if (!isset($data['userId'])) {
-            return $this->error('El ID de usuario es requerido y debe ser un número entero.', 400);
-        }
-
-        // 3. Ejecutar caso de uso
-        $userId = (int)$data['userId'];
-
         try {
-            $profile = $this->getCitizenProfileUseCase->execute($userId);
-            return $this->ok($profile);
-        } catch (\Throwable $e) {
-            return $this->error($e->getMessage(), 500);
+            // 1. Obtener datos
+            $userId = (int)$request->getAttribute('userId');
+            if (!$userId) {
+                return $this->error('El ID de usuario es requerido y debe ser un número entero.', 400);
+            }
+
+            // 2. Validar que el usuario autenticado solo pueda ver su propio perfil
+            $payload = $request->getAttribute('user');
+            if (!$payload || !isset($payload['user_id']) || (int)$payload['user_id'] !== $userId) {
+                return $this->error('No autorizado para ver este perfil', 401);
+            }
+
+            // 3. Ejecutar caso de uso
+            try {
+                $profile = $this->getCitizenProfileUseCase->execute($userId);
+                return $this->ok($profile);
+            } catch (\Throwable $e) {
+                return $this->error($e->getMessage(), 500);
+            }
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), 400);
         }
     }
 
     public function getDriverProfile(ServerRequestInterface $request): ResponseInterface
     {
-        // 1. Obtener datos
-        $data = ['userId' => $request->getAttribute('userId')];
-
-        // 2. Validar datos
-        if (!isset($data['userId'])) {
-            return $this->error('El ID de usuario es requerido y debe ser un número entero.', 400);
-        }
-
-        // 3. Ejecutar caso de uso
-        $userId = (int)$data['userId'];
-
         try {
-            $profile = $this->getDriverProfileUseCase->execute($userId);
-            return $this->ok($profile);
-        } catch (\Throwable $e) {
-            return $this->error($e->getMessage(), 500);
+            // 1. Obtener datos
+            $userId = (int)$request->getAttribute('userId');
+            if (!$userId) {
+                return $this->error('El ID de usuario es requerido y debe ser un número entero.', 400);
+            }
+
+            // 2. Validar que el usuario autenticado solo pueda ver su propio perfil
+            $payload = $request->getAttribute('user');
+            if (!$payload || !isset($payload['user_id']) || (int)$payload['user_id'] !== $userId) {
+                return $this->error('No autorizado para ver este perfil', 401);
+            }
+
+            // 3. Ejecutar caso de uso
+            try {
+                $profile = $this->getDriverProfileUseCase->execute($userId);
+                return $this->ok($profile);
+            } catch (\Throwable $e) {
+                return $this->error($e->getMessage(), 500);
+            }
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), 400);
         }
     }
 }

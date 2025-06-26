@@ -3,6 +3,8 @@
 namespace itaxcix\Infrastructure\Database\Repository\user;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use itaxcix\Core\Domain\user\RoleModel;
 use itaxcix\Core\Interfaces\user\RoleRepositoryInterface;
 use itaxcix\Infrastructure\Database\Entity\user\RoleEntity;
@@ -69,6 +71,10 @@ class DoctrineRoleRepository implements RoleRepositoryInterface
         return array_map([$this, 'toDomain'], $results);
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     public function saveRole(RoleModel $role): RoleModel
     {
         if ($role->getId()) {
@@ -86,6 +92,10 @@ class DoctrineRoleRepository implements RoleRepositoryInterface
         return $this->toDomain($entity);
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     public function deleteRole(RoleModel $role): void
     {
         $entity = $this->entityManager->find(RoleEntity::class, $role->getId());

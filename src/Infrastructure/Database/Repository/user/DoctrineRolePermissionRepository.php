@@ -3,10 +3,14 @@
 namespace itaxcix\Infrastructure\Database\Repository\user;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use itaxcix\Core\Domain\user\RolePermissionModel;
 use itaxcix\Core\Interfaces\user\PermissionRepositoryInterface;
 use itaxcix\Core\Interfaces\user\RolePermissionRepositoryInterface;
 use itaxcix\Core\Interfaces\user\RoleRepositoryInterface;
+use itaxcix\Infrastructure\Database\Entity\user\PermissionEntity;
+use itaxcix\Infrastructure\Database\Entity\user\RoleEntity;
 use itaxcix\Infrastructure\Database\Entity\user\RolePermissionEntity;
 
 class DoctrineRolePermissionRepository implements RolePermissionRepositoryInterface
@@ -112,6 +116,10 @@ class DoctrineRolePermissionRepository implements RolePermissionRepositoryInterf
         return ($query->getSingleScalarResult() > 0);
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     public function saveRolePermission(RolePermissionModel $rolePermission): RolePermissionModel
     {
         if ($rolePermission->getId()) {
@@ -134,6 +142,10 @@ class DoctrineRolePermissionRepository implements RolePermissionRepositoryInterf
         return $this->toDomain($entity);
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     public function deleteRolePermission(RolePermissionModel $rolePermission): void
     {
         $entity = $this->entityManager->find(RolePermissionEntity::class, $rolePermission->getId());

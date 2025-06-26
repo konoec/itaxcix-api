@@ -20,7 +20,7 @@ use Psr\Http\Message\ServerRequestInterface;
         required: true,
         content: new OA\JsonContent(ref: DocumentValidationRequestDTO::class)
     ),
-    tags: ["Auth", "Validation"]
+    tags: ["Validation"]
 )]
 #[OA\Response(
     response: 200,

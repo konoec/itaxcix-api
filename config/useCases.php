@@ -40,6 +40,7 @@ use itaxcix\Core\Handler\Profile\GetAdminProfileUseCaseHandler;
 use itaxcix\Core\Handler\Profile\GetCitizenProfileUseCaseHandler;
 use itaxcix\Core\Handler\Profile\GetDriverProfileUseCaseHandler;
 use itaxcix\Core\Handler\Profile\VerifyEmailChangeUseCaseHandler;
+use itaxcix\Core\Handler\Profile\VerifyPhoneChangeUseCaseHandler;
 use itaxcix\Core\Handler\Travel\CancelTravelUseCaseHandler;
 use itaxcix\Core\Handler\Travel\CompleteTravelUseCaseHandler;
 use itaxcix\Core\Handler\Travel\GetTravelHistoryUseCaseHandler;

@@ -3,6 +3,7 @@
 namespace itaxcix\Core\Handler\Profile;
 
 use DateTime;
+use Exception;
 use InvalidArgumentException;
 use itaxcix\Core\Domain\user\UserCodeModel;
 use itaxcix\Core\Domain\user\UserContactModel;
@@ -14,6 +15,7 @@ use itaxcix\Core\Interfaces\user\UserRepositoryInterface;
 use itaxcix\Core\UseCases\Profile\ChangePhoneUseCase;
 use itaxcix\Infrastructure\Notifications\NotificationServiceFactory;
 use itaxcix\Shared\DTO\useCases\Profile\ChangePhoneRequestDTO;
+use Random\RandomException;
 
 class ChangePhoneUseCaseHandler implements ChangePhoneUseCase
 {
@@ -40,6 +42,10 @@ class ChangePhoneUseCaseHandler implements ChangePhoneUseCase
         $this->notificationServiceFactory = $notificationServiceFactory;
     }
 
+    /**
+     * @throws RandomException
+     * @throws Exception
+     */
     public function execute(ChangePhoneRequestDTO $dto): ?array
     {
         // Verificar si existe usuario
@@ -117,6 +123,9 @@ class ChangePhoneUseCaseHandler implements ChangePhoneUseCase
         ];
     }
 
+    /**
+     * @throws RandomException
+     */
     private function generateUserCode(int $length = 6): string
     {
         $characters = '0123456789';

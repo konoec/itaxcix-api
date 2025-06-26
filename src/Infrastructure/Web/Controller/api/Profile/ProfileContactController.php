@@ -84,10 +84,15 @@ class ProfileContactController extends AbstractController
         try {
             $data = $this->getJsonBody($request);
 
-            // Obtener userId del token JWT que está en los atributos de la request
-            $userId = $request->getAttribute('userId');
-            if (!$userId) {
-                return $this->error('Usuario no autenticado', 401);
+            // Validar que el userId del body existe
+            if (!isset($data['userId'])) {
+                return $this->error('userId es requerido', 400);
+            }
+
+            // Obtener y validar que el user_id del token coincida con el userId del body
+            $payload = $request->getAttribute('user');
+            if (!$payload || !isset($payload['user_id']) || $payload['user_id'] !== $data['userId']) {
+                return $this->error('No autorizado para modificar este usuario', 401);
             }
 
             $validator = new ChangeEmailRequestValidator();
@@ -98,7 +103,7 @@ class ProfileContactController extends AbstractController
             }
 
             $dto = new ChangeEmailRequestDTO(
-                userId: $userId,
+                userId: (int) $data['userId'], // Convertir a int ya que viene como string del JSON
                 email: $data['email']
             );
 
@@ -140,10 +145,15 @@ class ProfileContactController extends AbstractController
         try {
             $data = $this->getJsonBody($request);
 
-            // Obtener userId del token JWT
-            $userId = $request->getAttribute('userId');
-            if (!$userId) {
-                return $this->error('Usuario no autenticado', 401);
+            // Validar que el userId del body existe
+            if (!isset($data['userId'])) {
+                return $this->error('userId es requerido', 400);
+            }
+
+            // Obtener y validar que el user_id del token coincida con el userId del body
+            $payload = $request->getAttribute('user');
+            if (!$payload || !isset($payload['user_id']) || $payload['user_id'] !== $data['userId']) {
+                return $this->error('No autorizado para modificar este usuario', 401);
             }
 
             $validator = new VerifyEmailChangeRequestValidator();
@@ -154,7 +164,7 @@ class ProfileContactController extends AbstractController
             }
 
             $dto = new VerifyEmailChangeRequestDTO(
-                userId: $userId,
+                userId: (int) $data['userId'],
                 code: $data['code']
             );
 
@@ -191,15 +201,34 @@ class ProfileContactController extends AbstractController
             type: "object"
         )
     )]
+    #[OA\Response(
+        response: 400,
+        description: "Errores de validación",
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: "success", type: "boolean", example: false),
+                new OA\Property(property: "message", type: "string", example: "Petición inválida"),
+                new OA\Property(property: "error", properties: [
+                    new OA\Property(property: "message", type: "string", example: "El número telefónico es inválido")
+                ], type: "object")
+            ],
+            type: "object"
+        )
+    )]
     public function changePhone(ServerRequestInterface $request): ResponseInterface
     {
         try {
             $data = $this->getJsonBody($request);
 
-            // Obtener userId del token JWT
-            $userId = $request->getAttribute('userId');
-            if (!$userId) {
-                return $this->error('Usuario no autenticado', 401);
+            // Validar que el userId del body existe
+            if (!isset($data['userId'])) {
+                return $this->error('userId es requerido', 400);
+            }
+
+            // Obtener y validar que el user_id del token coincida con el userId del body
+            $payload = $request->getAttribute('user');
+            if (!$payload || !isset($payload['user_id']) || $payload['user_id'] !== $data['userId']) {
+                return $this->error('No autorizado para modificar este usuario', 401);
             }
 
             $validator = new ChangePhoneRequestValidator();
@@ -210,7 +239,7 @@ class ProfileContactController extends AbstractController
             }
 
             $dto = new ChangePhoneRequestDTO(
-                userId: $userId,
+                userId: (int) $data['userId'],
                 phone: $data['phone']
             );
 
@@ -252,10 +281,15 @@ class ProfileContactController extends AbstractController
         try {
             $data = $this->getJsonBody($request);
 
-            // Obtener userId del token JWT
-            $userId = $request->getAttribute('userId');
-            if (!$userId) {
-                return $this->error('Usuario no autenticado', 401);
+            // Validar que el userId del body existe
+            if (!isset($data['userId'])) {
+                return $this->error('userId es requerido', 400);
+            }
+
+            // Obtener y validar que el user_id del token coincida con el userId del body
+            $payload = $request->getAttribute('user');
+            if (!$payload || !isset($payload['user_id']) || $payload['user_id'] !== $data['userId']) {
+                return $this->error('No autorizado para modificar este usuario', 401);
             }
 
             $validator = new VerifyPhoneChangeRequestValidator();
@@ -266,7 +300,7 @@ class ProfileContactController extends AbstractController
             }
 
             $dto = new VerifyPhoneChangeRequestDTO(
-                userId: $userId,
+                userId: (int) $data['userId'],
                 code: $data['code']
             );
 

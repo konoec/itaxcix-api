@@ -1666,7 +1666,6 @@
         "/auth/validation/biometric": {
             "post": {
                 "tags": [
-                    "Auth",
                     "Validation"
                 ],
                 "summary": "Valida una imagen biométrica de una persona registrada.",
@@ -1810,7 +1809,6 @@
         "/auth/validation/document": {
             "post": {
                 "tags": [
-                    "Auth",
                     "Validation"
                 ],
                 "summary": "Valida un documento según su tipo y valor",
@@ -1952,7 +1950,6 @@
         "/auth/recovery/start": {
             "post": {
                 "tags": [
-                    "Auth",
                     "Recovery"
                 ],
                 "summary": "Iniciar recuperación de contraseña",
@@ -2063,7 +2060,6 @@
         "/auth/recovery/verify-code": {
             "post": {
                 "tags": [
-                    "Auth",
                     "Recovery"
                 ],
                 "summary": "Verificar código de recuperación",
@@ -2206,7 +2202,6 @@
         "/auth/recovery/change-password": {
             "post": {
                 "tags": [
-                    "Auth",
                     "Recovery"
                 ],
                 "summary": "Cambiar contraseña",
@@ -2350,7 +2345,6 @@
         "/auth/registration": {
             "post": {
                 "tags": [
-                    "Auth",
                     "Registration"
                 ],
                 "summary": "Registrar nuevo usuario",
@@ -2490,7 +2484,6 @@
         "/auth/registration/resend-code": {
             "post": {
                 "tags": [
-                    "Auth",
                     "Registration"
                 ],
                 "summary": "Reenviar código de verificación",
@@ -2562,7 +2555,6 @@
         "/auth/registration/verify-code": {
             "post": {
                 "tags": [
-                    "Auth",
                     "Registration"
                 ],
                 "summary": "Verificar código de contacto",
@@ -2701,7 +2693,6 @@
         "/auth/validation/vehicle": {
             "post": {
                 "tags": [
-                    "Auth",
                     "Validation"
                 ],
                 "summary": "Validar vehículo con documento",

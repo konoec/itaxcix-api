@@ -14,6 +14,7 @@ use itaxcix\Core\Interfaces\user\UserRepositoryInterface;
 use itaxcix\Core\UseCases\Profile\ChangeEmailUseCase;
 use itaxcix\Infrastructure\Notifications\NotificationServiceFactory;
 use itaxcix\Shared\DTO\useCases\Profile\ChangeEmailRequestDTO;
+use Random\RandomException;
 
 class ChangeEmailUseCaseHandler implements ChangeEmailUseCase
 {
@@ -40,6 +41,9 @@ class ChangeEmailUseCaseHandler implements ChangeEmailUseCase
         $this->notificationServiceFactory = $notificationServiceFactory;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function execute(ChangeEmailRequestDTO $dto): ?array
     {
         // Verificar si existe usuario
@@ -117,6 +121,9 @@ class ChangeEmailUseCaseHandler implements ChangeEmailUseCase
         ];
     }
 
+    /**
+     * @throws RandomException
+     */
     private function generateUserCode(int $length = 6): string
     {
         $characters = '0123456789';
