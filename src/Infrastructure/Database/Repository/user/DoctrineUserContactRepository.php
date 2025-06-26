@@ -50,8 +50,10 @@ class DoctrineUserContactRepository implements UserContactRepositoryInterface
             ->from(UserContactEntity::class, 'uc')
             ->where('uc.value = :value')
             ->andWhere('uc.active = :active')
+            ->andWhere('uc.confirmed = :confirmed')
             ->setParameter('value', $value)
             ->setParameter('active', true)
+            ->setParameter('confirmed', true)
             ->getQuery();
 
         $entity = $query->getOneOrNullResult();
