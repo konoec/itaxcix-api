@@ -158,9 +158,11 @@ class DoctrineUserContactRepository implements UserContactRepositoryInterface
             ->where('uc.user = :userId')
             ->andWhere('uc.type = :contactTypeId')
             ->andWhere('uc.active = :active')
+            ->andWhere('uc.confirmed = :confirmed')
             ->setParameter('userId', $userId)
             ->setParameter('contactTypeId', $contactTypeId)
             ->setParameter('active', true)
+            ->setParameter('confirmed', true)
             ->getQuery();
 
         $entity = $query->getOneOrNullResult();
