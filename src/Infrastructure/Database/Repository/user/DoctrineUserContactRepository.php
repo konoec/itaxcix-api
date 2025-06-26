@@ -3,6 +3,8 @@
 namespace itaxcix\Infrastructure\Database\Repository\user;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use itaxcix\Core\Domain\user\UserContactModel;
 use itaxcix\Core\Interfaces\user\ContactTypeRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserCodeTypeRepositoryInterface;
@@ -73,6 +75,10 @@ class DoctrineUserContactRepository implements UserContactRepositoryInterface
         return $entity ? $this->toDomain($entity) : null;
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     public function saveUserContact(UserContactModel $contact): UserContactModel
     {
         if ($contact->getId()) {
@@ -132,8 +138,12 @@ class DoctrineUserContactRepository implements UserContactRepositoryInterface
             ->from(UserContactEntity::class, 'uc')
             ->where('uc.user = :userId')
             ->andWhere('uc.active = :active')
+            ->andWhere('uc.confirmed = :confirmed')
+            ->orderBy('uc.id', 'DESC')
+            ->setMaxResults(1)
             ->setParameter('userId', $userId)
             ->setParameter('active', true)
+            ->setParameter('confirmed', true)
             ->getQuery();
 
         $entity = $query->getOneOrNullResult();
