@@ -112,6 +112,14 @@ use itaxcix\Core\UseCases\HelpCenter\HelpCenterDeleteUseCase;
 use itaxcix\Core\UseCases\HelpCenter\HelpCenterListUseCase;
 use itaxcix\Core\UseCases\HelpCenter\HelpCenterPublicListUseCase;
 use itaxcix\Core\UseCases\HelpCenter\HelpCenterUpdateUseCase;
+use itaxcix\Core\Handler\Company\CompanyCreateUseCaseHandler;
+use itaxcix\Core\Handler\Company\CompanyDeleteUseCaseHandler;
+use itaxcix\Core\Handler\Company\CompanyListUseCaseHandler;
+use itaxcix\Core\Handler\Company\CompanyUpdateUseCaseHandler;
+use itaxcix\Core\UseCases\Company\CompanyCreateUseCase;
+use itaxcix\Core\UseCases\Company\CompanyDeleteUseCase;
+use itaxcix\Core\UseCases\Company\CompanyListUseCase;
+use itaxcix\Core\UseCases\Company\CompanyUpdateUseCase;
 use function DI\autowire;
 
 return array(
@@ -193,4 +201,10 @@ return array(
     HelpCenterCreateUseCase::class => autowire(HelpCenterCreateUseCaseHandler::class),
     HelpCenterUpdateUseCase::class => autowire(HelpCenterUpdateUseCaseHandler::class),
     HelpCenterDeleteUseCase::class => autowire(HelpCenterDeleteUseCaseHandler::class),
+
+    // Company Use Cases
+    CompanyListUseCase::class => autowire(CompanyListUseCaseHandler::class),
+    CompanyCreateUseCase::class => autowire(CompanyCreateUseCaseHandler::class),
+    CompanyUpdateUseCase::class => autowire(CompanyUpdateUseCaseHandler::class),
+    CompanyDeleteUseCase::class => autowire(CompanyDeleteUseCaseHandler::class),
 );

@@ -26,6 +26,7 @@ use itaxcix\Infrastructure\Web\Controller\api\User\UserProfilePhotoController;
 use itaxcix\Infrastructure\Web\Controller\api\User\UserProfilePhotoUploadController;
 use itaxcix\Infrastructure\Web\Controller\docs\DocsController;
 use itaxcix\Infrastructure\Web\Controller\api\HelpCenter\HelpCenterController;
+use itaxcix\Infrastructure\Web\Controller\api\Company\CompanyController;
 
 return function (RouteCollector $r) {
     // API Routes v1
@@ -119,6 +120,12 @@ return function (RouteCollector $r) {
         $r->post('/help-center', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [HelpCenterController::class, 'create']]);
         $r->put('/help-center/{id}', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [HelpCenterController::class, 'update']]);
         $r->delete('/help-center/{id}', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [HelpCenterController::class, 'delete']]);
+
+        // Company Routes
+        $r->get('/companies', [JwtPermissionMiddleware::class, 'TABLAS MAESTRAS', [CompanyController::class, 'list']]);
+        $r->post('/companies', [JwtPermissionMiddleware::class, 'TABLAS MAESTRAS', [CompanyController::class, 'create']]);
+        $r->put('/companies/{id}', [JwtPermissionMiddleware::class, 'TABLAS MAESTRAS', [CompanyController::class, 'update']]);
+        $r->delete('/companies/{id}', [JwtPermissionMiddleware::class, 'TABLAS MAESTRAS', [CompanyController::class, 'delete']]);
 
     });
 

@@ -2833,6 +2833,249 @@
                 }
             }
         },
+        "/companies": {
+            "get": {
+                "tags": [
+                    "Company"
+                ],
+                "summary": "Lista empresas con paginación.",
+                "description": "Obtiene empresas paginadas para administración.",
+                "operationId": "getCompanies",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número de página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "perPage",
+                        "in": "query",
+                        "description": "Elementos por página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10,
+                            "maximum": 100,
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista paginada de empresas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "items": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/CompanyResponseDTO"
+                                                    }
+                                                },
+                                                "meta": {
+                                                    "properties": {
+                                                        "total": {
+                                                            "type": "integer",
+                                                            "example": 50
+                                                        },
+                                                        "perPage": {
+                                                            "type": "integer",
+                                                            "example": 10
+                                                        },
+                                                        "currentPage": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "lastPage": {
+                                                            "type": "integer",
+                                                            "example": 5
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Company"
+                ],
+                "summary": "Crea empresa.",
+                "description": "Crea una nueva empresa.",
+                "operationId": "createCompany",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CompanyRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Empresa creada correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Empresa creada correctamente."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/companies/{id}": {
+            "put": {
+                "tags": [
+                    "Company"
+                ],
+                "summary": "Actualiza empresa.",
+                "description": "Actualiza una empresa.",
+                "operationId": "updateCompany",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la empresa a actualizar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CompanyRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Empresa actualizada correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Empresa actualizada correctamente."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Company"
+                ],
+                "summary": "Elimina empresa.",
+                "description": "Elimina (desactiva) una empresa.",
+                "operationId": "deleteCompany",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la empresa a eliminar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Empresa eliminada correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Empresa eliminada correctamente."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/drivers/{id}/has-active-tuc": {
             "get": {
                 "tags": [
@@ -5340,6 +5583,77 @@
                 },
                 "type": "object"
             },
+            "CompanyPaginationRequestDTO": {
+                "description": "Parámetros de paginación para empresas",
+                "properties": {
+                    "page": {
+                        "description": "Página actual",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "perPage": {
+                        "description": "Elementos por página",
+                        "type": "integer",
+                        "example": 10
+                    }
+                },
+                "type": "object"
+            },
+            "CompanyRequestDTO": {
+                "description": "Datos necesarios para crear o actualizar una empresa",
+                "properties": {
+                    "id": {
+                        "description": "ID de la empresa (opcional para crear)",
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "ruc": {
+                        "description": "RUC de la empresa",
+                        "type": "string",
+                        "example": "20123456789"
+                    },
+                    "name": {
+                        "description": "Nombre de la empresa",
+                        "type": "string",
+                        "example": "Empresa de Transportes SAC",
+                        "nullable": true
+                    },
+                    "active": {
+                        "description": "Si la empresa está activa",
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "CompanyResponseDTO": {
+                "description": "Respuesta con los datos de una empresa",
+                "properties": {
+                    "id": {
+                        "description": "ID de la empresa",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "ruc": {
+                        "description": "RUC de la empresa",
+                        "type": "string",
+                        "example": "20123456789"
+                    },
+                    "name": {
+                        "description": "Nombre de la empresa",
+                        "type": "string",
+                        "example": "Empresa de Transportes SAC",
+                        "nullable": true
+                    },
+                    "active": {
+                        "description": "Si la empresa está activa",
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
             "EmergencyNumberRequestDTO": {
                 "description": "Datos necesarios para guardar el número de emergencia",
                 "properties": {
@@ -5982,6 +6296,10 @@
         {
             "name": "Registration",
             "description": "Registration"
+        },
+        {
+            "name": "Company",
+            "description": "Company"
         },
         {
             "name": "Driver",
