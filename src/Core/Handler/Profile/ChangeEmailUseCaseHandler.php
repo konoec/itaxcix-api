@@ -64,27 +64,15 @@ class ChangeEmailUseCaseHandler implements ChangeEmailUseCase
             throw new InvalidArgumentException('Tipo de contacto no encontrado.');
         }
 
-        // Crear o actualizar contacto de correo
-        $userContact = $this->userContactRepository->findUserContactByTypeAndUser(
-            $contactType->getId(),
-            $user->getId()
+        // Crear nuevo contacto de correo sin desactivar el anterior
+        $userContact = new UserContactModel(
+            id: null,
+            user: $user,
+            type: $contactType,
+            value: $dto->email,
+            confirmed: false,
+            active: true
         );
-
-        if ($userContact) {
-            // Si ya existe un contacto de correo, lo actualizamos
-            $userContact->setValue($dto->email);
-            $userContact->setConfirmed(false);
-        } else {
-            // Si no existe, creamos uno nuevo
-            $userContact = new UserContactModel(
-                id: null,
-                user: $user,
-                type: $contactType,
-                value: $dto->email,
-                confirmed: false,
-                active: true
-            );
-        }
 
         $userContact = $this->userContactRepository->saveUserContact($userContact);
 

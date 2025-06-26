@@ -66,27 +66,15 @@ class ChangePhoneUseCaseHandler implements ChangePhoneUseCase
             throw new InvalidArgumentException('Tipo de contacto no encontrado.');
         }
 
-        // Crear o actualizar contacto de teléfono
-        $userContact = $this->userContactRepository->findUserContactByTypeAndUser(
-            $contactType->getId(),
-            $user->getId()
+        // Crear nuevo contacto de teléfono sin desactivar el anterior
+        $userContact = new UserContactModel(
+            id: null,
+            user: $user,
+            type: $contactType,
+            value: $dto->phone,
+            confirmed: false,
+            active: true
         );
-
-        if ($userContact) {
-            // Si ya existe un contacto de teléfono, lo actualizamos
-            $userContact->setValue($dto->phone);
-            $userContact->setConfirmed(false);
-        } else {
-            // Si no existe, creamos uno nuevo
-            $userContact = new UserContactModel(
-                id: null,
-                user: $user,
-                type: $contactType,
-                value: $dto->phone,
-                confirmed: false,
-                active: true
-            );
-        }
 
         $userContact = $this->userContactRepository->saveUserContact($userContact);
 
