@@ -25,6 +25,7 @@ use itaxcix\Infrastructure\Web\Controller\api\Travel\TravelStatusController;
 use itaxcix\Infrastructure\Web\Controller\api\User\UserProfilePhotoController;
 use itaxcix\Infrastructure\Web\Controller\api\User\UserProfilePhotoUploadController;
 use itaxcix\Infrastructure\Web\Controller\docs\DocsController;
+use itaxcix\Infrastructure\Web\Controller\api\HelpCenter\HelpCenterController;
 
 return function (RouteCollector $r) {
     // API Routes v1
@@ -111,6 +112,13 @@ return function (RouteCollector $r) {
         $r->put('/admin/user-role/update', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [UserRoleController::class, 'update']]);
         $r->delete('/admin/user-role/delete', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [UserRoleController::class, 'delete']]);
         $r->get('/admin/user-role/list', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [UserRoleController::class, 'list']]);
+
+        // HelpCenter Routes
+        $r->get('/help-center', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [HelpCenterController::class, 'list']]);
+        $r->get('/help-center/public', [HelpCenterController::class, 'publicList']);
+        $r->post('/help-center', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [HelpCenterController::class, 'create']]);
+        $r->put('/help-center/{id}', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [HelpCenterController::class, 'update']]);
+        $r->delete('/help-center/{id}', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [HelpCenterController::class, 'delete']]);
 
     });
 

@@ -3079,6 +3079,292 @@
                 ]
             }
         },
+        "/help-center": {
+            "get": {
+                "tags": [
+                    "HelpCenter"
+                ],
+                "summary": "Lista elementos del centro de ayuda con paginación.",
+                "description": "Obtiene elementos del centro de ayuda paginados para administración.",
+                "operationId": "getHelpCenterItems",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número de página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "perPage",
+                        "in": "query",
+                        "description": "Elementos por página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10,
+                            "maximum": 100,
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista paginada de elementos del centro de ayuda",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "items": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/HelpCenterResponseDTO"
+                                                    }
+                                                },
+                                                "meta": {
+                                                    "properties": {
+                                                        "total": {
+                                                            "type": "integer",
+                                                            "example": 50
+                                                        },
+                                                        "perPage": {
+                                                            "type": "integer",
+                                                            "example": 10
+                                                        },
+                                                        "currentPage": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "lastPage": {
+                                                            "type": "integer",
+                                                            "example": 5
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "HelpCenter"
+                ],
+                "summary": "Crea elemento del centro de ayuda.",
+                "description": "Crea un nuevo elemento del centro de ayuda.",
+                "operationId": "createHelpCenterItem",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/HelpCenterRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Elemento creado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Elemento del centro de ayuda creado correctamente."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/help-center/public": {
+            "get": {
+                "tags": [
+                    "HelpCenter"
+                ],
+                "summary": "Lista elementos activos del centro de ayuda.",
+                "description": "Obtiene elementos activos del centro de ayuda para la aplicación móvil.",
+                "operationId": "getPublicHelpCenterItems",
+                "responses": {
+                    "200": {
+                        "description": "Lista de elementos activos del centro de ayuda",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/HelpCenterResponseDTO"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/help-center/{id}": {
+            "put": {
+                "tags": [
+                    "HelpCenter"
+                ],
+                "summary": "Actualiza elemento del centro de ayuda.",
+                "description": "Actualiza un elemento del centro de ayuda.",
+                "operationId": "updateHelpCenterItem",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del elemento a actualizar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/HelpCenterRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Elemento actualizado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Elemento del centro de ayuda actualizado correctamente."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "HelpCenter"
+                ],
+                "summary": "Elimina elemento del centro de ayuda.",
+                "description": "Elimina (desactiva) un elemento del centro de ayuda.",
+                "operationId": "deleteHelpCenterItem",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del elemento a eliminar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Elemento eliminado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Elemento del centro de ayuda eliminado correctamente."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/incidents/register": {
             "post": {
                 "tags": [
@@ -3324,6 +3610,35 @@
                                                 "message": {
                                                     "type": "string",
                                                     "example": "Se ha enviado un código de verificación a tu nuevo número"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Errores de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Petición inválida"
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "El número telefónico es inválido"
                                                 }
                                             },
                                             "type": "object"
@@ -5047,6 +5362,85 @@
                 },
                 "type": "object"
             },
+            "HelpCenterPaginationRequestDTO": {
+                "description": "Parámetros de paginación para el centro de ayuda",
+                "properties": {
+                    "page": {
+                        "description": "Página actual",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "perPage": {
+                        "description": "Elementos por página",
+                        "type": "integer",
+                        "example": 10
+                    }
+                },
+                "type": "object"
+            },
+            "HelpCenterRequestDTO": {
+                "description": "Datos necesarios para crear o actualizar un elemento del centro de ayuda",
+                "properties": {
+                    "id": {
+                        "description": "ID del elemento (opcional para crear)",
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "title": {
+                        "description": "Título de la sección",
+                        "type": "string",
+                        "example": "Viajes"
+                    },
+                    "subtitle": {
+                        "description": "Subtítulo de la pregunta",
+                        "type": "string",
+                        "example": "¿Cómo solicitar un viaje?"
+                    },
+                    "answer": {
+                        "description": "Respuesta detallada",
+                        "type": "string",
+                        "example": "Para solicitar un viaje, abre la aplicación y selecciona tu destino."
+                    },
+                    "active": {
+                        "description": "Si el elemento está activo",
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "HelpCenterResponseDTO": {
+                "description": "Respuesta con un elemento del centro de ayuda",
+                "properties": {
+                    "id": {
+                        "description": "ID del elemento",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "title": {
+                        "description": "Título de la sección",
+                        "type": "string",
+                        "example": "Viajes"
+                    },
+                    "subtitle": {
+                        "description": "Subtítulo de la pregunta",
+                        "type": "string",
+                        "example": "¿Cómo solicitar un viaje?"
+                    },
+                    "answer": {
+                        "description": "Respuesta detallada",
+                        "type": "string",
+                        "example": "Para solicitar un viaje, abre la aplicación y selecciona tu destino."
+                    },
+                    "active": {
+                        "description": "Si el elemento está activo",
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
             "RegisterIncidentRequestDTO": {
                 "description": "Datos necesarios para registrar un incidente",
                 "properties": {
@@ -5596,6 +5990,10 @@
         {
             "name": "Emergency",
             "description": "Emergency"
+        },
+        {
+            "name": "HelpCenter",
+            "description": "HelpCenter"
         },
         {
             "name": "Incident",

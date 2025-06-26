@@ -102,6 +102,16 @@ use itaxcix\Core\UseCases\Travel\RespondToTravelRequestUseCase;
 use itaxcix\Core\UseCases\Travel\StartAcceptedTravelUseCase;
 use itaxcix\Core\UseCases\User\UserProfilePhotoUploadUseCase;
 use itaxcix\Core\UseCases\User\UserProfilePhotoUseCase;
+use itaxcix\Core\Handler\HelpCenter\HelpCenterCreateUseCaseHandler;
+use itaxcix\Core\Handler\HelpCenter\HelpCenterDeleteUseCaseHandler;
+use itaxcix\Core\Handler\HelpCenter\HelpCenterListUseCaseHandler;
+use itaxcix\Core\Handler\HelpCenter\HelpCenterPublicListUseCaseHandler;
+use itaxcix\Core\Handler\HelpCenter\HelpCenterUpdateUseCaseHandler;
+use itaxcix\Core\UseCases\HelpCenter\HelpCenterCreateUseCase;
+use itaxcix\Core\UseCases\HelpCenter\HelpCenterDeleteUseCase;
+use itaxcix\Core\UseCases\HelpCenter\HelpCenterListUseCase;
+use itaxcix\Core\UseCases\HelpCenter\HelpCenterPublicListUseCase;
+use itaxcix\Core\UseCases\HelpCenter\HelpCenterUpdateUseCase;
 use function DI\autowire;
 
 return array(
@@ -176,4 +186,11 @@ return array(
     UserRoleDeleteUseCase::class => autowire(UserRoleDeleteUseCaseHandler::class),
     UserRoleListUseCase::class => autowire(UserRoleListUseCaseHandler::class),
     UserRoleUpdateUseCase::class => autowire(UserRoleUpdateUseCaseHandler::class),
+
+    // HelpCenter Use Cases
+    HelpCenterListUseCase::class => autowire(HelpCenterListUseCaseHandler::class),
+    HelpCenterPublicListUseCase::class => autowire(HelpCenterPublicListUseCaseHandler::class),
+    HelpCenterCreateUseCase::class => autowire(HelpCenterCreateUseCaseHandler::class),
+    HelpCenterUpdateUseCase::class => autowire(HelpCenterUpdateUseCaseHandler::class),
+    HelpCenterDeleteUseCase::class => autowire(HelpCenterDeleteUseCaseHandler::class),
 );

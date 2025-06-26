@@ -2,6 +2,7 @@
 
 use itaxcix\Core\Interfaces\company\CompanyRepositoryInterface;
 use itaxcix\Core\Interfaces\configuration\ConfigurationRepositoryInterface;
+use itaxcix\Core\Interfaces\help\HelpCenterRepositoryInterface;
 use itaxcix\Core\Interfaces\incident\IncidentRepositoryInterface;
 use itaxcix\Core\Interfaces\incident\IncidentTypeRepositoryInterface;
 use itaxcix\Core\Interfaces\location\CoordinatesRepositoryInterface;
@@ -85,6 +86,7 @@ use itaxcix\Infrastructure\Database\Repository\vehicle\DoctrineVehicleCategoryRe
 use itaxcix\Infrastructure\Database\Repository\vehicle\DoctrineVehicleClassRepository;
 use itaxcix\Infrastructure\Database\Repository\vehicle\DoctrineVehicleRepository;
 use itaxcix\Infrastructure\Database\Repository\vehicle\DoctrineVehicleUserRepository;
+use itaxcix\Infrastructure\Database\Repository\help\DoctrineHelpCenterRepository;
 use function DI\autowire;
 
 return [
@@ -140,4 +142,5 @@ return [
 
     IncidentRepositoryInterface::class => autowire(DoctrineIncidentRepository::class),
     IncidentTypeRepositoryInterface::class => autowire(DoctrineIncidentTypeRepository::class),
+    HelpCenterRepositoryInterface::class => autowire(DoctrineHelpCenterRepository::class),
 ];
