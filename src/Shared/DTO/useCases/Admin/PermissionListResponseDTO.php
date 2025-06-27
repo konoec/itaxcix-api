@@ -10,6 +10,6 @@ readonly class PermissionListResponseDTO
 {
     public function __construct(
         #[OA\Property(description: "Lista paginada de permisos")]
-        public PaginationResponseDTO $permissions
+        public PaginationResponseDTO $data
     ) {}
 }

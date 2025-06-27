@@ -20,7 +20,8 @@ class DoctrinePermissionRepository implements PermissionRepositoryInterface
         return new PermissionModel(
             id: $entity->getId(),
             name: $entity->getName(),
-            active: $entity->isActive()
+            active: $entity->isActive(),
+            web: $entity->isWeb()
         );
     }
 
@@ -55,6 +56,43 @@ class DoctrinePermissionRepository implements PermissionRepositoryInterface
         return array_map([$this, 'toDomain'], $results);
     }
 
+    public function findAllPermissionsPaginated(int $page, int $perPage): object
+    {
+        // Contar total de registros
+        $totalQb = $this->entityManager->createQueryBuilder()
+            ->select('COUNT(p.id)')
+            ->from(PermissionEntity::class, 'p');
+        $total = (int) $totalQb->getQuery()->getSingleScalarResult();
+
+        // Calcular offset y lastPage
+        $offset = ($page - 1) * $perPage;
+        $lastPage = ceil($total / $perPage);
+
+        // Obtener registros paginados
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('p')
+            ->from(PermissionEntity::class, 'p')
+            ->setFirstResult($offset)
+            ->setMaxResults($perPage);
+
+        $results = $qb->getQuery()->getResult();
+        $items = array_map([$this, 'toDomain'], $results);
+
+        // Crear metadatos de paginación
+        $meta = new \itaxcix\Shared\DTO\generic\PaginationMetaDTO(
+            total: $total,
+            perPage: $perPage,
+            currentPage: $page,
+            lastPage: $lastPage
+        );
+
+        // Retornar objeto con items y meta
+        return (object) [
+            'items' => $items,
+            'meta' => $meta
+        ];
+    }
+
     public function savePermission(PermissionModel $permission): PermissionModel
     {
         if ($permission->getId()){
@@ -65,6 +103,7 @@ class DoctrinePermissionRepository implements PermissionRepositoryInterface
 
         $entity->setName($permission->getName());
         $entity->setActive($permission->isActive());
+        $entity->setWeb($permission->isWeb());
         $this->entityManager->persist($entity);
         $this->entityManager->flush();
         return $this->toDomain($entity);

@@ -218,7 +218,7 @@ class Kernel implements RequestHandlerInterface
             $_SERVER['REQUEST_METHOD'] ?? 'GET',
             $uri,
             $_SERVER
-        )->withBody($stream);
+        )->withBody($stream)->withQueryParams($_GET);
 
         $headers = is_callable('getallheaders') ? getallheaders() : [];
         foreach ($headers as $name => $value) {
