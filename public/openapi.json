@@ -6182,15 +6182,15 @@
                         "type": "integer",
                         "example": 123
                     },
-                    "raterId": {
-                        "description": "ID del usuario que califica",
-                        "type": "integer",
-                        "example": 456
+                    "raterName": {
+                        "description": "Nombre del usuario que califica",
+                        "type": "string",
+                        "example": "Juan Pérez"
                     },
-                    "ratedId": {
-                        "description": "ID del usuario calificado",
-                        "type": "integer",
-                        "example": 789
+                    "ratedName": {
+                        "description": "Nombre del usuario calificado",
+                        "type": "string",
+                        "example": "María García"
                     },
                     "score": {
                         "description": "Puntaje otorgado (1-5)",

@@ -12,10 +12,10 @@ readonly class TravelRatingItemDto
         public int $id,
         #[OA\Property(description: "ID del viaje", example: 123)]
         public int $travelId,
-        #[OA\Property(description: "ID del usuario que califica", example: 456)]
-        public int $raterId,
-        #[OA\Property(description: "ID del usuario calificado", example: 789)]
-        public int $ratedId,
+        #[OA\Property(description: "Nombre del usuario que califica", example: "Juan Pérez")]
+        public string $raterName,
+        #[OA\Property(description: "Nombre del usuario calificado", example: "María García")]
+        public string $ratedName,
         #[OA\Property(description: "Puntaje otorgado (1-5)", example: 5)]
         public int $score,
         #[OA\Property(description: "Comentario", example: "Buen viaje", nullable: true)]
@@ -24,4 +24,3 @@ readonly class TravelRatingItemDto
         public string $createdAt
     ) {}
 }
-

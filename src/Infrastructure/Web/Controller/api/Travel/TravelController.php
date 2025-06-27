@@ -9,7 +9,6 @@ use itaxcix\Core\UseCases\Travel\GetTravelRatingsByTravelUseCase;
 use itaxcix\Infrastructure\Web\Controller\generic\AbstractController;
 use itaxcix\Shared\DTO\useCases\Travel\RateTravelRequestDto;
 use itaxcix\Shared\DTO\useCases\Travel\TravelHistoryResponseDto;
-use itaxcix\Shared\DTO\useCases\Travel\TravelRatingsByTravelResponseDto;
 use itaxcix\Shared\Validators\useCases\Travel\RateTravelValidator;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
@@ -157,8 +156,8 @@ class TravelController extends AbstractController
     #[OA\Get(
         path: "/travels/{travelId}/ratings",
         operationId: "getTravelRatingsByTravel",
-        description: "Obtiene las calificaciones del conductor y ciudadano para un viaje.",
-        summary: "Historial de calificaciones por viaje",
+        description: "Obtiene las calificaciones del conductor y ciudadano para un viaje. Retorna los nombres de los usuarios que califican y son calificados en lugar de sus IDs.",
+        summary: "Historial de calificaciones por viaje con nombres de usuarios",
         security: [["bearerAuth" => []]],
         tags: ["Travels"]
     )]
@@ -171,8 +170,53 @@ class TravelController extends AbstractController
     )]
     #[OA\Response(
         response: 200,
-        description: "Calificaciones del viaje",
-        content: new OA\JsonContent(ref: TravelRatingsByTravelResponseDto::class)
+        description: "Calificaciones del viaje con nombres de usuarios incluidos",
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(
+                    property: "driverRating",
+                    description: "Calificación dada por el conductor",
+                    properties: [
+                        new OA\Property(property: "id", description: "ID de la calificación", type: "integer", example: 1),
+                        new OA\Property(property: "travelId", description: "ID del viaje", type: "integer", example: 123),
+                        new OA\Property(property: "raterName", description: "Nombre del usuario que califica", type: "string", example: "Juan Pérez"),
+                        new OA\Property(property: "ratedName", description: "Nombre del usuario calificado", type: "string", example: "María García"),
+                        new OA\Property(property: "score", description: "Puntaje otorgado (1-5)", type: "integer", example: 5),
+                        new OA\Property(property: "comment", description: "Comentario", type: "string", example: "Buen viaje", nullable: true),
+                        new OA\Property(property: "createdAt", description: "Fecha de creación", type: "string", example: "2025-06-19T10:00:00Z")
+                    ],
+                    type: "object",
+                    nullable: true
+                ),
+                new OA\Property(
+                    property: "citizenRating",
+                    description: "Calificación dada por el ciudadano",
+                    properties: [
+                        new OA\Property(property: "id", description: "ID de la calificación", type: "integer", example: 2),
+                        new OA\Property(property: "travelId", description: "ID del viaje", type: "integer", example: 123),
+                        new OA\Property(property: "raterName", description: "Nombre del usuario que califica", type: "string", example: "María García"),
+                        new OA\Property(property: "ratedName", description: "Nombre del usuario calificado", type: "string", example: "Juan Pérez"),
+                        new OA\Property(property: "score", description: "Puntaje otorgado (1-5)", type: "integer", example: 4),
+                        new OA\Property(property: "comment", description: "Comentario", type: "string", example: "Conductor puntual", nullable: true),
+                        new OA\Property(property: "createdAt", description: "Fecha de creación", type: "string", example: "2025-06-19T10:05:00Z")
+                    ],
+                    type: "object",
+                    nullable: true
+                )
+            ],
+            type: "object"
+        )
+    )]
+    #[OA\Response(
+        response: 400,
+        description: "Petición inválida",
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: "success", type: "boolean", example: false),
+                new OA\Property(property: "message", type: "string", example: "Travel with ID {travelId} not found.")
+            ],
+            type: "object"
+        )
     )]
     public function getTravelRatingsByTravel(ServerRequestInterface $request): ResponseInterface
     {

@@ -34,6 +34,7 @@ class GetTravelRatingsByTravelUseCaseHandler implements GetTravelRatingsByTravel
         $citizenId = $travel->getCitizen()->getId();
         $driverRating = null;
         $citizenRating = null;
+
         foreach ($ratings as $rating) {
             if (!$rating instanceof RatingModel) {
                 continue; // o lanza una excepción si es crítico
@@ -43,8 +44,8 @@ class GetTravelRatingsByTravelUseCaseHandler implements GetTravelRatingsByTravel
                 $driverRating = new TravelRatingItemDto(
                     id: $rating->getId(),
                     travelId: $rating->getTravel()->getId(),
-                    raterId: $rating->getrater()->getId(),
-                    ratedId: $rating->getRated()->getId(),
+                    raterName: $rating->getRater()->getPerson()->getName(),
+                    ratedName: $rating->getRated()->getPerson()->getName(),
                     score: $rating->getScore(),
                     comment: $rating->getComment(),
                     createdAt: ""
@@ -53,8 +54,8 @@ class GetTravelRatingsByTravelUseCaseHandler implements GetTravelRatingsByTravel
                 $citizenRating = new TravelRatingItemDto(
                     id: $rating->getId(),
                     travelId: $rating->getTravel()->getId(),
-                    raterId: $rating->getRater()->getId(),
-                    ratedId: $rating->getRated()->getId(),
+                    raterName: $rating->getRater()->getPerson()->getName(),
+                    ratedName: $rating->getRated()->getPerson()->getName(),
                     score: $rating->getScore(),
                     comment: $rating->getComment(),
                     createdAt: ""
