@@ -20,8 +20,16 @@ class PermissionListUseCaseHandler implements PermissionListUseCase
 
     public function execute(int $page, int $perPage): ?PermissionListResponseDTO
     {
-        // Obtener permisos paginados desde el repositorio
-        $paginationResult = $this->permissionRepository->findAllPermissionsPaginated($page, $perPage);
+        // Obtener permisos paginados
+        $permissions = $this->permissionRepository->findAllPermissions();
+
+        // Calcular total y páginas
+        $total = count($permissions);
+        $lastPage = ceil($total / $perPage);
+
+        // Aplicar paginación
+        $offset = ($page - 1) * $perPage;
+        $paginatedPermissions = array_slice($permissions, $offset, $perPage);
 
         // Convertir los modelos a DTOs
         $permissionDTOs = array_map(
@@ -31,18 +39,26 @@ class PermissionListUseCaseHandler implements PermissionListUseCase
                 active: $permission->isActive(),
                 web: $permission->isWeb()
             ),
-            $paginationResult->items
+            $paginatedPermissions
+        );
+
+        // Crear metadatos de paginación
+        $meta = new PaginationMetaDTO(
+            total: $total,
+            perPage: $perPage,
+            currentPage: $page,
+            lastPage: $lastPage
         );
 
         // Crear respuesta paginada
         $paginatedResponse = new PaginationResponseDTO(
             items: $permissionDTOs,
-            meta: $paginationResult->meta
+            meta: $meta
         );
 
         // Crear y retornar el DTO de respuesta
         return new PermissionListResponseDTO(
-            data: $paginatedResponse
+            permissions: $paginatedResponse
         );
     }
 }

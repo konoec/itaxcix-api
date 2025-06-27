@@ -2,7 +2,7 @@
 
 namespace itaxcix\Core\UseCases\Admin;
 
-use itaxcix\Shared\DTO\useCases\Admin\PermissionListResponseDTO;
+ use itaxcix\Shared\DTO\useCases\Admin\PermissionListResponseDTO;
 
 interface PermissionListUseCase
 {
