@@ -110,7 +110,9 @@ class ProfileController extends AbstractController
             }
 
             // 2. Validar que el usuario autenticado solo pueda ver su propio perfil
-            $authenticatedUserId = $request->getAttribute('user_id');
+            // JwtMiddleware usa 'user' en lugar de 'user_id'
+            $user = $request->getAttribute('user');
+            $authenticatedUserId = $user['user_id'] ?? null;
             if (!$authenticatedUserId || (int)$authenticatedUserId !== $userId) {
                 return $this->error('No autorizado para ver este perfil', 401);
             }
@@ -119,7 +121,7 @@ class ProfileController extends AbstractController
             try {
                 $profile = $this->getAdminProfileUseCase->execute($userId);
                 return $this->ok($profile);
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 return $this->error($e->getMessage(), 500);
             }
         } catch (Exception $e) {
