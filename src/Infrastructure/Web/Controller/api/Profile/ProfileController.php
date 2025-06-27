@@ -2,6 +2,7 @@
 
 namespace itaxcix\Infrastructure\Web\Controller\api\Profile;
 
+use Exception;
 use itaxcix\Core\UseCases\Profile\GetAdminProfileUseCase;
 use itaxcix\Core\UseCases\Profile\GetCitizenProfileUseCase;
 use itaxcix\Core\UseCases\Profile\GetDriverProfileUseCase;
@@ -12,6 +13,7 @@ use itaxcix\Shared\DTO\useCases\Profile\DriverProfileResponseDTO;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Throwable;
 
 #[OA\Get(
     path: "/profile/admin/{userId}",
@@ -117,10 +119,10 @@ class ProfileController extends AbstractController
             try {
                 $profile = $this->getAdminProfileUseCase->execute($userId);
                 return $this->ok($profile);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 return $this->error($e->getMessage(), 500);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->error($e->getMessage(), 400);
         }
     }
@@ -144,10 +146,10 @@ class ProfileController extends AbstractController
             try {
                 $profile = $this->getCitizenProfileUseCase->execute($userId);
                 return $this->ok($profile);
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 return $this->error($e->getMessage(), 500);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->error($e->getMessage(), 400);
         }
     }
@@ -171,10 +173,10 @@ class ProfileController extends AbstractController
             try {
                 $profile = $this->getDriverProfileUseCase->execute($userId);
                 return $this->ok($profile);
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 return $this->error($e->getMessage(), 500);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->error($e->getMessage(), 400);
         }
     }
