@@ -54,8 +54,8 @@ class GetTravelRatingsByTravelUseCaseHandler implements GetTravelRatingsByTravel
                 $citizenRating = new TravelRatingItemDto(
                     id: $rating->getId(),
                     travelId: $rating->getTravel()->getId(),
-                    raterName: $rating->getRater()->getPerson()->getName() . $rating->getRater()->getPerson()->getLastName(),
-                    ratedName: $rating->getRated()->getPerson()->getName() . $rating->getRater()->getPerson()->getLastName(),
+                    raterName: $rating->getRater()->getPerson()->getName() . " " . $rating->getRater()->getPerson()->getLastName(),
+                    ratedName: $rating->getRated()->getPerson()->getName() . " " . $rating->getRater()->getPerson()->getLastName(),
                     score: $rating->getScore(),
                     comment: $rating->getComment(),
                     createdAt: ""
