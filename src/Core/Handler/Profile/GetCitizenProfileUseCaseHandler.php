@@ -27,7 +27,7 @@ class GetCitizenProfileUseCaseHandler implements GetCitizenProfileUseCase
     {
         $profile = $this->citizenProfileRepository->findCitizenProfileByUserId($userId);
         if (!$profile) {
-            return null;
+            throw new \InvalidArgumentException('No se encontró un perfil de ciudadano para este usuario.');
         }
 
         $email = $this->userContactRepository->findUserContactByUserIdAndContactTypeId($userId, 1);
@@ -45,4 +45,3 @@ class GetCitizenProfileUseCaseHandler implements GetCitizenProfileUseCase
         );
     }
 }
-

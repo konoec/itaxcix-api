@@ -108,8 +108,8 @@ class ProfileController extends AbstractController
             }
 
             // 2. Validar que el usuario autenticado solo pueda ver su propio perfil
-            $payload = $request->getAttribute('user');
-            if (!$payload || !isset($payload['user_id']) || (int)$payload['user_id'] !== $userId) {
+            $authenticatedUserId = $request->getAttribute('user_id');
+            if (!$authenticatedUserId || (int)$authenticatedUserId !== $userId) {
                 return $this->error('No autorizado para ver este perfil', 401);
             }
 
@@ -135,8 +135,8 @@ class ProfileController extends AbstractController
             }
 
             // 2. Validar que el usuario autenticado solo pueda ver su propio perfil
-            $payload = $request->getAttribute('user');
-            if (!$payload || !isset($payload['user_id']) || (int)$payload['user_id'] !== $userId) {
+            $authenticatedUserId = $request->getAttribute('user_id');
+            if (!$authenticatedUserId || (int)$authenticatedUserId !== $userId) {
                 return $this->error('No autorizado para ver este perfil', 401);
             }
 
@@ -162,8 +162,8 @@ class ProfileController extends AbstractController
             }
 
             // 2. Validar que el usuario autenticado solo pueda ver su propio perfil
-            $payload = $request->getAttribute('user');
-            if (!$payload || !isset($payload['user_id']) || (int)$payload['user_id'] !== $userId) {
+            $authenticatedUserId = $request->getAttribute('user_id');
+            if (!$authenticatedUserId || (int)$authenticatedUserId !== $userId) {
                 return $this->error('No autorizado para ver este perfil', 401);
             }
 
