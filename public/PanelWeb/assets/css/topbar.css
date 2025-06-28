@@ -1,10 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
 /* ===== TOP BAR STYLES ===== */
 
 /* Barra superior */
 .top-bar {
-    background: linear-gradient(180deg, #2b3962 0%, #1e2a4a 100%);
+    background: linear-gradient(180deg, #22304a 0%, #16203a 100%);
     backdrop-filter: blur(12px);
     padding: 5.6px 20px;
     display: flex;
@@ -15,7 +13,7 @@
     top: 0;
     z-index: 10;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
     color: #ecf0f1;
     overflow: hidden;
     width: 100%;
@@ -23,6 +21,7 @@
     right: 0;
     margin: 0;
     box-sizing: border-box;
+    height: 65px;
 }
 
 .top-bar::before {
@@ -32,9 +31,19 @@
     left: 0;
     right: 0;
     height: 100%;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
     pointer-events: none;
     z-index: 1;
+}
+
+.top-bar::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 20px;
+    right: 20px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(124, 150, 204, 0.4) 50%, transparent 100%);
 }
 
 .top-bar h1 {
@@ -200,7 +209,7 @@
         min-width: 250px;
         max-width: 350px;
     }
-    
+
     .top-bar .user-display {
         max-width: 150px;
     }
@@ -212,7 +221,7 @@
     .top-bar .sidebar-toggle {
         display: flex !important;
     }
-    
+
     /* Reducir padding del top-bar en móvil y asegurar ancho completo */
     .top-bar {
         padding: 4px 15px; /* Menos padding horizontal */
@@ -223,19 +232,19 @@
         margin: 0 !important;
         box-sizing: border-box !important;
     }
-    
+
     /* Ajustar título para pantallas pequeñas */
     .top-bar h3 {
         font-size: 0.9rem; /* Reducir más en móvil */
         margin-left: 10px; /* Menos margen */
         letter-spacing: 0.01em; /* Menos espaciado entre letras */
     }
-    
+
     /* Ocultar información del usuario en móviles, solo mostrar imagen */
     .top-bar .user-info {
         display: none !important;
     }
-    
+
     /* Contenedor del perfil solo para la imagen */
     .top-bar .profile-container {
         min-width: auto !important;
@@ -247,7 +256,7 @@
         justify-content: center !important;
         flex-shrink: 0 !important;
     }
-    
+
     .top-bar .profile-image {
         width: 36px !important;
         height: 36px !important;
@@ -267,12 +276,12 @@
         margin: 0 !important;
         box-sizing: border-box !important;
     }
-    
+
     .top-bar h3 {
         font-size: 0.8rem;
         margin-left: 8px;
     }
-    
+
     .top-bar .sidebar-toggle {
         width: 32px;
         height: 32px;

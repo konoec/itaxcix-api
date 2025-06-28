@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
 /* LOGIN CSS - Version Limpia */
 
 body {
@@ -9,7 +7,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: 'Inter', 'SF Pro Display', 'Helvetica Neue', 'Arial', sans-serif;
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
   padding: 0;
   box-sizing: border-box;
   border-image-slice: 0%;
@@ -17,7 +15,7 @@ body {
 
 /* El contenedor del formulario */
 .login-container {
-  font-family: 'Inter', 'SF Pro Display', 'Helvetica Neue', 'Arial', sans-serif;
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
   background-color: #2b39627a;
   padding: 30px 25px;
   border-radius: 10px;

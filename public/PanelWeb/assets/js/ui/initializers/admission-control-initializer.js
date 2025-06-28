@@ -42,6 +42,12 @@ class ControlAdmisionInitializer {
                 }
             }
 
+            // Configurar permisos inmediatamente con pantalla de carga
+            if (window.PermissionsService) {
+                console.log('🔧 Inicializando sistema de permisos...');
+                window.PermissionsService.initializePermissions();
+            }
+
             // Configurar verificación de sesión
             setInterval(authChecker.checkTokenExpiration, 60000);
             

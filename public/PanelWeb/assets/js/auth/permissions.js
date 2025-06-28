@@ -504,12 +504,22 @@ class PermissionsService {    constructor() {
     initializePermissions() {
         console.log('🚀 Inicializando sistema de permisos...');
         
+        // Mostrar mensaje de progreso
+        this.updateLoadingStep('Cargando permisos del usuario...');
+        
         const userPermissions = this.getUserPermissions();
         console.log('👤 Permisos del usuario:', userPermissions);
         
+        // Actualizar mensaje de progreso
+        this.updateLoadingStep('Configurando menú de navegación...');
+        
         // Configurar elementos del menú según permisos (siempre)
         this.configureMenuPermissions();
-          // Validar ruta actual solo si estamos en una página específica de módulo
+        
+        // Actualizar mensaje de progreso
+        this.updateLoadingStep('Validando ruta actual...');
+        
+        // Validar ruta actual solo si estamos en una página específica de módulo
         const currentPath = window.location.pathname;
         const isModulePage = Object.values(this.modulePermissions).some(module => 
             module.route && currentPath.toLowerCase().includes(module.route.toLowerCase().replace(/^\//, ''))
@@ -522,7 +532,57 @@ class PermissionsService {    constructor() {
             console.log('📍 Página general o inicio, omitiendo validación de ruta específica');
         }
         
-        console.log('✅ Sistema de permisos inicializado');
+        // Finalizar configuración
+        setTimeout(() => {
+            this.updateLoadingStep('Finalizando configuración...');
+            setTimeout(() => {
+                this.hidePermissionsLoading();
+                console.log('✅ Sistema de permisos inicializado');
+            }, 300);
+        }, 500);
+    }
+
+    /**
+     * Actualiza el mensaje de progreso en la pantalla de carga
+     * @param {string} message - Mensaje a mostrar
+     */
+    updateLoadingStep(message) {
+        const stepElement = document.getElementById('loading-step');
+        if (stepElement) {
+            stepElement.textContent = message;
+        }
+    }    /**
+     * Oculta la pantalla de carga y muestra el contenido
+     */
+    hidePermissionsLoading() {
+        const loadingOverlay = document.getElementById('permissions-loading');
+        const sidebarMenu = document.querySelector('.sidebar-menu');
+        const mainContent = document.querySelector('.inicio-content') || 
+                           document.querySelector('.main-content .content');
+        
+        if (loadingOverlay) {
+            loadingOverlay.classList.add('hidden');
+            
+            // Remover completamente después de la animación
+            setTimeout(() => {
+                if (loadingOverlay.parentNode) {
+                    loadingOverlay.parentNode.removeChild(loadingOverlay);
+                }
+            }, 500);
+        }
+        
+        // Mostrar elementos con animación suave
+        if (sidebarMenu) {
+            sidebarMenu.classList.add('permissions-ready');
+        }
+        
+        if (mainContent) {
+            setTimeout(() => {
+                mainContent.classList.add('permissions-ready');
+            }, 200);
+        }
+        
+        console.log('🎉 Interfaz lista y permisos configurados');
     }
 
     /**

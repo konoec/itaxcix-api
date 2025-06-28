@@ -22,15 +22,11 @@ class LoginService {
       };
       
       console.log('Enviando datos:', { ...loginData, password: '[OCULTA]' });
-      console.log('⚠️ NOTA: Si ves errores de certificado SSL, es normal en desarrollo');
       
-      // Intentar múltiples estrategias para manejar problemas SSL
+      // Realizar petición al servidor
       let response;
-      let lastError;
       
-      // Estrategia 1: HTTPS normal (puede fallar por SSL)
       try {
-        console.log('🔒 Intentando HTTPS con certificado SSL...');
         response = await fetch(`${this.baseUrl}/auth/login`, {
           method: 'POST',
           headers: {
@@ -39,13 +35,8 @@ class LoginService {
           },
           body: JSON.stringify(loginData)
         });
-        console.log('✅ HTTPS exitoso');
-      } catch (sslError) {
-        console.warn('❌ HTTPS falló (problema SSL):', sslError.message);
-        lastError = sslError;
-
-
-        
+      } catch (error) {
+        throw new Error('No se pudo conectar con el servidor: ' + error.message);
       }
 
       console.log('Status:', response.status, response.statusText);
@@ -61,7 +52,15 @@ class LoginService {
       } catch (parseError) {
         console.error('Error al parsear respuesta JSON:', parseError);
         console.error('Texto de respuesta:', responseText);
-        throw new Error('Error en la comunicación con el servidor');
+        
+        // Mostrar el error exacto del servidor
+        if (responseText && responseText.trim()) {
+          // Limpiar tags HTML para mejor legibilidad
+          const cleanError = responseText.replace(/<[^>]*>/g, '').trim();
+          throw new Error(`Error del servidor: ${cleanError}`);
+        } else {
+          throw new Error('Error en la comunicación con el servidor - respuesta vacía');
+        }
       }
         console.log("Respuesta del servidor:", baseResponse);
 

@@ -9,7 +9,12 @@
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-      <title>Panel de Administración - Aprobación de Conductores</title>    <!-- Hojas de estilo -->
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../../assets/Recourse/Logo/1.png">
+    <link rel="shortcut icon" href="../../assets/Recourse/Logo/1.png">
+    
+    <title>Panel de Administración - Aprobación de Conductores</title>    <!-- Hojas de estilo -->
     <link rel="stylesheet" href="../../assets/css/base.css">
     <link rel="stylesheet" href="../../assets/css/sidebar.css">
     <link rel="stylesheet" href="../../assets/css/topbar.css">
@@ -21,6 +26,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+    <!-- Pantalla de carga para configuración de permisos -->
+    <div id="permissions-loading" class="permissions-loading-overlay">
+        <div class="loading-content">
+            <div class="loading-car">🚕</div>
+            <h2 class="loading-title">Configurando Permisos</h2>
+            <p class="loading-message">
+                Estamos configurando tu sesión y verificando los permisos asignados...
+            </p>
+            <p class="loading-steps">
+                <span id="loading-step">Validando credenciales...</span>
+            </p>
+        </div>
+    </div>
+
     <!-- Contenedor principal del layout -->
     <div class="layout">
         <!-- Barra lateral de navegación -->
@@ -41,7 +60,7 @@
                         </a>
                     </li>                    <!-- Módulo de Admisión de conductores -->
                     <li class="active" id="menu-admission">
-                        <a class="module-admission" href="javascript:void(0)">
+                        <a class="module-admission" href="../Admission/AdmissionControl.html">
                             <i class="fas fa-user-check"></i>
                             Admisión de conductores
                         </a>
@@ -94,7 +113,7 @@
             <!-- Barra superior con controles y información de usuario -->
             <div class="top-bar">
                 <button id="open-sidebar" class="sidebar-toggle">
-                    <i class="fas fa-bars"></i>                </button>                 <h3>ADMISSION CONTROL</h3>
+                    <i class="fas fa-bars"></i>                </button>                 <h3>CONTROL ADMISION</h3>
                 <div class="profile-container" id="profile-container" style="cursor: pointer;" title="Ver mi perfil">
                     <div class="profile-image" id="profile-image"></div>
                     <div class="user-info">
@@ -299,25 +318,9 @@
     <script src="../../assets/js/auth/permissions.js"></script>
     <script src="../../assets/js/auth/route-guard.js"></script>
     
-    <!-- DEBUG: Script de testing temporal (REMOVER EN PRODUCCIÓN) -->
-
-    
     <script>
-        // Inicializa RouteGuard para proteger la página y verificar permisos
+        // Inicializa RouteGuard para proteger la página
         window.routeGuard = new RouteGuard("../../index.html");
-        
-        // Debug de permisos (remover en producción)
-        setTimeout(() => {
-            console.log('🐛 DEBUG - Estado del RouteGuard:');
-            if (window.routeGuard) {
-                window.routeGuard.debug();
-            }
-            
-            console.log('🐛 DEBUG - Estado de PermissionsService:');
-            if (window.PermissionsService) {
-                window.PermissionsService.debugCurrentState();
-            }
-        }, 1000);
     </script>
 
     <!-- 2. Modelos de datos -->
@@ -334,50 +337,12 @@
     
     <script src="../../assets/js/ui/initializers/admission-control-initializer.js"></script>
     
-    <!-- 5. Utilidades de sesión -->
-    <script src="../../assets/js/auth/session-cleaner.js"></script>
-      <script>
-        // Verificar acceso específico al módulo de Admisión de Conductores
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('📋 Verificando acceso al módulo de Admisión...');
-            
-            // Configurar menú de permisos inmediatamente
-            if (window.PermissionsService) {
-                console.log('🔧 Configurando menú según permisos...');
-                window.PermissionsService.configureMenuPermissions();
-            }
-            
-            setTimeout(() => {
-                if (window.routeGuard && typeof window.routeGuard.hasPermission === 'function') {
-                    // Verificar si tiene permiso para este módulo específico
-                    const hasAdmisionAccess = window.routeGuard.hasPermission('ADMISIÓN DE CONDUCTORES');
-                    
-                    console.log(`🔍 Permiso para Admisión de Conductores: ${hasAdmisionAccess}`);
-                    
-                    if (!hasAdmisionAccess) {
-                        console.warn('🚫 Usuario no tiene acceso al módulo de Admisión de Conductores');
-                        
-                        // Buscar una ruta autorizada
-                        if (window.PermissionsService) {
-                            const authorizedRoute = window.PermissionsService.getFirstAvailableRoute();
-                            if (authorizedRoute) {
-                                console.log(`🔄 Redirigiendo a: ${authorizedRoute}`);
-                                window.location.replace(`../../${authorizedRoute}`);
-                            } else {
-                                console.log('🔄 No hay rutas autorizadas, volviendo al login');
-                                window.location.replace('../../index.html');
-                            }
-                        } else {
-                            window.location.replace('../../index.html');
-                        }
-                    } else {
-                        console.log('✅ Usuario autorizado para Admisión de Conductores');
-                    }
-                } else {
-                    console.warn('⚠️ RouteGuard o método hasPermission no disponible');
-                }
-            }, 500); // Dar tiempo para que se carguen todos los servicios
-        });
-    </script>
+    <!-- Toast notification for password recovery -->
+    <div id="recovery-toast" class="recovery-toast">
+        <div class="recovery-toast-content">
+            <i class="fas fa-check-circle"></i>
+            <span id="recovery-toast-message">Foto de perfil actualizada correctamente</span>
+        </div>
+    </div>
 </body>
 </html>

@@ -419,6 +419,481 @@ class ProfileService {
             hasDefaultAvatar: !!this.defaultAvatarCache
         };
     }
+
+    /**
+     * Debug: Verifica el estado del token de autenticación
+     */
+    debugAuthToken() {
+        const token = sessionStorage.getItem("authToken");
+        console.log('🔍 Debug Token:', {
+            exists: !!token,
+            length: token?.length || 0,
+            starts: token?.substring(0, 20) + '...' || 'No token',
+            type: typeof token,
+            sessionStorageKeys: Object.keys(sessionStorage)
+        });
+        return token;
+    }
+
+    /**
+     * Solicita cambio de correo electrónico
+     * @param {number} userId - ID del usuario
+     * @param {string} newEmail - Nuevo correo electrónico
+     * @returns {Promise<Object>} - Resultado de la operación
+     */
+    async requestEmailChange(userId, newEmail) {
+        if (!userId) {
+            return { success: false, message: 'ID de usuario requerido' };
+        }
+
+        if (!newEmail) {
+            return { success: false, message: 'Correo electrónico requerido' };
+        }
+
+        // Validar formato de email básico
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(newEmail)) {
+            return { success: false, message: 'El formato del correo electrónico es inválido' };
+        }
+
+        try {
+            console.log(`📧 Solicitando cambio de correo para usuario ${userId} a ${newEmail}...`);
+
+            // Debug del token
+            this.debugAuthToken();
+            
+            const token = sessionStorage.getItem("authToken");
+            if (!token) {
+                console.error('❌ No se encontró token de autenticación en sessionStorage');
+                // Intentar otros nombres posibles para el token
+                const alternativeTokens = [
+                    sessionStorage.getItem("token"),
+                    sessionStorage.getItem("accessToken"),
+                    sessionStorage.getItem("jwt"),
+                    sessionStorage.getItem("bearerToken")
+                ];
+                console.log('🔍 Tokens alternativos encontrados:', alternativeTokens.filter(t => t));
+                return { success: false, message: 'No hay token de autenticación' };
+            }
+
+            console.log('✅ Token encontrado, preparando solicitud...');
+
+            const requestBody = {
+                userId: parseInt(userId),
+                email: newEmail
+            };
+
+            console.log('📤 Enviando solicitud con:', {
+                url: `${this.baseUrl}/profile/change-email`,
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token.substring(0, 20)}...`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: requestBody
+            });
+
+            const response = await fetch(`${this.baseUrl}/profile/change-email`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': token ? 'Bearer ' + token : '',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            console.log('📥 Respuesta recibida:', {
+                status: response.status,
+                statusText: response.statusText,
+                ok: response.ok
+            });
+
+            if (!response.ok) {
+                let errorMessage = `Error del servidor: ${response.status}`;
+                
+                try {
+                    const errorData = await response.json();
+                    console.log('📥 Error data received:', errorData);
+                    
+                    // Priorizar el mensaje específico del error de la API
+                    if (errorData.error && errorData.error.message) {
+                        errorMessage = errorData.error.message;
+                        console.log('✅ Usando mensaje específico del error:', errorMessage);
+                    } else if (errorData.message) {
+                        errorMessage = errorData.message;
+                        console.log('✅ Usando mensaje general:', errorMessage);
+                    } else {
+                        // Solo usar mensajes genéricos si no hay mensaje específico de la API
+                        console.log('⚠️ No hay mensaje específico, usando mensaje genérico');
+                        if (response.status === 401) {
+                            errorMessage = 'Token de autenticación inválido';
+                        } else if (response.status === 404) {
+                            errorMessage = 'Usuario no encontrado';
+                        } else if (response.status === 400) {
+                            errorMessage = 'Datos inválidos';
+                        }
+                    }
+                } catch (e) {
+                    console.warn('⚠️ No se pudo parsear respuesta de error:', e);
+                    // Si no se puede parsear el error, usar mensajes por defecto
+                    if (response.status === 401) {
+                        errorMessage = 'Token de autenticación inválido';
+                    } else if (response.status === 404) {
+                        errorMessage = 'Usuario no encontrado';
+                    } else if (response.status === 400) {
+                        errorMessage = 'Datos inválidos';
+                    }
+                }
+
+                console.error(`❌ Error ${response.status}:`, errorMessage);
+                return { success: false, message: errorMessage };
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                console.log('✅ Solicitud de cambio de correo enviada exitosamente');
+                
+                return { 
+                    success: true, 
+                    message: data.data?.message || 'Se ha enviado un código de verificación a tu nuevo correo',
+                    data: data.data
+                };
+            } else {
+                return { 
+                    success: false, 
+                    message: data.error?.message || data.message || 'Error al procesar la solicitud' 
+                };
+            }
+
+        } catch (error) {
+            console.error('❌ Error al solicitar cambio de correo:', error);
+            return { success: false, message: 'Error de conexión al servidor' };
+        }
+    }
+
+    /**
+     * Verifica el código de cambio de correo electrónico
+     * @param {number} userId - ID del usuario
+     * @param {string} code - Código de verificación
+     * @returns {Promise<Object>} - Resultado de la operación
+     */
+    async verifyEmailChange(userId, code) {
+        if (!userId) {
+            return { success: false, message: 'ID de usuario requerido' };
+        }
+
+        if (!code) {
+            return { success: false, message: 'Código de verificación requerido' };
+        }
+
+        try {
+            console.log(`🔐 Verificando código de cambio de correo para usuario ${userId}...`);
+
+            // Debug del token
+            this.debugAuthToken();
+
+            const token = sessionStorage.getItem("authToken");
+            if (!token) {
+                return { success: false, message: 'No hay token de autenticación' };
+            }
+
+            const requestBody = {
+                userId: parseInt(userId),
+                code: code.toString()
+            };
+
+            const response = await fetch(`${this.baseUrl}/profile/verify-email`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': token ? 'Bearer ' + token : '',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) {
+                let errorMessage = `Error del servidor: ${response.status}`;
+                
+                try {
+                    const errorData = await response.json();
+                    if (errorData.error && errorData.error.message) {
+                        errorMessage = errorData.error.message;
+                    } else if (errorData.message) {
+                        errorMessage = errorData.message;
+                    }
+                } catch (e) {
+                    // Si no se puede parsear el error, usar el mensaje por defecto
+                }
+
+                if (response.status === 401) {
+                    errorMessage = 'Token de autenticación inválido';
+                } else if (response.status === 404) {
+                    errorMessage = 'Usuario no encontrado o código inválido';
+                } else if (response.status === 400) {
+                    errorMessage = 'Código de verificación inválido';
+                }
+
+                return { success: false, message: errorMessage };
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                console.log('✅ Código de verificación válido, correo actualizado');
+                
+                return { 
+                    success: true, 
+                    message: data.data?.message || 'Correo electrónico actualizado correctamente',
+                    data: data.data
+                };
+            } else {
+                return { 
+                    success: false, 
+                    message: data.error?.message || data.message || 'Código de verificación inválido' 
+                };
+            }
+
+        } catch (error) {
+            console.error('❌ Error al verificar código de cambio de correo:', error);
+            return { success: false, message: 'Error de conexión al servidor' };
+        }
+    }
+
+    /**
+     * Solicita cambio de número de teléfono
+     * @param {number} userId - ID del usuario
+     * @param {string} newPhone - Nuevo número de teléfono
+     * @returns {Promise<Object>} - Resultado de la operación
+     */
+    async requestPhoneChange(userId, newPhone) {
+        if (!userId) {
+            return { success: false, message: 'ID de usuario requerido' };
+        }
+
+        if (!newPhone) {
+            return { success: false, message: 'Número de teléfono requerido' };
+        }
+
+        // Validar formato de teléfono básico
+        const phoneRegex = /^[0-9+\-\s()]+$/;
+        if (!phoneRegex.test(newPhone) || newPhone.length < 10) {
+            return { success: false, message: 'El formato del número de teléfono es inválido' };
+        }
+
+        try {
+            console.log(`📱 Solicitando cambio de teléfono para usuario ${userId} a ${newPhone}...`);
+
+            // Debug del token
+            this.debugAuthToken();
+            
+            const token = sessionStorage.getItem("authToken");
+            if (!token) {
+                console.error('❌ No se encontró token de autenticación en sessionStorage');
+                // Intentar otros nombres posibles para el token
+                const alternativeTokens = [
+                    sessionStorage.getItem("token"),
+                    sessionStorage.getItem("accessToken"),
+                    sessionStorage.getItem("jwt"),
+                    sessionStorage.getItem("bearerToken")
+                ];
+                console.log('🔍 Tokens alternativos encontrados:', alternativeTokens.filter(t => t));
+                return { success: false, message: 'No hay token de autenticación' };
+            }
+
+            console.log('✅ Token encontrado, preparando solicitud...');
+
+            const requestBody = {
+                userId: parseInt(userId),
+                phone: newPhone
+            };
+
+            console.log('📤 Enviando solicitud con:', {
+                url: `${this.baseUrl}/profile/change-phone`,
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token.substring(0, 20)}...`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: requestBody
+            });
+
+            const response = await fetch(`${this.baseUrl}/profile/change-phone`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': token ? 'Bearer ' + token : '',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            console.log('📥 Respuesta recibida:', {
+                status: response.status,
+                statusText: response.statusText,
+                ok: response.ok
+            });
+
+            if (!response.ok) {
+                let errorMessage = `Error del servidor: ${response.status}`;
+                
+                try {
+                    const errorData = await response.json();
+                    console.log('📥 Error data received:', errorData);
+                    
+                    // Priorizar el mensaje específico del error de la API
+                    if (errorData.error && errorData.error.message) {
+                        errorMessage = errorData.error.message;
+                        console.log('✅ Usando mensaje específico del error:', errorMessage);
+                    } else if (errorData.message) {
+                        errorMessage = errorData.message;
+                        console.log('✅ Usando mensaje general:', errorMessage);
+                    } else {
+                        // Solo usar mensajes genéricos si no hay mensaje específico de la API
+                        console.log('⚠️ No hay mensaje específico, usando mensaje genérico');
+                        if (response.status === 401) {
+                            errorMessage = 'Token de autenticación inválido';
+                        } else if (response.status === 404) {
+                            errorMessage = 'Usuario no encontrado';
+                        } else if (response.status === 400) {
+                            errorMessage = 'Datos inválidos';
+                        }
+                    }
+                } catch (e) {
+                    console.warn('⚠️ No se pudo parsear respuesta de error:', e);
+                    // Si no se puede parsear el error, usar mensajes por defecto
+                    if (response.status === 401) {
+                        errorMessage = 'Token de autenticación inválido';
+                    } else if (response.status === 404) {
+                        errorMessage = 'Usuario no encontrado';
+                    } else if (response.status === 400) {
+                        errorMessage = 'Datos inválidos';
+                    }
+                }
+
+                console.error(`❌ Error ${response.status}:`, errorMessage);
+                return { success: false, message: errorMessage };
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                console.log('✅ Solicitud de cambio de teléfono enviada exitosamente');
+                
+                return { 
+                    success: true, 
+                    message: data.data?.message || 'Se ha enviado un código de verificación a tu nuevo número',
+                    data: data.data
+                };
+            } else {
+                return { 
+                    success: false, 
+                    message: data.error?.message || data.message || 'Error al procesar la solicitud' 
+                };
+            }
+
+        } catch (error) {
+            console.error('❌ Error al solicitar cambio de teléfono:', error);
+            return { success: false, message: 'Error de conexión al servidor' };
+        }
+    }
+
+    /**
+     * Verifica el código de cambio de número de teléfono
+     * @param {number} userId - ID del usuario
+     * @param {string} code - Código de verificación
+     * @returns {Promise<Object>} - Resultado de la operación
+     */
+    async verifyPhoneChange(userId, code) {
+        if (!userId) {
+            return { success: false, message: 'ID de usuario requerido' };
+        }
+
+        if (!code) {
+            return { success: false, message: 'Código de verificación requerido' };
+        }
+
+        try {
+            console.log(`🔐 Verificando código de cambio de teléfono para usuario ${userId}...`);
+
+            // Debug del token
+            this.debugAuthToken();
+
+            const token = sessionStorage.getItem("authToken");
+            if (!token) {
+                return { success: false, message: 'No hay token de autenticación' };
+            }
+
+            const requestBody = {
+                userId: parseInt(userId),
+                code: code.toString()
+            };
+
+            const response = await fetch(`${this.baseUrl}/profile/verify-phone`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': token ? 'Bearer ' + token : '',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) {
+                let errorMessage = `Error del servidor: ${response.status}`;
+                
+                try {
+                    const errorData = await response.json();
+                    if (errorData.error && errorData.error.message) {
+                        errorMessage = errorData.error.message;
+                    } else if (errorData.message) {
+                        errorMessage = errorData.message;
+                    }
+                } catch (e) {
+                    // Si no se puede parsear el error, usar el mensaje por defecto
+                }
+
+                if (response.status === 401) {
+                    errorMessage = 'Token de autenticación inválido';
+                } else if (response.status === 404) {
+                    errorMessage = 'Usuario no encontrado o código inválido';
+                } else if (response.status === 400) {
+                    errorMessage = 'Código de verificación inválido';
+                }
+
+                return { success: false, message: errorMessage };
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                console.log('✅ Código de verificación válido, teléfono actualizado');
+                
+                return { 
+                    success: true, 
+                    message: data.data?.message || 'Número telefónico actualizado correctamente',
+                    data: data.data
+                };
+            } else {
+                return { 
+                    success: false, 
+                    message: data.error?.message || data.message || 'Código de verificación inválido' 
+                };
+            }
+
+        } catch (error) {
+            console.error('❌ Error al verificar código de cambio de teléfono:', error);
+            return { success: false, message: 'Error de conexión al servidor' };
+        }
+    }
 }
 
 // Exportar para uso en navegador

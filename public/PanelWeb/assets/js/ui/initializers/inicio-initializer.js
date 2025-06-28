@@ -28,10 +28,10 @@ class InicioInitializer {
             if (!window.inicioController) {
                 window.inicioController = new InicioController();
                 console.log('🏠 InicioController inicializado');
-            }            // Configurar menú de permisos inmediatamente
+            }            // Configurar permisos inmediatamente con pantalla de carga
             if (window.PermissionsService) {
-                console.log('🔧 Configurando menú según permisos...');
-                window.PermissionsService.configureMenuPermissions();
+                console.log('🔧 Inicializando sistema de permisos...');
+                window.PermissionsService.initializePermissions();
             }
 
             // Configurar verificación de sesión

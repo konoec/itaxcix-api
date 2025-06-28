@@ -25,10 +25,18 @@ class ConfigurationInitializer {
             // Inicializar ProfileController de forma INDEPENDIENTE
             if (!window.profileControllerInstance) {
                 window.profileControllerInstance = new ProfileController();
-                console.log('👤 ProfileController inicializado');            }            // Inicializar ConfigurationController específico de esta página
-            if (!window.configurationController) {
-                window.configurationController = new ConfigurationController();
-                console.log('⚙️ ConfigurationController inicializado');
+                console.log('👤 ProfileController inicializado');            }            // Los controladores específicos de configuración se auto-inicializan
+            // EmergencyContactController, PermissionsController y RolesController
+            // se inicializan automáticamente si detectan sus elementos en el DOM
+            console.log('⚙️ Controladores de configuración se inicializarán automáticamente');
+
+            // Configurar funcionalidad adicional para permisos
+            ConfigurationInitializer.setupPermissionsFeatures();
+
+            // Configurar permisos inmediatamente con pantalla de carga
+            if (window.PermissionsService) {
+                console.log('🔧 Inicializando sistema de permisos...');
+                window.PermissionsService.initializePermissions();
             }
 
             // Configurar verificación de sesión
@@ -38,6 +46,34 @@ class ConfigurationInitializer {
         } else {
             console.log('❌ Usuario no autenticado, redirigiendo...');
         }
+    }
+
+    /**
+     * Configura funcionalidades adicionales para permisos
+     */
+    static setupPermissionsFeatures() {
+        console.log('📋 Configurando funcionalidades de permisos...');
+        
+        // Verificar que el servicio de configuración esté disponible
+        const checkServices = () => {
+            if (window.ConfigurationService) {
+                console.log('✅ ConfigurationService disponible');
+                
+                // Verificar que el controlador esté disponible
+                setTimeout(() => {
+                    if (window.permissionsController) {
+                        console.log('✅ PermissionsController disponible y configurado');
+                    } else {
+                        console.log('⚠️ PermissionsController no disponible aún');
+                    }
+                }, 500);
+            } else {
+                console.log('⚠️ ConfigurationService no disponible, esperando...');
+                setTimeout(checkServices, 100);
+            }
+        };
+        
+        checkServices();
     }
 }
 

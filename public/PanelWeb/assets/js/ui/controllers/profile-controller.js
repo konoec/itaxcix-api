@@ -363,6 +363,15 @@ class ProfileController {    constructor() {
         
         // Event listeners para cambio de foto
         this.setupPhotoChangeListeners();
+        
+        // Event listeners para cambio de correo
+        this.setupEmailChangeListeners();
+        
+        // Event listeners para cambio de teléfono
+        this.setupPhoneChangeListeners();
+        
+        // Debug de elementos configurados
+        this.debugModalElements();
     }
 
     /**
@@ -411,9 +420,18 @@ class ProfileController {    constructor() {
      * Configura los event listeners para cambio de foto
      */
     setupPhotoChangeListeners() {
+        console.log('🔧 Configurando listeners para cambio de foto...');
+        console.log('📋 Elementos disponibles:', {
+            changePhotoBtn: !!this.changePhotoBtn,
+            photoInput: !!this.photoInput,
+            changePhotoBtnId: this.changePhotoBtn?.id,
+            photoInputId: this.photoInput?.id
+        });
+        
         if (this.changePhotoBtn && this.photoInput) {
             // Botón para abrir selector de archivo
             this.changePhotoBtn.addEventListener('click', (e) => {
+                console.log('🖱️ Click en botón cambiar foto');
                 e.preventDefault();
                 e.stopPropagation();
                 this.photoInput.click();
@@ -421,316 +439,873 @@ class ProfileController {    constructor() {
 
             // Manejar selección de archivo
             this.photoInput.addEventListener('change', (e) => {
+                console.log('📁 Archivo seleccionado:', e.target.files[0]?.name);
                 const file = e.target.files[0];
                 if (file) {
                     this.handlePhotoSelection(file);
                 }
             });
 
-            console.log('📸 Event listeners para cambio de foto configurados');
+            console.log('📸 Event listeners para cambio de foto configurados exitosamente');
+        } else {
+            console.warn('⚠️ No se pudieron configurar listeners - elementos faltantes');
         }
     }
 
     /**
-     * Maneja la selección de una nueva foto
-     * @param {File} file - Archivo de imagen seleccionado
+     * Inicializa los event listeners para el cambio de correo
      */
-    async handlePhotoSelection(file) {
+    setupEmailChangeListeners() {
+        // Verificar que el elemento existe antes de proceder
+        if (!this.modalEmail) {
+            console.warn('⚠️ Elemento modalEmail no encontrado, saltando configuración de cambio de correo');
+            return;
+        }
+
         try {
-            // Validar el archivo
-            if (!this.validateImageFile(file)) {
-                return;
-            }
-
-            console.log('📸 Procesando nueva foto...', {
-                name: file.name,
-                size: file.size,
-                type: file.type
-            });
-
-            // Mostrar estado de carga
-            this.setAvatarLoading(true);            // Convertir a base64
-            const base64Image = await this.fileToBase64(file);
-            console.log('📸 Base64 generado:', {
-                length: base64Image.length,
-                prefix: base64Image.substring(0, 50),
-                hasDataPrefix: base64Image.startsWith('data:'),
-                estimatedSizeKB: Math.round(base64Image.length * 0.75 / 1024)            });
-
-            // Redimensionar y convertir a JPEG de calidad reducida (500px max)
-            const processedImage = await this.processImageForUpload(base64Image, 500);
+            // Agregar clase CSS para indicar que es clickeable
+            this.modalEmail.classList.add('email-clickable');
             
-            // Validar el base64 procesado antes de enviar
-            const validation = this.profileService.validateBase64Image(processedImage);
-            if (!validation.isValid) {
-                throw new Error(`Imagen inválida: ${validation.error}`);
-            }
-            
-            console.log('✅ Validación de imagen procesada exitosa:', validation);            // Subir la imagen procesada
-            console.log('📤 Iniciando subida al servidor...');
-            const result = await this.profileService.uploadProfilePhoto(this.currentUserId, processedImage);
-
-            if (result.success) {                // Actualizar cache e interfaz
-                const imageUrl = this.profileService.base64ToImageUrl(processedImage);
-                this.imageCache.set(this.currentUserId, imageUrl);
-                
-                // Actualizar imagen del modal
-                if (this.modalAvatar) {
-                    this.modalAvatar.src = imageUrl;
+            // Listener para abrir/cerrar el formulario de cambio de correo
+            this.modalEmail.addEventListener('click', () => {
+                console.log('📧 Click en email - abriendo formulario de cambio');
+                // Crear contenedor si no existe
+                if (!this.emailChangeContainer) {
+                    this.createEmailChangeContainer();
                 }
+                // Alternar el modo de cambio
+                this.toggleEmailChangeMode();
+            });
+            
+            console.log('✅ Event listeners para cambio de correo configurados');
+        } catch (error) {
+            console.error('❌ Error al configurar listeners de cambio de correo:', error);
+        }
+    }
+
+    /**
+     * Inicializa los event listeners para el cambio de teléfono
+     */
+    setupPhoneChangeListeners() {
+        // Verificar que el elemento existe antes de proceder
+        if (!this.modalPhone) {
+            console.warn('⚠️ Elemento modalPhone no encontrado, saltando configuración de cambio de teléfono');
+            return;
+        }
+
+        try {
+            // Agregar clase CSS para indicar que es clickeable
+            this.modalPhone.classList.add('phone-clickable');
+            
+            // Listener para abrir/cerrar el formulario de cambio de teléfono
+            this.modalPhone.addEventListener('click', () => {
+                console.log('📱 Click en teléfono - abriendo formulario de cambio');
+                // Crear contenedor si no existe
+                if (!this.phoneChangeContainer) {
+                    this.createPhoneChangeContainer();
+                }
+                // Alternar el modo de cambio
+                this.togglePhoneChangeMode();
+            });
+            
+            console.log('✅ Event listeners para cambio de teléfono configurados');
+        } catch (error) {
+            console.error('❌ Error al configurar listeners de cambio de teléfono:', error);
+        }
+    }
+
+    /**
+     * Crea el contenedor expandible para cambiar correo
+     */
+    createEmailChangeContainer() {
+        if (!this.modalEmail) {
+            console.warn('⚠️ modalEmail no disponible para crear contenedor de cambio');
+            return;
+        }
+
+        const emailInfoItem = this.modalEmail.closest('.info-item');
+        if (!emailInfoItem) {
+            console.warn('⚠️ No se encontró el info-item parent del correo');
+            return;
+        }
+
+        try {
+            // Crear contenedor expandible si no existe
+            let emailChangeContainer = emailInfoItem.querySelector('.email-change-container');
+            if (!emailChangeContainer) {
+                emailChangeContainer = document.createElement('div');
+                emailChangeContainer.className = 'email-change-container';
+                emailChangeContainer.style.display = 'none';
+                emailChangeContainer.innerHTML = `
+                    <div class="email-change-form">
+                        <div class="form-group">
+                            <label for="new-email-input">Nuevo correo electrónico:</label>
+                            <input type="email" id="new-email-input" class="form-input" placeholder="ejemplo@correo.com">
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" id="send-email-code-btn" class="btn-primary">Enviar código</button>
+                            <button type="button" id="cancel-email-change-btn" class="btn-secondary">Cancelar</button>
+                        </div>
+                        <div class="email-status-message" style="display: none;"></div>
+                    </div>
+                    
+                    <div class="email-verify-form" style="display: none;">
+                        <div class="verify-info">
+                            <p>Se ha enviado un código de verificación a tu nuevo correo electrónico.</p>
+                            <p>Por favor, ingresa el código de 6 dígitos:</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="verify-code-input">Código de verificación:</label>
+                            <input type="text" id="verify-code-input" class="form-input" placeholder="123456" maxlength="6">
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" id="verify-email-code-btn" class="btn-primary">Verificar código</button>
+                            <button type="button" id="cancel-verify-btn" class="btn-secondary">Cancelar</button>
+                        </div>
+                        <div class="verify-status-message" style="display: none;"></div>
+                    </div>
+                `;
                 
-                // Actualizar imagen en la barra superior
-                this.setProfileImage(imageUrl);
+                emailInfoItem.appendChild(emailChangeContainer);
                 
-                this.showToast('Foto de perfil actualizada correctamente', 'success');
-                console.log('✅ Foto actualizada exitosamente');
+                // Configurar event listeners para los botones
+                this.setupEmailChangeButtons(emailChangeContainer);
+                
+                console.log('✅ Contenedor de cambio de correo creado');
+            }
+
+            this.emailChangeContainer = emailChangeContainer;
+        } catch (error) {
+            console.error('❌ Error al crear contenedor de cambio de correo:', error);
+        }
+    }
+
+    /**
+     * Crea el contenedor expandible para cambiar teléfono
+     */
+    createPhoneChangeContainer() {
+        if (!this.modalPhone) {
+            console.warn('⚠️ modalPhone no disponible para crear contenedor de cambio');
+            return;
+        }
+
+        const phoneInfoItem = this.modalPhone.closest('.info-item');
+        if (!phoneInfoItem) {
+            console.warn('⚠️ No se encontró el info-item parent del teléfono');
+            return;
+        }
+
+        try {
+            // Crear contenedor expandible si no existe
+            let phoneChangeContainer = phoneInfoItem.querySelector('.phone-change-container');
+            if (!phoneChangeContainer) {
+                phoneChangeContainer = document.createElement('div');
+                phoneChangeContainer.className = 'phone-change-container';
+                phoneChangeContainer.style.display = 'none';
+                phoneChangeContainer.innerHTML = `
+                    <div class="phone-change-form">
+                        <div class="form-group">
+                            <label for="new-phone-input">Nuevo número de teléfono:</label>
+                            <input type="tel" id="new-phone-input" class="form-input" placeholder="593987654321">
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" id="send-phone-code-btn" class="btn-primary">Enviar código</button>
+                            <button type="button" id="cancel-phone-change-btn" class="btn-secondary">Cancelar</button>
+                        </div>
+                        <div class="phone-status-message" style="display: none;"></div>
+                    </div>
+                    
+                    <div class="phone-verify-form" style="display: none;">
+                        <div class="verify-info">
+                            <p>Se ha enviado un código de verificación a tu nuevo número de teléfono.</p>
+                            <p>Por favor, ingresa el código de 6 dígitos:</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="verify-phone-code-input">Código de verificación:</label>
+                            <input type="text" id="verify-phone-code-input" class="form-input" placeholder="123456" maxlength="6">
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" id="verify-phone-code-btn" class="btn-primary">Verificar código</button>
+                            <button type="button" id="cancel-phone-verify-btn" class="btn-secondary">Cancelar</button>
+                        </div>
+                        <div class="verify-phone-status-message" style="display: none;"></div>
+                    </div>
+                `;
+                
+                phoneInfoItem.appendChild(phoneChangeContainer);
+                
+                // Configurar event listeners para los botones
+                this.setupPhoneChangeButtons(phoneChangeContainer);
+                
+                console.log('✅ Contenedor de cambio de teléfono creado');
+            }
+
+            this.phoneChangeContainer = phoneChangeContainer;
+        } catch (error) {
+            console.error('❌ Error al crear contenedor de cambio de teléfono:', error);
+        }
+    }
+
+    /**
+     * Configura los event listeners para los botones de cambio de correo
+     */
+    setupEmailChangeButtons(container) {
+        // Botón enviar código
+        const sendCodeBtn = container.querySelector('#send-email-code-btn');
+        if (sendCodeBtn) {
+            sendCodeBtn.addEventListener('click', () => {
+                this.handleSendEmailCode();
+            });
+        }
+
+        // Botón cancelar cambio
+        const cancelBtn = container.querySelector('#cancel-email-change-btn');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                this.toggleEmailChangeMode(false);
+            });
+        }
+
+        // Botón verificar código
+        const verifyBtn = container.querySelector('#verify-email-code-btn');
+        if (verifyBtn) {
+            verifyBtn.addEventListener('click', () => {
+                this.handleVerifyEmailCode();
+            });
+        }
+
+        // Botón cancelar verificación
+        const cancelVerifyBtn = container.querySelector('#cancel-verify-btn');
+        if (cancelVerifyBtn) {
+            cancelVerifyBtn.addEventListener('click', () => {
+                this.resetEmailChangeForm();
+            });
+        }
+
+        // Enter key en input de nuevo correo
+        const newEmailInput = container.querySelector('#new-email-input');
+        if (newEmailInput) {
+            newEmailInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    this.handleSendEmailCode();
+                }
+            });
+        }
+
+        // Enter key en input de código
+        const verifyCodeInput = container.querySelector('#verify-code-input');
+        if (verifyCodeInput) {
+            verifyCodeInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    this.handleVerifyEmailCode();
+                }
+            });
+        }
+    }
+
+    /**
+     * Configura los event listeners para los botones de cambio de teléfono
+     */
+    setupPhoneChangeButtons(container) {
+        // Botón enviar código
+        const sendCodeBtn = container.querySelector('#send-phone-code-btn');
+        if (sendCodeBtn) {
+            sendCodeBtn.addEventListener('click', () => {
+                this.handleSendPhoneCode();
+            });
+        }
+
+        // Botón cancelar cambio
+        const cancelBtn = container.querySelector('#cancel-phone-change-btn');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                this.togglePhoneChangeMode(false);
+            });
+        }
+
+        // Botón verificar código
+        const verifyBtn = container.querySelector('#verify-phone-code-btn');
+        if (verifyBtn) {
+            verifyBtn.addEventListener('click', () => {
+                this.handleVerifyPhoneCode();
+            });
+        }
+
+        // Botón cancelar verificación
+        const cancelVerifyBtn = container.querySelector('#cancel-phone-verify-btn');
+        if (cancelVerifyBtn) {
+            cancelVerifyBtn.addEventListener('click', () => {
+                this.resetPhoneChangeForm();
+            });
+        }
+
+        // Enter key en input de nuevo teléfono
+        const newPhoneInput = container.querySelector('#new-phone-input');
+        if (newPhoneInput) {
+            newPhoneInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    this.handleSendPhoneCode();
+                }
+            });
+        }
+
+        // Enter key en input de código
+        const verifyPhoneCodeInput = container.querySelector('#verify-phone-code-input');
+        if (verifyPhoneCodeInput) {
+            verifyPhoneCodeInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    this.handleVerifyPhoneCode();
+                }
+            });
+        }
+    }
+
+    /**
+     * Alterna el modo de cambio de correo
+     */
+    toggleEmailChangeMode(show = null) {
+        if (!this.emailChangeContainer) return;
+
+        const emailInfoItem = this.modalEmail.closest('.info-item');
+        const isCurrentlyExpanded = this.emailChangeContainer.style.display !== 'none';
+        
+        if (show === null) {
+            show = !isCurrentlyExpanded;
+        }
+
+        if (show) {
+            // Expandir contenedor
+            this.emailChangeContainer.style.display = 'block';
+            emailInfoItem.classList.add('expanded');
+            
+            // Resetear formulario
+            this.resetEmailChangeForm();
+            
+            // Hacer focus en el input
+            const newEmailInput = this.emailChangeContainer.querySelector('#new-email-input');
+            if (newEmailInput) {
+                setTimeout(() => newEmailInput.focus(), 100);
+            }
+        } else {
+            // Contraer contenedor
+            this.emailChangeContainer.style.display = 'none';
+            emailInfoItem.classList.remove('expanded');
+            
+            // Resetear formulario
+            this.resetEmailChangeForm();
+        }
+    }
+
+    /**
+     * Alterna el modo de cambio de teléfono
+     */
+    togglePhoneChangeMode(show = null) {
+        if (!this.phoneChangeContainer) return;
+
+        const phoneInfoItem = this.modalPhone.closest('.info-item');
+        const isCurrentlyExpanded = this.phoneChangeContainer.style.display !== 'none';
+        
+        if (show === null) {
+            show = !isCurrentlyExpanded;
+        }
+
+        if (show) {
+            // Expandir contenedor
+            this.phoneChangeContainer.style.display = 'block';
+            phoneInfoItem.classList.add('expanded');
+            
+            // Resetear formulario
+            this.resetPhoneChangeForm();
+            
+            // Hacer focus en el input
+            const newPhoneInput = this.phoneChangeContainer.querySelector('#new-phone-input');
+            if (newPhoneInput) {
+                setTimeout(() => newPhoneInput.focus(), 100);
+            }
+        } else {
+            // Contraer contenedor
+            this.phoneChangeContainer.style.display = 'none';
+            phoneInfoItem.classList.remove('expanded');
+            
+            // Resetear formulario
+            this.resetPhoneChangeForm();
+        }
+    }
+
+    /**
+     * Resetea el formulario de cambio de correo
+     */
+    resetEmailChangeForm() {
+        if (!this.emailChangeContainer) return;
+
+        // Mostrar formulario de cambio, ocultar verificación
+        const changeForm = this.emailChangeContainer.querySelector('.email-change-form');
+        const verifyForm = this.emailChangeContainer.querySelector('.email-verify-form');
+        
+        if (changeForm) changeForm.style.display = 'block';
+        if (verifyForm) verifyForm.style.display = 'none';
+
+        // Limpiar inputs
+        const newEmailInput = this.emailChangeContainer.querySelector('#new-email-input');
+        const verifyCodeInput = this.emailChangeContainer.querySelector('#verify-code-input');
+        
+        if (newEmailInput) newEmailInput.value = '';
+        if (verifyCodeInput) verifyCodeInput.value = '';
+
+        // Limpiar mensajes
+        this.clearEmailStatusMessage();
+        this.clearVerifyStatusMessage();
+
+        // Habilitar botones
+        this.setEmailButtonsEnabled(true);
+    }
+
+    /**
+     * Resetea el formulario de cambio de teléfono
+     */
+    resetPhoneChangeForm() {
+        if (!this.phoneChangeContainer) return;
+
+        // Mostrar formulario de cambio, ocultar verificación
+        const changeForm = this.phoneChangeContainer.querySelector('.phone-change-form');
+        const verifyForm = this.phoneChangeContainer.querySelector('.phone-verify-form');
+        
+        if (changeForm) changeForm.style.display = 'block';
+        if (verifyForm) verifyForm.style.display = 'none';
+
+        // Limpiar inputs
+        const newPhoneInput = this.phoneChangeContainer.querySelector('#new-phone-input');
+        const verifyPhoneCodeInput = this.phoneChangeContainer.querySelector('#verify-phone-code-input');
+        
+        if (newPhoneInput) newPhoneInput.value = '';
+        if (verifyPhoneCodeInput) verifyPhoneCodeInput.value = '';
+
+        // Limpiar mensajes
+        this.clearPhoneStatusMessage();
+        this.clearVerifyPhoneStatusMessage();
+
+        // Habilitar botones
+        this.setPhoneButtonsEnabled(true);
+    }
+
+    /**
+     * Maneja el envío del código de verificación
+     */
+    async handleSendEmailCode() {
+        const newEmailInput = this.emailChangeContainer.querySelector('#new-email-input');
+        if (!newEmailInput) return;
+
+        const newEmail = newEmailInput.value.trim();
+        if (!newEmail) {
+            this.showEmailStatusMessage('Por favor, ingresa un correo electrónico válido', 'error');
+            return;
+        }
+
+        // Validar formato básico
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(newEmail)) {
+            this.showEmailStatusMessage('El formato del correo electrónico es inválido', 'error');
+            return;
+        }
+
+        // Verificar que no sea el mismo correo actual
+        const currentEmail = this.modalEmail.textContent;
+        if (newEmail === currentEmail) {
+            this.showEmailStatusMessage('El nuevo correo debe ser diferente al actual', 'error');
+            return;
+        }
+
+        try {
+            // Deshabilitar botones durante la solicitud
+            this.setEmailButtonsEnabled(false);
+            this.showEmailStatusMessage('Enviando código de verificación...', 'loading');
+
+            // Enviar solicitud de cambio
+            const result = await this.profileService.requestEmailChange(this.currentUserId, newEmail);
+
+            if (result.success) {
+                // Mostrar formulario de verificación
+                this.showEmailVerificationForm();
+                this.showVerifyStatusMessage(result.message, 'success');
             } else {
-                throw new Error(result.message);
+                this.showEmailStatusMessage(result.message, 'error');
+                this.setEmailButtonsEnabled(true);
             }
 
         } catch (error) {
-            console.error('❌ Error al cambiar foto:', error);
-            this.showToast(`❌ Error: ${error.message}`, 'error');
-        } finally {
-            this.setAvatarLoading(false);
-            // Limpiar input
-            if (this.photoInput) {
-                this.photoInput.value = '';
-            }
+            console.error('Error al enviar código de verificación:', error);
+            this.showEmailStatusMessage('Error de conexión. Inténtalo de nuevo.', 'error');
+            this.setEmailButtonsEnabled(true);
         }
-    }    /**
-     * Valida que el archivo sea una imagen válida
-     * @param {File} file - Archivo a validar
-     * @returns {boolean}
-     */
-    validateImageFile(file) {
-        console.log('🔍 Validando archivo:', {
-            name: file.name,
-            size: file.size,
-            type: file.type,
-            lastModified: new Date(file.lastModified)
-        });
-
-        // Validar tipo - aceptar varios formatos que se convertirán a JPEG
-        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/bmp'];
-        if (!validTypes.includes(file.type)) {
-            this.showToast('❌ Formato no válido. Use JPG, PNG, GIF, WebP o BMP', 'error');
-            return false;
-        }
-
-        // Validar tamaño (máximo 10MB para permitir conversión)
-        const maxSize = 10 * 1024 * 1024; // 10MB
-        if (file.size > maxSize) {
-            this.showToast('❌ Imagen muy grande. Máximo 10MB', 'error');
-            return false;
-        }
-
-        // Validar tamaño mínimo (1KB)
-        const minSize = 1024; // 1KB
-        if (file.size < minSize) {
-            this.showToast('❌ Archivo muy pequeño. Mínimo 1KB', 'error');
-            return false;
-        }
-
-        console.log('✅ Archivo válido - se convertirá a JPEG si es necesario');
-        return true;
-    }/**
-     * Convierte un archivo a base64 en formato JPEG
-     * @param {File} file - Archivo a convertir
-     * @returns {Promise<string>}
-     */
-    fileToBase64(file) {
-        return new Promise((resolve, reject) => {
-            console.log('🔄 Convirtiendo archivo a JPEG base64...');
-            
-            // Si el archivo ya es JPEG, usar FileReader directo
-            if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    const result = reader.result;
-                    console.log('✅ Conversión directa JPEG exitosa:', {
-                        originalSize: file.size,
-                        base64Size: result.length,
-                        format: 'JPEG (directo)'
-                    });
-                    resolve(result);
-                };
-                reader.onerror = (error) => {
-                    console.error('❌ Error en conversión directa:', error);
-                    reject(new Error('Error al procesar la imagen JPEG'));
-                };
-                reader.readAsDataURL(file);
-                return;
-            }
-
-            // Para otros formatos, convertir a JPEG usando canvas
-            console.log(`🎨 Convirtiendo de ${file.type} a JPEG...`);
-            
-            const reader = new FileReader();
-            reader.onload = () => {
-                const img = new Image();
-                img.onload = () => {
-                    try {
-                        // Crear canvas para conversión
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        
-                        // Mantener dimensiones originales (optimización opcional)
-                        canvas.width = img.width;
-                        canvas.height = img.height;
-                        
-                        // Fondo blanco para JPEG (elimina transparencia)
-                        ctx.fillStyle = 'white';
-                        ctx.fillRect(0, 0, canvas.width, canvas.height);
-                        
-                        // Dibujar imagen
-                        ctx.drawImage(img, 0, 0);
-                        
-                        // Convertir a JPEG con calidad alta
-                        const jpegBase64 = canvas.toDataURL('image/jpeg', 0.9);
-                        
-                        console.log('✅ Conversión a JPEG exitosa:', {
-                            originalSize: file.size,
-                            originalFormat: file.type,
-                            jpegBase64Size: jpegBase64.length,
-                            dimensions: `${canvas.width}x${canvas.height}`,
-                            quality: '90%'
-                        });
-                        
-                        resolve(jpegBase64);
-                    } catch (error) {
-                        console.error('❌ Error en conversión con canvas:', error);
-                        reject(new Error('Error al convertir imagen a JPEG'));
-                    }
-                };
-                img.onerror = () => {
-                    console.error('❌ Error al cargar imagen en elemento img');
-                    reject(new Error('Error al procesar la imagen'));
-                };
-                img.src = reader.result;
-            };
-            reader.onerror = (error) => {
-                console.error('❌ Error en FileReader:', error);
-                reject(new Error('Error al leer el archivo'));
-            };
-            reader.readAsDataURL(file);
-        });
     }
 
     /**
-     * Establece el estado de carga en el avatar
-     * @param {boolean} loading - Si está cargando o no
+     * Maneja la verificación del código
      */
-    setAvatarLoading(loading) {
-        if (this.avatarLarge) {
-            if (loading) {
-                this.avatarLarge.classList.add('avatar-loading');
+    async handleVerifyEmailCode() {
+        const verifyCodeInput = this.emailChangeContainer.querySelector('#verify-code-input');
+        if (!verifyCodeInput) return;
+
+        const code = verifyCodeInput.value.trim();
+        if (!code) {
+            this.showVerifyStatusMessage('Por favor, ingresa el código de verificación', 'error');
+            return;
+        }
+
+        if (code.length !== 6) {
+            this.showVerifyStatusMessage('El código debe tener 6 dígitos', 'error');
+            return;
+        }
+
+        try {
+            // Deshabilitar botones durante la verificación
+            this.setVerifyButtonsEnabled(false);
+            this.showVerifyStatusMessage('Verificando código...', 'loading');
+
+            // Verificar código
+            const result = await this.profileService.verifyEmailChange(this.currentUserId, code);
+
+            if (result.success) {
+                this.showVerifyStatusMessage(result.message, 'success');
+                
+                // Actualizar el correo en la interfaz
+                const newEmailInput = this.emailChangeContainer.querySelector('#new-email-input');
+                if (newEmailInput && newEmailInput.value) {
+                    this.modalEmail.textContent = newEmailInput.value;
+                    
+                    // Actualizar sessionStorage
+                    sessionStorage.setItem('email', newEmailInput.value);
+                    sessionStorage.setItem('userEmail', newEmailInput.value);
+                }
+
+                // Cerrar formulario después de un delay
+                setTimeout(() => {
+                    this.toggleEmailChangeMode(false);
+                    this.showSuccessToast('Correo electrónico actualizado correctamente');
+                }, 2000);
+
             } else {
-                this.avatarLarge.classList.remove('avatar-loading');
+                this.showVerifyStatusMessage(result.message, 'error');
+                this.setVerifyButtonsEnabled(true);
             }
+
+        } catch (error) {
+            console.error('Error al verificar código:', error);
+            this.showVerifyStatusMessage('Error de conexión. Inténtalo de nuevo.', 'error');
+            this.setVerifyButtonsEnabled(true);
         }
-    }    /**
-     * Muestra un mensaje toast usando el mismo diseño que la recuperación de contraseña
-     * @param {string} message - Mensaje a mostrar
-     * @param {string} type - Tipo: success, error, warning
+    }
+
+    /**
+     * Maneja el envío del código de verificación para teléfono
      */
-    showToast(message, type = 'info') {
-        // Crear el toast con los mismos estilos que la recuperación de contraseña
-        let toast = document.getElementById('profile-notification-toast');
-        
-        if (!toast) {
-            // Crear estructura HTML igual a la de recovery-toast
-            toast = document.createElement('div');
-            toast.id = 'profile-notification-toast';
-            toast.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                z-index: 10000;
-                opacity: 0;
-                transform: translateX(100%);
-                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                pointer-events: none;
-            `;
-            
-            const toastContent = document.createElement('div');
-            toastContent.style.cssText = `
-                background: linear-gradient(135deg, #1fb583, #059669);
-                color: white;
-                padding: 16px 20px;
-                border-radius: 8px;
-                box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                min-width: 320px;
-                max-width: 400px;
-                font-family: 'Inter', sans-serif;
-                border: 1px solid rgba(255, 255, 255, 0.2);
-            `;
-            
-            const icon = document.createElement('i');
-            icon.style.cssText = `
-                font-size: 20px;
-                color: rgba(255, 255, 255, 0.9);
-                flex-shrink: 0;
-            `;
-            
-            const messageSpan = document.createElement('span');
-            messageSpan.style.cssText = `
-                font-size: 14px;
-                font-weight: 500;
-                line-height: 1.4;
-                letter-spacing: 0.025em;
-            `;
-            
-            toastContent.appendChild(icon);
-            toastContent.appendChild(messageSpan);
-            toast.appendChild(toastContent);
-            document.body.appendChild(toast);
+    async handleSendPhoneCode() {
+        const newPhoneInput = this.phoneChangeContainer.querySelector('#new-phone-input');
+        if (!newPhoneInput) return;
+
+        const newPhone = newPhoneInput.value.trim();
+        if (!newPhone) {
+            this.showPhoneStatusMessage('Por favor, ingresa un número de teléfono válido', 'error');
+            return;
         }
-        
-        const toastContent = toast.querySelector('div');
-        const icon = toast.querySelector('i');
-        const messageSpan = toast.querySelector('span');
-        
-        // Configurar el mensaje
-        messageSpan.textContent = message;
-        
-        // Configurar colores según el tipo
-        if (type === 'success') {
-            icon.className = 'fas fa-check-circle';
-            toastContent.style.background = 'linear-gradient(135deg, #1fb583, #059669)';
-            toastContent.style.boxShadow = '0 8px 32px rgba(16, 185, 129, 0.3)';
-        } else if (type === 'error') {
-            icon.className = 'fas fa-exclamation-circle';
-            toastContent.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
-            toastContent.style.boxShadow = '0 8px 32px rgba(239, 68, 68, 0.3)';
-        } else if (type === 'warning') {
-            icon.className = 'fas fa-exclamation-triangle';
-            toastContent.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
-            toastContent.style.boxShadow = '0 8px 32px rgba(245, 158, 11, 0.3)';
+
+        // Validar formato básico
+        const phoneRegex = /^[0-9+\-\s()]+$/;
+        if (!phoneRegex.test(newPhone) || newPhone.length < 10) {
+            this.showPhoneStatusMessage('El formato del número de teléfono es inválido', 'error');
+            return;
         }
+
+        // Verificar que no sea el mismo teléfono actual
+        const currentPhone = this.modalPhone.textContent;
+        if (newPhone === currentPhone) {
+            this.showPhoneStatusMessage('El nuevo número debe ser diferente al actual', 'error');
+            return;
+        }
+
+        try {
+            // Deshabilitar botones durante la solicitud
+            this.setPhoneButtonsEnabled(false);
+            this.showPhoneStatusMessage('Enviando código de verificación...', 'loading');
+
+            // Enviar solicitud de cambio
+            const result = await this.profileService.requestPhoneChange(this.currentUserId, newPhone);
+
+            if (result.success) {
+                // Mostrar formulario de verificación
+                this.showPhoneVerificationForm();
+                this.showVerifyPhoneStatusMessage(result.message, 'success');
+            } else {
+                this.showPhoneStatusMessage(result.message, 'error');
+                this.setPhoneButtonsEnabled(true);
+            }
+
+        } catch (error) {
+            console.error('Error al enviar código de verificación de teléfono:', error);
+            this.showPhoneStatusMessage('Error de conexión. Inténtalo de nuevo.', 'error');
+            this.setPhoneButtonsEnabled(true);
+        }
+    }
+
+    /**
+     * Maneja la verificación del código de teléfono
+     */
+    async handleVerifyPhoneCode() {
+        const verifyCodeInput = this.phoneChangeContainer.querySelector('#verify-phone-code-input');
+        if (!verifyCodeInput) return;
+
+        const code = verifyCodeInput.value.trim();
+        if (!code) {
+            this.showVerifyPhoneStatusMessage('Por favor, ingresa el código de verificación', 'error');
+            return;
+        }
+
+        if (code.length !== 6) {
+            this.showVerifyPhoneStatusMessage('El código debe tener 6 dígitos', 'error');
+            return;
+        }
+
+        try {
+            // Deshabilitar botones durante la verificación
+            this.setVerifyPhoneButtonsEnabled(false);
+            this.showVerifyPhoneStatusMessage('Verificando código...', 'loading');
+
+            // Verificar código
+            const result = await this.profileService.verifyPhoneChange(this.currentUserId, code);
+
+            if (result.success) {
+                this.showVerifyPhoneStatusMessage(result.message, 'success');
+                
+                // Actualizar el teléfono en la interfaz
+                const newPhoneInput = this.phoneChangeContainer.querySelector('#new-phone-input');
+                if (newPhoneInput && newPhoneInput.value) {
+                    this.modalPhone.textContent = newPhoneInput.value;
+                    
+                    // Actualizar sessionStorage
+                    sessionStorage.setItem('phone', newPhoneInput.value);
+                    sessionStorage.setItem('userPhone', newPhoneInput.value);
+                }
+
+                // Cerrar formulario después de un delay
+                setTimeout(() => {
+                    this.togglePhoneChangeMode(false);
+                    this.showSuccessToast('Número de teléfono actualizado correctamente');
+                }, 2000);
+
+            } else {
+                this.showVerifyPhoneStatusMessage(result.message, 'error');
+                this.setVerifyPhoneButtonsEnabled(true);
+            }
+
+        } catch (error) {
+            console.error('Error al verificar código de teléfono:', error);
+            this.showVerifyPhoneStatusMessage('Error de conexión. Inténtalo de nuevo.', 'error');
+            this.setVerifyPhoneButtonsEnabled(true);
+        }
+    }
+
+    /**
+     * Muestra el formulario de verificación de teléfono
+     */
+    showPhoneVerificationForm() {
+        if (!this.phoneChangeContainer) return;
+
+        const changeForm = this.phoneChangeContainer.querySelector('.phone-change-form');
+        const verifyForm = this.phoneChangeContainer.querySelector('.phone-verify-form');
         
-        // Mostrar el toast
-        toast.style.opacity = '1';
-        toast.style.transform = 'translateX(0)';
-        toast.style.pointerEvents = 'auto';
+        if (changeForm) changeForm.style.display = 'none';
+        if (verifyForm) verifyForm.style.display = 'block';
+
+        // Hacer focus en el input de código
+        const verifyCodeInput = this.phoneChangeContainer.querySelector('#verify-phone-code-input');
+        if (verifyCodeInput) {
+            setTimeout(() => verifyCodeInput.focus(), 100);
+        }
+    }
+
+    /**
+     * Muestra el formulario de verificación de correo electrónico
+     */
+    showEmailVerificationForm() {
+        if (!this.emailChangeContainer) return;
+
+        const changeForm = this.emailChangeContainer.querySelector('.email-change-form');
+        const verifyForm = this.emailChangeContainer.querySelector('.email-verify-form');
         
-        // Ocultar después de 4 segundos
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            toast.style.transform = 'translateX(100%)';
-            toast.style.pointerEvents = 'none';
-        }, 4000);
+        if (changeForm) changeForm.style.display = 'none';
+        if (verifyForm) verifyForm.style.display = 'block';
+
+        // Hacer focus en el input de código
+        const verifyCodeInput = this.emailChangeContainer.querySelector('#verify-code-input');
+        if (verifyCodeInput) {
+            setTimeout(() => verifyCodeInput.focus(), 100);
+        }
+    }
+
+    /**
+     * Muestra mensaje de estado para el cambio de correo
+     */
+    showEmailStatusMessage(message, type = 'info') {
+        const statusElement = this.emailChangeContainer.querySelector('.email-status-message');
+        if (!statusElement) return;
+
+        statusElement.textContent = message;
+        statusElement.className = `email-status-message ${type}`;
+        statusElement.style.display = 'block';
+    }
+
+    /**
+     * Muestra mensaje de estado para la verificación
+     */
+    showVerifyStatusMessage(message, type = 'info') {
+        const statusElement = this.emailChangeContainer.querySelector('.verify-status-message');
+        if (!statusElement) return;
+
+        statusElement.textContent = message;
+        statusElement.className = `verify-status-message ${type}`;
+        statusElement.style.display = 'block';
+    }
+
+    /**
+     * Muestra mensaje de estado para el cambio de teléfono
+     */
+    showPhoneStatusMessage(message, type = 'info') {
+        const statusElement = this.phoneChangeContainer.querySelector('.phone-status-message');
+        if (!statusElement) return;
+
+        statusElement.textContent = message;
+        statusElement.className = `phone-status-message ${type}`;
+        statusElement.style.display = 'block';
+    }
+
+    /**
+     * Muestra mensaje de estado para la verificación de teléfono
+     */
+    showVerifyPhoneStatusMessage(message, type = 'info') {
+        const statusElement = this.phoneChangeContainer.querySelector('.verify-phone-status-message');
+        if (!statusElement) return;
+
+        statusElement.textContent = message;
+        statusElement.className = `verify-phone-status-message ${type}`;
+        statusElement.style.display = 'block';
+    }
+
+    /**
+     * Limpia el mensaje de estado del cambio de correo
+     */
+    clearEmailStatusMessage() {
+        const statusElement = this.emailChangeContainer.querySelector('.email-status-message');
+        if (statusElement) {
+            statusElement.style.display = 'none';
+            statusElement.textContent = '';
+        }
+    }
+
+    /**
+     * Limpia el mensaje de estado de la verificación
+     */
+    clearVerifyStatusMessage() {
+        const statusElement = this.emailChangeContainer.querySelector('.verify-status-message');
+        if (statusElement) {
+            statusElement.style.display = 'none';
+            statusElement.textContent = '';
+        }
+    }
+
+    /**
+     * Limpia el mensaje de estado del cambio de teléfono
+     */
+    clearPhoneStatusMessage() {
+        const statusElement = this.phoneChangeContainer.querySelector('.phone-status-message');
+        if (statusElement) {
+            statusElement.style.display = 'none';
+            statusElement.textContent = '';
+        }
+    }
+
+    /**
+     * Limpia el mensaje de estado de la verificación de teléfono
+     */
+    clearVerifyPhoneStatusMessage() {
+        const statusElement = this.phoneChangeContainer.querySelector('.verify-phone-status-message');
+        if (statusElement) {
+            statusElement.style.display = 'none';
+            statusElement.textContent = '';
+        }
+    }
+
+    /**
+     * Habilita/deshabilita los botones del formulario de cambio
+     */
+    setEmailButtonsEnabled(enabled) {
+        const sendBtn = this.emailChangeContainer.querySelector('#send-email-code-btn');
+        const cancelBtn = this.emailChangeContainer.querySelector('#cancel-email-change-btn');
         
-        console.log(`📢 Toast mostrado: ${type} - ${message}`);
-    }    /**
-     * Muestra el modal de perfil con la información del usuario
+        if (sendBtn) sendBtn.disabled = !enabled;
+        if (cancelBtn) cancelBtn.disabled = !enabled;
+    }
+
+    /**
+     * Habilita/deshabilita los botones del formulario de verificación
+     */
+    setVerifyButtonsEnabled(enabled) {
+        const verifyBtn = this.emailChangeContainer.querySelector('#verify-email-code-btn');
+        const cancelBtn = this.emailChangeContainer.querySelector('#cancel-verify-btn');
+        
+        if (verifyBtn) verifyBtn.disabled = !enabled;
+        if (cancelBtn) cancelBtn.disabled = !enabled;
+    }
+
+    /**
+     * Habilita/deshabilita los botones del formulario de cambio de teléfono
+     */
+    setPhoneButtonsEnabled(enabled) {
+        const sendBtn = this.phoneChangeContainer.querySelector('#send-phone-code-btn');
+        const cancelBtn = this.phoneChangeContainer.querySelector('#cancel-phone-change-btn');
+        
+        if (sendBtn) sendBtn.disabled = !enabled;
+        if (cancelBtn) cancelBtn.disabled = !enabled;
+    }
+
+    /**
+     * Habilita/deshabilita los botones del formulario de verificación de teléfono
+     */
+    setVerifyPhoneButtonsEnabled(enabled) {
+        const verifyBtn = this.phoneChangeContainer.querySelector('#verify-phone-code-btn');
+        const cancelBtn = this.phoneChangeContainer.querySelector('#cancel-phone-verify-btn');
+        
+        if (verifyBtn) verifyBtn.disabled = !enabled;
+        if (cancelBtn) cancelBtn.disabled = !enabled;
+    }
+
+    /**
+     * Muestra un toast de éxito
+     */
+    showSuccessToast(message) {
+        // Verificar si existe un sistema de toast
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
+        
+        if (toast && toastMessage) {
+            toastMessage.textContent = message;
+            toast.classList.add('show', 'success');
+            
+            setTimeout(() => {
+                toast.classList.remove('show', 'success');
+            }, 3000);
+        } else {
+            // Fallback: usar alert si no hay sistema de toast
+            alert(message);
+        }
+    }
+
+    /**
+     * Muestra el modal de perfil
      */
     async showProfileModal() {
         if (!this.profileModal) {
             console.warn('⚠️ Modal de perfil no encontrado');
+            this.debugModalElements();
             return;
         }
 
@@ -818,7 +1393,9 @@ class ProfileController {    constructor() {
             position: sessionStorage.getItem("position") || sessionStorage.getItem("userPosition") || sessionStorage.getItem("userRole"),
             roles: sessionStorage.getItem("userRoles")
         };
-    }    /**
+    }
+
+    /**
      * Puebla el modal con los datos del usuario
      */
     async populateProfileModal(userData) {
@@ -850,12 +1427,9 @@ class ProfileController {    constructor() {
         }
         
         if (this.modalDocument) {
-            // Usar 'document' primero (de la API), luego 'documentValue' (de sessionStorage)
-            const documentNumber = userData.document || userData.documentValue;
-            this.modalDocument.textContent = documentNumber || 'No disponible';
+            this.modalDocument.textContent = userData.documentValue || 'No disponible';
         }
-
-        // Datos laborales
+        
         if (this.modalArea) {
             this.modalArea.textContent = userData.area || 'No disponible';
         }
@@ -898,257 +1472,93 @@ class ProfileController {    constructor() {
      * Carga la imagen de perfil específicamente para el modal
      */
     async loadModalProfileImage() {
-        if (!this.currentUserId || !this.modalAvatar) {
-            console.log('⚠️ No hay userId o elemento de avatar del modal');
-            this.setModalDefaultImage();
+        if (!this.modalAvatar || !this.currentUserId) {
             return;
         }
 
         try {
-            console.log(`📸 Cargando imagen para el modal...`);
-
-            // Verificar si ya está en cache
+            // Verificar cache primero
             if (this.imageCache.has(this.currentUserId)) {
-                console.log('📸 Usando imagen desde cache para el modal');
-                this.modalAvatar.src = this.imageCache.get(this.currentUserId);
-                return;
-            }            // Mostrar loading state en el modal
-            this.setModalImageLoading(true);
-
-            // Verificar que ProfileService esté disponible
-            if (!this.profileService) {
-                console.warn('⚠️ ProfileService no disponible para modal, usando imagen por defecto');
-                this.modalAvatar.src = this.getDefaultAvatarUrl();
-                this.setModalImageLoading(false);
+                console.log('📸 Usando imagen desde cache para modal');
+                this.setModalProfileImage(this.imageCache.get(this.currentUserId));
                 return;
             }
 
-            // Obtener imagen del servicio
-            const base64Image = await this.profileService.getProfilePhoto(this.currentUserId);
-
-            if (base64Image) {
-                const imageUrl = this.profileService.base64ToImageUrl(base64Image);
+            // Si no hay cache, obtener la imagen
+            if (this.profileService) {
+                const base64Image = await this.profileService.getProfilePhoto(this.currentUserId);
                 
-                // Guardar en cache
-                this.imageCache.set(this.currentUserId, imageUrl);
-                
-                // Establecer imagen en el modal
-                this.modalAvatar.src = imageUrl;
-                console.log('✅ Foto de perfil cargada en el modal exitosamente');
+                if (base64Image) {
+                    const imageUrl = this.profileService.base64ToImageUrl(base64Image);
+                    
+                    // Guardar en cache
+                    this.imageCache.set(this.currentUserId, imageUrl);
+                    
+                    // Establecer imagen en el modal
+                    this.setModalProfileImage(imageUrl);
+                } else {
+                    // No hay foto, usar avatar por defecto
+                    this.setModalDefaultImage();
+                }
             } else {
-                // No hay foto, usar avatar por defecto
                 this.setModalDefaultImage();
-                console.log('📸 Usando avatar por defecto en el modal');
             }
 
         } catch (error) {
-            console.error('❌ Error al cargar imagen de perfil en el modal:', error);
+            console.error('❌ Error al cargar imagen de perfil del modal:', error);
             this.setModalDefaultImage();
-        } finally {
-            this.setModalImageLoading(false);
         }
     }
 
     /**
-     * Establece imagen por defecto en el modal
+     * Establece la imagen de perfil en el modal
+     */
+    setModalProfileImage(imageUrl) {
+        if (this.modalAvatar && imageUrl) {
+            this.modalAvatar.src = imageUrl;
+            this.modalAvatar.alt = 'Foto de perfil';
+        }
+    }
+
+    /**
+     * Establece la imagen por defecto en el modal
      */
     setModalDefaultImage() {
-        if (this.modalAvatar) {
-            this.modalAvatar.src = this.profileService.getDefaultAvatarUrl();
-            
-            // Manejar error de carga de imagen
-            this.modalAvatar.onerror = () => {
-                this.modalAvatar.onerror = null;
-                this.modalAvatar.src = this.profileService.getDefaultAvatarUrl();
-            };
+        if (this.modalAvatar && this.profileService) {
+            const defaultUrl = this.profileService.getDefaultAvatarUrl();
+            this.modalAvatar.src = defaultUrl;
+            this.modalAvatar.alt = 'Avatar por defecto';
         }
     }
 
     /**
-     * Establece el estado de loading para la imagen del modal
+     * Método de debug para verificar el estado de los elementos del modal
      */
-    setModalImageLoading(loading) {
-        if (this.modalAvatar) {
-            if (loading) {
-                this.modalAvatar.style.opacity = '0.5';
-                console.log('🔄 Cargando imagen del modal...');
-            } else {
-                this.modalAvatar.style.opacity = '1';
-            }
-        }
-    }
-
-    /**
-     * Método de debug para probar formatos de base64
-     * Solo para desarrollo - no usar en producción
-     */
-    async debugImageFormats() {
-        if (!this.currentUserId) {
-            console.error('❌ No hay usuario logueado para debug');
-            return;
-        }
-
-        if (!testImage) {
-            console.error('❌ No hay imagen de prueba. Usa generateSmallTestImage() primero');
-            return;
-        }
-
-        console.log('🧪 Iniciando debug de formatos de imagen...');
-        
-        try {
-            const results = await this.profileService.testAllFormats(this.currentUserId, testImage);
-            
-            console.log('\n📋 RESULTADOS COMPLETOS:', results);
-            
-            // Buscar el primer formato exitoso
-            const workingFormat = results.find(r => r.success);
-            if (workingFormat) {
-                console.log(`\n🎯 FORMATO RECOMENDADO: ${workingFormat.formatType}`);
-                console.log(`   Descripción: ${workingFormat.description}`);
-                console.log(`   Status: ${workingFormat.status}`);
-                
-                // Actualizar el método uploadProfilePhoto para usar el formato correcto
-                console.log('\n💡 Considera actualizar uploadProfilePhoto() para usar este formato');
-            } else {
-                console.log('\n💥 NINGÚN FORMATO FUNCIONÓ - Revisar configuración del servidor');
-            }
-            
-            return results;
-            
-        } catch (error) {
-            console.error('❌ Error durante debug:', error);
-            return null;
-        }
-    }
-
-    /**
-     * Genera una imagen pequeña de prueba para debug
-     */
-    generateTestImage() {
-        const canvas = document.createElement('canvas');
-        canvas.width = 10;
-        canvas.height = 10;
-        const ctx = canvas.getContext('2d');
-        
-        // Crear un pequeño patrón colorido
-        ctx.fillStyle = '#FF0000';
-        ctx.fillRect(0, 0, 5, 5);
-        ctx.fillStyle = '#00FF00';
-        ctx.fillRect(5, 0, 5, 5);
-        ctx.fillStyle = '#0000FF';
-        ctx.fillRect(0, 5, 5, 5);
-        ctx.fillStyle = '#FFFF00';
-        ctx.fillRect(5, 5, 5, 5);
-        
-        const testImage = canvas.toDataURL('image/png');
-        
-        // Hacer la imagen disponible globalmente para debug
-        window.testImage = testImage;
-        
-        console.log('🎯 Imagen de prueba generada:', {
-            size: `${canvas.width}x${canvas.height}`,
-            format: 'PNG',
-            base64Length: testImage.length,
-            sizeKB: Math.round(testImage.length * 0.75 / 1024)
-        });
-        
-        return testImage;
-    }
-
-    /**
-     * Obtiene la URL del avatar por defecto
-     * Método helper para casos donde ProfileService no esté disponible
-     * @returns {string} - URL del avatar por defecto
-     */
-    getDefaultAvatarUrl() {
-        if (this.profileService && typeof this.profileService.getDefaultAvatarUrl === 'function') {
-            return this.profileService.getDefaultAvatarUrl();
-        }
-        
-        // Fallback hardcoded
-        return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiM2MzczZDAiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTEwIDMyYzAtNS41MjMgNC40NzctMTAgMTAtMTBzMTAgNC40NzcgMTAgMTAiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo=';
-    }
-
-    /**
-     * Procesa una imagen base64 para reducir su tamaño a máximo 500px y convertir a JPEG
-     * @param {string} base64Image - Imagen en formato base64
-     * @param {number} maxSize - Tamaño máximo en píxeles (default: 500)
-     * @returns {Promise<string>} - Imagen procesada en base64
-     */
-    processImageForUpload(base64Image, maxSize = 500) {
-        return new Promise((resolve, reject) => {
-            console.log('🔄 Procesando imagen para subida...', {
-                originalLength: base64Image.length,
-                maxSize: maxSize
-            });
-            
-            const img = new Image();
-            img.onload = () => {
-                try {
-                    // Calcular nuevas dimensiones manteniendo proporción
-                    let { width, height } = img;
-                    
-                    if (width > maxSize || height > maxSize) {
-                        const aspectRatio = width / height;
-                        
-                        if (width > height) {
-                            width = maxSize;
-                            height = maxSize / aspectRatio;
-                        } else {
-                            height = maxSize;
-                            width = maxSize * aspectRatio;
-                        }
-                        
-                        // Redondear a enteros
-                        width = Math.round(width);
-                        height = Math.round(height);
-                    }
-                    
-                    // Crear canvas con nuevas dimensiones
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    
-                    canvas.width = width;
-                    canvas.height = height;
-                    
-                    // Fondo blanco para JPEG
-                    ctx.fillStyle = 'white';
-                    ctx.fillRect(0, 0, width, height);
-                    
-                    // Redimensionar y dibujar imagen
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    // Convertir a JPEG con calidad optimizada para servidor
-                    const processedBase64 = canvas.toDataURL('image/jpeg', 0.8);
-                    
-                    console.log('✅ Imagen procesada exitosamente:', {
-                        originalSize: `${img.width}x${img.height}`,
-                        newSize: `${width}x${height}`,
-                        originalLength: base64Image.length,
-                        processedLength: processedBase64.length,
-                        compressionRatio: `${((1 - processedBase64.length / base64Image.length) * 100).toFixed(1)}%`,
-                        quality: '80%'
-                    });
-                    
-                    resolve(processedBase64);
-                } catch (error) {
-                    console.error('❌ Error procesando imagen:', error);
-                    reject(new Error('Error al procesar imagen para subida'));
-                }
-            };
-            
-            img.onerror = () => {
-                console.error('❌ Error al cargar imagen base64');
-                reject(new Error('Error al cargar imagen para procesar'));
-            };
-            
-            img.src = base64Image;
+    debugModalElements() {
+        console.log('🔍 Debug - Estado de elementos del modal:', {
+            profileModal: {
+                element: !!this.profileModal,
+                display: this.profileModal?.style.display,
+                id: this.profileModal?.id
+            },
+            profileContainer: {
+                element: !!this.profileContainer,
+                id: this.profileContainer?.id
+            },
+            modalElements: {
+                modalName: !!this.modalName,
+                modalEmail: !!this.modalEmail,
+                modalAvatar: !!this.modalAvatar,
+                modalFirstName: !!this.modalFirstName,
+                modalLastName: !!this.modalLastName
+            },
+            currentUserId: this.currentUserId,
+            profileService: !!this.profileService
         });
     }
 
     /**
-     * Actualiza el sessionStorage con los datos obtenidos de la API
-     * @param {Object} apiData - Datos del perfil desde la API
+     * Actualiza sessionStorage con datos de la API
      */
     updateSessionStorageWithApiData(apiData) {
         if (!apiData) return;
@@ -1226,6 +1636,264 @@ class ProfileController {    constructor() {
         } catch (error) {
             console.error('❌ Error al refrescar perfil desde API:', error);
             return false;
+        }
+    }
+
+    /**
+     * Maneja la selección de una nueva foto de perfil
+     */
+    async handlePhotoSelection(file) {
+        console.log('🚀 Iniciando handlePhotoSelection:', file?.name);
+        
+        if (!file) {
+            console.warn('⚠️ No se seleccionó ningún archivo');
+            return;
+        }
+
+        // Validaciones básicas
+        if (!this.currentUserId) {
+            console.error('❌ currentUserId no disponible');
+            this.showToast('Error: Usuario no identificado', 'error');
+            return;
+        }
+
+        if (!this.profileService) {
+            console.error('❌ ProfileService no disponible');
+            this.showToast('Error: Servicio no disponible', 'error');
+            return;
+        }
+
+        try {
+            // Validar archivo
+            if (!this.validateImageFile(file)) {
+                return; // validateImageFile ya muestra el error
+            }
+
+            // Mostrar loading
+            this.setAvatarLoading(true);
+
+            // Procesar imagen
+            const processedImage = await this.processImageForUpload(file);
+            if (!processedImage) {
+                this.showToast('Error al procesar la imagen', 'error');
+                return;
+            }
+
+            // Subir imagen
+            console.log('☁️ Subiendo imagen al servidor...');
+            const result = await this.profileService.uploadProfilePhoto(this.currentUserId, processedImage);
+            console.log('📤 Resultado del upload:', result);
+
+            if (result && result.success) {
+                // Actualizar imagen en la interfaz
+                await this.updateProfileImageAfterUpload(processedImage);
+                this.showToast('Foto actualizada correctamente', 'success');
+            } else {
+                const errorMsg = result?.message || 'Error al subir la foto';
+                console.error('❌ Error en upload:', errorMsg);
+                this.showToast(errorMsg, 'error');
+            }
+
+        } catch (error) {
+            console.error('❌ Error en handlePhotoSelection:', error);
+            this.showToast('Error inesperado: ' + error.message, 'error');
+        } finally {
+            this.setAvatarLoading(false);
+            // Limpiar input
+            if (this.photoInput) {
+                this.photoInput.value = '';
+            }
+        }
+    }
+
+    /**
+     * Valida el archivo de imagen
+     */
+    validateImageFile(file) {
+        if (!file) {
+            this.showToast('No se seleccionó ningún archivo', 'error');
+            return false;
+        }
+
+        // Verificar tipo
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+            this.showToast('Formato no válido. Use JPG, PNG, GIF o WebP', 'error');
+            return false;
+        }
+
+        // Verificar tamaño (5MB max)
+        const maxSize = 5 * 1024 * 1024;
+        if (file.size > maxSize) {
+            this.showToast('Archivo muy grande. Máximo 5MB', 'error');
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Procesa la imagen para upload
+     */
+    async processImageForUpload(file) {
+        try {
+            // Convertir a base64
+            const base64 = await this.fileToBase64(file);
+            
+            // Crear imagen para redimensionar
+            const img = new Image();
+            
+            return new Promise((resolve) => {
+                img.onload = () => {
+                    try {
+                        // Calcular dimensiones (max 800px)
+                        const maxSize = 800;
+                        let { width, height } = img;
+                        
+                        if (width > height && width > maxSize) {
+                            height = (height * maxSize) / width;
+                            width = maxSize;
+                        } else if (height > maxSize) {
+                            width = (width * maxSize) / height;
+                            height = maxSize;
+                        }
+
+                        // Crear canvas
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.width = width;
+                        canvas.height = height;
+
+                        // Redimensionar
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // Convertir a JPEG 85%
+                        const resized = canvas.toDataURL('image/jpeg', 0.85);
+                        console.log(`📏 Redimensionado: ${img.width}x${img.height} -> ${width}x${height}`);
+                        resolve(resized);
+                        
+                    } catch (error) {
+                        console.error('Error al redimensionar:', error);
+                        resolve(base64); // Fallback al original
+                    }
+                };
+                
+                img.onerror = () => {
+                    console.error('Error al cargar imagen');
+                    resolve(base64); // Fallback al original
+                };
+                
+                img.src = base64;
+            });
+            
+        } catch (error) {
+            console.error('Error en processImageForUpload:', error);
+            return null;
+        }
+    }
+
+    /**
+     * Convierte archivo a base64
+     */
+    fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    /**
+     * Actualiza la imagen en la interfaz después del upload
+     */
+    async updateProfileImageAfterUpload(base64Image) {
+        try {
+            const imageUrl = this.profileService.base64ToImageUrl(base64Image);
+            
+            // Actualizar cache
+            this.imageCache.set(this.currentUserId, imageUrl);
+            
+            // Actualizar imagen principal
+            this.setProfileImage(imageUrl);
+            
+            // Actualizar modal si está abierto
+            if (this.modalAvatar) {
+                this.modalAvatar.src = imageUrl;
+            }
+            
+        } catch (error) {
+            console.error('Error al actualizar imagen en interfaz:', error);
+        }
+    }
+
+    /**
+     * Establece estado de carga del avatar
+     */
+    setAvatarLoading(isLoading) {
+        // Avatar principal
+        if (this.profileImageElement) {
+            if (isLoading) {
+                this.profileImageElement.classList.add('profile-loading');
+            } else {
+                this.profileImageElement.classList.remove('profile-loading');
+            }
+        }
+
+        // Avatar del modal
+        if (this.modalAvatar) {
+            if (isLoading) {
+                this.modalAvatar.classList.add('avatar-loading');
+            } else {
+                this.modalAvatar.classList.remove('avatar-loading');
+            }
+        }
+
+        // Botón de cambio
+        if (this.changePhotoBtn) {
+            this.changePhotoBtn.disabled = isLoading;
+            this.changePhotoBtn.textContent = isLoading ? 'Subiendo...' : 'Cambiar foto';
+        }
+    }
+
+    /**
+     * Muestra mensaje toast (mismo estilo que recuperación de contraseña)
+     */
+    showToast(message, type = 'success') {
+        console.log(`📢 Toast ${type}: ${message}`);
+        
+        const toast = document.getElementById('recovery-toast');
+        const toastMessage = document.getElementById('recovery-toast-message');
+        const toastContent = toast?.querySelector('.recovery-toast-content');
+        const toastIcon = toast?.querySelector('i');
+        
+        if (toast && toastMessage && toastContent) {
+            // Configurar el mensaje
+            toastMessage.textContent = message;
+            
+            // Configurar estilos según el tipo
+            if (type === 'error') {
+                toastContent.classList.add('error');
+                if (toastIcon) {
+                    toastIcon.className = 'fas fa-times-circle';
+                }
+            } else {
+                toastContent.classList.remove('error');
+                if (toastIcon) {
+                    toastIcon.className = 'fas fa-check-circle';
+                }
+            }
+            
+            // Mostrar la notificación
+            toast.classList.add('show');
+            
+            // Ocultar automáticamente después de 4 segundos
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        } else {
+            // Fallback: crear toast temporal si no existe el sistema
+            this.createTemporaryToast(message, type);
         }
     }
 }

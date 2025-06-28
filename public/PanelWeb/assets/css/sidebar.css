@@ -1,9 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
 /* Sidebar principal */
 .sidebar {
     width: 250px;
-    background: linear-gradient(180deg, #2b3962 0%, #1e2a4a 100%);
+    background: linear-gradient(180deg, #22304a 0%, #16203a 100%);
     backdrop-filter: blur(12px);
     color: #ecf0f1;
     display: flex;
@@ -200,10 +198,10 @@
 
 .sidebar-menu::-webkit-scrollbar-thumb {
     background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.15) 0%,
-        rgba(255, 255, 255, 0.25) 50%,
-        rgba(255, 255, 255, 0.15) 100%
+            180deg,
+            rgba(255, 255, 255, 0.15) 0%,
+            rgba(255, 255, 255, 0.25) 50%,
+            rgba(255, 255, 255, 0.15) 100%
     );
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -213,10 +211,10 @@
 
 .sidebar-menu::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.25) 0%,
-        rgba(255, 255, 255, 0.35) 50%,
-        rgba(255, 255, 255, 0.25) 100%
+            180deg,
+            rgba(255, 255, 255, 0.25) 0%,
+            rgba(255, 255, 255, 0.35) 50%,
+            rgba(255, 255, 255, 0.25) 100%
     );
     border-color: rgba(255, 255, 255, 0.2);
     box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
@@ -224,10 +222,10 @@
 
 .sidebar-menu::-webkit-scrollbar-thumb:active {
     background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.3) 0%,
-        rgba(255, 255, 255, 0.4) 50%,
-        rgba(255, 255, 255, 0.3) 100%
+            180deg,
+            rgba(255, 255, 255, 0.3) 0%,
+            rgba(255, 255, 255, 0.4) 50%,
+            rgba(255, 255, 255, 0.3) 100%
     );
 }
 
@@ -394,11 +392,11 @@
         font-size: 14px;
         border-radius: 8px;
     }    .submenu li a i {
-        width: 18px;
-        height: 18px;
-        font-size: 14px;
-        margin-right: 12px;
-    }
+             width: 18px;
+             height: 18px;
+             font-size: 14px;
+             margin-right: 12px;
+         }
 
     /* Botón de logout más grande para touch */
     .logout-btn {
@@ -413,9 +411,9 @@
     .sidebar-header {
         padding: 15px 16px;
     }    .sidebar-header h2 {
-        font-size: 1.1rem;
-        font-weight: 600;
-    }
+             font-size: 1.1rem;
+             font-weight: 600;
+         }
 
     .sidebar-menu li a {
         margin: 4px 6px;
@@ -492,7 +490,7 @@
     .sidebar-toggle {
         display: block !important;
     }
-    
+
     /* En móviles, el sidebar ocupa toda la pantalla y comienza oculto */
     .sidebar {
         width: 100vw !important; /* Ancho completo de la ventana */
@@ -502,29 +500,29 @@
         height: 100vh !important; /* Altura completa de la pantalla */
         border-radius: 0 !important; /* Sin bordes redondeados en móvil */
     }
-    
+
     /* Cuando se abre en móvil - ocupa toda la pantalla */
     .sidebar:not(.collapsed) {
         left: 0 !important;
         width: 100vw !important;
     }
-    
+
     /* Estado específicamente colapsado en móvil */
     .sidebar.collapsed {
         left: -100vw !important; /* Completamente oculto */
     }
-    
+
     /* El contenido principal siempre ocupa todo el ancho en móviles */
     .main-content {
         margin-left: 0 !important;
         width: 100vw !important;
     }
-    
+
     /* Prevenir scroll horizontal */
     body {
         overflow-x: hidden;
     }
-    
+
     html {
         overflow-x: hidden;
     }
@@ -536,17 +534,17 @@
     .sidebar-toggle {
         display: none !important;
     }
-    
+
     /* En desktop, el sidebar siempre está visible */
     .sidebar {
         left: 0 !important;
     }
-    
+
     /* Prevenir que se colapse en desktop */
     .sidebar.collapsed {
         left: 0 !important;
     }
-    
+
     /* El contenido principal siempre debe tener margen para el sidebar */
     .main-content {
         margin-left: 250px !important;

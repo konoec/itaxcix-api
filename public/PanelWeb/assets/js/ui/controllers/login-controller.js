@@ -129,9 +129,16 @@ class LoginController {
                 
             } else {
                 this.showError("Error en la respuesta del servidor. Inténtalo de nuevo.");
-            }} catch (error) {
+            }        } catch (error) {
             console.error('Error durante el login:', error);
-              // Mapear errores a mensajes amigables para el usuario
+            
+            // Para errores del servidor, mostrar el error completo
+            if (error.message && error.message.includes('Error del servidor:')) {
+                this.showError(error.message);
+                return;
+            }
+            
+            // Mapear errores a mensajes amigables para el usuario
             let errorMessage = "Error inesperado. Inténtalo de nuevo.";
             
             if (error.message) {
@@ -154,13 +161,6 @@ class LoginController {
                     errorMessage = "Servicio no disponible. Contacta al administrador.";
                 } else if (msg.includes('servidor no disponible temporalmente')) {
                     errorMessage = "El servidor no está disponible temporalmente. Intenta más tarde.";
-                } else if (msg.includes('certificado ssl') || 
-                          msg.includes('certificate') ||
-                          msg.includes('ssl') ||
-                          msg.includes('contacta al administrador')) {
-                    errorMessage = "Error de certificado SSL del servidor. ";
-                    this.showSSLError();
-                    return; // No mostrar error normal, mostrar panel SSL
                 } else if (msg.includes('error en la comunicación') || 
                           msg.includes('network') || 
                           msg.includes('fetch') ||

@@ -1,12 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>                    <!-- Módulo de Admisión de conductores -->
-                    <li id="menu-admission">
-                        <a class="module-admission" href="../Admission/AdmissionControl.html">
-                            <i class="fas fa-user-check"></i>
-                            Admisión de conductores
-                        </a>
-                    </li>-- Configuración básica del documento -->
+<head>
+    <!-- Configuración básica del documento -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
@@ -14,17 +9,39 @@
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-      <title>Panel de Administración - Configuration</title>    <!-- Hojas de estilo -->
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../../assets/Recourse/Logo/1.png">
+    <link rel="shortcut icon" href="../../assets/Recourse/Logo/1.png">
+    
+    <title>Panel de Administración - Configuration</title>
+    
+    <!-- Hojas de estilo -->
     <link rel="stylesheet" href="../../assets/css/base.css">
     <link rel="stylesheet" href="../../assets/css/sidebar.css">
     <link rel="stylesheet" href="../../assets/css/topbar.css">
     <link rel="stylesheet" href="../../assets/css/profile.css">
     <link rel="stylesheet" href="../../assets/css/confirmation-modal.css">
-    <link rel="stylesheet" href="../../assets/css/configuration.css">
-    <link rel="stylesheet" href="../../assets/css/permissions.css">
+    <link rel="stylesheet" href="../../assets/css/configuration/configuration.css">
+    <link rel="stylesheet" href="../../assets/css/configuration/permissions.css">
+    
     <!-- Font Awesome para iconografía -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></head>
 <body>
+    <!-- Pantalla de carga para configuración de permisos -->
+    <div id="permissions-loading" class="permissions-loading-overlay">
+        <div class="loading-content">
+            <div class="loading-car">🚕</div>
+            <h2 class="loading-title">Configurando Permisos</h2>
+            <p class="loading-message">
+                Estamos configurando tu sesión y verificando los permisos asignados...
+            </p>
+            <p class="loading-steps">
+                <span id="loading-step">Validando credenciales...</span>
+            </p>
+        </div>
+    </div>
+
     <!-- Contenedor principal del layout -->
     <div class="layout">
         <!-- Barra lateral de navegación -->
@@ -95,7 +112,8 @@
 
         <!-- Contenido principal de la página -->
         <div class="main-content">
-            <!-- Barra superior con controles y información de usuario -->
+
+            <!-- Topbar con información de usuario -->
             <div class="top-bar">
                 <button id="open-sidebar" class="sidebar-toggle">
                     <i class="fas fa-bars"></i>
@@ -108,86 +126,76 @@
                         <span class="user-role">Administrador</span>
                     </div>
                 </div>
-            </div>            <!-- Contenido de configuration -->
-            <div class="content configuration">
-                <!-- Contenedor principal de configuraciones -->
-                <div class="config-sections">
-                    <!-- Contenedor rectangular de configuración de emergencia -->
-                    <div class="emergency-config-container" id="emergency-config-container">
-                    <div class="emergency-config-header" id="emergency-config-header">
-                        <h3>
-                            <i class="fas fa-phone-alt icon"></i>
-                            Configuración de Emergencia
-                        </h3>
-                        <i class="fas fa-chevron-down toggle-icon"></i>
-                    </div>
-                    <div class="emergency-config-content" id="emergency-config-content">
-                        <div class="emergency-config-content-inner">
-                            <form id="emergency-inline-form" autocomplete="off">
-                                <div class="form-group emergency-number-group">
-                                    <label for="emergency-inline-number">Número de emergencia:</label>
-                                    <div class="input-prefix-group">
-                                        <input type="tel" id="emergency-inline-number" name="emergency-number" placeholder="Ej: 999999999 o +51999999999" maxlength="15" required>
-                                    </div>
-                                </div>
-                                <div class="emergency-modal-actions">
-                                    <button type="button" class="btn btn-cancel" id="cancel-inline-emergency">Cancelar</button>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-save"></i> Guardar
-                                    </button>
-                                </div>
-                                <div id="emergency-inline-message" class="form-message"></div>
-                            </form>                        </div>
-                    </div>
-                    
-                    <!-- Aquí se pueden agregar más secciones de configuración -->
-                    <!-- Ejemplo: 
-                    <div class="config-container">
-                        <div class="config-header">
-                            <h3><i class="fas fa-cog"></i> Otra Configuración</h3>
-                        </div>
-                    </div>
-                    -->
-                </div>
             </div>
-        </div>
+            <!-- Contenido de configuración -->
+            <div class="configuration-content">
+                <div class="cards-container">
+  <!-- Emergencia -->
+  <div class="card header-emergencia" id="card-emergencia">
+    <div class="card-header">
+      <i class="fas fa-phone-alt"></i>
+      <h3>Configuración de Emergencia</h3>
     </div>
+    <div class="card-body">
+      <label for="emergencia">Número de emergencia:</label>
+      <input type="tel" id="emergencia" name="emergency-number" placeholder="Ej: +51999999999" maxlength="15" required>
+      <div class="form-message" id="emergency-inline-message"></div>
+    </div>
+    <div class="card-footer">
+      <button type="button" class="btn-cancel">Cancelar</button>
+      <button type="submit" class="btn-save">Guardar</button>
+    </div>
+  </div>
 
-    <!-- Modal para configurar número de emergencia -->
-    <div id="emergency-modal" class="modal">
-        <div class="modal-content emergency-modal-content">
-            <h2>
-                <i class="fas fa-phone-alt"></i> Número de Emergencia
-                <span class="close-modal" id="close-emergency-modal">&times;</span>
-            </h2>
-            
-            <div class="emergency-modal-body">
-                <form id="emergency-number-form" autocomplete="off">
-                    <div class="form-group emergency-number-group">
-                        <label for="emergency-number">Número de emergencia:</label>
-                        <div class="input-prefix-group">
-                            <input type="tel" id="emergency-number" name="emergency-number" placeholder="Ej: 999999999 o +51999999999" maxlength="15" required>
-                        </div>
-                    </div>
-                    <div class="emergency-modal-actions">
-                        <button type="button" class="btn btn-cancel" id="cancel-emergency">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Guardar
-                        </button>
-                    </div>
-                    <div id="emergency-number-message" class="form-message"></div>
-                </form>
+  <!-- Permisos -->
+  <div class="card header-permisos" id="card-permisos">
+    <div class="card-header">
+      <i class="fas fa-shield-alt"></i>
+      <h3>Gestionar Permisos</h3>
+    </div>
+    <div class="card-body">
+      <p>Crea, elimina, actualiza y lista los permisos del panel de Administración.</p>
+    </div>
+    <div class="card-footer">
+      <button type="button" class="btn-create" id="create-permission">+ Crear Permiso</button>
+      <button type="button" class="btn-list">Listar Permisos</button>
+      <button type="button" class="btn-edit">Actualizar Permiso</button>
+      <button type="button" class="btn-delete">Eliminar Permiso</button>
+    </div>
+  </div>
+
+  <!-- Roles -->
+  <div class="card header-roles" id="card-roles">
+    <div class="card-header">
+      <i class="fas fa-users-cog"></i>
+      <h3>Gestionar Roles</h3>
+    </div>
+    <div class="card-body">
+      <p>Crea, elimina, actualiza y lista los roles de la aplicación.</p>
+    </div>
+    <div class="card-footer">
+      <button type="button" class="btn-create">+ Crear Rol</button>
+      <button type="button" class="btn-list">Listar Roles</button>
+      <button type="button" class="btn-edit">Actualizar Rol</button>
+      <button type="button" class="btn-delete">Eliminar Rol</button>
+    </div>
+  </div>
+</div>
             </div>
-        </div>
-    </div>    <!-- Modal para mostrar perfil del usuario -->
+                     
+            
+     
+    <!-- Modal para mostrar perfil del usuario -->
     <div id="profile-modal" class="admin-profile-modal">
         <div class="admin-profile-content">
             <h2>
                 Mi Perfil
                 <span class="close-modal" id="close-profile-modal">&times;</span>
             </h2>
-              <!-- Contenido del modal -->
-            <div class="admin-profile-details">                <!-- Perfil del usuario -->
+            
+            <!-- Contenido del modal -->
+            <div class="admin-profile-details">
+                <!-- Perfil del usuario -->
                 <div class="admin-profile-header">
                     <div class="avatar-large">
                         <img id="profile-modal-avatar" src="" alt="Foto de perfil">
@@ -197,7 +205,9 @@
                             </button>
                         </div>
                         <input type="file" id="photo-input" accept="image/*" style="display: none;">
-                    </div>                    <div class="admin-profile-header-info">
+                    </div>
+                    
+                    <div class="admin-profile-header-info">
                         <h3 id="profile-modal-name">Nombre del Usuario</h3>
                     </div>
                 </div>
@@ -243,6 +253,106 @@
         </div>
     </div>
 
+    <!-- Modal para crear permisos -->
+    <div id="create-permission-modal" class="permissions-modal">
+        <div class="permissions-modal-content">
+            <div class="permissions-modal-header">
+                <h2 class="permissions-modal-title">Crear Nuevo Permiso</h2>
+                <span class="permissions-modal-close" id="close-create-permission">&times;</span>
+            </div>
+            <div class="permissions-modal-body">
+                <form id="create-permission-form">
+                    <div class="permissions-form-group">
+                        <label for="permission-name">Nombre del permiso <span class="permissions-required">*</span></label>
+                        <input type="text" id="permission-name" name="name" required 
+                               placeholder="Ej: Ver usuarios, Crear reportes" class="permissions-input">
+                    </div>
+                    
+                    <div class="permissions-form-group">
+                        <label>Estado del permiso</label>
+                        <div class="permissions-checkbox-group">
+                            <label class="permissions-checkbox-label">
+                                <input type="checkbox" id="permission-active" name="active" checked>
+                                <span class="permissions-checkmark"></span>
+                                Activo
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="permissions-form-group">
+                        <label>Tipo de permiso</label>
+                        <div class="permissions-checkbox-group">
+                            <label class="permissions-checkbox-label">
+                                <input type="checkbox" id="permission-web" name="web">
+                                <span class="permissions-checkmark"></span>
+                                Permiso para la web
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="permissions-form-actions">
+                        <button type="button" class="permissions-btn-cancel" id="cancel-create-permission">Cancelar</button>
+                        <button type="submit" class="permissions-btn-save">Crear Permiso</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para listar permisos -->
+    <div id="list-permissions-modal" class="permissions-modal">
+        <div class="permissions-modal-content permissions-modal-large">
+            <div class="permissions-modal-header">
+                <h2 class="permissions-modal-title">Lista de Permisos</h2>
+                <span class="permissions-modal-close" id="close-list-permissions">&times;</span>
+            </div>
+            <div class="permissions-modal-body">
+                <!-- Controles de filtrado y paginación -->
+                <div class="permissions-list-controls">
+                    <div class="permissions-pagination-info">
+                        <span id="permissions-total-info">Total: 0 permisos</span>
+                    </div>
+                    <div class="permissions-pagination-controls">
+                        <button id="permissions-prev-page" class="permissions-pagination-btn" disabled>← Anterior</button>
+                        <span id="permissions-page-info">Página 1 de 1</span>
+                        <button id="permissions-next-page" class="permissions-pagination-btn" disabled>Siguiente →</button>
+                    </div>
+                </div>
+                
+                <!-- Loading indicator -->
+                <div id="permissions-list-loading" class="permissions-loading" style="display: none;">
+                    <div class="permissions-spinner"></div>
+                    <p>Cargando permisos...</p>
+                </div>
+                
+                <!-- Tabla de permisos -->
+                <div class="permissions-table-container">
+                    <table class="permissions-table" id="permissions-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Estado</th>
+                                <th>Tipo</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="permissions-table-body">
+                            <!-- Los permisos se cargarán aquí dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Mensaje cuando no hay permisos -->
+                <div id="permissions-empty-state" class="permissions-empty-state" style="display: none;">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>No hay permisos disponibles</h3>
+                    <p>No se encontraron permisos en el sistema.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Sistema de notificaciones toast -->
     <div id="toast" class="toast">
         <div id="toast-message">Configuration saved successfully</div>
@@ -252,79 +362,33 @@
     <script src="../../assets/js/auth/permissions.js"></script>
     <script src="../../assets/js/auth/route-guard.js"></script>
     
-    <!-- DEBUG: Script de testing temporal (REMOVER EN PRODUCCIÓN) -->
-    
     <script>
-        // Inicializa RouteGuard para proteger la página y verificar permisos
+        // Inicializa RouteGuard para proteger la página
         window.routeGuard = new RouteGuard("../../index.html");
-        
-        // Debug de permisos (remover en producción)
-        setTimeout(() => {
-            console.log('🐛 DEBUG - Estado del RouteGuard:');
-            if (window.routeGuard) {
-                window.routeGuard.debug();
-            }
-            
-            console.log('🐛 DEBUG - Estado de PermissionsService:');
-            if (window.PermissionsService) {
-                window.PermissionsService.debugCurrentState();
-            }
-        }, 1000);
     </script>
 
     <!-- 2. Servicios de API -->
     <script src="../../assets/js/api/services/profile-service.js"></script>
     <script src="../../assets/js/api/services/configuration-service.js"></script>
+    
+    <!-- 2.1. Modelos de datos -->
+    <script src="../../assets/js/api/models/user.js"></script>
+    <script src="../../assets/js/api/models/permission.js"></script>
+    <script src="../../assets/js/api/models/role.js"></script>
+    <script src="../../assets/js/api/models/configuration.js"></script>
+    
     <!-- El controlador modular se encarga de la lógica -->    <!-- 3. Controladores de UI -->
     <script src="../../assets/js/ui/controllers/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/topbar-controller.js"></script>
-    <script src="../../assets/js/ui/controllers/profile-controller.js"></script>     <script src="../../assets/js/ui/controllers/configuration-controller.js"></script>
-    <script src="../../assets/js/ui/initializers/configuration-initializer.js"></script>
-      <!-- 4. Utilidades de sesión -->
-    <script src="../../assets/js/auth/session-cleaner.js"></script>
+    <script src="../../assets/js/ui/controllers/profile-controller.js"></script>
     
-    <script>
-        // Verificar acceso específico al módulo de Configuración
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('⚙️ Verificando acceso al módulo de Configuración...');
-            
-            // Configurar menú de permisos inmediatamente
-            if (window.PermissionsService) {
-                console.log('🔧 Configurando menú según permisos...');
-                window.PermissionsService.configureMenuPermissions();
-            }
-            
-            setTimeout(() => {
-                if (window.routeGuard && typeof window.routeGuard.hasPermission === 'function') {
-                    // Verificar si tiene permiso para este módulo específico
-                    const hasConfigAccess = window.routeGuard.hasPermission('CONFIGURACIÓN');
-                    
-                    console.log(`🔍 Permiso para Configuración: ${hasConfigAccess}`);
-                    
-                    if (!hasConfigAccess) {
-                        console.warn('🚫 Usuario no tiene acceso al módulo de Configuración');
-                        
-                        // Buscar una ruta autorizada
-                        if (window.PermissionsService) {
-                            const authorizedRoute = window.PermissionsService.getFirstAvailableRoute();
-                            if (authorizedRoute) {
-                                console.log(`🔄 Redirigiendo a: ${authorizedRoute}`);
-                                window.location.replace(`../../${authorizedRoute}`);
-                            } else {
-                                console.log('🔄 No hay rutas autorizadas, volviendo al login');
-                                window.location.replace('../../index.html');
-                            }
-                        } else {
-                            window.location.replace('../../index.html');
-                        }
-                    } else {
-                        console.log('✅ Usuario autorizado para Configuración');
-                    }
-                } else {
-                    console.warn('⚠️ RouteGuard o método hasPermission no disponible');
-                }
-            }, 500); // Dar tiempo para que se carguen todos los servicios
-        });
-    </script>
+    <!-- Controladores específicos de configuración -->
+    <script src="../../assets/js/ui/controllers/configuration/emergency-contact-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/configuration/permissions-controller.js"></script>
+    <!-- <script src="../../assets/js/ui/controllers/configuration/roles-controller.js"></script> -->
+    
+    <!-- Inicializador de la página de configuración -->
+    <script src="../../assets/js/ui/initializers/configuration-initializer.js"></script>
+      
 </body>
 </html>

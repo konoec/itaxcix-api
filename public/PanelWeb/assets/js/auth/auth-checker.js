@@ -3,6 +3,26 @@
  * Si no está autenticado, redirige al login.
  * @returns {boolean} true si el usuario está autenticado, false en caso contrario
  */
+
+/**
+ * Limpia la sesión de forma específica y segura
+ */
+function cleanSession() {
+    // Limpiar datos específicos de autenticación
+    sessionStorage.removeItem("isLoggedIn");
+    sessionStorage.removeItem("loginTime");
+    sessionStorage.removeItem("authToken");
+    sessionStorage.removeItem("userId");
+    sessionStorage.removeItem("documentValue");
+    sessionStorage.removeItem("userRoles");
+    sessionStorage.removeItem("userPermissions");
+    sessionStorage.removeItem("userAvailability");
+    sessionStorage.removeItem("firstName");
+    sessionStorage.removeItem("lastName");
+    sessionStorage.removeItem("userFullName");
+    sessionStorage.removeItem("userRating");
+}
+
 function checkAuthentication() {
     // Verifica si el usuario está logueado y si existe un token en sessionStorage
     const isLoggedIn = sessionStorage.getItem("isLoggedIn") === "true";
@@ -78,7 +98,7 @@ function checkTokenExpiration() {
     // Si la sesión ha expirado, limpia y redirige
     if (now - sessionTime > sessionDuration) {
         console.log("Sesión expirada, redirigiendo al login...");
-        clearSession();
+        cleanSession();
         window.location.href = "../../index.html";
         return false;
     }
@@ -96,7 +116,7 @@ function setupLogoutButton() {
     if (logoutBtn) {
         logoutBtn.addEventListener("click", function(e) {
             e.preventDefault(); // Previene el comportamiento por defecto
-            clearSession(); // Limpia la sesión (debe estar definida en session-cleaner.js)
+            cleanSession(); // Usar función de limpieza específica
             window.location.href = "../../index.html"; // Redirige al login
         });
     }

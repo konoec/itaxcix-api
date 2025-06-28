@@ -14,7 +14,7 @@
     <link rel="icon" type="image/png" href="../../assets/Recourse/Logo/1.png">
     <link rel="shortcut icon" href="../../assets/Recourse/Logo/1.png">
     
-    <title>Panel de Administración - Inicio</title>
+    <title>Panel de Administración - Configuración de Emergencia</title>
     
     <!-- Hojas de estilo -->
     <link rel="stylesheet" href="../../assets/css/base.css">
@@ -22,27 +22,12 @@
     <link rel="stylesheet" href="../../assets/css/topbar.css">
     <link rel="stylesheet" href="../../assets/css/profile.css">
     <link rel="stylesheet" href="../../assets/css/confirmation-modal.css">
-    <link rel="stylesheet" href="../../assets/css/permissions.css">
-    <link rel="stylesheet" href="../../assets/css/inicio.css">
+    <link rel="stylesheet" href="../../assets/css/configuration/configuration.css">
     
     <!-- Font Awesome para iconografía -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <!-- Pantalla de carga para configuración de permisos -->
-    <div id="permissions-loading" class="permissions-loading-overlay">
-        <div class="loading-content">
-            <div class="loading-car">🚕</div>
-            <h2 class="loading-title">Configurando Permisos</h2>
-            <p class="loading-message">
-                Estamos configurando tu sesión y verificando los permisos asignados...
-            </p>
-            <p class="loading-steps">
-                <span id="loading-step">Validando credenciales...</span>
-            </p>
-        </div>
-    </div>
-
     <!-- Contenedor principal del layout -->
     <div class="layout">
         <!-- Barra lateral de navegación -->
@@ -59,12 +44,14 @@
             <div class="sidebar-menu">
                 <ul>
                     <!-- Inicio -->
-                    <li class="active" id="menu-inicio">
+                    <li id="menu-inicio">
                         <a href="../Inicio/Inicio.html" class="module-inicio">
                             <i class="fas fa-home"></i>
                             Inicio
                         </a>
-                    </li>                    <!-- Módulo de Admisión de conductores -->
+                    </li>
+                    
+                    <!-- Módulo de Admisión de conductores -->
                     <li id="menu-admission">
                         <a class="module-admission" href="../Admission/AdmissionControl.html">
                             <i class="fas fa-user-check"></i>
@@ -80,7 +67,7 @@
                             <span class="submenu-arrow"></span>
                         </a>
                         <ul class="submenu">
-                            <li><a href="../Master-tables/MasterTable1.html"><i class="fas fa-car"></i>Tabla Maestra 1</a></li>
+                            <li><a href="javascript:void(0)"><i class="fas fa-car"></i>Tabla Maestra 1</a></li>
                             <li><a href="javascript:void(0)"><i class="fas fa-users"></i>Tabla Maestra 2</a></li>
                             <li><a href="javascript:void(0)"><i class="fas fa-id-card"></i>Tabla Maestra 3</a></li>
                             <li><a href="javascript:void(0)"><i class="fas fa-route"></i>Tabla Maestra 4</a></li>
@@ -96,11 +83,16 @@
                     </li>
 
                     <!-- Módulo de Configuración -->
-                    <li id="menu-configuracion">
-                        <a href="../Configuration/Configuration.html" class="module-config">
+                    <li class="has-submenu active" id="menu-configuracion">
+                        <a href="javascript:void(0)" class="module-config">
                             <i class="fas fa-cog"></i>
                             Configuración
+                            <span class="submenu-arrow"></span>
                         </a>
+                        <ul class="submenu show">
+                            <li class="active"><a href="EmergencyConfiguration.html"><i class="fas fa-phone-alt"></i>Configuración de Emergencia</a></li>
+                            <li><a href="PermissionsManagement.html"><i class="fas fa-shield-alt"></i>Gestionar Permisos</a></li>
+                        </ul>
                     </li>
                 </ul>
             </div>
@@ -115,13 +107,13 @@
         </div>
 
         <!-- Contenido principal de la página -->
-       <div class="main-content">
-            <!-- Barra superior con controles y información de usuario -->
+        <div class="main-content">
+            <!-- Topbar con información de usuario -->
             <div class="top-bar">
                 <button id="open-sidebar" class="sidebar-toggle">
                     <i class="fas fa-bars"></i>
                 </button>
-                <h3>PANEL DE ADMINISTRACIÓN</h3>
+                <h3>CONFIGURACIÓN DE EMERGENCIA</h3>
                 <div class="profile-container" id="profile-container" style="cursor: pointer;" title="Ver mi perfil">
                     <div class="profile-image" id="profile-image"></div>
                     <div class="user-info">
@@ -130,46 +122,32 @@
                     </div>
                 </div>
             </div>
-         <!-- Contenido del inicio -->
-            <div class="inicio-content">
-                <!-- Sección de bienvenida -->
-                <div class="welcome-section">
-                    <h1>¡Bienvenido al Panel de Administración!</h1>
-                    <p>Gestiona los diferentes módulos del sistema según tus permisos asignados.</p>
-                </div>
 
-                <!-- Grid de estadísticas/módulos -->
-                <div class="stats-grid" id="modules-grid">
-                    <div class="loading-placeholder">
-                        <i class="fas fa-spinner"></i>
-                        Cargando información de módulos...
-                    </div>
-                </div>
-
-                <!-- Acciones rápidas -->
-                <div class="quick-actions">
-                    <h3><i class="fas fa-bolt"></i> Acciones Rápidas</h3>
-                    <div class="actions-grid" id="quick-actions-grid">
-                        <div class="loading-placeholder">
-                            <i class="fas fa-spinner"></i>
-                            Cargando acciones...
+            <!-- Contenido de configuración de emergencia -->
+            <div class="configuration-content">
+                <div class="cards-container">
+                    <!-- Emergencia -->
+                    <div class="card header-emergencia" id="card-emergencia">
+                        <div class="card-header">
+                            <i class="fas fa-phone-alt"></i>
+                            <h3>Configuración de Emergencia</h3>
+                        </div>
+                        <div class="card-body">
+                            <label for="emergencia">Número de emergencia:</label>
+                            <input type="tel" id="emergencia" name="emergency-number" placeholder="Ej: +51999999999" maxlength="15" required>
+                            <div class="form-message" id="emergency-inline-message"></div>
+                        </div>
+                        <div class="card-footer">
+                            <button type="button" class="btn-cancel">Cancelar</button>
+                            <button type="submit" class="btn-save">Guardar</button>
                         </div>
                     </div>
                 </div>
-
-                <!-- Información del sistema -->
-                <div class="info-section">
-                    <h3><i class="fas fa-info-circle"></i> Información del Sistema</h3>
-                    <p><strong>Panel de Administración</strong> - Sistema de gestión integral</p>
-                    <p>Esta página de inicio te proporciona acceso centralizado a todos los módulos del sistema según los permisos asignados a tu cuenta.</p>
-                    <p>Si necesitas acceso a algún módulo específico que aparece como restringido, contacta al administrador del sistema.</p>
-                    <p id="user-permissions-info">Cargando información de permisos...</p>
-                </div>
             </div>
         </div>
-    </div> 
+    </div>
 
-<!-- Modal para mostrar perfil del usuario -->
+    <!-- Modal para mostrar perfil del usuario -->
     <div id="profile-modal" class="admin-profile-modal">
         <div class="admin-profile-content">
             <h2>
@@ -231,46 +209,37 @@
                         <span id="profile-modal-phone">No disponible</span>
                     </div>
                 </div>
-
-                <!-- Botones de acción del modal -->
             </div>
         </div>
-    </div>    <!-- Sistema de notificaciones toast -->
-    <div id="toast" class="toast">
-        <div id="toast-message">Inicio cargado correctamente</div>
     </div>
 
-    <!-- Carga de scripts en orden específico para manejar dependencias -->
-    <!-- 1. Utilidades y herramientas base -->
-    <!-- Carga de scripts en orden específico para manejar dependencias -->
-    <!-- 1. Utilidades y herramientas base -->
-    <script src="../../assets/js/auth/permissions.js"></script>
+    <!-- Sistema de notificaciones toast -->
+    <div id="toast" class="toast">
+        <div id="toast-message">Configuration saved successfully</div>
+    </div>
+
+    <!-- Carga de scripts -->
     <script src="../../assets/js/auth/auth-checker.js"></script>
+    <script src="../../assets/js/auth/permissions.js"></script>
     <script src="../../assets/js/auth/route-guard.js"></script>
     
     <script>
         // Inicializa RouteGuard para proteger la página
         window.routeGuard = new RouteGuard("../../index.html");
     </script>
-    
-    <!-- 2. Servicios de API -->
-    <script src="../../assets/js/api/services/profile-service.js"></script>
 
-    <!-- 3. Controladores de UI -->
+    <!-- Servicios de API -->
+    <script src="../../assets/js/api/services/profile-service.js"></script>
+    <script src="../../assets/js/api/services/configuration-service.js"></script>
+    
+    <!-- Modelos de datos -->
+    <script src="../../assets/js/api/models/user.js"></script>
+    <script src="../../assets/js/api/models/configuration.js"></script>
+    
+    <!-- Controladores de UI -->
     <script src="../../assets/js/ui/controllers/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/profile-controller.js"></script>
-    <script src="../../assets/js/ui/controllers/inicio-controller.js"></script>
-
-    <!-- 4. Inicializador específico de la página -->
-    <script src="../../assets/js/ui/initializers/inicio-initializer.js"></script>
-
-    <!-- Toast notification for profile operations (mismo estilo que recuperación de contraseña) -->
-    <div id="recovery-toast" class="recovery-toast">
-        <div class="recovery-toast-content">
-            <i class="fas fa-check-circle"></i>
-            <span id="recovery-toast-message">Foto de perfil actualizada correctamente</span>
-        </div>
-    </div>
+    <script src="../../assets/js/ui/controllers/configuration/emergency-contact-controller.js"></script>
 </body>
 </html>
