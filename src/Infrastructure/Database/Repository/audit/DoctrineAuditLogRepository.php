@@ -102,6 +102,19 @@ class DoctrineAuditLogRepository implements AuditLogRepositoryInterface
         return $this->toDomain($entity);
     }
 
+    public function logAuditEvent(string $affectedTable, string $operation, string $systemUser, ?array $previousData = null, ?array $newData = null): void
+    {
+        $entity = new AuditEntity();
+        $entity->setAffectedTable($affectedTable);
+        $entity->setOperation($operation);
+        $entity->setSystemUser($systemUser);
+        $entity->setDate(new \DateTime());
+        $entity->setPreviousData($previousData);
+        $entity->setNewData($newData);
+        $this->entityManager->persist($entity);
+        $this->entityManager->flush();
+    }
+
     private function toDomain(AuditEntity $entity): array
     {
         return [

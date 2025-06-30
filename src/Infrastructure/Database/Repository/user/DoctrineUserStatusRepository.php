@@ -18,6 +18,30 @@ class DoctrineUserStatusRepository implements UserStatusRepositoryInterface
         $this->entityManager = $entityManager;
     }
 
+    public function toDomain(UserStatusEntity $entity): UserStatusModel {
+        return new UserStatusModel(
+            id: $entity->getId(),
+            name: $entity->getName(),
+            active: $entity->isActive()
+        );
+    }
+
+    public function findUserStatusByName(string $name): ?UserStatusModel
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('us')
+            ->from(UserStatusEntity::class, 'us')
+            ->where('us.name = :name')
+            ->andWhere('us.active = :active')
+            ->setParameter('name', $name)
+            ->setParameter('active', true)
+            ->getQuery();
+
+        $entity = $query->getOneOrNullResult();
+
+        return $entity ? $this->toDomain($entity) : null;
+    }
+
     public function findAll(UserStatusPaginationRequestDTO $request): array
     {
         $qb = $this->createQueryBuilder($request);
@@ -27,13 +51,13 @@ class DoctrineUserStatusRepository implements UserStatusRepositoryInterface
 
         $entities = $qb->getQuery()->getResult();
 
-        return array_map(fn(UserStatusEntity $entity) => $this->entityToModel($entity), $entities);
+        return array_map(fn(UserStatusEntity $entity) => $this->toDomain($entity), $entities);
     }
 
     public function findById(int $id): ?UserStatusModel
     {
         $entity = $this->entityManager->find(UserStatusEntity::class, $id);
-        return $entity ? $this->entityToModel($entity) : null;
+        return $entity ? $this->toDomain($entity) : null;
     }
 
     public function create(UserStatusModel $userStatus): UserStatusModel
@@ -129,23 +153,5 @@ class DoctrineUserStatusRepository implements UserStatusRepositoryInterface
         }
 
         return $qb;
-    }
-
-    private function entityToModel(UserStatusEntity $entity): UserStatusModel
-    {
-        return new UserStatusModel(
-            $entity->getId(),
-            $entity->getName(),
-            $entity->isActive()
-        );
-    }
-
-    public function toDomain(UserStatusEntity $entity): UserStatusModel
-    {
-        return new UserStatusModel(
-            $entity->getId(),
-            $entity->getName(),
-            $entity->isActive()
-        );
     }
 }
