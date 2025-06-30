@@ -42,14 +42,12 @@ class AdminPermissionController extends AbstractController
     public function __construct(
         ListPermissionsUseCase $listPermissionsUseCase,
         CreatePermissionUseCase $createPermissionUseCase,
-        GetPermissionUseCase $getPermissionUseCase,
         UpdatePermissionUseCase $updatePermissionUseCase,
         DeletePermissionUseCase $deletePermissionUseCase,
         ListPermissionsValidator $listPermissionsValidator
     ) {
         $this->listPermissionsUseCase = $listPermissionsUseCase;
         $this->createPermissionUseCase = $createPermissionUseCase;
-        $this->getPermissionUseCase = $getPermissionUseCase;
         $this->updatePermissionUseCase = $updatePermissionUseCase;
         $this->deletePermissionUseCase = $deletePermissionUseCase;
         $this->listPermissionsValidator = $listPermissionsValidator;
