@@ -2,22 +2,19 @@
 
 namespace itaxcix\Shared\DTO\Admin\Permission;
 
-class CreatePermissionRequestDTO
+readonly class CreatePermissionRequestDTO
 {
-    public readonly string $name;
-    public readonly bool $active;
-    public readonly bool $web;
-    public readonly string $description;
+    public string $name;
+    public bool $active;
+    public bool $web;
 
     public function __construct(
         string $name,
         bool $active = true,
-        bool $web = false,
-        string $description = ''
+        bool $web = false
     ) {
         $this->name = $name;
         $this->active = $active;
         $this->web = $web;
-        $this->description = $description;
     }
 }

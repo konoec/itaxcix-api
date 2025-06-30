@@ -2,6 +2,7 @@
 
 namespace itaxcix\Infrastructure\Web\Controller\web\Admin;
 
+use Exception;
 use itaxcix\Core\UseCases\Admin\Permission\ListPermissionsUseCase;
 use itaxcix\Core\UseCases\Admin\Permission\CreatePermissionUseCase;
 use itaxcix\Core\UseCases\Admin\Permission\GetPermissionUseCase;
@@ -12,25 +13,11 @@ use itaxcix\Shared\DTO\Admin\Permission\ListPermissionsRequestDTO;
 use itaxcix\Shared\DTO\Admin\Permission\CreatePermissionRequestDTO;
 use itaxcix\Shared\DTO\Admin\Permission\UpdatePermissionRequestDTO;
 use itaxcix\Shared\Validators\Admin\Permission\ListPermissionsValidator;
+use itaxcix\Shared\Validators\useCases\Admin\PermissionCreateRequestValidator;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * AdminPermissionController - Controlador para gestión de permisos
- *
- * Este controlador proporciona funcionalidades para consultar permisos del sistema:
- * - Listado paginado con filtros (búsqueda, tipo web, estado)
- * - CRUD completo de permisos
- * - Útil para interfaces que necesitan mostrar permisos disponibles
- * - Usado principalmente en formularios de asignación masiva de permisos
- *
- * Los permisos normalmente son gestionados a través de seeders automáticos
- * y se consultan para asignación a roles, no se crean/editan manualmente.
- *
- * @package itaxcix\Infrastructure\Web\Controller\web\Admin
- * @author Sistema de Administración iTaxCix
- */
 class AdminPermissionController extends AbstractController
 {
     private ListPermissionsUseCase $listPermissionsUseCase;
@@ -38,61 +25,24 @@ class AdminPermissionController extends AbstractController
     private UpdatePermissionUseCase $updatePermissionUseCase;
     private DeletePermissionUseCase $deletePermissionUseCase;
     private ListPermissionsValidator $listPermissionsValidator;
+    private PermissionCreateRequestValidator $permissionCreateRequestValidator;
 
     public function __construct(
         ListPermissionsUseCase $listPermissionsUseCase,
         CreatePermissionUseCase $createPermissionUseCase,
         UpdatePermissionUseCase $updatePermissionUseCase,
         DeletePermissionUseCase $deletePermissionUseCase,
-        ListPermissionsValidator $listPermissionsValidator
+        ListPermissionsValidator $listPermissionsValidator,
+        PermissionCreateRequestValidator $permissionCreateRequestValidator
     ) {
         $this->listPermissionsUseCase = $listPermissionsUseCase;
         $this->createPermissionUseCase = $createPermissionUseCase;
         $this->updatePermissionUseCase = $updatePermissionUseCase;
         $this->deletePermissionUseCase = $deletePermissionUseCase;
         $this->listPermissionsValidator = $listPermissionsValidator;
+        $this->permissionCreateRequestValidator = $permissionCreateRequestValidator;
     }
 
-    /**
-     * Lista permisos con paginación y filtros
-     *
-     * Endpoint: GET /api/v1/admin/permissions
-     * Permisos: admin.permissions.list
-     *
-     * Parámetros de consulta:
-     * - page (int): Página actual (default: 1)
-     * - limit (int): Elementos por página (default: 20, max: 100)
-     * - search (string): Búsqueda por nombre del permiso
-     * - webOnly (bool): Filtrar solo permisos web
-     * - activeOnly (bool): Filtrar solo permisos activos (default: true)
-     *
-     * Principalmente usado para:
-     * - Llenar formularios de asignación de permisos a roles
-     * - Mostrar permisos disponibles en interfaces administrativas
-     * - Auditoría de permisos del sistema
-     *
-     * Respuesta exitosa (200):
-     * {
-     *   "success": true,
-     *   "data": {
-     *     "permissions": [
-     *       {
-     *         "id": 1,
-     *         "name": "admin.roles.list",
-     *         "active": true,
-     *         "web": true
-     *       }
-     *     ],
-     *     "total": 25,
-     *     "page": 1,
-     *     "limit": 20,
-     *     "totalPages": 2
-     *   }
-     * }
-     *
-     * @param ServerRequestInterface $request Petición HTTP
-     * @return ResponseInterface Respuesta con lista paginada de permisos
-     */
     #[OA\Get(
         path: "/api/v1/permissions",
         operationId: "listPermissions",
@@ -197,41 +147,11 @@ class AdminPermissionController extends AbstractController
             $response = $this->listPermissionsUseCase->execute($requestDTO);
             return $this->ok($response);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->error($e->getMessage());
         }
     }
 
-    /**
-     * Crea un nuevo permiso
-     *
-     * Endpoint: POST /api/v1/admin/permissions
-     * Permisos: admin.permissions.create
-     *
-     * Cuerpo de la petición:
-     * {
-     *   "name": "admin.roles.create",
-     *   "active": true,
-     *   "web": true,
-     *   "description": "Permiso para crear roles"
-     * }
-     *
-     * Respuesta exitosa (201):
-     * {
-     *   "success": true,
-     *   "message": "Permiso creado exitosamente",
-     *   "data": {
-     *     "id": 1,
-     *     "name": "admin.roles.create",
-     *     "active": true,
-     *     "web": true,
-     *     "description": "Permiso para crear roles"
-     *   }
-     * }
-     *
-     * @param ServerRequestInterface $request Petición HTTP
-     * @return ResponseInterface Respuesta con el permiso creado
-     */
     #[OA\Post(
         path: "/api/v1/permissions",
         operationId: "createPermission",
@@ -243,9 +163,9 @@ class AdminPermissionController extends AbstractController
             content: new OA\JsonContent(
                 required: ["name"],
                 properties: [
-                    new OA\Property(property: "name", type: "string", example: "admin.reports.view", description: "Nombre del permiso"),
-                    new OA\Property(property: "active", type: "boolean", example: true, description: "Estado activo del permiso"),
-                    new OA\Property(property: "web", type: "boolean", example: true, description: "Acceso web del permiso")
+                    new OA\Property(property: "name", description: "Nombre del permiso", type: "string", example: "admin.reports.view"),
+                    new OA\Property(property: "active", description: "Estado activo del permiso", type: "boolean", example: true),
+                    new OA\Property(property: "web", description: "Acceso web del permiso", type: "boolean", example: true)
                 ]
             )
         ),
@@ -282,52 +202,31 @@ class AdminPermissionController extends AbstractController
     public function createPermission(ServerRequestInterface $request): ResponseInterface
     {
         try {
-            $body = $request->getParsedBody();
+            $body = $this->getJsonBody($request);
+
+            $errors = $this->permissionCreateRequestValidator->validate($body);
+            if (!empty($errors)) {
+                return $this->validationError($errors);
+            }
+
+            $name = $body['name'];
+            $active = $this->parseBool($body['active']);
+            $web = $this->parseBool($body['web']);
 
             $requestDTO = new CreatePermissionRequestDTO(
-                name: $body['name'],
-                active: $body['active'],
-                web: $body['web'],
-                description: $body['description']
+                name: $name,
+                active: $active,
+                web: $web
             );
 
             $response = $this->createPermissionUseCase->execute($requestDTO);
             return $this->created($response);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->error($e->getMessage());
         }
     }
 
-    /**
-     * Actualiza un permiso existente
-     *
-     * Endpoint: PUT /api/v1/admin/permissions/{id}
-     * Permisos: admin.permissions.update
-     *
-     * Cuerpo de la petición:
-     * {
-     *   "name": "admin.roles.create",
-     *   "active": true,
-     *   "web": true,
-     *   "description": "Permiso para crear roles - Actualizado"
-     * }
-     *
-     * Respuesta exitosa (200):
-     * {
-     *   "success": true,
-     *   "message": "Permiso actualizado exitosamente",
-     *   "data": {
-     *     "id": 1,
-     *     "name": "admin.roles.create",
-     *     "active": true,
-     *     "web": true
-     *   }
-     * }
-     *
-     * @param ServerRequestInterface $request Petición HTTP
-     * @return ResponseInterface Respuesta con el permiso actualizado
-     */
     #[OA\Put(
         path: "/api/v1/permissions/{id}",
         operationId: "updatePermission",
@@ -403,26 +302,11 @@ class AdminPermissionController extends AbstractController
             $response = $this->updatePermissionUseCase->execute($requestDTO);
             return $this->ok($response);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->error($e->getMessage());
         }
     }
 
-    /**
-     * Elimina un permiso existente
-     *
-     * Endpoint: DELETE /api/v1/admin/permissions/{id}
-     * Permisos: admin.permissions.delete
-     *
-     * Respuesta exitosa (204):
-     * {
-     *   "success": true,
-     *   "message": "Permiso eliminado exitosamente"
-     * }
-     *
-     * @param ServerRequestInterface $request Petición HTTP
-     * @return ResponseInterface Respuesta con el resultado de la eliminación
-     */
     #[OA\Delete(
         path: "/api/v1/permissions/{id}",
         operationId: "deletePermission",
@@ -465,14 +349,11 @@ class AdminPermissionController extends AbstractController
             $this->deletePermissionUseCase->execute((int) $data['id']);
             return $this->noContent();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->error($e->getMessage());
         }
     }
 
-    /**
-     * Convierte un string 'true'/'false'/'1'/'0' a booleano real o null
-     */
     private function parseBool($value): ?bool {
         if ($value === null) return null;
         if (is_bool($value)) return $value;
