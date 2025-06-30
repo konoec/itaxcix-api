@@ -146,7 +146,7 @@ return function (RouteCollector $r) {
 
         // Help Center Routes (ya existente - se mantiene)
         $r->get('/help-center', [JwtPermissionMiddleware::class, 'TABLAS MAESTRAS', [HelpCenterController::class, 'list']]);
-        $r->get('/help-center/public', [JwtMiddleware::class, [HelpCenterController::class, 'publicList']]);
+        $r->get('/help-center/public', [HelpCenterController::class, 'publicList']);
         $r->post('/help-center', [JwtPermissionMiddleware::class, 'TABLAS MAESTRAS', [HelpCenterController::class, 'create']]);
         $r->put('/help-center/{id}', [JwtPermissionMiddleware::class, 'TABLAS MAESTRAS', [HelpCenterController::class, 'update']]);
         $r->delete('/help-center/{id}', [JwtPermissionMiddleware::class, 'TABLAS MAESTRAS', [HelpCenterController::class, 'delete']]);
