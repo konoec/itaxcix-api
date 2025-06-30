@@ -6,6 +6,7 @@ use itaxcix\Core\Interfaces\user\UserRepositoryInterface;
 use itaxcix\Core\Interfaces\user\CitizenProfileRepositoryInterface;
 use itaxcix\Core\Interfaces\user\DriverProfileRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserContactRepositoryInterface;
+use itaxcix\Core\Interfaces\user\UserRoleRepositoryInterface;
 use itaxcix\Core\Interfaces\vehicle\VehicleUserRepositoryInterface;
 use itaxcix\Shared\DTO\Admin\User\AdminUserListRequestDTO;
 use itaxcix\Shared\DTO\Admin\User\AdminUserListResponseDTO;
@@ -20,6 +21,7 @@ use itaxcix\Shared\DTO\Admin\User\AdminUserListResponseDTO;
 class AdminUserListUseCase
 {
     private UserRepositoryInterface $userRepository;
+    private UserRoleRepositoryInterface $userRoleRepository;
     private CitizenProfileRepositoryInterface $citizenProfileRepository;
     private DriverProfileRepositoryInterface $driverProfileRepository;
     private UserContactRepositoryInterface $userContactRepository;
@@ -30,13 +32,15 @@ class AdminUserListUseCase
         CitizenProfileRepositoryInterface $citizenProfileRepository,
         DriverProfileRepositoryInterface $driverProfileRepository,
         UserContactRepositoryInterface $userContactRepository,
-        VehicleUserRepositoryInterface $vehicleUserRepository
+        VehicleUserRepositoryInterface $vehicleUserRepository,
+        UserRoleRepositoryInterface $userRoleRepository
     ) {
         $this->userRepository = $userRepository;
         $this->citizenProfileRepository = $citizenProfileRepository;
         $this->driverProfileRepository = $driverProfileRepository;
         $this->userContactRepository = $userContactRepository;
         $this->vehicleUserRepository = $vehicleUserRepository;
+        $this->userRoleRepository = $userRoleRepository;
     }
 
     public function execute(AdminUserListRequestDTO $request): AdminUserListResponseDTO
@@ -142,11 +146,40 @@ class AdminUserListUseCase
             $vehicle = $vehicleUser->getVehicle();
             $enrichedData['vehicle'] = [
                 'id' => $vehicle->getId(),
-                'plate' => $vehicle->getPlate(),
-                'brand' => $vehicle->getBrand(),
-                'model' => $vehicle->getModel(),
-                'color' => $vehicle->getColor()
+                'plate' => $vehicle->getLicensePlate(),
+                'brand' => $vehicle->getModel() && $vehicle->getModel()->getBrand() ? [
+                    'id' => $vehicle->getModel()->getBrand()->getId(),
+                    'name' => $vehicle->getModel()->getBrand()->getName()
+                ] : null,
+                'model' => $vehicle->getModel() ? [
+                    'id' => $vehicle->getModel()->getId(),
+                    'name' => $vehicle->getModel()->getName()
+                ] : null,
+                'color' => $vehicle->getColor() ? [
+                    'id' => $vehicle->getColor()->getId(),
+                    'name' => $vehicle->getColor()->getName()
+                ] : null
             ];
+        }
+
+        // Obtener roles activos del usuario
+        $roles = $this->userRoleRepository->findActiveRolesByUserId($user->getId());
+        $enrichedData['roles'] = array_map(function($userRole) {
+            $role = $userRole->getRole();
+            return [
+                'id' => $role->getId(),
+                'name' => $role->getName(),
+                'active' => $role->isActive(),
+                'web' => $role->isWeb()
+            ];
+        }, $roles);
+
+        // Inicializar perfiles aunque sean null
+        if (!isset($enrichedData['profiles']['citizen'])) {
+            $enrichedData['profiles']['citizen'] = null;
+        }
+        if (!isset($enrichedData['profiles']['driver'])) {
+            $enrichedData['profiles']['driver'] = null;
         }
 
         return $enrichedData;
