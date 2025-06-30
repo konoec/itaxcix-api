@@ -400,8 +400,7 @@ class AdminPermissionController extends AbstractController
      *     "id": 1,
      *     "name": "admin.roles.create",
      *     "active": true,
-     *     "web": true,
-     *     "description": "Permiso para crear roles - Actualizado"
+     *     "web": true
      *   }
      * }
      *
@@ -461,14 +460,23 @@ class AdminPermissionController extends AbstractController
     public function updatePermission(ServerRequestInterface $request): ResponseInterface
     {
         try {
-            $body = $request->getParsedBody();
+            $data = $this->getJsonBody($request);
+            $data['id'] = $request->getAttribute('id');
+
+            $id = (int)$data['id'];
+            $body['name'] = $data['name'] ?? null;
+            $body['active'] = $data['active'] ?? true;
+            $body['web'] = $data['web'] ?? false;
+
+            if ($id <= 0) {
+                return $this->validationError(['id' => 'El ID del permiso debe ser un número positivo.']);
+            }
 
             $requestDTO = new UpdatePermissionRequestDTO(
                 id: $id,
                 name: $body['name'],
                 active: $body['active'],
-                web: $body['web'],
-                description: $body['description']
+                web: $body['web']
             );
 
             $response = $this->updatePermissionUseCase->execute($requestDTO);
@@ -529,8 +537,11 @@ class AdminPermissionController extends AbstractController
     )]
     public function deletePermission(ServerRequestInterface $request): ResponseInterface
     {
+        $data = $this->getJsonBody($request);
+        $data['id'] = $request->getAttribute('id');
+
         try {
-            $this->deletePermissionUseCase->execute($id);
+            $this->deletePermissionUseCase->execute((int) $data['id']);
             return $this->noContent();
 
         } catch (\Exception $e) {

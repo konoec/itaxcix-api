@@ -3,9 +3,11 @@
 namespace itaxcix\Infrastructure\Database\Repository\user;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use itaxcix\Core\Domain\user\PermissionModel;
 use itaxcix\Core\Interfaces\user\PermissionRepositoryInterface;
 use itaxcix\Infrastructure\Database\Entity\user\PermissionEntity;
+use RuntimeException;
 
 class DoctrinePermissionRepository implements PermissionRepositoryInterface
 {
@@ -85,7 +87,7 @@ class DoctrinePermissionRepository implements PermissionRepositoryInterface
             if ($permission->getId()) {
                 $entity = $this->entityManager->find(PermissionEntity::class, $permission->getId());
                 if (!$entity) {
-                    throw new \RuntimeException('Permission not found for update');
+                    throw new RuntimeException('Permission not found for update');
                 }
             } else {
                 $entity = new PermissionEntity();
@@ -99,8 +101,8 @@ class DoctrinePermissionRepository implements PermissionRepositoryInterface
             $this->entityManager->flush();
 
             return $this->toDomain($entity);
-        } catch (\Exception $e) {
-            throw new \RuntimeException('Error saving permission: ' . $e->getMessage());
+        } catch (Exception $e) {
+            throw new RuntimeException('Error saving permission: ' . $e->getMessage());
         }
     }
 
@@ -112,8 +114,8 @@ class DoctrinePermissionRepository implements PermissionRepositoryInterface
                 $entity->setActive(false);
                 $this->entityManager->flush();
             }
-        } catch (\Exception $e) {
-            throw new \RuntimeException('Error deleting permission: ' . $e->getMessage());
+        } catch (Exception $e) {
+            throw new RuntimeException('Error eliminando Permiso: ' . $e->getMessage());
         }
     }
 
@@ -208,7 +210,7 @@ class DoctrinePermissionRepository implements PermissionRepositoryInterface
                 return true;
             }
             return false;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
     }
@@ -268,7 +270,7 @@ class DoctrinePermissionRepository implements PermissionRepositoryInterface
                 return true;
             }
             return false;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
     }
