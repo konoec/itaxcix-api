@@ -5,7 +5,6 @@ namespace itaxcix\Core\UseCases\TravelStatus;
 use itaxcix\Core\Interfaces\travel\TravelStatusRepositoryInterface;
 use itaxcix\Shared\DTO\useCases\TravelStatus\TravelStatusPaginationRequestDTO;
 use itaxcix\Shared\DTO\useCases\TravelStatus\TravelStatusResponseDTO;
-
 class TravelStatusListUseCase
 {
     private TravelStatusRepositoryInterface $repository;

@@ -99,10 +99,6 @@ use itaxcix\Core\Handler\Travel\RespondToTravelRequestUseCaseHandler;
 use itaxcix\Core\Handler\Travel\StartAcceptedTravelUseCaseHandler;
 use itaxcix\Core\Handler\Rating\GetUserRatingsCommentsUseCaseHandler;
 use itaxcix\Core\Handler\TravelReport\TravelReportUseCaseHandler;
-use itaxcix\Core\Handler\TravelStatus\TravelStatusCreateUseCaseHandler;
-use itaxcix\Core\Handler\TravelStatus\TravelStatusDeleteUseCaseHandler;
-use itaxcix\Core\Handler\TravelStatus\TravelStatusListUseCaseHandler;
-use itaxcix\Core\Handler\TravelStatus\TravelStatusUpdateUseCaseHandler;
 use itaxcix\Core\Handler\TucModality\TucModalityCreateUseCaseHandler;
 use itaxcix\Core\Handler\TucModality\TucModalityDeleteUseCaseHandler;
 use itaxcix\Core\Handler\TucModality\TucModalityUpdateUseCaseHandler;
@@ -114,6 +110,7 @@ use itaxcix\Core\Handler\User\CitizenToDriverUseCaseHandler;
 use itaxcix\Core\Handler\User\DriverToCitizenUseCaseHandler;
 use itaxcix\Core\Handler\UserCodeType\UserCodeTypeCreateUseCaseHandler;
 use itaxcix\Core\Handler\UserCodeType\UserCodeTypeDeleteUseCaseHandler;
+use itaxcix\Core\Handler\UserCodeType\UserCodeTypeListUseCaseHandler;
 use itaxcix\Core\Handler\UserCodeType\UserCodeTypeUpdateUseCaseHandler;
 use itaxcix\Core\Handler\UserReport\UserReportUseCaseHandler;
 use itaxcix\Core\Handler\UserStatus\UserStatusCreateUseCaseHandler;
@@ -650,10 +647,10 @@ return array(
 
     InfractionStatusValidator::class => autowire(InfractionStatusValidator::class),
 
-    TravelStatusCreateUseCase::class => autowire(TravelStatusCreateUseCaseHandler::class),
-    TravelStatusDeleteUseCase::class => autowire(TravelStatusDeleteUseCaseHandler::class),
-    TravelStatusListUseCase::class => autowire(TravelStatusListUseCaseHandler::class),
-    TravelStatusUpdateUseCase::class => autowire(TravelStatusUpdateUseCaseHandler::class),
+    TravelStatusCreateUseCase::class => autowire(TravelStatusCreateUseCase::class),
+    TravelStatusDeleteUseCase::class => autowire(TravelStatusDeleteUseCase::class),
+    TravelStatusListUseCase::class => autowire(TravelStatusListUseCase::class),
+    TravelStatusUpdateUseCase::class => autowire(TravelStatusUpdateUseCase::class),
 
     TravelStatusValidator::class => autowire(TravelStatusValidator::class),
 
@@ -679,7 +676,7 @@ return array(
     UserCodeTypeCreateUseCase::class => autowire(UserCodeTypeCreateUseCaseHandler::class),
     UserCodeTypeDeleteUseCase::class => autowire(UserCodeTypeDeleteUseCaseHandler::class),
     UserCodeTypeUpdateUseCase::class => autowire(UserCodeTypeUpdateUseCaseHandler::class),
-    UserCodeTypeListUseCase::class => autowire(UserCodeTypeListUseCase::class),
+    UserCodeTypeListUseCase::class => autowire(UserCodeTypeListUseCaseHandler::class),
 
     UserCodeTypeValidator::class => autowire(UserCodeTypeValidator::class),
 
@@ -701,6 +698,3 @@ return array(
     AuditLogUseCase::class => autowire(AuditLogUseCaseHandler::class),
     AuditLogValidator::class => autowire(AuditLogValidator::class),
 );
-
-
-
