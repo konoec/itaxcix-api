@@ -4,7 +4,7 @@ namespace itaxcix\Core\Domain\user;
 
 use itaxcix\Infrastructure\Database\Entity\user\PermissionEntity;
 
-class PermissionModel {
+class PermissionModel implements \JsonSerializable {
     private ?int $id;
     private string $name;
     private bool $active = true;
@@ -67,5 +67,15 @@ class PermissionModel {
         $permissionEntity->setWeb($this->web);
 
         return $permissionEntity;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'active' => $this->active,
+            'web' => $this->web
+        ];
     }
 }

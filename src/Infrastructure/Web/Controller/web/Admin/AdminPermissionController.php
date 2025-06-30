@@ -194,7 +194,7 @@ class AdminPermissionController extends AbstractController
                 limit: (int)($queryParams['limit'] ?? 20),
                 search: $queryParams['search'] ?? null,
                 webOnly: isset($queryParams['webOnly']) ? (bool)$queryParams['webOnly'] : null,
-                activeOnly: isset($queryParams['activeOnly']) ? (bool)$queryParams['activeOnly'] : true
+                activeOnly: !isset($queryParams['activeOnly']) || $queryParams['activeOnly']
             );
 
             $response = $this->listPermissionsUseCase->execute($requestDTO);
