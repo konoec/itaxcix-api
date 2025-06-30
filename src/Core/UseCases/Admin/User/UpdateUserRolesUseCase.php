@@ -66,8 +66,8 @@ class UpdateUserRolesUseCase
         foreach ($validRoles as $role) {
             $userRole = new UserRoleModel(
                 id: null,
-                user: $user,
                 role: $role,
+                user: $user,
                 active: true
             );
 

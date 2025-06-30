@@ -14,4 +14,6 @@ interface ConfigurationRepositoryInterface
     public function update(ConfigurationModel $configuration): ConfigurationModel;
     public function delete(int $id): bool;
     public function existsByKey(string $key, ?int $excludeId = null): bool;
+    public function saveConfiguration(ConfigurationModel $configurationModel): ConfigurationModel;
+    public function findConfigurationByKey(string $key): ?ConfigurationModel;
 }
