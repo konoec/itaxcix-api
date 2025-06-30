@@ -418,9 +418,9 @@ class AdminPermissionController extends AbstractController
             content: new OA\JsonContent(
                 required: ["name"],
                 properties: [
-                    new OA\Property(property: "name", type: "string", example: "admin.reports.advanced", description: "Nombre del permiso"),
-                    new OA\Property(property: "active", type: "boolean", example: true, description: "Estado activo del permiso"),
-                    new OA\Property(property: "web", type: "boolean", example: false, description: "Acceso web del permiso")
+                    new OA\Property(property: "name", description: "Nombre del permiso", type: "string", example: "admin.reports.advanced"),
+                    new OA\Property(property: "active", description: "Estado activo del permiso", type: "boolean", example: true),
+                    new OA\Property(property: "web", description: "Acceso web del permiso", type: "boolean", example: false)
                 ]
             )
         ),

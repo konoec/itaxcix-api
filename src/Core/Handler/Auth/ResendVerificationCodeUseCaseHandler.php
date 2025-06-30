@@ -63,7 +63,7 @@ class ResendVerificationCodeUseCaseHandler implements ResendInterface
         }
 
         $code = $this->generateUserCode();
-        $expires = (new DateTime())->modify('+10 minutes');
+        $expires = (new DateTime())->modify('+5 minutes');
         $userCode = new UserCodeModel(
             id: null,
             type: $userCodeType,

@@ -56,12 +56,27 @@ class StartPasswordRecoveryUseCaseHandler implements StartPasswordRecoveryUseCas
             throw new InvalidArgumentException('El tipo de código de usuario no existe.');
         }
 
+        // Verificar si ya existe un código de recuperación activo (no expirado)
+        $preUserCode = $this->userCodeRepository->findUserCodeByUserIdAndTypeId(
+            $userContact->getUser()->getId(),
+            $userCodeType->getId()
+        );
+        if ($preUserCode && $preUserCode->getExpirationDate() > new DateTime()) {
+            $now = new DateTime();
+            $interval = $now->diff($preUserCode->getExpirationDate());
+            $minutes = $interval->i + ($interval->h * 60);
+            $seconds = $interval->s;
+            throw new InvalidArgumentException(
+                'Ya se ha enviado un código de recuperación recientemente. Por favor, espere a que expire. Tiempo restante: ' . $minutes . ' minutos y ' . $seconds . ' segundos.'
+            );
+        }
+
         $newUserCode = new UserCodeModel(
             id: null,
             type: $userCodeType,
             contact: $userContact,
             code: $this->generateUserCode(),
-            expirationDate: (new DateTime())->modify('+10 minutes'),
+            expirationDate: (new DateTime())->modify('+5 minutes'),
             useDate: null,
             used: false
         );
