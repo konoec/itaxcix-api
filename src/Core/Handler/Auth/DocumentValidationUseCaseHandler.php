@@ -35,7 +35,7 @@ class DocumentValidationUseCaseHandler implements DocumentValidationUseCase
             throw new InvalidArgumentException('El tipo de documento no es admitido actualmente.');
         }
 
-        $person = $this->personRepository->findAllPersonByDocument($dto->documentValue);
+        $person = $this->personRepository->findAllPersonByDocument($dto->documentValue, $dto->documentTypeId);
 
         if ($person) {
 

@@ -34,13 +34,15 @@ class DoctrinePersonRepository implements PersonRepositoryInterface
         );
     }
 
-    public function findAllPersonByDocument(string $documentValue): ?PersonModel
+    public function findAllPersonByDocument(string $documentValue, int $documentTypeId): ?PersonModel
     {
         $query = $this->entityManager->createQueryBuilder()
             ->select('p')
             ->from(PersonEntity::class, 'p')
             ->where('p.document = :documentValue')
+            ->andWhere('p.documentType = :documentTypeId')
             ->setParameter('documentValue', $documentValue)
+            ->setParameter('documentTypeId', $documentTypeId)
             ->getQuery();
 
         $entity = $query->getOneOrNullResult();
@@ -74,6 +76,7 @@ class DoctrinePersonRepository implements PersonRepositoryInterface
 
         $this->entityManager->persist($entity);
         $this->entityManager->flush();
+        error_log('[DoctrinePersonRepository] Persona persistida con ID: ' . $entity->getId());
 
         return $this->toDomain($entity);
     }
