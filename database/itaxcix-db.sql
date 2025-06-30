@@ -109,3 +109,8 @@ VALUES ('FALTA DE RESPETO', TRUE),
        ('FALTA DE SEGURIDAD', TRUE),
        ('FALTA DE CUMPLIMIENTO', TRUE),
        ('OTRO', TRUE);
+
+INSERT INTO public.tb_centro_ayuda (ayuda_titulo, ayuda_subtitulo, ayuda_respuesta, ayuda_activo) VALUES
+                                                                                                      ('¿Cómo solicito un taxi?', 'Guía rápida para pedir un taxi desde la app', 'Abre la aplicación, permite el acceso a tu ubicación, selecciona tu destino y confirma tu pedido.', true),
+                                                                                                      ('¿Qué hago si el conductor no llega?', 'Pasos en caso de demora', 'Puedes cancelar el viaje sin penalidad si el conductor demora más de 10 minutos. También puedes contactar al conductor desde la app.', true),
+                                                                                                      ('¿Puedo calificar al conductor?', 'Sistema de calificación', 'Sí, al finalizar el viaje podrás calificar al conductor con estrellas y dejar un comentario.', true);
