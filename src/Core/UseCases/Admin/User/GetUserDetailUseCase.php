@@ -2,6 +2,7 @@
 
 namespace itaxcix\Core\UseCases\Admin\User;
 
+use InvalidArgumentException;
 use itaxcix\Core\Interfaces\user\UserRepositoryInterface;
 use itaxcix\Core\Interfaces\user\CitizenProfileRepositoryInterface;
 use itaxcix\Core\Interfaces\user\DriverProfileRepositoryInterface;
@@ -24,7 +25,6 @@ class GetUserDetailUseCase
     private UserContactRepositoryInterface $userContactRepository;
     private UserRoleRepositoryInterface $userRoleRepository;
     private VehicleUserRepositoryInterface $vehicleUserRepository;
-
     public function __construct(
         UserRepositoryInterface $userRepository,
         CitizenProfileRepositoryInterface $citizenProfileRepository,
@@ -46,7 +46,7 @@ class GetUserDetailUseCase
         // Validar que el usuario existe
         $user = $this->userRepository->findUserById($userId);
         if (!$user) {
-            throw new \InvalidArgumentException("Usuario con ID {$userId} no encontrado");
+            throw new InvalidArgumentException("Usuario con ID {$userId} no encontrado");
         }
 
         // Obtener datos de la persona
@@ -88,7 +88,7 @@ class GetUserDetailUseCase
         }
 
         // Obtener roles del usuario
-        $userRoles = $this->userRoleRepository->findAllUserRoleByUserId($userId);
+        $userRoles = $this->userRoleRepository->findUserRolesByUserId($userId);
         $rolesData = [];
         foreach ($userRoles as $userRole) {
             if ($userRole->isActive()) {
@@ -135,17 +135,22 @@ class GetUserDetailUseCase
             $vehicle = $vehicleUser->getVehicle();
             $vehicleData = [
                 'id' => $vehicle->getId(),
-                'plate' => $vehicle->getPlate(),
-                'brand' => $vehicle->getBrand(),
-                'model' => $vehicle->getModel(),
-                'year' => $vehicle->getYear(),
-                'color' => $vehicle->getColor(),
+                'plate' => $vehicle->getLicensePlate(),
+                'brand' => $vehicle->getModel() && $vehicle->getModel()->getBrand() ? [
+                    'id' => $vehicle->getModel()->getBrand()->getId(),
+                    'name' => $vehicle->getModel()->getBrand()->getName()
+                ] : null,
+                'model' => $vehicle->getModel() ? [
+                    'id' => $vehicle->getModel()->getId(),
+                    'name' => $vehicle->getModel()->getName()
+                ] : null,
+                'year' => $vehicle->getManufactureYear(),
+                'color' => $vehicle->getColor() ? [
+                    'id' => $vehicle->getColor()->getId(),
                 'active' => $vehicle->isActive()
+            ] : null
             ];
         }
-
-        // TODO: Obtener historial de admisión si es conductor
-        $admissionHistory = [];
 
         return new AdminUserDetailResponseDTO(
             userId: $userId,
@@ -155,8 +160,7 @@ class GetUserDetailUseCase
             roles: $rolesData,
             citizenProfile: $citizenProfileData,
             driverProfile: $driverProfileData,
-            vehicle: $vehicleData,
-            admissionHistory: $admissionHistory
+            vehicle: $vehicleData
         );
     }
 }

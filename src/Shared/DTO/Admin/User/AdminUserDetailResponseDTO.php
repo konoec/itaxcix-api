@@ -12,7 +12,6 @@ class AdminUserDetailResponseDTO
     public readonly ?array $citizenProfile;
     public readonly ?array $driverProfile;
     public readonly ?array $vehicle;
-    public readonly array $admissionHistory;
 
     public function __construct(
         int $userId,
@@ -22,8 +21,7 @@ class AdminUserDetailResponseDTO
         array $roles,
         ?array $citizenProfile = null,
         ?array $driverProfile = null,
-        ?array $vehicle = null,
-        array $admissionHistory = []
+        ?array $vehicle = null
     ) {
         $this->userId = $userId;
         $this->person = $person;
@@ -33,6 +31,5 @@ class AdminUserDetailResponseDTO
         $this->citizenProfile = $citizenProfile;
         $this->driverProfile = $driverProfile;
         $this->vehicle = $vehicle;
-        $this->admissionHistory = $admissionHistory;
     }
 }
