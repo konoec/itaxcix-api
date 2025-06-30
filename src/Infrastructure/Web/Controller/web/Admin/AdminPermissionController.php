@@ -353,13 +353,10 @@ class AdminPermissionController extends AbstractController
     )]
     public function deletePermission(ServerRequestInterface $request): ResponseInterface
     {
-        $data = $this->getJsonBody($request);
-        $data['id'] = $request->getAttribute('id');
-
+        $id = $request->getAttribute('id');
         try {
-            $this->deletePermissionUseCase->execute((int) $data['id']);
+            $this->deletePermissionUseCase->execute((int) $id);
             return $this->noContent();
-
         } catch (Exception $e) {
             return $this->error($e->getMessage());
         }
