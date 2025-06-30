@@ -203,6 +203,17 @@ class AdminPermissionController extends AbstractController
     {
         try {
             $body = $this->getJsonBody($request);
+            if (!is_array($body)) {
+                return $this->validationError(['body' => 'El cuerpo de la petición debe ser un JSON válido.']);
+            }
+            // Validación estricta de campos requeridos
+            if (!isset($body['name']) || !isset($body['active']) || !isset($body['web'])) {
+                $missing = [];
+                if (!isset($body['name'])) $missing['name'] = 'El nombre del permiso es requerido.';
+                if (!isset($body['active'])) $missing['active'] = 'El campo active es requerido.';
+                if (!isset($body['web'])) $missing['web'] = 'El campo web es requerido.';
+                return $this->validationError($missing);
+            }
 
             $errors = $this->permissionCreateRequestValidator->validate($body);
             if (!empty($errors)) {
