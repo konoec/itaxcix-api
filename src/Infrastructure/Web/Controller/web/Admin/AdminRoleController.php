@@ -24,21 +24,6 @@ use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * AdminRoleController - Controlador para administración avanzada de roles
- *
- * Este controlador proporciona un CRUD completo de roles con funcionalidades avanzadas:
- * - Listado paginado con filtros (búsqueda, tipo web, estado)
- * - Creación, actualización y eliminación de roles
- * - Gestión masiva de permisos por rol (asignar múltiples permisos de una vez)
- * - Consulta de roles con sus permisos asignados
- *
- * Reemplaza los controladores básicos anteriores con una solución profesional
- * que permite administrar roles de manera eficiente sin asignar permisos uno por uno.
- *
- * @package itaxcix\Infrastructure\Web\Controller\web\Admin
- * @author Sistema de Administración iTaxCix
- */
 class AdminRoleController extends AbstractController
 {
     private ListRolesUseCase $listRolesUseCase;
@@ -79,34 +64,6 @@ class AdminRoleController extends AbstractController
         $this->assignPermissionsToRoleValidator = $assignPermissionsToRoleValidator;
     }
 
-    /**
-     * Lista roles con paginación y filtros avanzados
-     *
-     * Endpoint: GET /api/v1/admin/roles
-     * Permisos: admin.roles.list
-     *
-     * Parámetros de consulta:
-     * - page (int): Página actual (default: 1)
-     * - limit (int): Elementos por página (default: 20, max: 100)
-     * - search (string): Búsqueda por nombre de rol
-     * - webOnly (bool): Filtrar solo roles web
-     * - activeOnly (bool): Filtrar solo roles activos (default: true)
-     *
-     * Respuesta exitosa (200):
-     * {
-     *   "success": true,
-     *   "data": {
-     *     "roles": [...],
-     *     "total": 50,
-     *     "page": 1,
-     *     "limit": 20,
-     *     "totalPages": 3
-     *   }
-     * }
-     *
-     * @param ServerRequestInterface $request Petición HTTP
-     * @return ResponseInterface Respuesta con lista paginada de roles
-     */
     #[OA\Get(
         path: "/api/v1/roles",
         operationId: "listRoles",

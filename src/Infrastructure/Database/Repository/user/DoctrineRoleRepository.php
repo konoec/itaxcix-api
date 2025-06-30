@@ -5,9 +5,12 @@ namespace itaxcix\Infrastructure\Database\Repository\user;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
+use Exception;
+use InvalidArgumentException;
 use itaxcix\Core\Domain\user\RoleModel;
 use itaxcix\Core\Interfaces\user\RoleRepositoryInterface;
 use itaxcix\Infrastructure\Database\Entity\user\RoleEntity;
+use RuntimeException;
 
 class DoctrineRoleRepository implements RoleRepositoryInterface
 {
@@ -19,7 +22,7 @@ class DoctrineRoleRepository implements RoleRepositoryInterface
 
     public function toDomain(object $entity): RoleModel {
         if (!$entity instanceof RoleEntity) {
-            throw new \InvalidArgumentException('Entity must be instance of RoleEntity');
+            throw new InvalidArgumentException('Entity must be instance of RoleEntity');
         }
 
         return new RoleModel(
@@ -129,12 +132,11 @@ class DoctrineRoleRepository implements RoleRepositoryInterface
                 $entity->setActive(false);
                 $this->entityManager->flush();
             }
-        } catch (\Exception $e) {
-            throw new \RuntimeException('Error deleting role: ' . $e->getMessage());
+        } catch (Exception $e) {
+            throw new RuntimeException('Error deleting role: ' . $e->getMessage());
         }
     }
 
-    // Método auxiliar para compatibilidad con casos de uso existentes
     public function deleteRoleById(int $roleId): bool
     {
         try {
