@@ -4,17 +4,25 @@ namespace itaxcix\Infrastructure\Web\Controller\api\Driver;
 
 use InvalidArgumentException;
 use itaxcix\Core\UseCases\Driver\DriverTucStatusUseCase;
+use itaxcix\Core\UseCases\Driver\UpdateDriverTucUseCase;
 use itaxcix\Infrastructure\Web\Controller\generic\AbstractController;
+use itaxcix\Shared\DTO\useCases\Driver\UpdateTucResponseDto;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Exception;
 
 class DriverTucStatusController extends AbstractController
 {
     private DriverTucStatusUseCase $driverTucStatusUseCase;
-    public function __construct(DriverTucStatusUseCase $driverTucStatusUseCase)
-    {
+    private UpdateDriverTucUseCase $updateDriverTucUseCase;
+
+    public function __construct(
+        DriverTucStatusUseCase $driverTucStatusUseCase,
+        UpdateDriverTucUseCase $updateDriverTucUseCase
+    ) {
         $this->driverTucStatusUseCase = $driverTucStatusUseCase;
+        $this->updateDriverTucUseCase = $updateDriverTucUseCase;
     }
     #[OA\Get(
         path: "/drivers/{id}/has-active-tuc",
@@ -98,6 +106,54 @@ class DriverTucStatusController extends AbstractController
 
         } catch (InvalidArgumentException $e) {
             return $this->error($e->getMessage(), 400);
+        }
+    }
+
+    // GET /drivers/{driverId}/update-tuc - Actualizar TUCs del conductor
+    #[OA\Get(
+        path: "/drivers/{driverId}/update-tuc",
+        operationId: "updateDriverTuc",
+        description: "Verifica y actualiza las TUCs de todos los vehículos del conductor consultando la API municipal. Solo registra nuevas TUCs cuando hay fechas de vigencia más recientes.",
+        summary: "Actualizar TUCs del conductor",
+        security: [["bearerAuth" => []]],
+        tags: ["Driver", "TUC"]
+    )]
+    #[OA\Parameter(
+        name: "driverId",
+        description: "ID del conductor",
+        in: "path",
+        required: true,
+        schema: new OA\Schema(type: "integer")
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "Resultado de la actualización de TUCs",
+        content: new OA\JsonContent(ref: UpdateTucResponseDto::class)
+    )]
+    #[OA\Response(
+        response: 400,
+        description: "Petición inválida",
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: "success", type: "boolean", example: false),
+                new OA\Property(property: "message", type: "string", example: "ID de conductor inválido")
+            ],
+            type: "object"
+        )
+    )]
+    public function updateDriverTuc(ServerRequestInterface $request): ResponseInterface
+    {
+        try {
+            $driverId = (int) $request->getAttribute('driverId');
+
+            if ($driverId <= 0) {
+                return $this->error('ID de conductor inválido', 400);
+            }
+
+            $result = $this->updateDriverTucUseCase->execute($driverId);
+            return $this->ok($result);
+        } catch (Exception $exception) {
+            return $this->error($exception->getMessage(), 400);
         }
     }
 }

@@ -5,18 +5,18 @@ namespace itaxcix\Core\Domain\infraction;
 use itaxcix\Infrastructure\Database\Entity\infraction\InfractionSeverityEntity;
 
 class InfractionSeverityModel {
-    private int $id;
+    private ?int $id;
     private string $name;
     private bool $active = true;
 
-    public function __construct(int $id, string $name, bool $active)
+    public function __construct(?int $id, string $name, bool $active)
     {
         $this->id = $id;
         $this->name = $name;
         $this->active = $active;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }

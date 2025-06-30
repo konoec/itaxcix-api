@@ -9,9 +9,9 @@ class UserStatusModel {
     private string $name;
     private bool $active = true;
 
-    public function __construct(string $name, ?int $id = null, bool $active = true) {
-        $this->name = $name;
+    public function __construct(?int $id, string $name, bool $active = true) {
         $this->id = $id;
+        $this->name = $name;
         $this->active = $active;
     }
 
@@ -47,7 +47,6 @@ class UserStatusModel {
 
     public function toEntity(): UserStatusEntity {
         $entity = new UserStatusEntity();
-
         $entity->setId($this->id);
         $entity->setName($this->name);
         $entity->setActive($this->active);

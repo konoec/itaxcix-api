@@ -69,4 +69,98 @@ class DoctrineIncidentRepository implements IncidentRepositoryInterface {
         $this->entityManager->flush();
         return $this->toDomain($entity);
     }
+
+    public function findReport(\itaxcix\Shared\DTO\useCases\IncidentReport\IncidentReportRequestDTO $dto): array
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('i, u, p, t')
+            ->from(IncidentEntity::class, 'i')
+            ->leftJoin('i.user', 'u')
+            ->leftJoin('u.person', 'p')
+            ->leftJoin('i.type', 't');
+
+        if ($dto->userId) {
+            $qb->andWhere('u.id = :userId')
+                ->setParameter('userId', $dto->userId);
+        }
+        if ($dto->travelId) {
+            $qb->andWhere('i.travel = :travelId')
+                ->setParameter('travelId', $dto->travelId);
+        }
+        if ($dto->typeId) {
+            $qb->andWhere('t.id = :typeId')
+                ->setParameter('typeId', $dto->typeId);
+        }
+        if ($dto->active !== null) {
+            $qb->andWhere('i.active = :active')
+                ->setParameter('active', $dto->active);
+        }
+        if ($dto->comment) {
+            $qb->andWhere('i.comment LIKE :comment')
+                ->setParameter('comment', '%' . $dto->comment . '%');
+        }
+        $allowedSort = [
+            'id' => 'i.id',
+            'userId' => 'u.id',
+            'travelId' => 'i.travel',
+            'typeId' => 't.id',
+            'active' => 'i.active'
+        ];
+        $sortBy = $allowedSort[$dto->sortBy] ?? 'i.id';
+        $sortDirection = strtoupper($dto->sortDirection) === 'ASC' ? 'ASC' : 'DESC';
+        $qb->orderBy($sortBy, $sortDirection)
+            ->setFirstResult(($dto->page - 1) * $dto->perPage)
+            ->setMaxResults($dto->perPage);
+
+        $entities = $qb->getQuery()->getResult();
+        $result = [];
+        foreach ($entities as $entity) {
+            if ($entity instanceof IncidentEntity) {
+                $user = $entity->getUser();
+                $person = $user?->getPerson();
+                $type = $entity->getType();
+                $result[] = [
+                    'id' => $entity->getId(),
+                    'userId' => $user?->getId(),
+                    'userName' => $person ? trim(($person->getName() ?? '') . ' ' . ($person->getLastName() ?? '')) : null,
+                    'travelId' => $entity->getTravel()?->getId(),
+                    'typeId' => $type?->getId(),
+                    'typeName' => $type?->getName(),
+                    'comment' => $entity->getComment(),
+                    'active' => $entity->isActive()
+                ];
+            }
+        }
+        return $result;
+    }
+
+    public function countReport(\itaxcix\Shared\DTO\useCases\IncidentReport\IncidentReportRequestDTO $dto): int
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('COUNT(i.id)')
+            ->from(IncidentEntity::class, 'i')
+            ->leftJoin('i.user', 'u')
+            ->leftJoin('i.type', 't');
+        if ($dto->userId) {
+            $qb->andWhere('u.id = :userId')
+                ->setParameter('userId', $dto->userId);
+        }
+        if ($dto->travelId) {
+            $qb->andWhere('i.travel = :travelId')
+                ->setParameter('travelId', $dto->travelId);
+        }
+        if ($dto->typeId) {
+            $qb->andWhere('t.id = :typeId')
+                ->setParameter('typeId', $dto->typeId);
+        }
+        if ($dto->active !== null) {
+            $qb->andWhere('i.active = :active')
+                ->setParameter('active', $dto->active);
+        }
+        if ($dto->comment) {
+            $qb->andWhere('i.comment LIKE :comment')
+                ->setParameter('comment', '%' . $dto->comment . '%');
+        }
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
 }

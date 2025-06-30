@@ -23,6 +23,7 @@ class JwtService implements JwtEncoderInterface {
 
     public function encode(array $payload, ?int $customExpiresIn = null): string {
         $payload['exp'] = time() + ($customExpiresIn ?? $this->expiresIn);
+        $payload['iat'] = time();
         return JWT::encode($payload, $this->secret, $this->algorithm);
     }
 

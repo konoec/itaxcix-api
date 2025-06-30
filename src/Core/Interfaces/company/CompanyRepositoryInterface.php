@@ -3,14 +3,15 @@
 namespace itaxcix\Core\Interfaces\company;
 
 use itaxcix\Core\Domain\company\CompanyModel;
-use itaxcix\Shared\DTO\generic\PaginationResponseDTO;
+use itaxcix\Shared\DTO\useCases\Company\CompanyPaginationRequestDTO;
 
 interface CompanyRepositoryInterface
 {
-    public function findCompanyByRuc(string $ruc): ?CompanyModel;
-    public function findAllCompanies(): array;
-    public function findAllCompaniesPaginated(int $page, int $perPage): PaginationResponseDTO;
-    public function findCompanyById(int $id): ?CompanyModel;
-    public function saveCompany(CompanyModel $companyModel): CompanyModel;
-    public function deleteCompany(int $id): bool;
+    public function findAll(CompanyPaginationRequestDTO $request): array;
+    public function findById(int $id): ?CompanyModel;
+    public function create(CompanyModel $company): CompanyModel;
+    public function update(CompanyModel $company): CompanyModel;
+    public function delete(int $id): bool;
+    public function existsByRuc(string $ruc, ?int $excludeId = null): bool;
+    public function count(CompanyPaginationRequestDTO $request): int;
 }

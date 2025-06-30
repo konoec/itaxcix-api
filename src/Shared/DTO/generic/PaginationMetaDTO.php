@@ -8,6 +8,12 @@ class PaginationMetaDTO
         public int $total,
         public int $perPage,
         public int $currentPage,
-        public int $lastPage
+        public int $lastPage,
+
+        // Campos adicionales para funcionalidades avanzadas
+        public ?string $search = null,
+        public ?array $filters = null,
+        public ?string $sortBy = null,
+        public ?string $sortDirection = null
     ) {}
 }

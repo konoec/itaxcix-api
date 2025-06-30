@@ -3,6 +3,11 @@
 namespace itaxcix\Infrastructure\Web\Controller\api\Travel;
 
 use Exception;
+use InvalidArgumentException;
+use itaxcix\Core\Handler\TravelStatus\TravelStatusCreateUseCaseHandler;
+use itaxcix\Core\Handler\TravelStatus\TravelStatusDeleteUseCaseHandler;
+use itaxcix\Core\Handler\TravelStatus\TravelStatusListUseCaseHandler;
+use itaxcix\Core\Handler\TravelStatus\TravelStatusUpdateUseCaseHandler;
 use itaxcix\Core\UseCases\Travel\CancelTravelUseCase;
 use itaxcix\Core\UseCases\Travel\CompleteTravelUseCase;
 use itaxcix\Core\UseCases\Travel\RequestNewTravelUseCase;
@@ -13,9 +18,12 @@ use itaxcix\Shared\DTO\useCases\Travel\RequestTravelDTO;
 use itaxcix\Shared\DTO\useCases\Travel\RespondToRequestDTO;
 use itaxcix\Shared\DTO\useCases\Travel\TravelIdDTO;
 use itaxcix\Shared\DTO\useCases\Travel\TravelResponseDTO;
+use itaxcix\Shared\DTO\useCases\TravelStatus\TravelStatusPaginationRequestDTO;
+use itaxcix\Shared\DTO\useCases\TravelStatus\TravelStatusRequestDTO;
 use itaxcix\Shared\Validators\useCases\Travel\RequestTravelValidator;
 use itaxcix\Shared\Validators\useCases\Travel\RespondToRequestValidator;
 use itaxcix\Shared\Validators\useCases\Travel\TravelIdValidator;
+use itaxcix\Shared\Validators\useCases\TravelStatus\TravelStatusValidator;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -27,19 +35,34 @@ class TravelStatusController extends AbstractController
     private RespondToTravelRequestUseCase $respondToTravelRequestUseCase;
     private StartAcceptedTravelUseCase $startAcceptedTravelUseCase;
     private RequestNewTravelUseCase $requestNewTravelUseCase;
+    private TravelStatusListUseCaseHandler $listHandler;
+    private TravelStatusCreateUseCaseHandler $createHandler;
+    private TravelStatusUpdateUseCaseHandler $updateHandler;
+    private TravelStatusDeleteUseCaseHandler $deleteHandler;
+    private TravelStatusValidator $validator;
 
     public function __construct(
         CancelTravelUseCase $cancelTravelUseCase,
         CompleteTravelUseCase $completeTravelUseCase,
         RespondToTravelRequestUseCase $respondToTravelRequestUseCase,
         StartAcceptedTravelUseCase $startAcceptedTravelUseCase,
-        RequestNewTravelUseCase $requestNewTravelUseCase
+        RequestNewTravelUseCase $requestNewTravelUseCase,
+        TravelStatusListUseCaseHandler $listHandler,
+        TravelStatusCreateUseCaseHandler $createHandler,
+        TravelStatusUpdateUseCaseHandler $updateHandler,
+        TravelStatusDeleteUseCaseHandler $deleteHandler,
+        TravelStatusValidator $validator
     ) {
         $this->cancelTravelUseCase = $cancelTravelUseCase;
         $this->completeTravelUseCase = $completeTravelUseCase;
         $this->respondToTravelRequestUseCase = $respondToTravelRequestUseCase;
         $this->startAcceptedTravelUseCase = $startAcceptedTravelUseCase;
         $this->requestNewTravelUseCase = $requestNewTravelUseCase;
+        $this->listHandler = $listHandler;
+        $this->createHandler = $createHandler;
+        $this->updateHandler = $updateHandler;
+        $this->deleteHandler = $deleteHandler;
+        $this->validator = $validator;
     }
 
     // POST /travels - Solicitar un nuevo viaje
@@ -411,4 +434,244 @@ class TravelStatusController extends AbstractController
             return $this->error($exception->getMessage(), 400);
         }
     }
+
+    #[OA\Get(
+        path: "/admin/travel-statuses",
+        operationId: "getTravelStatuses",
+        description: "Obtiene estados de viaje con búsqueda, filtros y paginación avanzada para panel administrativo.",
+        summary: "Lista estados de viaje con funcionalidades administrativas.",
+        security: [["bearerAuth" => []]],
+        tags: ["Admin - Travel Status"]
+    )]
+    #[OA\Parameter(name: "page", description: "Número de página", in: "query", required: false, schema: new OA\Schema(type: "integer", default: 1, minimum: 1))]
+    #[OA\Parameter(name: "perPage", description: "Elementos por página", in: "query", required: false, schema: new OA\Schema(type: "integer", default: 15, minimum: 1, maximum: 100))]
+    #[OA\Parameter(name: "search", description: "Búsqueda global en nombre", in: "query", required: false, schema: new OA\Schema(type: "string"))]
+    #[OA\Parameter(name: "name", description: "Filtro por nombre de estado de viaje", in: "query", required: false, schema: new OA\Schema(type: "string"))]
+    #[OA\Parameter(name: "active", description: "Filtro por estado activo", in: "query", required: false, schema: new OA\Schema(type: "boolean"))]
+    #[OA\Parameter(name: "sortBy", description: "Campo de ordenamiento", in: "query", required: false, schema: new OA\Schema(type: "string", enum: ["id", "name", "active"], default: "name"))]
+    #[OA\Parameter(name: "sortDirection", description: "Dirección de ordenamiento", in: "query", required: false, schema: new OA\Schema(type: "string", enum: ["ASC", "DESC"], default: "ASC"))]
+    #[OA\Response(
+        response: 200,
+        description: "Lista de estados de viaje con paginación",
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: "success", type: "boolean", example: true),
+                new OA\Property(property: "message", type: "string", example: "Estados de viaje obtenidos exitosamente"),
+                new OA\Property(
+                    property: "data",
+                    type: "object",
+                    properties: [
+                        new OA\Property(
+                            property: "data",
+                            type: "array",
+                            items: new OA\Items(
+                                type: "object",
+                                properties: [
+                                    new OA\Property(property: "id", type: "integer", example: 1),
+                                    new OA\Property(property: "name", type: "string", example: "En curso"),
+                                    new OA\Property(property: "active", type: "boolean", example: true)
+                                ]
+                            )
+                        ),
+                        new OA\Property(
+                            property: "pagination",
+                            type: "object",
+                            properties: [
+                                new OA\Property(property: "current_page", type: "integer", example: 1),
+                                new OA\Property(property: "per_page", type: "integer", example: 15),
+                                new OA\Property(property: "total_items", type: "integer", example: 25),
+                                new OA\Property(property: "total_pages", type: "integer", example: 2),
+                                new OA\Property(property: "has_next_page", type: "boolean", example: true),
+                                new OA\Property(property: "has_previous_page", type: "boolean", example: false)
+                            ]
+                        )
+                    ]
+                )
+            ],
+            type: "object"
+        )
+    )]
+    public function list(ServerRequestInterface $request): ResponseInterface
+    {
+        try {
+            $queryParams = $request->getQueryParams();
+            $paginationRequest = TravelStatusPaginationRequestDTO::fromArray($queryParams);
+
+            $result = $this->listHandler->handle($paginationRequest);
+
+            return $this->ok('Estados de viaje obtenidos exitosamente', $result);
+        } catch (\Exception $e) {
+            return $this->error('Error al obtener los estados de viaje: ' . $e->getMessage());
+        }
+    }
+
+    #[OA\Post(
+        path: "/admin/travel-statuses",
+        operationId: "createTravelStatus",
+        description: "Crea un nuevo estado de viaje.",
+        summary: "Crear nuevo estado de viaje.",
+        security: [["bearerAuth" => []]],
+        tags: ["Admin - Travel Status"]
+    )]
+    #[OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            required: ["name"],
+            properties: [
+                new OA\Property(property: "name", type: "string", example: "En curso", description: "Nombre del estado de viaje"),
+                new OA\Property(property: "active", description: "Estado activo del estado de viaje", type: "boolean", example: true)
+            ],
+            type: "object"
+        )
+    )]
+    #[OA\Response(
+        response: 201,
+        description: "Estado de viaje creado exitosamente",
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: "success", type: "boolean", example: true),
+                new OA\Property(property: "message", type: "string", example: "Estado de viaje creado exitosamente"),
+                new OA\Property(
+                    property: "data",
+                    properties: [
+                        new OA\Property(property: "id", type: "integer", example: 1),
+                        new OA\Property(property: "name", type: "string", example: "En curso"),
+                        new OA\Property(property: "active", type: "boolean", example: true)
+                    ],
+                    type: "object"
+                )
+            ],
+            type: "object"
+        )
+    )]
+    public function create(ServerRequestInterface $request): ResponseInterface
+    {
+        try {
+            $data = $this->getJsonBody($request);
+
+            $validationErrors = $this->validator->validateCreate($data);
+            if (!empty($validationErrors)) {
+                return $this->validationError($validationErrors);
+            }
+
+            $requestDTO = TravelStatusRequestDTO::fromArray($data);
+            $result = $this->createHandler->handle($requestDTO);
+
+            return $this->ok('Estado de viaje creado exitosamente', $result->toArray(), 201);
+        } catch (InvalidArgumentException $e) {
+            return $this->error('Datos inválidos: ' . $e->getMessage(), 400);
+        } catch (\Exception $e) {
+            return $this->error('Error al crear el estado de viaje: ' . $e->getMessage());
+        }
+    }
+
+    #[OA\Put(
+        path: "/admin/travel-statuses/{id}",
+        operationId: "updateTravelStatus",
+        description: "Actualiza un estado de viaje existente.",
+        summary: "Actualizar estado de viaje.",
+        security: [["bearerAuth" => []]],
+        tags: ["Admin - Travel Status"]
+    )]
+    #[OA\Parameter(name: "id", description: "ID del estado de viaje", in: "path", required: true, schema: new OA\Schema(type: "integer"))]
+    #[OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            required: ["name"],
+            properties: [
+                new OA\Property(property: "name", type: "string", example: "En curso modificado", description: "Nombre del estado de viaje"),
+                new OA\Property(property: "active", type: "boolean", example: true, description: "Estado activo del estado de viaje")
+            ],
+            type: "object"
+        )
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "Estado de viaje actualizado exitosamente",
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: "success", type: "boolean", example: true),
+                new OA\Property(property: "message", type: "string", example: "Estado de viaje actualizado exitosamente"),
+                new OA\Property(
+                    property: "data",
+                    properties: [
+                        new OA\Property(property: "id", type: "integer", example: 1),
+                        new OA\Property(property: "name", type: "string", example: "En curso modificado"),
+                        new OA\Property(property: "active", type: "boolean", example: true)
+                    ],
+                    type: "object"
+                )
+            ],
+            type: "object"
+        )
+    )]
+    public function update(ServerRequestInterface $request): ResponseInterface
+    {
+        try {
+            $id = (int) $request->getAttribute('id');
+            $data = $this->getJsonBody($request);
+
+            $idValidationErrors = $this->validator->validateId($id);
+            if (!empty($idValidationErrors)) {
+                return $this->validationError($idValidationErrors);
+            }
+
+            $validationErrors = $this->validator->validateUpdate($data, $id);
+            if (!empty($validationErrors)) {
+                return $this->validationError($validationErrors);
+            }
+
+            $requestDTO = TravelStatusRequestDTO::fromArray($data);
+            $result = $this->updateHandler->handle($id, $requestDTO);
+
+            return $this->ok('Estado de viaje actualizado exitosamente', $result->toArray());
+        } catch (InvalidArgumentException $e) {
+            return $this->error('Datos inválidos: ' . $e->getMessage(), 400);
+        } catch (\Exception $e) {
+            return $this->error('Error al actualizar el estado de viaje: ' . $e->getMessage());
+        }
+    }
+
+    #[OA\Delete(
+        path: "/admin/travel-statuses/{id}",
+        operationId: "deleteTravelStatus",
+        description: "Elimina un estado de viaje.",
+        summary: "Eliminar estado de viaje.",
+        security: [["bearerAuth" => []]],
+        tags: ["Admin - Travel Status"]
+    )]
+    #[OA\Parameter(name: "id", description: "ID del estado de viaje", in: "path", required: true, schema: new OA\Schema(type: "integer"))]
+    #[OA\Response(
+        response: 200,
+        description: "Estado de viaje eliminado exitosamente",
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: "success", type: "boolean", example: true),
+                new OA\Property(property: "message", type: "string", example: "Estado de viaje eliminado exitosamente")
+            ],
+            type: "object"
+        )
+    )]
+    public function delete(ServerRequestInterface $request): ResponseInterface
+    {
+        try {
+            $id = (int) $request->getAttribute('id');
+
+            $validationErrors = $this->validator->validateId($id);
+            if (!empty($validationErrors)) {
+                return $this->validationError($validationErrors);
+            }
+
+            $result = $this->deleteHandler->handle($id);
+
+            if (!$result) {
+                return $this->error('No se pudo eliminar el estado de viaje', 400);
+            }
+
+            return $this->ok('Estado de viaje eliminado exitosamente');
+        } catch (\Exception $e) {
+            return $this->error('Error al eliminar el estado de viaje: ' . $e->getMessage());
+        }
+    }
 }
+

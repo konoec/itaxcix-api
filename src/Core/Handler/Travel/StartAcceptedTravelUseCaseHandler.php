@@ -50,12 +50,13 @@ class StartAcceptedTravelUseCaseHandler implements StartAcceptedTravelUseCase
         $notification = [
             'type' => 'trip_status_update',
             'recipientType' => 'citizen',
-            'recipientId' => (string) $travel->getCitizen()->getId(),
+            'recipientId' => $travel->getCitizen()->getId(),
             'data' => [
                 'tripId' => $updatedTravel->getId(),
                 'status' => 'started',
                 'driverId' => $travel->getDriver()->getId()
-            ]
+            ],
+            'timestamp' => time() // Agregar timestamp para validación TTL
         ];
 
         // Enviar a la cola de Redis

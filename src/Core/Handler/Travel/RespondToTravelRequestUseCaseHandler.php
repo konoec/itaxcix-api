@@ -57,14 +57,15 @@ class RespondToTravelRequestUseCaseHandler implements RespondToTravelRequestUseC
         $notification = [
             'type' => 'trip_response',
             'recipientType' => 'citizen',
-            'recipientId' => (string) $travel->getCitizen()->getId(),
+            'recipientId' => $travel->getCitizen()->getId(),
             'data' => [
                 'tripId' => $updatedTravel->getId(),
                 'accepted' => $dto->accepted,
                 'driverId' => $travel->getDriver()->getId(),
                 'driverName' => $travel->getDriver()->getPerson()->getName() . ' ' . $travel->getDriver()->getPerson()->getLastName(),
                 'estimatedArrival' => $dto->estimatedArrival ?? 0
-            ]
+            ],
+            'timestamp' => time() // Agregar timestamp para validación TTL
         ];
 
         // Enviar a la cola de Redis

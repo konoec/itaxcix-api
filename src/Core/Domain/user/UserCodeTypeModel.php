@@ -5,23 +5,23 @@ namespace itaxcix\Core\Domain\user;
 use itaxcix\Infrastructure\Database\Entity\user\UserCodeTypeEntity;
 
 class UserCodeTypeModel {
-    private int $id;
+    private ?int $id;
     private string $name;
     private bool $active = true;
 
     /**
-     * @param int $id
+     * @param ?int $id
      * @param string $name
      * @param bool $active
      */
-    public function __construct(int $id, string $name, bool $active)
+    public function __construct(?int $id, string $name, bool $active)
     {
         $this->id = $id;
         $this->name = $name;
         $this->active = $active;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }

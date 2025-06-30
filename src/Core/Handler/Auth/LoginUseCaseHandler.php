@@ -3,8 +3,6 @@
 namespace itaxcix\Core\Handler\Auth;
 
 use InvalidArgumentException;
-use itaxcix\Core\Domain\user\RolePermissionModel;
-use itaxcix\Core\Domain\user\UserRoleModel;
 use itaxcix\Core\Interfaces\user\CitizenProfileRepositoryInterface;
 use itaxcix\Core\Interfaces\user\DriverProfileRepositoryInterface;
 use itaxcix\Core\Interfaces\user\RolePermissionRepositoryInterface;
@@ -82,27 +80,91 @@ class LoginUseCaseHandler implements LoginUseCase
         }
 
         // Obtener todos los permisos de todos los roles
-        $permissions = [];
+        $permissionsData = [];
+        $permissionNames = []; // Para mantener compatibilidad en el token
+
         foreach ($roles as $role) {
             $perms = $this->rolePermissionRepository->findPermissionsByRoleId($role->getRole()->getId(), $dto->web);
-            $permissions = [...$permissions, ...array_map(fn(RolePermissionModel $p) => $p->getPermission()->getName(), $perms)];
+            foreach ($perms as $permission) {
+                // Evitar duplicados por ID
+                if (!isset($permissionsData[$permission->getId()])) {
+                    $permissionsData[$permission->getId()] = [
+                        'id' => $permission->getId(),
+                        'name' => $permission->getName()
+                    ];
+                    $permissionNames[] = $permission->getName();
+                }
+            }
         }
 
-        // Eliminar duplicados
-        $permissions = array_unique($permissions);
+        // Convertir a array indexado para la respuesta
+        $permissions = array_values($permissionsData);
 
         // Verificar si el usuario tiene permisos
         if (empty($permissions)) {
             throw new InvalidArgumentException('El usuario no tiene permisos asignados. Contacte al administrador.');
         }
 
-        // Generar token
-        $token = $this->jwtService->encode([
+        // Determinar tipo de usuario basado en perfiles reales o plataforma web
+        $userTypes = [];
+        $hasApprovedDriverProfile = false;
+
+        if ($dto->web) {
+            // Si es acceso web, no importa driver/citizen
+            $userTypes[] = 'web';
+            $primaryUserType = 'web';
+        } else {
+            // Verificar perfil de ciudadano
+            if ($citizenProfile) {
+                $userTypes[] = 'citizen';
+            }
+
+            // Verificar perfil de conductor (solo si está aprobado)
+            if ($driverProfile && $driverProfile->getStatus()->getName() === 'APROBADO') {
+                $userTypes[] = 'driver';
+                $hasApprovedDriverProfile = true;
+            }
+
+            // Si no tiene ningún perfil válido, error
+            if (empty($userTypes)) {
+                throw new InvalidArgumentException('El usuario no tiene perfiles válidos activos.');
+            }
+
+            // Para compatibilidad, el userType principal es driver si está aprobado, sino citizen
+            $primaryUserType = $hasApprovedDriverProfile ? 'driver' : 'citizen';
+        }
+
+        // Construir roles con ID y nombre
+        $rolesData = [];
+        $roleNames = []; // Para mantener compatibilidad en el token
+
+        foreach ($roles as $userRole) {
+            $role = $userRole->getRole();
+            // Evitar duplicados por ID
+            if (!isset($rolesData[$role->getId()])) {
+                $rolesData[$role->getId()] = [
+                    'id' => $role->getId(),
+                    'name' => $role->getName()
+                ];
+                $roleNames[] = $role->getName();
+            }
+        }
+
+        // Convertir a array indexado para la respuesta
+        $rolesForResponse = array_values($rolesData);
+
+        // Generar token con userId y userTypes para validación de seguridad
+        $tokenPayload = [
+            'userId' => $user->getId(),
+            'userType' => $primaryUserType, // ← Tipo principal para compatibilidad
+            'userTypes' => $userTypes, // ← Todos los tipos disponibles para WebSocket
+            // Datos legacy para el panel web (mantenemos solo nombres para compatibilidad)
             'user_id' => $user->getId(),
-            'roles' => array_map(fn(UserRoleModel $r) => $r->getRole()?->getName(), $roles),
-            'permissions' => $permissions,
-            'exp' => time() + 3600
-        ]);
+            'roles' => $roleNames,
+            'permissions' => $permissionNames
+        ];
+
+        $token = $this->jwtService->encode($tokenPayload);
 
         return new AuthLoginResponseDTO(
             token: $token,
@@ -110,7 +172,7 @@ class LoginUseCaseHandler implements LoginUseCase
             documentValue: $user->getPerson()->getDocument(),
             firstName: $user->getPerson()->getName(),
             lastName: $user->getPerson()->getLastName(),
-            roles: array_map(fn(UserRoleModel $r) => $r->getRole()?->getName(), $roles),
+            roles: $rolesForResponse,
             permissions: $permissions,
             rating: $averageRating
         );

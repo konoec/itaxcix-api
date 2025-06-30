@@ -1,100 +1,770 @@
 asyncapi: '2.6.0'
 info:
-  title: iTaxCix WebSocket API
-  version: '1.0.0'
+  title: API WebSocket de iTaxCix
+  version: '1.4.0'
   description: |
-    API de WebSocket para seguimiento de conductores en tiempo real y notificaciones de viajes.
+    API WebSocket en tiempo real para seguimiento de conductores y notificaciones de viajes en la plataforma iTaxCix.
     
-    ## Políticas de expiración de notificaciones (TTL)
-    - Las notificaciones de tipo `trip_request` y `trip_response` expiran si no son entregadas en **30 segundos**.
-    - Las notificaciones de tipo `driver_location_update` expiran si no son entregadas en **10 segundos**.
-    - Las notificaciones de tipo `trip_status_update` (por ejemplo, `canceled`, `completed`) **siempre se entregan**, sin importar su antigüedad.
+    Esta API maneja la comunicación en tiempo real entre conductores y pasajeros, incluyendo seguimiento de ubicación,
+    solicitudes de viajes, respuestas y actualizaciones de estado con gestión automática de disponibilidad de conductores.
     
-    Esto garantiza que los usuarios reciban solo información relevante y actualizada.
+    ## 🔒 Seguridad y Autenticación Híbrida
     
-    ## Flujo de conexión actualizado:
-    - Los clientes se conectan al WebSocket
-    - Los clientes se identifican (ciudadano o conductor)
-    - Solo después de identificarse como ciudadano, reciben la lista de conductores activos
+    **La API utiliza un sistema híbrido de autenticación**:
+    1. **JWT para autenticación básica** - Valida que el usuario puede conectarse
+    2. **Mensaje `identify` para configuración** - Envía datos específicos del cliente
+    
+    ### Métodos de Autenticación JWT Soportados:
+    
+    1. **Query Parameter** (Recomendado para clientes web):
+       ```javascript
+       const ws = new WebSocket(`wss://api.itaxcix.com/ws?token=${jwtToken}`);
+       ```
+    
+    2. **Authorization Header** (Estándar HTTP):
+       ```javascript
+       const ws = new WebSocket('wss://api.itaxcix.com/ws', [], {
+         headers: { 'Authorization': `Bearer ${jwtToken}` }
+       });
+       ```
+    
+    3. **WebSocket Subprotocol** (Método alternativo):
+       ```javascript
+       const ws = new WebSocket('wss://api.itaxcix.com/ws', [`token.${jwtToken}`]);
+       ```
+    
+    ### Estructura del Token JWT (Con Validación de Seguridad):
+    
+    El token ahora incluye información de seguridad para prevenir suplantación:
+    
+    ```json
+    {
+      "userId": 123,
+      "userType": "driver|citizen",  // ← REQUERIDO para validación de seguridad
+      "exp": 1703980800,
+      "iat": 1703894400,
+      // Datos adicionales para el panel web (legacy)
+      "user_id": 123,
+      "roles": ["DRIVER"],
+      "permissions": [...]
+    }
+    ```
+    
+    **⚠️ IMPORTANTE**: El `userType` se determina automáticamente desde la base de datos:
+    - Si el usuario tiene `DriverProfile` aprobado → `userType: "driver"`
+    - Si no tiene `DriverProfile` → `userType: "citizen"`
+    
+    ### Validaciones de Seguridad:
+    
+    - ✅ **Firma del token**: Verificada con clave secreta
+    - ✅ **Expiración**: Token debe estar vigente  
+    - ✅ **Claims requeridos**: `userId` Y `userType` obligatorios
+    - ✅ **Validación de identidad**: El `userType` del JWT debe coincidir con el `clientType` del mensaje `identify`
+    - ✅ **Protección contra suplantación**: Imposible que un ciudadano se haga pasar por conductor o viceversa
+    - ✅ **Rechazo automático**: Conexiones sin token válido o intentos de suplantación
+    
+    ## Flujo de Conexión Híbrido
+    
+    1. **🔑 Obtener token JWT** desde tu sistema de autenticación (login)
+    2. **🔌 Conectar** al endpoint WebSocket con el token
+    3. **✅ Autenticación JWT** - Solo valida acceso básico
+    4. **📨 Recibir confirmación** - Servidor confirma autenticación pero requiere identify
+    5. **🆔 Enviar mensaje `identify`** - Cliente envía tipo y datos específicos
+    6. **💬 Funcionamiento completo** - Cliente configurado para intercambiar mensajes
+    
+    ### Ejemplo de Flujo Completo:
+    
+    ```javascript
+    // 1. Conectar con token JWT
+    const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...";
+    const ws = new WebSocket(`ws://localhost:8080?token=${token}`);
+    
+    ws.onopen = function() {
+        console.log('🔐 Conectado y autenticado con JWT');
+    };
+    
+    ws.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        
+        if (data.type === 'connection_status' && data.data.requiresIdentify) {
+            console.log('⚠️ Necesito enviar identify');
+            
+            // 2. Enviar identify según el tipo de cliente
+            if (isDriver) {
+                ws.send(JSON.stringify({
+                    type: 'identify',
+                    clientType: 'driver', 
+                    userId: 123,
+                    driverData: {
+                        fullName: "Juan Pérez",
+                        image: "..base64...",
+                        location: { lat: -12.0464, lng: -77.0428 }, // ← Ubicación actual
+                        rating: 4.8
+                    }
+                }));
+            } else {
+                ws.send(JSON.stringify({
+                    type: 'identify',
+                    clientType: 'citizen',
+                    userId: 456
+                }));
+            }
+        }
+        
+        if (data.type === 'identify_confirm') {
+            console.log('✅ Cliente configurado completamente');
+            // Ahora puede enviar mensajes normales
+        }
+    };
+    ```
+    
+    ## Características Principales
+    
+    - **🔐 Autenticación JWT básica** para acceso seguro
+    - **🆔 Sistema identify flexible** para datos específicos
+    - **🗺️ Seguimiento de conductores en tiempo real** con actualizaciones de ubicación
+    - **⚡ Gestión automática de disponibilidad** basada en el estado del viaje
+    - **⏱️ Expiración de mensajes con TTL** para rendimiento óptimo
+    - **🔄 Comunicación bidireccional** entre conductores y pasajeros
+    - **📊 Persistencia respaldada por Redis** para escalabilidad
+    
+    ## Sistema de Disponibilidad de Conductores
+    
+    El sistema gestiona automáticamente la disponibilidad de conductores según el estado del viaje:
+    
+    | Estado | Disponibilidad | Visible para Ciudadanos |
+    |--------|---------------|-------------------------|
+    | Conectado | Disponible | ✅ Sí |
+    | Viaje Aceptado | Ocupado | ❌ No |
+    | Viaje Completado/Cancelado | Disponible | ✅ Sí |
+    
+    ## Expiración de Mensajes (TTL)
+    
+    | Tipo de Mensaje | TTL | Comportamiento |
+    |-----------------|-----|----------------|
+    | `trip_request` | 30s | Se descarta si no se entrega |
+    | `trip_response` | 30s | Se descarta si no se entrega |
+    | `driver_location_update` | 10s | Se descarta si no se entrega |
+    | `trip_status_update` | ∞ | Siempre se entrega |
+    
+    ## Máquina de Estados de Viaje
+    
+    ```
+    SOLICITADO ──aceptar──▶ ACEPTADO ──iniciar──▶ INICIADO ──completar──▶ FINALIZADO
+         │                     │                     │
+         └──rechazar──▶ RECHAZADO    └──cancelar──▶ CANCELADO ◀──cancelar──┘
+    ```
+
+  contact:
+    name: Equipo de Desarrollo iTaxCix
+    email: dev@itaxcix.com
+  license:
+    name: Propietario
+    url: https://itaxcix.com/license
 
 servers:
   production:
     url: wss://api.itaxcix.com/ws
     protocol: wss
+    description: Servidor WebSocket de producción (Requiere JWT)
+    security:
+      - JWTAuth: []
+  staging:
+    url: wss://staging-api.itaxcix.com/ws
+    protocol: wss
+    description: Ambiente de pruebas (Requiere JWT)
+    security:
+      - JWTAuth: []
   development:
     url: ws://localhost:8080
     protocol: ws
+    description: Servidor de desarrollo local (Requiere JWT)
+    security:
+      - JWTAuth: []
+
+defaultContentType: application/json
 
 channels:
   /:
+    description: |
+      Canal principal de WebSocket para todas las comunicaciones en tiempo real.
+      
+      **🔒 Requiere autenticación JWT válida durante el handshake.**
+      
+      **Flujo híbrido**:
+      1. Autenticación JWT automática al conectar
+      2. Mensaje `identify` requerido para configuración completa
+      3. Intercambio normal de mensajes una vez identificado
+    bindings:
+      ws:
+        query:
+          type: object
+          properties:
+            token:
+              type: string
+              description: Token JWT para autenticación básica
+        headers:
+          type: object
+          properties:
+            Authorization:
+              type: string
+              description: "Bearer token para autenticación: 'Bearer {jwt}'"
     publish:
-      summary: Mensajes enviados por clientes al servidor
+      operationId: enviarMensaje
+      summary: Enviar mensajes del cliente al servidor
+      description: |
+        Mensajes que los clientes autenticados pueden enviar al servidor.
+        
+        **⚠️ Importante**: Después de conectar con JWT, DEBES enviar el mensaje `identify` 
+        antes de poder usar otros mensajes del WebSocket.
+      security:
+        - JWTAuth: []
       message:
         oneOf:
-          - $ref: '#/components/messages/IdentifyMessage'
-          - $ref: '#/components/messages/UpdateLocationMessage'
+          - $ref: '#/components/messages/MensajeIdentificar'
+          - $ref: '#/components/messages/MensajeRegistrarConductor'
+          - $ref: '#/components/messages/MensajeActualizarUbicacion'
+          - $ref: '#/components/messages/MensajeSolicitudViaje'
+          - $ref: '#/components/messages/MensajeRespuestaViaje'
+          - $ref: '#/components/messages/MensajeActualizacionEstadoViaje'
     subscribe:
-      summary: Mensajes enviados por el servidor a los clientes
+      operationId: recibirMensaje
+      summary: Recibir mensajes del servidor al cliente
+      description: |
+        Mensajes que los clientes autenticados reciben del servidor.
+        
+        **Automático al conectar**:
+        - `connection_status`: Confirmación de autenticación JWT (requiere identify)
+        
+        **Después del identify**:
+        - `identify_confirm`: Confirmación de configuración completa
+        - `initial_drivers`: Lista de conductores (solo para ciudadanos)
+      security:
+        - JWTAuth: []
       message:
         oneOf:
-          - $ref: '#/components/messages/InitialDriversMessage'
-          - $ref: '#/components/messages/NewDriverMessage'
-          - $ref: '#/components/messages/DriverLocationUpdateMessage'
-          - $ref: '#/components/messages/DriverOfflineMessage'
-          - $ref: '#/components/messages/TripRequestMessage'
-          - $ref: '#/components/messages/TripResponseMessage'
-          - $ref: '#/components/messages/TripStatusUpdateMessage'
+          - $ref: '#/components/messages/MensajeEstadoConexion'
+          - $ref: '#/components/messages/MensajeConfirmacionIdentify'
+          - $ref: '#/components/messages/MensajeListaConductoresIniciales'
+          - $ref: '#/components/messages/MensajeNuevoConductor'
+          - $ref: '#/components/messages/MensajeActualizacionUbicacionConductor'
+          - $ref: '#/components/messages/MensajeConductorDesconectado'
+          - $ref: '#/components/messages/MensajeConductorNoDisponible'
+          - $ref: '#/components/messages/MensajeConductorDisponible'
+          - $ref: '#/components/messages/NotificacionSolicitudViaje'
+          - $ref: '#/components/messages/NotificacionRespuestaViaje'
+          - $ref: '#/components/messages/NotificacionActualizacionEstadoViaje'
+          - $ref: '#/components/messages/MensajeError'
+          - $ref: '#/components/messages/MensajeErrorAutenticacion'
 
 components:
+  securitySchemes:
+    JWTAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        Token JWT requerido para autenticación con validación de seguridad anti-suplantación.
+        
+        **Claims OBLIGATORIOS**:
+        - `userId`: ID del usuario (REQUERIDO)
+        - `userType`: Tipo de usuario - "driver" o "citizen" (REQUERIDO para seguridad)
+        - `exp`: Timestamp de expiración
+        - `iat`: Timestamp de emisión
+        
+        **Validación de Seguridad**:
+        El `userType` del token JWT debe coincidir exactamente con el `clientType` 
+        enviado en el mensaje `identify`. Esto previene que:
+        - Un ciudadano se haga pasar por conductor
+        - Un conductor se haga pasar por ciudadano
+        - Cualquier intento de suplantación de identidad
+        
+        **Origen del userType**:
+        Se determina automáticamente en el login basado en la base de datos:
+        - Usuario con DriverProfile aprobado → "driver"
+        - Usuario sin DriverProfile → "citizen"
+
   messages:
-    IdentifyMessage:
-      name: identify
-      summary: Mensaje de identificación de cliente
+    # Mensajes de Cliente a Servidor
+    MensajeIdentificar:
+      name: Identificar Cliente
+      title: Identificación y configuración del cliente
+      summary: |
+        Mensaje OBLIGATORIO que debe enviarse después de la autenticación JWT.
+        Configura el tipo de cliente y envía datos específicos.
       payload:
-        $ref: '#/components/schemas/IdentifyPayload'
-    UpdateLocationMessage:
-      name: update_location
-      summary: Actualización de ubicación del conductor
+        $ref: '#/components/schemas/PayloadIdentificar'
+      examples:
+        - name: Identificación de conductor con datos
+          summary: Conductor enviando tipo y datos de perfil
+          payload:
+            type: identify
+            clientType: driver
+            userId: 123
+            driverData:
+              fullName: "Juan Pérez"
+              image: "..base64..."
+              location:
+                lat: -12.0464
+                lng: -77.0428
+              rating: 4.8
+        - name: Identificación de ciudadano
+          summary: Ciudadano enviando solo tipo
+          payload:
+            type: identify
+            clientType: citizen
+            userId: 456
+
+    MensajeRegistrarConductor:
+      name: Registrar Conductor
+      title: Registro de datos adicionales del conductor
+      summary: Permite a conductores ya identificados actualizar sus datos de perfil
       payload:
-        $ref: '#/components/schemas/UpdateLocationPayload'
-    InitialDriversMessage:
-      name: initial_drivers
-      summary: Lista inicial de conductores activos (enviada solo después de identificación como ciudadano)
+        $ref: '#/components/schemas/PayloadRegistrarConductor'
+      examples:
+        - name: Actualización de datos de conductor
+          summary: Conductor actualizando su información
+          payload:
+            type: register_driver
+            driverData:
+              fullName: "Juan Pérez Actualizado"
+              image: "..base64..."
+              location:
+                lat: -12.0465
+                lng: -77.0429
+              rating: 4.9
+
+    MensajeActualizarUbicacion:
+      name: Actualizar Ubicación
+      title: Actualización de ubicación del conductor
+      summary: Conductores envían su ubicación actual para tracking en tiempo real
       payload:
-        $ref: '#/components/schemas/InitialDriversPayload'
-    NewDriverMessage:
-      name: new_driver
-      summary: Nuevo conductor conectado (enviado solo a ciudadanos)
+        $ref: '#/components/schemas/PayloadActualizarUbicacion'
+      examples:
+        - name: Actualización de ubicación
+          summary: Conductor actualizando su posición GPS
+          payload:
+            type: update_location
+            location:
+              lat: -12.0465
+              lng: -77.0429
+
+    MensajeSolicitudViaje:
       payload:
-        $ref: '#/components/schemas/DriverEventPayload'
-    DriverLocationUpdateMessage:
-      name: driver_location_update
-      summary: Actualización de ubicación de un conductor (enviado solo a ciudadanos)
+        $ref: '#/components/schemas/PayloadSolicitudViaje'
+
+    MensajeRespuestaViaje:
       payload:
-        $ref: '#/components/schemas/LocationUpdatePayload'
-    DriverOfflineMessage:
-      name: driver_offline
-      summary: Conductor desconectado (enviado solo a ciudadanos)
+        $ref: '#/components/schemas/PayloadRespuestaViaje'
+
+    MensajeActualizacionEstadoViaje:
       payload:
-        $ref: '#/components/schemas/DriverOfflinePayload'
-    TripRequestMessage:
-      name: trip_request
-      summary: Solicitud de viaje enviada al conductor
+        $ref: '#/components/schemas/PayloadActualizacionEstadoViaje'
+
+    # Mensajes de Servidor a Cliente
+    MensajeEstadoConexion:
+      name: Estado de Conexión
+      title: Confirmación de autenticación JWT básica
+      summary: |
+        Mensaje automático enviado inmediatamente después de una conexión WebSocket exitosa.
+        Confirma autenticación JWT pero requiere mensaje `identify` para configuración completa.
       payload:
-        $ref: '#/components/schemas/TripRequestPayload'
-    TripResponseMessage:
-      name: trip_response
-      summary: Respuesta del conductor a una solicitud de viaje
+        type: object
+        required: [type, data]
+        properties:
+          type:
+            type: string
+            const: connection_status
+          data:
+            type: object
+            required: [status, message, clientId, requiresIdentify]
+            properties:
+              status:
+                type: string
+                const: authenticated
+                description: Estado de autenticación JWT
+              message:
+                type: string
+                const: "Autenticación JWT exitosa. Envía mensaje identify para completar configuración."
+              clientId:
+                type: string
+                description: ID único de la conexión WebSocket
+              requiresIdentify:
+                type: boolean
+                const: true
+                description: Indica que se requiere el mensaje identify
+      examples:
+        - name: Confirmación de autenticación
+          summary: Respuesta automática después de conectar con JWT válido
+          payload:
+            type: connection_status
+            data:
+              status: authenticated
+              message: "Autenticación JWT exitosa. Envía mensaje identify para completar configuración."
+              clientId: "12345"
+              requiresIdentify: true
+
+    MensajeConfirmacionIdentify:
+      name: Confirmación de Identify
+      title: Confirmación de configuración completa
+      summary: |
+        Mensaje enviado después de procesar exitosamente el mensaje `identify`.
+        Confirma que el cliente está completamente configurado y listo para usar.
       payload:
-        $ref: '#/components/schemas/TripResponsePayload'
-    TripStatusUpdateMessage:
-      name: trip_status_update
-      summary: Actualización del estado del viaje
+        type: object
+        required: [type, data]
+        properties:
+          type:
+            type: string
+            const: identify_confirm
+          data:
+            type: object
+            required: [clientType, userId]
+            properties:
+              clientType:
+                type: string
+                enum: [driver, citizen]
+                description: Tipo de cliente confirmado
+              userId:
+                type: integer
+                description: ID del usuario confirmado
+      examples:
+        - name: Confirmación de conductor
+          summary: Confirmación para un conductor identificado
+          payload:
+            type: identify_confirm
+            data:
+              clientType: driver
+              userId: 123
+        - name: Confirmación de ciudadano
+          summary: Confirmación para un ciudadano identificado
+          payload:
+            type: identify_confirm
+            data:
+              clientType: citizen
+              userId: 456
+
+    MensajeListaConductoresIniciales:
+      name: Lista Inicial de Conductores
+      title: Conductores disponibles al conectar
+      summary: |
+        Lista de conductores activos y disponibles enviada automáticamente a ciudadanos
+        al establecer la conexión WebSocket. Solo incluye conductores que no están en viaje.
       payload:
-        $ref: '#/components/schemas/TripStatusUpdatePayload'
+        $ref: '#/components/schemas/PayloadListaConductoresIniciales'
+      examples:
+        - name: Lista de conductores disponibles
+          summary: Conductores activos al momento de la conexión
+          payload:
+            type: initial_drivers
+            drivers:
+              - id: 456
+                fullName: "Juan Pérez"
+                image: "..base64..."
+                location:
+                  lat: -12.0464
+                  lng: -77.0428
+                rating: 4.8
+                timestamp: 1703894400
+              - id: 789
+                fullName: "María García"
+                image: "..base64..."
+                location:
+                  lat: -12.0500
+                  lng: -77.0400
+                rating: 4.9
+                timestamp: 1703894350
+
+    MensajeNuevoConductor:
+      name: Nuevo Conductor
+      title: Notificación de conductor conectado
+      summary: Notifica a ciudadanos cuando un nuevo conductor se conecta y está disponible
+      payload:
+        type: object
+        required: [type, data]
+        properties:
+          type:
+            type: string
+            const: new_driver
+          data:
+            $ref: '#/components/schemas/DriverInfo'
+      examples:
+        - name: Nuevo conductor disponible
+          payload:
+            type: new_driver
+            data:
+              id: 789
+              fullName: "Carlos López"
+              image: "..base64..."
+              location:
+                lat: -12.0480
+                lng: -77.0420
+              rating: 4.7
+              timestamp: 1703894500
+
+    MensajeActualizacionUbicacionConductor:
+      name: Actualización de Ubicación de Conductor
+      title: Ubicación actualizada del conductor
+      summary: Notifica a ciudadanos sobre cambios de ubicación de conductores activos
+      payload:
+        type: object
+        required: [type, data]
+        properties:
+          type:
+            type: string
+            const: driver_location_update
+          data:
+            type: object
+            required: [id, location, timestamp]
+            properties:
+              id:
+                type: integer
+                description: ID del conductor
+              location:
+                $ref: '#/components/schemas/Location'
+              timestamp:
+                type: integer
+                description: Timestamp de la actualización
+      examples:
+        - name: Actualización de ubicación
+          payload:
+            type: driver_location_update
+            data:
+              id: 456
+              location:
+                lat: -12.0465
+                lng: -77.0429
+              timestamp: 1703894600
+
+    MensajeConductorDesconectado:
+      name: Conductor Desconectado
+      title: Notificación de conductor desconectado
+      summary: Notifica a ciudadanos cuando un conductor se desconecta y ya no está disponible
+      payload:
+        type: object
+        required: [type, data]
+        properties:
+          type:
+            type: string
+            const: driver_offline
+          data:
+            type: object
+            required: [id]
+            properties:
+              id:
+                type: integer
+                description: ID del conductor que se desconectó
+      examples:
+        - name: Conductor desconectado
+          payload:
+            type: driver_offline
+            data:
+              id: 456
+
+    MensajeConductorNoDisponible:
+      name: Conductor No Disponible
+      title: Conductor ocupado en viaje
+      summary: Notifica que un conductor ya no está disponible porque aceptó un viaje
+      payload:
+        type: object
+        required: [type, data]
+        properties:
+          type:
+            type: string
+            const: driver_unavailable
+          data:
+            type: object
+            required: [id]
+            properties:
+              id:
+                type: integer
+                description: ID del conductor que ya no está disponible
+      examples:
+        - name: Conductor ocupado
+          payload:
+            type: driver_unavailable
+            data:
+              id: 456
+
+    MensajeConductorDisponible:
+      name: Conductor Disponible
+      title: Conductor libre nuevamente
+      summary: Notifica que un conductor volvió a estar disponible después de completar un viaje
+      payload:
+        type: object
+        required: [type, data]
+        properties:
+          type:
+            type: string
+            const: driver_available
+          data:
+            $ref: '#/components/schemas/DriverInfo'
+      examples:
+        - name: Conductor disponible nuevamente
+          payload:
+            type: driver_available
+            data:
+              id: 456
+              fullName: "Juan Pérez"
+              image: "..base64..."
+              location:
+                lat: -12.0464
+                lng: -77.0428
+              rating: 4.8
+              timestamp: 1703894700
+
+    NotificacionSolicitudViaje:
+      name: Notificación de Solicitud de Viaje
+      title: Solicitud de viaje recibida
+      summary: Notifica a un conductor específico sobre una nueva solicitud de viaje
+      payload:
+        type: object
+        required: [type, data]
+        properties:
+          type:
+            type: string
+            const: trip_request
+          data:
+            $ref: '#/components/schemas/TripRequestData'
+      examples:
+        - name: Solicitud de viaje
+          payload:
+            type: trip_request
+            data:
+              tripId: 12345
+              passengerId: 789
+              passengerName: "Ana García"
+              driverId: 456
+              origin:
+                lat: -12.0464
+                lng: -77.0428
+              destination:
+                lat: -12.0500
+                lng: -77.0400
+              passengerRating: 4.5
+              price: 15.50
+              distance: 2.3
+
+    NotificacionRespuestaViaje:
+      name: Notificación de Respuesta de Viaje
+      title: Respuesta del conductor al viaje
+      summary: Notifica al pasajero sobre la respuesta del conductor (aceptado/rechazado)
+      payload:
+        type: object
+        required: [type, data]
+        properties:
+          type:
+            type: string
+            const: trip_response
+          data:
+            $ref: '#/components/schemas/TripResponseData'
+      examples:
+        - name: Viaje aceptado
+          payload:
+            type: trip_response
+            data:
+              tripId: 12345
+              accepted: true
+              driverId: 456
+              driverName: "Juan Pérez"
+              estimatedArrival: 300
+        - name: Viaje rechazado
+          payload:
+            type: trip_response
+            data:
+              tripId: 12345
+              accepted: false
+              driverId: 456
+
+    NotificacionActualizacionEstadoViaje:
+      name: Notificación de Actualización de Estado
+      title: Cambio de estado del viaje
+      summary: Notifica cambios en el estado del viaje (iniciado, completado, cancelado)
+      payload:
+        type: object
+        required: [type, data]
+        properties:
+          type:
+            type: string
+            const: trip_status_update
+          data:
+            $ref: '#/components/schemas/TripStatusUpdateData'
+      examples:
+        - name: Viaje iniciado
+          payload:
+            type: trip_status_update
+            data:
+              tripId: 12345
+              status: started
+              driverId: 456
+        - name: Viaje completado
+          payload:
+            type: trip_status_update
+            data:
+              tripId: 12345
+              status: completed
+              driverId: 456
+
+    MensajeError:
+      name: Error
+      title: Mensaje de error
+      summary: Notifica errores en el procesamiento de mensajes o operaciones
+      payload:
+        type: object
+        required: [type, message]
+        properties:
+          type:
+            type: string
+            const: error
+          message:
+            type: string
+            description: Descripción del error
+      examples:
+        - name: Error de formato
+          payload:
+            type: error
+            message: "Formato de mensaje inválido"
+        - name: Error de permisos
+          payload:
+            type: error
+            message: "Solo conductores pueden registrar datos"
+
+    MensajeErrorAutenticacion:
+      name: Error de Autenticación
+      title: Error en la autenticación JWT
+      summary: |
+        Mensaje enviado cuando hay problemas con la autenticación.
+        Después de este mensaje, la conexión WebSocket se cierra automáticamente.
+      payload:
+        type: object
+        required: [type, message, timestamp]
+        properties:
+          type:
+            type: string
+            const: auth_error
+          message:
+            type: string
+            description: Descripción del error de autenticación
+          timestamp:
+            type: integer
+            description: Timestamp cuando ocurrió el error
+      examples:
+        - name: Token no proporcionado
+          summary: Error cuando no se proporciona token JWT
+          payload:
+            type: auth_error
+            message: "Token de autenticación requerido"
+            timestamp: 1703894400
+        - name: Token inválido
+          summary: Error cuando el token JWT es inválido o expirado
+          payload:
+            type: auth_error
+            message: "Token inválido o expirado"
+            timestamp: 1703894400
 
   schemas:
-    IdentifyPayload:
+    # Payloads de mensajes enviados por clientes
+    PayloadIdentificar:
       type: object
       required:
         - type
@@ -104,24 +774,87 @@ components:
         type:
           type: string
           const: identify
+          description: Tipo de mensaje para identificación
         clientType:
           type: string
           enum: [driver, citizen]
+          description: Tipo de cliente que se conecta
         userId:
-          type: string
+          type: integer
+          description: ID del usuario (debe coincidir con el del token JWT)
         driverData:
           type: object
+          description: Datos del conductor (solo requerido si clientType es 'driver')
+          required:
+            - fullName
+            - location
+            - image
+            - rating
           properties:
             fullName:
               type: string
+              description: Nombre completo del conductor
+              example: "Juan Pérez"
             location:
               $ref: '#/components/schemas/Location'
             image:
               type: string
+              format: uri
+              description: URL de la imagen de perfil del conductor
+              example: "..base64..."
             rating:
               type: number
+              minimum: 0
+              maximum: 5
+              description: Calificación promedio del conductor
+              example: 4.8
+      description: |
+        Mensaje OBLIGATORIO para completar la configuración del cliente después de la autenticación JWT.
+        
+        - **Ciudadanos**: Solo necesitan enviar tipo y userId
+        - **Conductores**: Deben incluir driverData con ubicación actual y datos de perfil
+        
+        El userId debe coincidir exactamente con el del token JWT.
 
-    UpdateLocationPayload:
+    PayloadRegistrarConductor:
+      type: object
+      required:
+        - type
+        - driverData
+      properties:
+        type:
+          type: string
+          const: register_driver
+          description: Tipo de mensaje para registro de conductor
+        driverData:
+          type: object
+          required:
+            - fullName
+            - location
+            - image
+            - rating
+          properties:
+            fullName:
+              type: string
+              description: Nombre completo del conductor
+              example: "Juan Pérez"
+            location:
+              $ref: '#/components/schemas/Location'
+            image:
+              type: string
+              format: uri
+              description: URL de la imagen de perfil del conductor
+              example: "..base64..."
+            rating:
+              type: number
+              minimum: 0
+              maximum: 5
+              description: Calificación promedio del conductor
+              example: 4.8
+      description: |
+        Mensaje para que conductores ya identificados actualicen sus datos de perfil.
+
+    PayloadActualizarUbicacion:
       type: object
       required:
         - type
@@ -133,7 +866,44 @@ components:
         location:
           $ref: '#/components/schemas/Location'
 
-    InitialDriversPayload:
+    PayloadSolicitudViaje:
+      type: object
+      required:
+        - type
+        - data
+      properties:
+        type:
+          type: string
+          const: trip_request
+        data:
+          $ref: '#/components/schemas/TripRequestData'
+
+    PayloadRespuestaViaje:
+      type: object
+      required:
+        - type
+        - data
+      properties:
+        type:
+          type: string
+          const: trip_response
+        data:
+          $ref: '#/components/schemas/TripResponseData'
+
+    PayloadActualizacionEstadoViaje:
+      type: object
+      required:
+        - type
+        - data
+      properties:
+        type:
+          type: string
+          const: trip_status_update
+        data:
+          $ref: '#/components/schemas/TripStatusUpdateData'
+
+    # Payloads de mensajes enviados por servidor
+    PayloadListaConductoresIniciales:
       type: object
       required:
         - type
@@ -146,141 +916,95 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DriverInfo'
+          description: Lista de conductores disponibles (no en viaje)
 
-    DriverEventPayload:
+    # Datos compartidos
+    TripRequestData:
       type: object
       required:
-        - type
-        - data
+        - tripId
+        - passengerId
+        - passengerName
+        - origin
+        - destination
+        - driverId
       properties:
-        type:
+        tripId:
+          type: integer
+        passengerId:
+          type: integer
+        passengerName:
           type: string
-          const: new_driver
-        data:
-          $ref: '#/components/schemas/DriverInfo'
+        driverId:
+          type: integer
+          description: ID del conductor al que se envía la solicitud
+        origin:
+          $ref: '#/components/schemas/Location'
+        destination:
+          $ref: '#/components/schemas/Location'
+        passengerRating:
+          type: number
+          minimum: 0
+          maximum: 5
+        price:
+          type: number
+        distance:
+          type: number
 
-    LocationUpdatePayload:
+    TripResponseData:
       type: object
       required:
-        - type
-        - data
+        - tripId
+        - accepted
+        - driverId
       properties:
-        type:
+        tripId:
+          type: integer
+        accepted:
+          type: boolean
+        driverId:
+          type: integer
+        driverName:
           type: string
-          const: driver_location_update
-        data:
-          type: object
-          properties:
-            id:
-              type: string
-            location:
-              $ref: '#/components/schemas/Location'
+        estimatedArrival:
+          type: integer
+          minimum: 0
 
-    DriverOfflinePayload:
+    TripStatusUpdateData:
       type: object
       required:
-        - type
-        - data
+        - tripId
+        - status
       properties:
-        type:
+        tripId:
+          type: integer
+        status:
           type: string
-          const: driver_offline
-        data:
-          type: object
-          properties:
-            id:
-              type: string
-
-    TripRequestPayload:
-      type: object
-      required:
-        - type
-        - data
-      properties:
-        type:
-          type: string
-          const: trip_request
-        data:
-          type: object
-          properties:
-            tripId:
-              type: string
-            passengerId:
-              type: string
-            origin:
-              $ref: '#/components/schemas/Location'
-            destination:
-              $ref: '#/components/schemas/Location'
-            passengerName:
-              type: string
-            passengerRating:
-              type: number
-            price:
-              type: number
-            distance:
-              type: number
-
-    TripResponsePayload:
-      type: object
-      required:
-        - type
-        - data
-      properties:
-        type:
-          type: string
-          const: trip_response
-        data:
-          type: object
-          required:
-            - tripId
-            - accepted
-          properties:
-            tripId:
-              type: string
-            accepted:
-              type: boolean
-            driverId:
-              type: string
-            driverName:
-              type: string
-            estimatedArrival:
-              type: integer
-              description: Tiempo estimado de llegada en segundos
-
-    TripStatusUpdatePayload:
-      type: object
-      required:
-        - type
-        - data
-      properties:
-        type:
-          type: string
-          const: trip_status_update
-        data:
-          type: object
-          required:
-            - tripId
-            - status
-          properties:
-            tripId:
-              type: string
-            status:
-              type: string
-              enum: [driver_arriving, started, completed, canceled]
+          enum: [started, completed, canceled]
+        driverId:
+          type: integer
 
     DriverInfo:
       type: object
+      required:
+        - id
+        - fullName
+        - location
+        - rating
       properties:
         id:
-          type: string
+          type: integer
         fullName:
           type: string
         image:
           type: string
+          format: uri
         location:
           $ref: '#/components/schemas/Location'
         rating:
           type: number
+          minimum: 0
+          maximum: 5
         timestamp:
           type: integer
 
@@ -292,5 +1016,11 @@ components:
       properties:
         lat:
           type: number
+          format: double
+          description: Latitud en grados decimales
+          example: -12.0464
         lng:
           type: number
+          format: double
+          description: Longitud en grados decimales
+          example: -77.0428

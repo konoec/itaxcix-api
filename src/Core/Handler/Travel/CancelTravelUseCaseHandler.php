@@ -63,24 +63,26 @@ class CancelTravelUseCaseHandler implements CancelTravelUseCase
         $driverNotification = [
             'type' => 'trip_status_update',
             'recipientType' => 'driver',
-            'recipientId' => (string) $travel->getDriver()->getId(),
+            'recipientId' => $travel->getDriver()->getId(),
             'data' => [
                 'tripId' => $updatedTravel->getId(),
                 'status' => 'canceled',
                 'driverId' => $travel->getDriver()->getId()
-            ]
+            ],
+            'timestamp' => time() // Agregar timestamp para validación TTL
         ];
 
         // Notificar al ciudadano
         $citizenNotification = [
             'type' => 'trip_status_update',
             'recipientType' => 'citizen',
-            'recipientId' => (string) $travel->getCitizen()->getId(),
+            'recipientId' => $travel->getCitizen()->getId(),
             'data' => [
                 'tripId' => $updatedTravel->getId(),
                 'status' => 'canceled',
                 'driverId' => $travel->getDriver()->getId()
-            ]
+            ],
+            'timestamp' => time() // Agregar timestamp para validación TTL
         ];
 
         // Enviar notificaciones a través de Redis

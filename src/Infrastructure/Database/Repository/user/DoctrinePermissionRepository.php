@@ -5,7 +5,6 @@ namespace itaxcix\Infrastructure\Database\Repository\user;
 use Doctrine\ORM\EntityManagerInterface;
 use itaxcix\Core\Domain\user\PermissionModel;
 use itaxcix\Core\Interfaces\user\PermissionRepositoryInterface;
-use itaxcix\Infrastructure\Database\Entity\user\DriverProfileEntity;
 use itaxcix\Infrastructure\Database\Entity\user\PermissionEntity;
 
 class DoctrinePermissionRepository implements PermissionRepositoryInterface
@@ -16,14 +15,6 @@ class DoctrinePermissionRepository implements PermissionRepositoryInterface
         $this->entityManager = $entityManager;
     }
 
-    public function toDomain(PermissionEntity $entity): PermissionModel {
-        return new PermissionModel(
-            id: $entity->getId(),
-            name: $entity->getName(),
-            active: $entity->isActive(),
-            web: $entity->isWeb()
-        );
-    }
 
     public function findPermissionById(int $id): ?PermissionModel
     {
@@ -49,73 +40,236 @@ class DoctrinePermissionRepository implements PermissionRepositoryInterface
 
     public function findAllPermissions(): array
     {
-        $qb = $this->entityManager->createQueryBuilder()
-            ->select('p')
-            ->from(PermissionEntity::class, 'p');
-        $results = $qb->getQuery()->getResult();
-        return array_map([$this, 'toDomain'], $results);
-    }
-
-    public function findAllPermissionsPaginated(int $page, int $perPage): object
-    {
-        // Contar total de registros
-        $totalQb = $this->entityManager->createQueryBuilder()
-            ->select('COUNT(p.id)')
-            ->from(PermissionEntity::class, 'p');
-        $total = (int) $totalQb->getQuery()->getSingleScalarResult();
-
-        // Calcular offset y lastPage
-        $offset = ($page - 1) * $perPage;
-        $lastPage = ceil($total / $perPage);
-
-        // Obtener registros paginados
-        $qb = $this->entityManager->createQueryBuilder()
+        $query = $this->entityManager->createQueryBuilder()
             ->select('p')
             ->from(PermissionEntity::class, 'p')
-            ->setFirstResult($offset)
-            ->setMaxResults($perPage);
+            ->where('p.active = true')
+            ->orderBy('p.name', 'ASC')
+            ->getQuery();
 
-        $results = $qb->getQuery()->getResult();
-        $items = array_map([$this, 'toDomain'], $results);
+        $entities = $query->getResult();
+        return array_map([$this, 'toDomain'], $entities);
+    }
 
-        // Crear metadatos de paginación
-        $meta = new \itaxcix\Shared\DTO\generic\PaginationMetaDTO(
-            total: $total,
-            perPage: $perPage,
-            currentPage: $page,
-            lastPage: $lastPage
-        );
+    public function findWebPermissions(): array
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('p')
+            ->from(PermissionEntity::class, 'p')
+            ->where('p.active = true')
+            ->andWhere('p.web = true')
+            ->orderBy('p.name', 'ASC')
+            ->getQuery();
 
-        // Retornar objeto con items y meta
-        return (object) [
-            'items' => $items,
-            'meta' => $meta
-        ];
+        $entities = $query->getResult();
+        return array_map([$this, 'toDomain'], $entities);
+    }
+
+    public function findMobilePermissions(): array
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('p')
+            ->from(PermissionEntity::class, 'p')
+            ->where('p.active = true')
+            ->andWhere('p.web = false')
+            ->orderBy('p.name', 'ASC')
+            ->getQuery();
+
+        $entities = $query->getResult();
+        return array_map([$this, 'toDomain'], $entities);
     }
 
     public function savePermission(PermissionModel $permission): PermissionModel
     {
-        if ($permission->getId()){
-            $entity = $this->entityManager->find(PermissionEntity::class, $permission->getId());
-        } else {
-            $entity = new PermissionEntity();
-        }
+        try {
+            if ($permission->getId()) {
+                $entity = $this->entityManager->find(PermissionEntity::class, $permission->getId());
+                if (!$entity) {
+                    throw new \RuntimeException('Permission not found for update');
+                }
+            } else {
+                $entity = new PermissionEntity();
+            }
 
-        $entity->setName($permission->getName());
-        $entity->setActive($permission->isActive());
-        $entity->setWeb($permission->isWeb());
-        $this->entityManager->persist($entity);
-        $this->entityManager->flush();
-        return $this->toDomain($entity);
+            $entity->setName($permission->getName());
+            $entity->setActive($permission->isActive());
+            $entity->setWeb($permission->isWeb());
+
+            $this->entityManager->persist($entity);
+            $this->entityManager->flush();
+
+            return $this->toDomain($entity);
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Error saving permission: ' . $e->getMessage());
+        }
     }
 
     public function deletePermission(PermissionModel $permission): void
     {
-        $entity = $this->entityManager->find(PermissionEntity::class, $permission->getId());
-        if ($entity) {
-            $entity->setActive(false);
-            $this->entityManager->persist($entity);
-            $this->entityManager->flush();
+        try {
+            $entity = $this->entityManager->find(PermissionEntity::class, $permission->getId());
+            if ($entity) {
+                $entity->setActive(false);
+                $this->entityManager->flush();
+            }
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Error deleting permission: ' . $e->getMessage());
+        }
+    }
+
+    public function findAllPaginated(
+        int $page = 1,
+        int $limit = 20,
+        ?string $search = null,
+        ?bool $webOnly = null,
+        ?bool $activeOnly = true
+    ): array {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('p')
+            ->from(PermissionEntity::class, 'p');
+
+        // Aplicar filtros
+        if ($activeOnly !== null) {
+            $qb->andWhere('p.active = :active')
+               ->setParameter('active', $activeOnly);
+        }
+
+        if ($webOnly !== null) {
+            $qb->andWhere('p.web = :web')
+               ->setParameter('web', $webOnly);
+        }
+
+        if ($search !== null && !empty(trim($search))) {
+            $qb->andWhere('p.name LIKE :search')
+               ->setParameter('search', '%' . trim($search) . '%');
+        }
+
+        // Aplicar paginación
+        $qb->setFirstResult(($page - 1) * $limit)
+           ->setMaxResults($limit)
+           ->orderBy('p.name', 'ASC');
+
+        $results = $qb->getQuery()->getResult();
+        return array_map([$this, 'toDomain'], $results);
+    }
+
+    public function countAll(
+        ?string $search = null,
+        ?bool $webOnly = null,
+        ?bool $activeOnly = true
+    ): int {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('COUNT(p.id)')
+            ->from(PermissionEntity::class, 'p');
+
+        // Aplicar los mismos filtros que en findAllPaginated
+        if ($activeOnly !== null) {
+            $qb->andWhere('p.active = :active')
+               ->setParameter('active', $activeOnly);
+        }
+
+        if ($webOnly !== null) {
+            $qb->andWhere('p.web = :web')
+               ->setParameter('web', $webOnly);
+        }
+
+        if ($search !== null && !empty(trim($search))) {
+            $qb->andWhere('p.name LIKE :search')
+               ->setParameter('search', '%' . trim($search) . '%');
+        }
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    public function permissionExists(string $name, ?int $excludeId = null): bool
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('COUNT(p.id)')
+            ->from(PermissionEntity::class, 'p')
+            ->where('p.name = :name')
+            ->andWhere('p.active = true')
+            ->setParameter('name', $name);
+
+        if ($excludeId !== null) {
+            $qb->andWhere('p.id != :excludeId')
+               ->setParameter('excludeId', $excludeId);
+        }
+
+        return (int) $qb->getQuery()->getSingleScalarResult() > 0;
+    }
+
+    public function updatePermissionStatus(int $permissionId, bool $active): bool
+    {
+        try {
+            $entity = $this->entityManager->find(PermissionEntity::class, $permissionId);
+            if ($entity) {
+                $entity->setActive($active);
+                $this->entityManager->flush();
+                return true;
+            }
+            return false;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    public function findPermissionsByIds(array $permissionIds): array
+    {
+        if (empty($permissionIds)) {
+            return [];
+        }
+
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('p')
+            ->from(PermissionEntity::class, 'p')
+            ->where('p.id IN (:permissionIds)')
+            ->andWhere('p.active = true')
+            ->setParameter('permissionIds', $permissionIds)
+            ->orderBy('p.name', 'ASC')
+            ->getQuery();
+
+        $entities = $query->getResult();
+        return array_map([$this, 'toDomain'], $entities);
+    }
+
+    // Métodos requeridos por la interfaz
+    public function findById(int $id): ?PermissionModel
+    {
+        return $this->findPermissionById($id);
+    }
+
+    public function save(PermissionModel $permission): PermissionModel
+    {
+        return $this->savePermission($permission);
+    }
+
+    public function toDomain(object $entity): PermissionModel
+    {
+        if (!$entity instanceof PermissionEntity) {
+            throw new \InvalidArgumentException('Entity must be instance of PermissionEntity');
+        }
+
+        return new PermissionModel(
+            id: $entity->getId(),
+            name: $entity->getName(),
+            active: $entity->isActive(),
+            web: $entity->isWeb()
+        );
+    }
+
+    // Método auxiliar para compatibilidad con casos de uso existentes
+    public function deletePermissionById(int $permissionId): bool
+    {
+        try {
+            $entity = $this->entityManager->find(PermissionEntity::class, $permissionId);
+            if ($entity) {
+                $entity->setActive(false);
+                $this->entityManager->flush();
+                return true;
+            }
+            return false;
+        } catch (\Exception $e) {
+            return false;
         }
     }
 }

@@ -142,4 +142,111 @@ class DoctrineTravelRepository implements TravelRepositoryInterface
 
         return (int) $query->getSingleScalarResult();
     }
+
+    public function findReport(\itaxcix\Shared\DTO\useCases\TravelReport\TravelReportRequestDTO $dto): array
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('t, citizen, driver, origin, destination, status')
+            ->from(TravelEntity::class, 't')
+            ->leftJoin('t.citizen', 'citizen')
+            ->leftJoin('t.driver', 'driver')
+            ->leftJoin('t.origin', 'origin')
+            ->leftJoin('t.destination', 'destination')
+            ->leftJoin('t.status', 'status');
+
+        if ($dto->startDate) {
+            $qb->andWhere('t.startDate >= :startDate')
+                ->setParameter('startDate', $dto->startDate . ' 00:00:00');
+        }
+        if ($dto->endDate) {
+            $qb->andWhere('t.endDate <= :endDate')
+                ->setParameter('endDate', $dto->endDate . ' 23:59:59');
+        }
+        if ($dto->citizenId) {
+            $qb->andWhere('citizen.id = :citizenId')
+                ->setParameter('citizenId', $dto->citizenId);
+        }
+        if ($dto->driverId) {
+            $qb->andWhere('driver.id = :driverId')
+                ->setParameter('driverId', $dto->driverId);
+        }
+        if ($dto->statusId) {
+            $qb->andWhere('status.id = :statusId')
+                ->setParameter('statusId', $dto->statusId);
+        }
+        if ($dto->origin) {
+            $qb->andWhere('origin.name LIKE :origin')
+                ->setParameter('origin', '%' . $dto->origin . '%');
+        }
+        if ($dto->destination) {
+            $qb->andWhere('destination.name LIKE :destination')
+                ->setParameter('destination', '%' . $dto->destination . '%');
+        }
+        $sortBy = in_array($dto->sortBy, ['creationDate','startDate','endDate']) ? 't.' . $dto->sortBy : 't.creationDate';
+        $sortDirection = strtoupper($dto->sortDirection) === 'ASC' ? 'ASC' : 'DESC';
+        $qb->orderBy($sortBy, $sortDirection)
+            ->setFirstResult(($dto->page - 1) * $dto->perPage)
+            ->setMaxResults($dto->perPage);
+
+        $entities = $qb->getQuery()->getResult();
+        $result = [];
+        foreach ($entities as $entity) {
+            if ($entity instanceof TravelEntity) {
+                $result[] = [
+                    'id' => $entity->getId(),
+                    'citizenName' => $entity->getCitizen()?->getPerson()?->getName() ?? null,
+                    'driverName' => $entity->getDriver()?->getPerson()?->getName() ?? null,
+                    'origin' => $entity->getOrigin()?->getName() ?? null,
+                    'destination' => $entity->getDestination()?->getName() ?? null,
+                    'startDate' => $entity->getStartDate()?->format('Y-m-d H:i:s'),
+                    'endDate' => $entity->getEndDate()?->format('Y-m-d H:i:s'),
+                    'creationDate' => $entity->getCreationDate()->format('Y-m-d H:i:s'),
+                    'status' => $entity->getStatus()?->getName() ?? null
+                ];
+            }
+        }
+        return $result;
+    }
+
+    public function countReport(\itaxcix\Shared\DTO\useCases\TravelReport\TravelReportRequestDTO $dto): int
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('COUNT(t.id)')
+            ->from(TravelEntity::class, 't')
+            ->leftJoin('t.citizen', 'citizen')
+            ->leftJoin('t.driver', 'driver')
+            ->leftJoin('t.origin', 'origin')
+            ->leftJoin('t.destination', 'destination')
+            ->leftJoin('t.status', 'status');
+
+        if ($dto->startDate) {
+            $qb->andWhere('t.startDate >= :startDate')
+                ->setParameter('startDate', $dto->startDate . ' 00:00:00');
+        }
+        if ($dto->endDate) {
+            $qb->andWhere('t.endDate <= :endDate')
+                ->setParameter('endDate', $dto->endDate . ' 23:59:59');
+        }
+        if ($dto->citizenId) {
+            $qb->andWhere('citizen.id = :citizenId')
+                ->setParameter('citizenId', $dto->citizenId);
+        }
+        if ($dto->driverId) {
+            $qb->andWhere('driver.id = :driverId')
+                ->setParameter('driverId', $dto->driverId);
+        }
+        if ($dto->statusId) {
+            $qb->andWhere('status.id = :statusId')
+                ->setParameter('statusId', $dto->statusId);
+        }
+        if ($dto->origin) {
+            $qb->andWhere('origin.name LIKE :origin')
+                ->setParameter('origin', '%' . $dto->origin . '%');
+        }
+        if ($dto->destination) {
+            $qb->andWhere('destination.name LIKE :destination')
+                ->setParameter('destination', '%' . $dto->destination . '%');
+        }
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
 }

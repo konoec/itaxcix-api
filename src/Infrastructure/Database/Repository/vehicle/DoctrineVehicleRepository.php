@@ -151,4 +151,244 @@ class DoctrineVehicleRepository implements VehicleRepositoryInterface {
 
         return $entity ? $this->toDomain($entity) : null;
     }
+
+    public function findReport(\itaxcix\Shared\DTO\useCases\VehicleReport\VehicleReportRequestDTO $dto): array
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('v, m, b, c, f, vc, cat')
+            ->from(VehicleEntity::class, 'v')
+            ->leftJoin('v.model', 'm')
+            ->leftJoin('m.brand', 'b')
+            ->leftJoin('v.color', 'c')
+            ->leftJoin('v.fuelType', 'f')
+            ->leftJoin('v.vehicleClass', 'vc')
+            ->leftJoin('v.category', 'cat');
+
+        // Filtros directos
+        if ($dto->licensePlate) {
+            $qb->andWhere('v.licensePlate LIKE :licensePlate')
+                ->setParameter('licensePlate', '%' . $dto->licensePlate . '%');
+        }
+        if ($dto->brandId) {
+            $qb->andWhere('b.id = :brandId')
+                ->setParameter('brandId', $dto->brandId);
+        }
+        if ($dto->modelId) {
+            $qb->andWhere('m.id = :modelId')
+                ->setParameter('modelId', $dto->modelId);
+        }
+        if ($dto->colorId) {
+            $qb->andWhere('c.id = :colorId')
+                ->setParameter('colorId', $dto->colorId);
+        }
+        if ($dto->manufactureYearFrom) {
+            $qb->andWhere('v.manufactureYear >= :manufactureYearFrom')
+                ->setParameter('manufactureYearFrom', $dto->manufactureYearFrom);
+        }
+        if ($dto->manufactureYearTo) {
+            $qb->andWhere('v.manufactureYear <= :manufactureYearTo')
+                ->setParameter('manufactureYearTo', $dto->manufactureYearTo);
+        }
+        if ($dto->seatCount) {
+            $qb->andWhere('v.seatCount = :seatCount')
+                ->setParameter('seatCount', $dto->seatCount);
+        }
+        if ($dto->passengerCount) {
+            $qb->andWhere('v.passengerCount = :passengerCount')
+                ->setParameter('passengerCount', $dto->passengerCount);
+        }
+        if ($dto->fuelTypeId) {
+            $qb->andWhere('f.id = :fuelTypeId')
+                ->setParameter('fuelTypeId', $dto->fuelTypeId);
+        }
+        if ($dto->vehicleClassId) {
+            $qb->andWhere('vc.id = :vehicleClassId')
+                ->setParameter('vehicleClassId', $dto->vehicleClassId);
+        }
+        if ($dto->categoryId) {
+            $qb->andWhere('cat.id = :categoryId')
+                ->setParameter('categoryId', $dto->categoryId);
+        }
+        if ($dto->active !== null) {
+            $qb->andWhere('v.active = :active')
+                ->setParameter('active', $dto->active);
+        }
+
+        // Filtros por relación con TUC (empresa, distrito, estado, tipo trámite, modalidad)
+        if ($dto->companyId || $dto->districtId || $dto->statusId || $dto->procedureTypeId || $dto->modalityId) {
+            $qb->leftJoin('itaxcix\\Infrastructure\\Database\\Entity\\vehicle\\TucProcedureEntity', 'tp', 'WITH', 'tp.vehicle = v.id');
+            if ($dto->companyId) {
+                $qb->andWhere('tp.company = :companyId')
+                    ->setParameter('companyId', $dto->companyId);
+            }
+            if ($dto->districtId) {
+                $qb->andWhere('tp.district = :districtId')
+                    ->setParameter('districtId', $dto->districtId);
+            }
+            if ($dto->statusId) {
+                $qb->andWhere('tp.status = :statusId')
+                    ->setParameter('statusId', $dto->statusId);
+            }
+            if ($dto->procedureTypeId) {
+                $qb->andWhere('tp.type = :procedureTypeId')
+                    ->setParameter('procedureTypeId', $dto->procedureTypeId);
+            }
+            if ($dto->modalityId) {
+                $qb->andWhere('tp.modality = :modalityId')
+                    ->setParameter('modalityId', $dto->modalityId);
+            }
+        }
+
+        // Ordenamiento
+        $allowedSort = [
+            'licensePlate' => 'v.licensePlate',
+            'manufactureYear' => 'v.manufactureYear',
+            'seatCount' => 'v.seatCount',
+            'passengerCount' => 'v.passengerCount',
+            'brandId' => 'b.id',
+            'modelId' => 'm.id',
+            'colorId' => 'c.id',
+            'fuelTypeId' => 'f.id',
+            'vehicleClassId' => 'vc.id',
+            'categoryId' => 'cat.id',
+            'companyId' => 'tp.company',
+            'districtId' => 'tp.district',
+            'statusId' => 'tp.status',
+            'procedureTypeId' => 'tp.type',
+            'modalityId' => 'tp.modality'
+        ];
+        $sortBy = $allowedSort[$dto->sortBy] ?? 'v.licensePlate';
+        $sortDirection = strtoupper($dto->sortDirection) === 'DESC' ? 'DESC' : 'ASC';
+        $qb->orderBy($sortBy, $sortDirection)
+            ->setFirstResult(($dto->page - 1) * $dto->perPage)
+            ->setMaxResults($dto->perPage);
+
+        $entities = $qb->getQuery()->getResult();
+        $result = [];
+        foreach ($entities as $entity) {
+            if ($entity instanceof VehicleEntity) {
+                $model = $entity->getModel();
+                $brand = $model?->getBrand();
+                $color = $entity->getColor();
+                $fuelType = $entity->getFuelType();
+                $vehicleClass = $entity->getVehicleClass();
+                $category = $entity->getCategory();
+                // Buscar TUC activo (si hay)
+                $tuc = null;
+                if (property_exists($entity, 'tucProcedures')) {
+                    foreach ($entity->tucProcedures as $tp) {
+                        if ($tp->getVehicle()->getId() === $entity->getId()) {
+                            $tuc = $tp;
+                            break;
+                        }
+                    }
+                }
+                $result[] = [
+                    'id' => $entity->getId(),
+                    'licensePlate' => $entity->getLicensePlate(),
+                    'brandName' => $brand?->getName(),
+                    'modelName' => $model?->getName(),
+                    'colorName' => $color?->getName(),
+                    'manufactureYear' => $entity->getManufactureYear(),
+                    'seatCount' => $entity->getSeatCount(),
+                    'passengerCount' => $entity->getPassengerCount(),
+                    'fuelTypeName' => $fuelType?->getName(),
+                    'vehicleClassName' => $vehicleClass?->getName(),
+                    'categoryName' => $category?->getName(),
+                    'active' => $entity->isActive(),
+                    'companyName' => $tuc?->getCompany()?->getName() ?? null,
+                    'districtName' => $tuc?->getDistrict()?->getName() ?? null,
+                    'statusName' => $tuc?->getStatus()?->getName() ?? null,
+                    'procedureTypeName' => $tuc?->getType()?->getName() ?? null,
+                    'modalityName' => $tuc?->getModality()?->getName() ?? null
+                ];
+            }
+        }
+        return $result;
+    }
+
+    public function countReport(\itaxcix\Shared\DTO\useCases\VehicleReport\VehicleReportRequestDTO $dto): int
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('COUNT(DISTINCT v.id)')
+            ->from(VehicleEntity::class, 'v')
+            ->leftJoin('v.model', 'm')
+            ->leftJoin('m.brand', 'b')
+            ->leftJoin('v.color', 'c')
+            ->leftJoin('v.fuelType', 'f')
+            ->leftJoin('v.vehicleClass', 'vc')
+            ->leftJoin('v.category', 'cat');
+        if ($dto->licensePlate) {
+            $qb->andWhere('v.licensePlate LIKE :licensePlate')
+                ->setParameter('licensePlate', '%' . $dto->licensePlate . '%');
+        }
+        if ($dto->brandId) {
+            $qb->andWhere('b.id = :brandId')
+                ->setParameter('brandId', $dto->brandId);
+        }
+        if ($dto->modelId) {
+            $qb->andWhere('m.id = :modelId')
+                ->setParameter('modelId', $dto->modelId);
+        }
+        if ($dto->colorId) {
+            $qb->andWhere('c.id = :colorId')
+                ->setParameter('colorId', $dto->colorId);
+        }
+        if ($dto->manufactureYearFrom) {
+            $qb->andWhere('v.manufactureYear >= :manufactureYearFrom')
+                ->setParameter('manufactureYearFrom', $dto->manufactureYearFrom);
+        }
+        if ($dto->manufactureYearTo) {
+            $qb->andWhere('v.manufactureYear <= :manufactureYearTo')
+                ->setParameter('manufactureYearTo', $dto->manufactureYearTo);
+        }
+        if ($dto->seatCount) {
+            $qb->andWhere('v.seatCount = :seatCount')
+                ->setParameter('seatCount', $dto->seatCount);
+        }
+        if ($dto->passengerCount) {
+            $qb->andWhere('v.passengerCount = :passengerCount')
+                ->setParameter('passengerCount', $dto->passengerCount);
+        }
+        if ($dto->fuelTypeId) {
+            $qb->andWhere('f.id = :fuelTypeId')
+                ->setParameter('fuelTypeId', $dto->fuelTypeId);
+        }
+        if ($dto->vehicleClassId) {
+            $qb->andWhere('vc.id = :vehicleClassId')
+                ->setParameter('vehicleClassId', $dto->vehicleClassId);
+        }
+        if ($dto->categoryId) {
+            $qb->andWhere('cat.id = :categoryId')
+                ->setParameter('categoryId', $dto->categoryId);
+        }
+        if ($dto->active !== null) {
+            $qb->andWhere('v.active = :active')
+                ->setParameter('active', $dto->active);
+        }
+        if ($dto->companyId || $dto->districtId || $dto->statusId || $dto->procedureTypeId || $dto->modalityId) {
+            $qb->leftJoin('itaxcix\\Infrastructure\\Database\\Entity\\vehicle\\TucProcedureEntity', 'tp', 'WITH', 'tp.vehicle = v.id');
+            if ($dto->companyId) {
+                $qb->andWhere('tp.company = :companyId')
+                    ->setParameter('companyId', $dto->companyId);
+            }
+            if ($dto->districtId) {
+                $qb->andWhere('tp.district = :districtId')
+                    ->setParameter('districtId', $dto->districtId);
+            }
+            if ($dto->statusId) {
+                $qb->andWhere('tp.status = :statusId')
+                    ->setParameter('statusId', $dto->statusId);
+            }
+            if ($dto->procedureTypeId) {
+                $qb->andWhere('tp.type = :procedureTypeId')
+                    ->setParameter('procedureTypeId', $dto->procedureTypeId);
+            }
+            if ($dto->modalityId) {
+                $qb->andWhere('tp.modality = :modalityId')
+                    ->setParameter('modalityId', $dto->modalityId);
+            }
+        }
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
 }

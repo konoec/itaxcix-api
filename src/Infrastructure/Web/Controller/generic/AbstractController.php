@@ -76,4 +76,11 @@ abstract class AbstractController {
             ? $request->getHeaderLine($headerName)
             : $default;
     }
+
+    protected function csv(string $csv, string $filename = 'export.csv'): ResponseInterface {
+        return new Response(200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"'
+        ], $csv);
+    }
 }

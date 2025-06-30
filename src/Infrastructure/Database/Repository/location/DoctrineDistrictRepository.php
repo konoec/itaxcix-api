@@ -70,4 +70,185 @@ class DoctrineDistrictRepository implements DistrictRepositoryInterface
 
         return $this->toDomain($entity);
     }
+
+    public function findAll(
+        int $page = 1,
+        int $perPage = 15,
+        ?string $search = null,
+        ?string $name = null,
+        ?int $provinceId = null,
+        ?string $ubigeo = null,
+        string $sortBy = 'name',
+        string $sortDirection = 'asc'
+    ): array {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('d, p')
+            ->from(DistrictEntity::class, 'd')
+            ->leftJoin('d.province', 'p');
+
+        // Aplicar filtros
+        if ($search) {
+            $qb->andWhere(
+                $qb->expr()->orX(
+                    $qb->expr()->like('LOWER(d.name)', ':search'),
+                    $qb->expr()->like('LOWER(d.ubigeo)', ':search'),
+                    $qb->expr()->like('LOWER(p.name)', ':search')
+                )
+            )
+            ->setParameter('search', '%' . strtolower($search) . '%');
+        }
+
+        if ($name) {
+            $qb->andWhere('LOWER(d.name) LIKE :name')
+               ->setParameter('name', '%' . strtolower($name) . '%');
+        }
+
+        if ($provinceId) {
+            $qb->andWhere('d.province = :provinceId')
+               ->setParameter('provinceId', $provinceId);
+        }
+
+        if ($ubigeo) {
+            $qb->andWhere('LOWER(d.ubigeo) LIKE :ubigeo')
+               ->setParameter('ubigeo', '%' . strtolower($ubigeo) . '%');
+        }
+
+        // Validar campo de ordenamiento
+        $validSortFields = ['id', 'name', 'ubigeo'];
+        if (!in_array($sortBy, $validSortFields)) {
+            $sortBy = 'name';
+        }
+
+        $sortDirection = strtolower($sortDirection) === 'desc' ? 'DESC' : 'ASC';
+        $qb->orderBy("d.$sortBy", $sortDirection);
+
+        // Contar total antes de paginar
+        $countQb = clone $qb;
+        $countQb->select('COUNT(DISTINCT d.id)');
+        $total = (int) $countQb->getQuery()->getSingleScalarResult();
+
+        // Aplicar paginación
+        $offset = ($page - 1) * $perPage;
+        $qb->setFirstResult($offset)
+           ->setMaxResults($perPage);
+
+        $entities = $qb->getQuery()->getResult();
+        $items = array_map([$this, 'toDomain'], $entities);
+
+        return [
+            'items' => $items,
+            'total' => $total,
+            'page' => $page,
+            'perPage' => $perPage,
+            'lastPage' => (int) ceil($total / $perPage)
+        ];
+    }
+
+    public function findById(int $id): ?DistrictModel
+    {
+        $entity = $this->entityManager->find(DistrictEntity::class, $id);
+        return $entity ? $this->toDomain($entity) : null;
+    }
+
+    public function create(DistrictModel $district): DistrictModel
+    {
+        $entity = new DistrictEntity();
+        $entity->setName($district->getName());
+        $entity->setUbigeo($district->getUbigeo());
+
+        if ($district->getProvince()) {
+            $provinceEntity = $this->entityManager->getReference(
+                ProvinceEntity::class,
+                $district->getProvince()->getId()
+            );
+            $entity->setProvince($provinceEntity);
+        }
+
+        $this->entityManager->persist($entity);
+        $this->entityManager->flush();
+
+        return $this->toDomain($entity);
+    }
+
+    public function update(DistrictModel $district): DistrictModel
+    {
+        $entity = $this->entityManager->find(DistrictEntity::class, $district->getId());
+
+        if (!$entity) {
+            throw new RuntimeException("District with ID {$district->getId()} not found");
+        }
+
+        $entity->setName($district->getName());
+        $entity->setUbigeo($district->getUbigeo());
+
+        if ($district->getProvince()) {
+            $provinceEntity = $this->entityManager->getReference(
+                ProvinceEntity::class,
+                $district->getProvince()->getId()
+            );
+            $entity->setProvince($provinceEntity);
+        }
+
+        $this->entityManager->flush();
+
+        return $this->toDomain($entity);
+    }
+
+    public function delete(int $id): bool
+    {
+        $entity = $this->entityManager->find(DistrictEntity::class, $id);
+
+        if (!$entity) {
+            return false;
+        }
+
+        $entity->setActive(false);
+        $this->entityManager->persist($entity);
+        $this->entityManager->flush();
+
+        return true;
+    }
+
+    public function existsByName(string $name, ?int $excludeId = null): bool
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('COUNT(d.id)')
+            ->from(DistrictEntity::class, 'd')
+            ->where('LOWER(d.name) = LOWER(:name)')
+            ->setParameter('name', $name);
+
+        if ($excludeId) {
+            $qb->andWhere('d.id != :excludeId')
+               ->setParameter('excludeId', $excludeId);
+        }
+
+        return (int) $qb->getQuery()->getSingleScalarResult() > 0;
+    }
+
+    public function existsByUbigeo(string $ubigeo, ?int $excludeId = null): bool
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('COUNT(d.id)')
+            ->from(DistrictEntity::class, 'd')
+            ->where('d.ubigeo = :ubigeo')
+            ->setParameter('ubigeo', $ubigeo);
+
+        if ($excludeId) {
+            $qb->andWhere('d.id != :excludeId')
+               ->setParameter('excludeId', $excludeId);
+        }
+
+        return (int) $qb->getQuery()->getSingleScalarResult() > 0;
+    }
+
+    public function countByProvince(int $provinceId): int
+    {
+        return (int) $this->entityManager->createQueryBuilder()
+            ->select('COUNT(d.id)')
+            ->from(DistrictEntity::class, 'd')
+            ->where('d.province = :provinceId')
+            ->setParameter('provinceId', $provinceId)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

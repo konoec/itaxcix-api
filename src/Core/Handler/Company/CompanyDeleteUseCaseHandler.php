@@ -2,27 +2,19 @@
 
 namespace itaxcix\Core\Handler\Company;
 
-use InvalidArgumentException;
-use itaxcix\Core\Interfaces\company\CompanyRepositoryInterface;
 use itaxcix\Core\UseCases\Company\CompanyDeleteUseCase;
 
-class CompanyDeleteUseCaseHandler implements CompanyDeleteUseCase
+class CompanyDeleteUseCaseHandler
 {
-    private CompanyRepositoryInterface $companyRepository;
+    private CompanyDeleteUseCase $useCase;
 
-    public function __construct(CompanyRepositoryInterface $companyRepository)
+    public function __construct(CompanyDeleteUseCase $useCase)
     {
-        $this->companyRepository = $companyRepository;
+        $this->useCase = $useCase;
     }
 
-    public function execute(int $id): array
+    public function handle(int $id): bool
     {
-        $success = $this->companyRepository->deleteCompany($id);
-
-        if (!$success) {
-            throw new InvalidArgumentException('Empresa no encontrada.');
-        }
-
-        return ['message' => 'Empresa eliminada correctamente.'];
+        return $this->useCase->execute($id);
     }
 }

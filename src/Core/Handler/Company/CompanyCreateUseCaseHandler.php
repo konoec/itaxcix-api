@@ -2,38 +2,20 @@
 
 namespace itaxcix\Core\Handler\Company;
 
-use InvalidArgumentException;
-use itaxcix\Core\Domain\company\CompanyModel;
-use itaxcix\Core\Interfaces\company\CompanyRepositoryInterface;
 use itaxcix\Core\UseCases\Company\CompanyCreateUseCase;
 use itaxcix\Shared\DTO\useCases\Company\CompanyRequestDTO;
 
-class CompanyCreateUseCaseHandler implements CompanyCreateUseCase
+class CompanyCreateUseCaseHandler
 {
-    private CompanyRepositoryInterface $companyRepository;
+    private CompanyCreateUseCase $useCase;
 
-    public function __construct(CompanyRepositoryInterface $companyRepository)
+    public function __construct(CompanyCreateUseCase $useCase)
     {
-        $this->companyRepository = $companyRepository;
+        $this->useCase = $useCase;
     }
 
-    public function execute(CompanyRequestDTO $dto): array
+    public function handle(CompanyRequestDTO $request): array
     {
-        // Verificar que el RUC no esté registrado
-        $existingCompany = $this->companyRepository->findCompanyByRuc($dto->ruc);
-        if ($existingCompany) {
-            throw new InvalidArgumentException('Ya existe una empresa registrada con ese RUC.');
-        }
-
-        $company = new CompanyModel(
-            id: null,
-            ruc: $dto->ruc,
-            name: $dto->name,
-            active: $dto->active
-        );
-
-        $this->companyRepository->saveCompany($company);
-
-        return ['message' => 'Empresa creada correctamente.'];
+        return $this->useCase->execute($request);
     }
 }

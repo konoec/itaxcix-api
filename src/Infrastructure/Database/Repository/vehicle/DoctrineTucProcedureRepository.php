@@ -173,4 +173,19 @@ class DoctrineTucProcedureRepository implements TucProcedureRepositoryInterface 
 
         return $this->toDomain($result);
     }
+
+    public function findAllTucProceduresByVehicleId(int $vehicleId): array
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('tp')
+            ->from(TucProcedureEntity::class, 'tp')
+            ->join('tp.vehicle', 'v')
+            ->where('v.id = :vehicleId')
+            ->orderBy('tp.expirationDate', 'DESC')
+            ->setParameter('vehicleId', $vehicleId);
+
+        $results = $qb->getQuery()->getResult();
+
+        return array_map([$this, 'toDomain'], $results);
+    }
 }

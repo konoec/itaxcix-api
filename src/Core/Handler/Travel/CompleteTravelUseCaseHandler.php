@@ -47,12 +47,13 @@ class CompleteTravelUseCaseHandler implements CompleteTravelUseCase
         $notification = [
             'type' => 'trip_status_update',
             'recipientType' => 'citizen',
-            'recipientId' => (string) $travel->getCitizen()->getId(),
+            'recipientId' => $travel->getCitizen()->getId(),
             'data' => [
                 'tripId' => $savedTravel->getId(),
                 'status' => 'completed',
                 'driverId' => $travel->getDriver()->getId()
-            ]
+            ],
+            'timestamp' => time() // Agregar timestamp para validación TTL
         ];
 
         // Publicar en la cola de Redis
@@ -64,7 +65,7 @@ class CompleteTravelUseCaseHandler implements CompleteTravelUseCase
         // Notificar también al conductor
         $driverNotification = array_merge($notification, [
             'recipientType' => 'driver',
-            'recipientId' => (string) $travel->getDriver()->getId()
+            'recipientId' => $travel->getDriver()->getId()
         ]);
 
         $this->redisService->getClient()->lpush(

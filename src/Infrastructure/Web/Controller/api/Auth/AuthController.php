@@ -15,7 +15,7 @@ use Psr\Http\Message\ServerRequestInterface;
 #[OA\Post(
     path: "/auth/login",
     operationId: "loginUser",
-    description: "Autentica al usuario utilizando su documento y contraseña.",
+    description: "Autentica al usuario utilizando su documento y contraseña. El tipo de acceso se determina por el campo 'web': si es true, el usuario puede ingresar aunque no tenga perfil de conductor o ciudadano, y el tipo de usuario será 'web'. Si es false, se validan los perfiles y el tipo de usuario será 'driver' o 'citizen' según corresponda.",
     summary: "Iniciar sesión de usuario",
     requestBody: new OA\RequestBody(
         required: true,
@@ -25,7 +25,7 @@ use Psr\Http\Message\ServerRequestInterface;
 )]
 #[OA\Response(
     response: 200,
-    description: "Inicio de sesión exitoso",
+    description: "Inicio de sesión exitoso. El campo 'userType' en el token puede ser 'web', 'driver' o 'citizen' según el contexto de acceso. El campo 'userTypes' es un array con todos los tipos válidos para el usuario. Se devuelven roles y permisos asignados.",
     content: new OA\JsonContent(
         properties: [
             new OA\Property(property: "success", type: "boolean", example: true),

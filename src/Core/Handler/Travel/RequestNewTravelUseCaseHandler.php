@@ -104,7 +104,7 @@ class RequestNewTravelUseCaseHandler implements RequestNewTravelUseCase
         $notification = [
             'type' => 'trip_request',
             'recipientType' => 'driver',
-            'recipientId' => (string) $driver->getId(),
+            'recipientId' => $driver->getId(),
             'data' => [
                 'tripId' => $savedTravel->getId(),
                 'passengerId' => $citizen->getId(),
@@ -118,7 +118,8 @@ class RequestNewTravelUseCaseHandler implements RequestNewTravelUseCase
                     'lng' => $dto->destinationLongitude
                 ],
                 'passengerRating' => $citizenProfile->getAverageRating()
-            ]
+            ],
+            'timestamp' => time() // Agregar timestamp para validación TTL
         ];
 
         // En RequestNewTravelUseCaseHandler.php

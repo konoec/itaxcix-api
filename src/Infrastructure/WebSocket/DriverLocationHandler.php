@@ -14,6 +14,7 @@ class DriverLocationHandler implements MessageComponentInterface
     protected $loop;
     protected $activeDrivers = [];
     protected $activeTrips = [];
+    protected $driversInTrip = []; // Nueva propiedad para conductores en viaje
 
     // TTLs en segundos
     const TTL_TRIP_REQUEST = 30;
@@ -71,6 +72,11 @@ class DriverLocationHandler implements MessageComponentInterface
                 }
                 // trip_status_update siempre se entrega
 
+                // Manejar cambios de estado del conductor
+                if ($shouldDeliver && $type === 'trip_response' && isset($data['data']['accepted'])) {
+                    $this->handleDriverAvailabilityChange($data['data']);
+                }
+
                 if ($shouldDeliver && $data && isset($data['recipientType']) && isset($data['recipientId'])) {
                     $found = false;
                     foreach ($this->clients as $client) {
@@ -80,7 +86,7 @@ class DriverLocationHandler implements MessageComponentInterface
                         if (isset($client->clientType) &&
                             $client->clientType === $data['recipientType'] &&
                             isset($client->userId) &&
-                            $client->userId == $data['recipientId']) {
+                            (int)$client->userId === (int)$data['recipientId']) {
 
                             echo "¡Destinatario encontrado! Enviando mensaje...\n";
                             $client->send(json_encode([
@@ -112,16 +118,33 @@ class DriverLocationHandler implements MessageComponentInterface
     {
         $this->clients->attach($conn);
 
-        // Enviar mensaje de conexión exitosa
+        // El cliente está autenticado por JWT con userId y userType validados
+        if (isset($conn->userData) && isset($conn->userData['userId']) && isset($conn->userData['userType'])) {
+            $conn->userId = $conn->userData['userId'];
+            $conn->authorizedUserType = $conn->userData['userType']; // Tipo principal para compatibilidad
+            $conn->authorizedUserTypes = $conn->userData['userTypes'] ?? [$conn->userData['userType']]; // Todos los tipos disponibles
+
+            echo "Usuario autenticado con JWT:\n";
+            echo "- ID: {$conn->userId}\n";
+            echo "- Tipo principal: {$conn->authorizedUserType}\n";
+            echo "- Tipos disponibles: " . implode(', ', $conn->authorizedUserTypes) . "\n";
+            echo "⚠️ Cliente debe enviar mensaje 'identify' para completar configuración\n";
+        }
+
+        // Enviar mensaje de conexión exitosa pero requiere identify
         $conn->send(json_encode([
             'type' => 'connection_status',
             'data' => [
-                'status' => 'connected',
-                'clientId' => $conn->resourceId
+                'status' => 'authenticated',
+                'message' => 'Autenticación JWT exitosa. Envía mensaje identify para completar configuración.',
+                'clientId' => $conn->resourceId,
+                'requiresIdentify' => true,
+                'authorizedUserType' => $conn->authorizedUserType ?? null,
+                'authorizedUserTypes' => $conn->authorizedUserTypes ?? []
             ]
         ]));
 
-        echo "Nueva conexión! ({$conn->resourceId})\n";
+        echo "Nueva conexión autenticada! ({$conn->resourceId}) - Esperando identify\n";
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e)
@@ -148,35 +171,74 @@ class DriverLocationHandler implements MessageComponentInterface
 
             switch ($data['type']) {
                 case 'identify':
-                            if (!isset($data['clientType']) || !isset($data['userId'])) {
-                                $from->send(json_encode([
-                                    'type' => 'error',
-                                    'message' => 'Datos de identificación incompletos'
-                                ]));
-                                return;
-                            }
+                    if (!isset($data['clientType']) || !isset($data['userId'])) {
+                        $from->send(json_encode([
+                            'type' => 'error',
+                            'message' => 'Datos de identificación incompletos'
+                        ]));
+                        return;
+                    }
 
-                            $from->clientType = $data['clientType'];
-                            $from->userId = $data['userId'];
+                    // Verificar que el userId del identify coincida con el del JWT
+                    if (isset($from->userId) && (int)$from->userId !== (int)$data['userId']) {
+                        $from->send(json_encode([
+                            'type' => 'error',
+                            'message' => 'El userId no coincide con el token JWT'
+                        ]));
+                        return;
+                    }
 
-                            echo "\n=== Cliente identificado ===\n";
-                            echo "Tipo: {$from->clientType}\n";
-                            echo "ID: {$from->userId}\n";
+                    // VALIDACIÓN DE SEGURIDAD: Verificar que el clientType esté autorizado en JWT
+                    if (isset($from->authorizedUserTypes) && !in_array($data['clientType'], $from->authorizedUserTypes)) {
+                        echo "🚨 INTENTO DE SUPLANTACIÓN DETECTADO:\n";
+                        echo "   - Usuario ID: {$from->userId}\n";
+                        echo "   - Tipos autorizados (JWT): " . implode(', ', $from->authorizedUserTypes) . "\n";
+                        echo "   - Tipo solicitado (identify): {$data['clientType']}\n";
 
-                            // Confirmar identificación
-                            $from->send(json_encode([
-                                'type' => 'identify_confirm',
-                                'data' => [
-                                    'clientType' => $from->clientType,
-                                    'userId' => $from->userId
-                                ]
-                            ]));
+                        $from->send(json_encode([
+                            'type' => 'error',
+                            'message' => 'Tipo de usuario no autorizado. Tus tipos válidos son: ' . implode(', ', $from->authorizedUserTypes)
+                        ]));
+                        return;
+                    }
+
+                    $from->clientType = $data['clientType'];
+                    $from->userId = (int) $data['userId'];
+
+                    echo "\n=== Cliente identificado y autorizado ===\n";
+                    echo "Tipo: {$from->clientType}\n";
+                    echo "ID: {$from->userId}\n";
+                    echo "✅ Validación de seguridad JWT: APROBADA\n";
+
+                    // Confirmar identificación
+                    $from->send(json_encode([
+                        'type' => 'identify_confirm',
+                        'data' => [
+                            'clientType' => $from->clientType,
+                            'userId' => $from->userId,
+                            'securityValidated' => true
+                        ]
+                    ]));
 
                     if ($from->clientType === 'driver' && isset($data['driverData'])) {
                         $this->registerDriver($from, $data['driverData']);
                     }
                     elseif ($from->clientType === 'citizen') {
                         $this->sendInitialDriversList($from);
+                    }
+                    break;
+
+                case 'register_driver':
+                    // Para conductores que necesitan registrar datos adicionales
+                    if (!isset($from->clientType) || $from->clientType !== 'driver') {
+                        $from->send(json_encode([
+                            'type' => 'error',
+                            'message' => 'Solo conductores pueden registrar datos'
+                        ]));
+                        return;
+                    }
+                    if (isset($data['driverData'])) {
+                        $this->registerDriver($from, $data['driverData']);
                     }
                     break;
 
@@ -188,6 +250,7 @@ class DriverLocationHandler implements MessageComponentInterface
                         $this->updateDriverLocation($from->userId, $data['location']);
                     }
                     break;
+
                 case 'trip_request':
                     if (!isset($from->clientType) || $from->clientType !== 'citizen') {
                         return;
@@ -207,6 +270,13 @@ class DriverLocationHandler implements MessageComponentInterface
                         return;
                     }
                     $this->handleTripStatusUpdate($from, $data['data']);
+                    break;
+
+                default:
+                    $from->send(json_encode([
+                        'type' => 'error',
+                        'message' => 'Tipo de mensaje no soportado: ' . $data['type']
+                    ]));
                     break;
             }
         } catch (\Exception $e) {
@@ -276,55 +346,91 @@ class DriverLocationHandler implements MessageComponentInterface
         }
     }
 
-    protected function handleTripStatusUpdate(ConnectionInterface $from, array $statusData)
+    /**
+     * Maneja los cambios de disponibilidad del conductor cuando acepta o rechaza un viaje
+     */
+    protected function handleDriverAvailabilityChange(array $tripResponseData)
     {
-        $tripId = $statusData['tripId'];
+        $driverId = $tripResponseData['driverId'];
+        $accepted = $tripResponseData['accepted'];
+        $tripId = $tripResponseData['tripId'];
 
-        if (!isset($this->activeTrips[$tripId])) {
-            return;
+        echo "Manejando cambio de disponibilidad - Conductor: $driverId, Aceptado: " . ($accepted ? 'Sí' : 'No') . "\n";
+
+        if ($accepted) {
+            // Conductor acepta el viaje - marcar como no disponible
+            $this->setDriverInTrip($driverId, $tripId);
+        } else {
+            // Conductor rechaza el viaje - mantener disponible (no hacer nada)
+            echo "Conductor $driverId rechazó el viaje - mantiene disponibilidad\n";
+        }
+    }
+
+    /**
+     * Marca un conductor como en viaje (no disponible)
+     */
+    protected function setDriverInTrip($driverId, $tripId)
+    {
+        // Agregar a la lista de conductores en viaje
+        $this->driversInTrip[$driverId] = [
+            'tripId' => $tripId,
+            'timestamp' => time()
+        ];
+
+        // Guardar en Redis para persistencia
+        $this->redisClient->hset('drivers_in_trip', $driverId, json_encode($this->driversInTrip[$driverId]));
+
+        // Notificar a todos los ciudadanos que el conductor ya no está disponible
+        $this->broadcastToClients('driver_unavailable', ['id' => $driverId]);
+
+        echo "Conductor $driverId marcado como no disponible (en viaje $tripId)\n";
+    }
+
+    /**
+     * Marca un conductor como disponible nuevamente
+     */
+    protected function setDriverAvailable($driverId)
+    {
+        // Remover de la lista de conductores en viaje
+        if (isset($this->driversInTrip[$driverId])) {
+            unset($this->driversInTrip[$driverId]);
         }
 
-        $trip = $this->activeTrips[$tripId];
-        $recipientType = $from->clientType === 'driver' ? 'citizen' : 'driver';
-        $recipientId = $from->clientType === 'driver' ? $trip['passengerId'] : $trip['driverId'];
+        // Remover de Redis
+        $this->redisClient->hdel('drivers_in_trip', [$driverId]);
 
-        // Actualizar estado del viaje
-        $this->activeTrips[$tripId]['status'] = $statusData['status'];
-
-        // Notificar al otro participante
-        foreach ($this->clients as $client) {
-            if (isset($client->clientType) &&
-                $client->clientType === $recipientType &&
-                isset($client->userId) &&
-                $client->userId === $recipientId) {
-
-                $client->send(json_encode([
-                    'type' => 'trip_status_update',
-                    'data' => $statusData
-                ]));
-                break;
-            }
+        // Si el conductor sigue activo, notificar que está disponible
+        if (isset($this->activeDrivers[$driverId])) {
+            $this->broadcastToClients('driver_available', $this->activeDrivers[$driverId]);
+            echo "Conductor $driverId marcado como disponible nuevamente\n";
         }
+    }
 
-        // Limpiar viaje si está completado o cancelado
-        if (in_array($statusData['status'], ['completed', 'canceled'])) {
-            unset($this->activeTrips[$tripId]);
-        }
+    /**
+     * Verifica si un conductor está disponible
+     */
+    protected function isDriverAvailable($driverId): bool
+    {
+        return !isset($this->driversInTrip[$driverId]);
     }
 
     protected function sendInitialDriversList(ConnectionInterface $conn)
     {
-        if (!empty($this->activeDrivers)) {
-            $conn->send(json_encode([
-                'type' => 'initial_drivers',
-                'drivers' => array_values($this->activeDrivers)
-            ]));
-        } else {
-            $conn->send(json_encode([
-                'type' => 'initial_drivers',
-                'drivers' => []
-            ]));
+        $availableDrivers = [];
+
+        // Filtrar solo conductores disponibles (no en viaje)
+        foreach ($this->activeDrivers as $driverId => $driverData) {
+            if ($this->isDriverAvailable($driverId)) {
+                $availableDrivers[] = $driverData;
+            }
         }
+
+        $conn->send(json_encode([
+            'type' => 'initial_drivers',
+            'drivers' => $availableDrivers
+        ]));
+
+        echo "Enviada lista de conductores disponibles: " . count($availableDrivers) . " de " . count($this->activeDrivers) . " total\n";
     }
 
     public function onClose(ConnectionInterface $conn)
@@ -445,6 +551,15 @@ class DriverLocationHandler implements MessageComponentInterface
             }
             echo "Cargados " . count($this->activeDrivers) . " conductores desde Redis\n";
         }
+
+        // Cargar también conductores en viaje
+        $driversInTrip = $this->redisClient->hgetall('drivers_in_trip');
+        if ($driversInTrip) {
+            foreach ($driversInTrip as $id => $data) {
+                $this->driversInTrip[$id] = json_decode($data, true);
+            }
+            echo "Cargados " . count($this->driversInTrip) . " conductores en viaje desde Redis\n";
+        }
     }
 
     protected function broadcastToClients(string $type, array $data)
@@ -509,7 +624,7 @@ class DriverLocationHandler implements MessageComponentInterface
                 }
 
                 if ($client->clientType === $data['recipientType'] &&
-                    (string)$client->userId === $data['recipientId']) {
+                    (int)$client->userId === (int)$data['recipientId']) {
 
                     echo "✅ Enviando a {$client->clientType} {$client->userId}\n";
                     $client->send(json_encode([
@@ -526,6 +641,48 @@ class DriverLocationHandler implements MessageComponentInterface
         } catch (\Exception $e) {
             echo "❌ Error: " . $e->getMessage() . "\n";
             echo "Traza: " . $e->getTraceAsString() . "\n";
+        }
+    }
+
+    protected function handleTripStatusUpdate(ConnectionInterface $from, array $statusData)
+    {
+        $tripId = $statusData['tripId'];
+
+        if (!isset($this->activeTrips[$tripId])) {
+            return;
+        }
+
+        $trip = $this->activeTrips[$tripId];
+        $recipientType = $from->clientType === 'driver' ? 'citizen' : 'driver';
+        $recipientId = $from->clientType === 'driver' ? $trip['passengerId'] : $trip['driverId'];
+
+        // Actualizar estado del viaje
+        $this->activeTrips[$tripId]['status'] = $statusData['status'];
+
+        // Notificar al otro participante
+        foreach ($this->clients as $client) {
+            if (isset($client->clientType) &&
+                $client->clientType === $recipientType &&
+                isset($client->userId) &&
+                $client->userId === $recipientId) {
+
+                $client->send(json_encode([
+                    'type' => 'trip_status_update',
+                    'data' => $statusData
+                ]));
+                break;
+            }
+        }
+
+        // Limpiar viaje si está completado o cancelado y liberar conductor
+        if (in_array($statusData['status'], ['completed', 'canceled'])) {
+            $driverId = $trip['driverId'];
+
+            // Marcar conductor como disponible nuevamente
+            $this->setDriverAvailable($driverId);
+
+            unset($this->activeTrips[$tripId]);
+            echo "Viaje $tripId finalizado - Conductor $driverId liberado\n";
         }
     }
 }

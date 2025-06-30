@@ -1,10 +1,14 @@
 <?php
 
+use itaxcix\Core\Interfaces\audit\AuditLogRepositoryInterface;
 use itaxcix\Core\Interfaces\company\CompanyRepositoryInterface;
 use itaxcix\Core\Interfaces\configuration\ConfigurationRepositoryInterface;
 use itaxcix\Core\Interfaces\help\HelpCenterRepositoryInterface;
 use itaxcix\Core\Interfaces\incident\IncidentRepositoryInterface;
 use itaxcix\Core\Interfaces\incident\IncidentTypeRepositoryInterface;
+use itaxcix\Core\Interfaces\infraction\InfractionRepositoryInterface;
+use itaxcix\Core\Interfaces\infraction\InfractionSeverityRepositoryInterface;
+use itaxcix\Core\Interfaces\infraction\InfractionStatusRepositoryInterface;
 use itaxcix\Core\Interfaces\location\CoordinatesRepositoryInterface;
 use itaxcix\Core\Interfaces\location\DepartmentRepositoryInterface;
 use itaxcix\Core\Interfaces\location\DistrictRepositoryInterface;
@@ -43,11 +47,14 @@ use itaxcix\Core\Interfaces\vehicle\VehicleCategoryRepositoryInterface;
 use itaxcix\Core\Interfaces\vehicle\VehicleClassRepositoryInterface;
 use itaxcix\Core\Interfaces\vehicle\VehicleRepositoryInterface;
 use itaxcix\Core\Interfaces\vehicle\VehicleUserRepositoryInterface;
-use itaxcix\Infrastructure\Database\Entity\incident\IncidentTypeEntity;
+use itaxcix\Infrastructure\Database\Repository\audit\DoctrineAuditLogRepository;
 use itaxcix\Infrastructure\Database\Repository\company\DoctrineCompanyRepository;
 use itaxcix\Infrastructure\Database\Repository\configuration\DoctrineConfigurationRepository;
 use itaxcix\Infrastructure\Database\Repository\incident\DoctrineIncidentRepository;
 use itaxcix\Infrastructure\Database\Repository\incident\DoctrineIncidentTypeRepository;
+use itaxcix\Infrastructure\Database\Repository\infraction\DoctrineInfractionRepository;
+use itaxcix\Infrastructure\Database\Repository\infraction\DoctrineInfractionSeverityRepository;
+use itaxcix\Infrastructure\Database\Repository\infraction\DoctrineInfractionStatusRepository;
 use itaxcix\Infrastructure\Database\Repository\location\DoctrineCoordinatesRepository;
 use itaxcix\Infrastructure\Database\Repository\location\DoctrineDepartmentRepository;
 use itaxcix\Infrastructure\Database\Repository\location\DoctrineDistrictRepository;
@@ -89,7 +96,7 @@ use itaxcix\Infrastructure\Database\Repository\vehicle\DoctrineVehicleUserReposi
 use itaxcix\Infrastructure\Database\Repository\help\DoctrineHelpCenterRepository;
 use function DI\autowire;
 
-return [
+return array(
     UserRepositoryInterface::class => autowire(DoctrineUserRepository::class),
     DriverStatusRepositoryInterface::class => autowire(DoctrineDriverStatusRepository::class),
     RolePermissionRepositoryInterface::class => autowire(DoctrineRolePermissionRepository::class),
@@ -143,4 +150,8 @@ return [
     IncidentRepositoryInterface::class => autowire(DoctrineIncidentRepository::class),
     IncidentTypeRepositoryInterface::class => autowire(DoctrineIncidentTypeRepository::class),
     HelpCenterRepositoryInterface::class => autowire(DoctrineHelpCenterRepository::class),
-];
+    InfractionSeverityRepositoryInterface::class => autowire(DoctrineInfractionSeverityRepository::class),
+    InfractionStatusRepositoryInterface::class => autowire(DoctrineInfractionStatusRepository::class),
+    InfractionRepositoryInterface::class => autowire(DoctrineInfractionRepository::class),
+    AuditLogRepositoryInterface::class => autowire(DoctrineAuditLogRepository::class),
+);

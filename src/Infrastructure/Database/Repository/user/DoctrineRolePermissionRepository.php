@@ -5,6 +5,8 @@ namespace itaxcix\Infrastructure\Database\Repository\user;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
+use itaxcix\Core\Domain\user\PermissionModel;
+use itaxcix\Core\Domain\user\RoleModel;
 use itaxcix\Core\Domain\user\RolePermissionModel;
 use itaxcix\Core\Interfaces\user\PermissionRepositoryInterface;
 use itaxcix\Core\Interfaces\user\RolePermissionRepositoryInterface;
@@ -32,29 +34,6 @@ class DoctrineRolePermissionRepository implements RolePermissionRepositoryInterf
             permission: $this->permissionRepository->toDomain($entity->getPermission()),
             active: $entity->isActive()
         );
-    }
-
-    public function findPermissionsByRoleId(int $roleId, bool $web): array
-    {
-        $query = $this->entityManager->createQueryBuilder()
-            ->select('rp')
-            ->from(RolePermissionEntity::class, 'rp')
-            ->join('rp.role', 'r')
-            ->join('rp.permission', 'p')
-            ->where('rp.role = :roleId')
-            ->andWhere('rp.active = :active')
-            ->andWhere('r.web = :web')
-            ->andWhere('p.web = :web')
-            ->setParameter('roleId', $roleId)
-            ->setParameter('active', true)
-            ->setParameter('web', $web)
-            ->getQuery();
-
-        $result = $query->getResult();
-
-        return array_map(function ($item) {
-            return $this->toDomain($item);
-        }, $result);
     }
 
     public function findRolePermissionById(int $id): ?RolePermissionModel
@@ -154,5 +133,59 @@ class DoctrineRolePermissionRepository implements RolePermissionRepositoryInterf
             $this->entityManager->persist($entity);
             $this->entityManager->flush();
         }
+    }
+
+    // Nuevos métodos para administración avanzada
+    public function removeAllByRoleId(int $roleId): void
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->update(RolePermissionEntity::class, 'rp')
+            ->set('rp.active', ':active')
+            ->where('rp.role = :roleId')
+            ->setParameter('active', false)
+            ->setParameter('roleId', $roleId);
+
+        $qb->getQuery()->execute();
+    }
+
+    public function assignPermissionToRole(
+        RoleModel $role,
+        PermissionModel $permission
+    ): RolePermissionModel {
+        $entity = new RolePermissionEntity();
+
+        $entity->setRole(
+            $this->entityManager->getReference(RoleEntity::class, $role->getId())
+        );
+        $entity->setPermission(
+            $this->entityManager->getReference(PermissionEntity::class, $permission->getId())
+        );
+        $entity->setActive(true);
+
+        $this->entityManager->persist($entity);
+        $this->entityManager->flush();
+
+        return $this->toDomain($entity);
+    }
+
+    public function findPermissionsByRoleId(int $roleId): array
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('p')
+            ->from(PermissionEntity::class, 'p')
+            ->join(RolePermissionEntity::class, 'rp', 'WITH', 'rp.permission = p.id')
+            ->where('rp.role = :roleId')
+            ->andWhere('rp.active = :active')
+            ->andWhere('p.active = :permissionActive')
+            ->setParameter('roleId', $roleId)
+            ->setParameter('active', true)
+            ->setParameter('permissionActive', true)
+            ->getQuery();
+
+        $results = $query->getResult();
+
+        return array_map(function (PermissionEntity $entity) {
+            return $this->permissionRepository->toDomain($entity);
+        }, $results);
     }
 }

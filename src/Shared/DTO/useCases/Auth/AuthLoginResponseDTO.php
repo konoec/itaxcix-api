@@ -25,16 +25,28 @@ readonly class AuthLoginResponseDTO {
         #[OA\Property(
             property: "roles",
             type: "array",
-            items: new OA\Items(type: "string"),
-            example: ["admin", "user"]
+            items: new OA\Items(
+                properties: [
+                    new OA\Property(property: "id", type: "integer", example: 1),
+                    new OA\Property(property: "name", type: "string", example: "admin")
+                ],
+                type: "object"
+            ),
+            example: [["id" => 1, "name" => "admin"], ["id" => 2, "name" => "user"]]
         )]
         public array $roles,
 
         #[OA\Property(
             property: "permissions",
             type: "array",
-            items: new OA\Items(type: "string"),
-            example: ["read_users", "write_users"]
+            items: new OA\Items(
+                properties: [
+                    new OA\Property(property: "id", type: "integer", example: 1),
+                    new OA\Property(property: "name", type: "string", example: "read_users")
+                ],
+                type: "object"
+            ),
+            example: [["id" => 1, "name" => "read_users"], ["id" => 2, "name" => "write_users"]]
         )]
         public array $permissions,
         #[OA\Property(description: "Valor de la calificación del usuario", example: 4.5)]

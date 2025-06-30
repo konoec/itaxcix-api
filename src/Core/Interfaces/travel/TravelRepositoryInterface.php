@@ -10,4 +10,6 @@ interface TravelRepositoryInterface
     public function findTravelById(int $id): ?TravelModel;
     public function findTravelsByUserId(int $userId, int $page, int $perPage): array;
     public function countTravelsByUserId(int $userId): int;
+    public function findReport(\itaxcix\Shared\DTO\useCases\TravelReport\TravelReportRequestDTO $dto): array;
+    public function countReport(\itaxcix\Shared\DTO\useCases\TravelReport\TravelReportRequestDTO $dto): int;
 }
