@@ -193,8 +193,8 @@ class AdminPermissionController extends AbstractController
                 page: (int)($queryParams['page'] ?? 1),
                 limit: (int)($queryParams['limit'] ?? 20),
                 search: $queryParams['search'] ?? null,
-                webOnly: isset($queryParams['webOnly']) ? (bool)$queryParams['webOnly'] : null,
-                activeOnly: !isset($queryParams['activeOnly']) || $queryParams['activeOnly']
+                webOnly: isset($queryParams['webOnly']) ? $this->parseBool($queryParams['webOnly']) : null,
+                activeOnly: isset($queryParams['activeOnly']) ? $this->parseBool($queryParams['activeOnly']) : null
             );
 
             $response = $this->listPermissionsUseCase->execute($requestDTO);
@@ -547,5 +547,19 @@ class AdminPermissionController extends AbstractController
         } catch (\Exception $e) {
             return $this->error($e->getMessage());
         }
+    }
+
+    /**
+     * Convierte un string 'true'/'false'/'1'/'0' a booleano real o null
+     */
+    private function parseBool($value): ?bool {
+        if ($value === null) return null;
+        if (is_bool($value)) return $value;
+        if (is_string($value)) {
+            $v = strtolower($value);
+            if ($v === 'true' || $v === '1') return true;
+            if ($v === 'false' || $v === '0') return false;
+        }
+        return (bool)$value;
     }
 }
