@@ -35,7 +35,6 @@ class AdminPermissionController extends AbstractController
 {
     private ListPermissionsUseCase $listPermissionsUseCase;
     private CreatePermissionUseCase $createPermissionUseCase;
-    private GetPermissionUseCase $getPermissionUseCase;
     private UpdatePermissionUseCase $updatePermissionUseCase;
     private DeletePermissionUseCase $deletePermissionUseCase;
     private ListPermissionsValidator $listPermissionsValidator;
@@ -296,82 +295,6 @@ class AdminPermissionController extends AbstractController
 
             $response = $this->createPermissionUseCase->execute($requestDTO);
             return $this->created($response);
-
-        } catch (\Exception $e) {
-            return $this->error($e->getMessage());
-        }
-    }
-
-    /**
-     * Obtiene los detalles de un permiso
-     *
-     * Endpoint: GET /api/v1/admin/permissions/{id}
-     * Permisos: admin.permissions.view
-     *
-     * Respuesta exitosa (200):
-     * {
-     *   "success": true,
-     *   "data": {
-     *     "id": 1,
-     *     "name": "admin.roles.create",
-     *     "active": true,
-     *     "web": true,
-     *     "description": "Permiso para crear roles"
-     *   }
-     * }
-     *
-     * @param ServerRequestInterface $request Petición HTTP
-     * @return ResponseInterface Respuesta con los detalles del permiso
-     */
-    #[OA\Get(
-        path: "/api/v1/permissions/{id}",
-        operationId: "getPermission",
-        description: "Obtiene los detalles de un permiso por su ID.",
-        summary: "Obtener permiso",
-        security: [["bearerAuth" => []]],
-        tags: ["Admin - Permisos"]
-    )]
-    #[OA\Parameter(
-        name: "id",
-        description: "ID del permiso",
-        in: "path",
-        required: true,
-        schema: new OA\Schema(type: "integer", example: 1)
-    )]
-    #[OA\Response(
-        response: 200,
-        description: "Detalles del permiso obtenidos exitosamente",
-        content: new OA\JsonContent(
-            properties: [
-                new OA\Property(property: "success", type: "boolean", example: true),
-                new OA\Property(property: "message", type: "string", example: "OK"),
-                new OA\Property(
-                    property: "data",
-                    properties: [
-                        new OA\Property(property: "id", type: "integer", example: 1),
-                        new OA\Property(property: "name", type: "string", example: "admin.roles.create"),
-                        new OA\Property(property: "active", type: "boolean", example: true),
-                        new OA\Property(property: "web", type: "boolean", example: true),
-                        new OA\Property(property: "description", type: "string", example: "Permiso para crear roles")
-                    ],
-                    type: "object"
-                )
-            ]
-        )
-    )]
-    #[OA\Response(
-        response: 401,
-        description: "No autorizado - Token inválido o expirado"
-    )]
-    #[OA\Response(
-        response: 403,
-        description: "Acceso denegado - Sin permisos de CONFIGURACIÓN"
-    )]
-    public function getPermission(ServerRequestInterface $request, int $id): ResponseInterface
-    {
-        try {
-            $response = $this->getPermissionUseCase->execute($id);
-            return $this->ok($response);
 
         } catch (\Exception $e) {
             return $this->error($e->getMessage());
