@@ -157,7 +157,7 @@ class DoctrineRoleRepository implements RoleRepositoryInterface
         int $limit = 20,
         ?string $search = null,
         ?bool $webOnly = null,
-        ?bool $activeOnly = true
+        ?bool $activeOnly = null
     ): array {
         $qb = $this->entityManager->createQueryBuilder()
             ->select('r')
@@ -191,7 +191,7 @@ class DoctrineRoleRepository implements RoleRepositoryInterface
     public function countAll(
         ?string $search = null,
         ?bool $webOnly = null,
-        ?bool $activeOnly = true
+        ?bool $activeOnly = null
     ): int {
         $qb = $this->entityManager->createQueryBuilder()
             ->select('COUNT(r.id)')
