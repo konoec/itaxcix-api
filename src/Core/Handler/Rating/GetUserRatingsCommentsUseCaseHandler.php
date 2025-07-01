@@ -31,10 +31,13 @@ class GetUserRatingsCommentsUseCaseHandler implements GetUserRatingsCommentsUseC
 
         // Mapear las calificaciones a DTOs de comentarios
         $comments = array_map(function ($rating) {
+            $raterPerson = $rating->getRater()->getPerson();
+            $fullName = trim(($raterPerson->getName() ?? '') . ' ' . ($raterPerson->getLastName() ?? ''));
+
             return new UserRatingCommentDto(
                 id: $rating->getId(),
                 travelId: $rating->getTravel()->getId(),
-                raterName: $rating->getRater()->getPerson()->getFullName(),
+                raterName: $fullName ?: 'Usuario',
                 score: $rating->getScore(),
                 comment: $rating->getComment(),
                 createdAt: $rating->getTravel()->getCreationDate()->format('c')
