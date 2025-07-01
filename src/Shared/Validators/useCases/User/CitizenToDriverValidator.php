@@ -14,8 +14,12 @@ class CitizenToDriverValidator
             $errors[] = 'El ID de usuario es requerido y debe ser un número válido.';
         }
 
-        if (!isset($data['vehicleId']) || !is_numeric($data['vehicleId']) || $data['vehicleId'] <= 0) {
-            $errors[] = 'El ID de vehículo es requerido y debe ser un número válido.';
+        if (!isset($data['plateValue']) || empty(trim($data['plateValue']))) {
+            $errors[] = 'La placa del vehículo es requerida.';
+        }
+
+        if (isset($data['plateValue']) && strlen(trim($data['plateValue'])) > 20) {
+            $errors[] = 'La placa del vehículo no puede exceder los 20 caracteres.';
         }
 
         return $errors;
@@ -25,7 +29,7 @@ class CitizenToDriverValidator
     {
         return new CitizenToDriverRequestDTO(
             userId: (int) $data['userId'],
-            vehicleId: (int) $data['vehicleId']
+            plateValue: trim($data['plateValue'])
         );
     }
 }
