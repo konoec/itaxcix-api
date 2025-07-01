@@ -73,7 +73,7 @@ class DriverToCitizenUseCaseHandler implements DriverToCitizenUseCase
         }
 
         // Verificar si ya tiene el rol de ciudadano
-        $existingCitizenRole = $this->userRoleRepository->findByUserAndRole($dto->getUserId(), $citizenRole->getId());
+        $existingCitizenRole = $this->userRoleRepository->findByUserAndRole($user, $citizenRole);
         if (!$existingCitizenRole) {
             $userRole = new UserRoleModel(
                 id: null,
