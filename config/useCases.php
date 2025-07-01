@@ -159,6 +159,7 @@ use itaxcix\Core\UseCases\Admin\User\GetUserWithRolesUseCase;
 use itaxcix\Core\UseCases\Admin\User\ListUsersUseCase;
 use itaxcix\Core\UseCases\Admin\User\ResetUserPasswordUseCase;
 use itaxcix\Core\UseCases\Admin\User\UpdateUserRolesUseCase;
+use itaxcix\Core\UseCases\Admin\User\CreateAdminUserUseCase;
 use itaxcix\Core\UseCases\Admin\UserRoleCreateUseCase;
 use itaxcix\Core\UseCases\Admin\UserRoleDeleteUseCase;
 use itaxcix\Core\UseCases\Admin\UserRoleListUseCase;
@@ -527,6 +528,7 @@ return array(
     ForceVerifyContactUseCase::class => autowire(),
     ResetUserPasswordUseCase::class => autowire(),
     UpdateUserRolesUseCase::class => autowire(),
+    CreateAdminUserUseCase::class => autowire(),
 
     // UserStatus Use Cases
     UserStatusListUseCase::class => autowire(UserStatusListUseCaseHandler::class),

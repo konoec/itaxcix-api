@@ -311,6 +311,7 @@ return function (RouteCollector $r) {
 
         // User Management Routes (CRUD completo + gestión avanzada)
         $r->get('/users', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [AdminUserController::class, 'adminListUsers']]); // Usar la versión avanzada
+        $r->post('/users', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [AdminUserController::class, 'createAdminUser']]); // Crear usuario administrador
         $r->get('/users/{userId}', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [AdminUserController::class, 'getUserDetails']]); // Detalles completos del usuario
         $r->get('/users/{userId}/roles', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [AdminUserController::class, 'getUserWithRoles']]); // Usuario con roles específico
         $r->put('/users/{userId}/roles', [JwtPermissionMiddleware::class, 'CONFIGURACIÓN', [AdminUserController::class, 'updateUserRoles']]); // Usar la versión admin

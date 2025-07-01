@@ -16456,6 +16456,148 @@
                         "bearerAuth": []
                     }
                 ]
+            },
+            "post": {
+                "tags": [
+                    "Admin - Usuarios"
+                ],
+                "summary": "Crear usuario administrador",
+                "description": "Crea un nuevo usuario administrador con perfil completo siguiendo el flujo: persona -> usuario -> contacto -> rol -> perfil admin.",
+                "operationId": "createAdminUser",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "firstName",
+                                    "lastName",
+                                    "document",
+                                    "documentTypeId",
+                                    "email",
+                                    "password",
+                                    "area",
+                                    "position"
+                                ],
+                                "properties": {
+                                    "firstName": {
+                                        "type": "string",
+                                        "example": "Administrador"
+                                    },
+                                    "lastName": {
+                                        "type": "string",
+                                        "example": "Principal"
+                                    },
+                                    "document": {
+                                        "type": "string",
+                                        "example": "12345678"
+                                    },
+                                    "documentTypeId": {
+                                        "description": "ID del tipo de documento (ej: 1 = DNI)",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "admin@itaxcix.com"
+                                    },
+                                    "password": {
+                                        "description": "Mínimo 8 caracteres, debe contener mayúscula, minúscula y número",
+                                        "type": "string",
+                                        "example": "Password@123"
+                                    },
+                                    "area": {
+                                        "type": "string",
+                                        "example": "Sistemas"
+                                    },
+                                    "position": {
+                                        "type": "string",
+                                        "example": "Administrador General"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Usuario administrador creado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Usuario administrador creado exitosamente"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "user": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "firstName": {
+                                                            "type": "string",
+                                                            "example": "Administrador"
+                                                        },
+                                                        "lastName": {
+                                                            "type": "string",
+                                                            "example": "Principal"
+                                                        },
+                                                        "document": {
+                                                            "type": "string",
+                                                            "example": "12345678"
+                                                        },
+                                                        "email": {
+                                                            "type": "string",
+                                                            "example": "admin@itaxcix.com"
+                                                        },
+                                                        "role": {
+                                                            "type": "string",
+                                                            "example": "ADMINISTRADOR"
+                                                        },
+                                                        "area": {
+                                                            "type": "string",
+                                                            "example": "Sistemas"
+                                                        },
+                                                        "position": {
+                                                            "type": "string",
+                                                            "example": "Administrador General"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación - Datos inválidos o usuario ya existe"
+                    },
+                    "401": {
+                        "description": "No autorizado - Token inválido o expirado"
+                    },
+                    "403": {
+                        "description": "Acceso denegado - Sin permisos de administración"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/users/{userId}": {

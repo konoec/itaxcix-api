@@ -10,12 +10,14 @@ use itaxcix\Core\UseCases\Admin\User\ChangeUserStatusUseCase;
 use itaxcix\Core\UseCases\Admin\User\ForceVerifyContactUseCase;
 use itaxcix\Core\UseCases\Admin\User\ResetUserPasswordUseCase;
 use itaxcix\Core\UseCases\Admin\User\UpdateUserRolesUseCase;
+use itaxcix\Core\UseCases\Admin\User\CreateAdminUserUseCase;
 use itaxcix\Infrastructure\Web\Controller\generic\AbstractController;
 use itaxcix\Shared\DTO\Admin\User\GetUserWithRolesRequestDTO;
 use itaxcix\Shared\DTO\Admin\User\AdminUserListRequestDTO;
 use itaxcix\Shared\DTO\Admin\User\ChangeUserStatusRequestDTO;
 use itaxcix\Shared\DTO\Admin\User\ForceVerifyContactRequestDTO;
 use itaxcix\Shared\DTO\Admin\User\ResetUserPasswordRequestDTO;
+use itaxcix\Shared\DTO\Admin\User\CreateAdminUserRequestDTO;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -32,6 +34,7 @@ class AdminUserController extends AbstractController
     private ForceVerifyContactUseCase $forceVerifyContactUseCase;
     private ResetUserPasswordUseCase $resetUserPasswordUseCase;
     private UpdateUserRolesUseCase $updateUserRolesUseCase;
+    private CreateAdminUserUseCase $createAdminUserUseCase;
 
     public function __construct(
         GetUserWithRolesUseCase $getUserWithRolesUseCase,
@@ -40,7 +43,8 @@ class AdminUserController extends AbstractController
         ChangeUserStatusUseCase $changeUserStatusUseCase,
         ForceVerifyContactUseCase $forceVerifyContactUseCase,
         ResetUserPasswordUseCase $resetUserPasswordUseCase,
-        UpdateUserRolesUseCase $updateUserRolesUseCase
+        UpdateUserRolesUseCase $updateUserRolesUseCase,
+        CreateAdminUserUseCase $createAdminUserUseCase
     ) {
         $this->getUserWithRolesUseCase = $getUserWithRolesUseCase;
         $this->adminUserListUseCase = $adminUserListUseCase;
@@ -49,6 +53,7 @@ class AdminUserController extends AbstractController
         $this->forceVerifyContactUseCase = $forceVerifyContactUseCase;
         $this->resetUserPasswordUseCase = $resetUserPasswordUseCase;
         $this->updateUserRolesUseCase = $updateUserRolesUseCase;
+        $this->createAdminUserUseCase = $createAdminUserUseCase;
     }
 
     #[OA\Get(
@@ -118,28 +123,24 @@ class AdminUserController extends AbstractController
                 new OA\Property(
                     property: "data",
                     properties: [
-                        new OA\Property(
-                            property: "users",
-                            type: "array",
-                            items: new OA\Items(
-                                properties: [
-                                    new OA\Property(property: "id", type: "integer", example: 1),
-                                    new OA\Property(
-                                        property: "person",
-                                        properties: [
-                                            new OA\Property(property: "name", type: "string", example: "Juan"),
-                                            new OA\Property(property: "lastName", type: "string", example: "Pérez"),
-                                            new OA\Property(property: "document", type: "string", example: "12345678")
-                                        ]
-                                    ),
-                                    new OA\Property(
-                                        property: "roles",
-                                        type: "array",
-                                        items: new OA\Items(type: "object")
-                                    )
-                                ]
-                            )
-                        ),
+                        new OA\Property(property: "users", type: "array", items: new OA\Items(
+                            properties: [
+                                new OA\Property(property: "id", type: "integer", example: 1),
+                                new OA\Property(
+                                    property: "person",
+                                    properties: [
+                                        new OA\Property(property: "name", type: "string", example: "Juan"),
+                                        new OA\Property(property: "lastName", type: "string", example: "Pérez"),
+                                        new OA\Property(property: "document", type: "string", example: "12345678")
+                                    ]
+                                ),
+                                new OA\Property(
+                                    property: "roles",
+                                    type: "array",
+                                    items: new OA\Items(type: "object")
+                                )
+                            ]
+                        )),
                         new OA\Property(property: "total", type: "integer", example: 150),
                         new OA\Property(property: "page", type: "integer", example: 1),
                         new OA\Property(property: "limit", type: "integer", example: 20),
@@ -499,6 +500,94 @@ class AdminUserController extends AbstractController
 
             $response = $this->resetUserPasswordUseCase->execute($requestDTO);
             return $this->ok($response);
+
+        } catch (Exception $e) {
+            return $this->error($e->getMessage());
+        }
+    }
+
+    #[OA\Post(
+        path: "/api/v1/users",
+        operationId: "createAdminUser",
+        description: "Crea un nuevo usuario administrador con perfil completo siguiendo el flujo: persona -> usuario -> contacto -> rol -> perfil admin.",
+        summary: "Crear usuario administrador",
+        security: [["bearerAuth" => []]],
+        tags: ["Admin - Usuarios"]
+    )]
+    #[OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            required: ["firstName", "lastName", "document", "documentTypeId", "email", "password", "area", "position"],
+            properties: [
+                new OA\Property(property: "firstName", type: "string", example: "Administrador"),
+                new OA\Property(property: "lastName", type: "string", example: "Principal"),
+                new OA\Property(property: "document", type: "string", example: "12345678"),
+                new OA\Property(property: "documentTypeId", type: "integer", example: 1, description: "ID del tipo de documento (ej: 1 = DNI)"),
+                new OA\Property(property: "email", type: "string", example: "admin@itaxcix.com"),
+                new OA\Property(property: "password", type: "string", example: "Password@123", description: "Mínimo 8 caracteres, debe contener mayúscula, minúscula y número"),
+                new OA\Property(property: "area", type: "string", example: "Sistemas"),
+                new OA\Property(property: "position", type: "string", example: "Administrador General")
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 201,
+        description: "Usuario administrador creado exitosamente",
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: "success", type: "boolean", example: true),
+                new OA\Property(property: "message", type: "string", example: "Usuario administrador creado exitosamente"),
+                new OA\Property(
+                    property: "data",
+                    properties: [
+                        new OA\Property(
+                            property: "user",
+                            properties: [
+                                new OA\Property(property: "id", type: "integer", example: 1),
+                                new OA\Property(property: "firstName", type: "string", example: "Administrador"),
+                                new OA\Property(property: "lastName", type: "string", example: "Principal"),
+                                new OA\Property(property: "document", type: "string", example: "12345678"),
+                                new OA\Property(property: "email", type: "string", example: "admin@itaxcix.com"),
+                                new OA\Property(property: "role", type: "string", example: "ADMINISTRADOR"),
+                                new OA\Property(property: "area", type: "string", example: "Sistemas"),
+                                new OA\Property(property: "position", type: "string", example: "Administrador General")
+                            ]
+                        )
+                    ]
+                )
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 400,
+        description: "Error de validación - Datos inválidos o usuario ya existe"
+    )]
+    #[OA\Response(
+        response: 401,
+        description: "No autorizado - Token inválido o expirado"
+    )]
+    #[OA\Response(
+        response: 403,
+        description: "Acceso denegado - Sin permisos de administración"
+    )]
+    public function createAdminUser(ServerRequestInterface $request): ResponseInterface
+    {
+        try {
+            $data = $this->getJsonBody($request);
+
+            $requestDTO = new CreateAdminUserRequestDTO(
+                firstName: $data['firstName'],
+                lastName: $data['lastName'],
+                document: $data['document'],
+                documentTypeId: (int)$data['documentTypeId'],
+                email: $data['email'],
+                password: $data['password'],
+                area: $data['area'],
+                position: $data['position']
+            );
+
+            $response = $this->createAdminUserUseCase->execute($requestDTO);
+            return $this->created($response);
 
         } catch (Exception $e) {
             return $this->error($e->getMessage());
