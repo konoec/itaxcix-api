@@ -321,5 +321,18 @@ class DoctrineUserRoleRepository implements UserRoleRepositoryInterface
             return false;
         }
     }
-}
 
+    public function findAllUserRoleByUserId(int $userId): array
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('ur')
+            ->from(UserRoleEntity::class, 'ur')
+            ->where('ur.user = :userId')
+            ->setParameter('userId', $userId)
+            ->orderBy('ur.id', 'ASC')
+            ->getQuery();
+
+        $entities = $query->getResult();
+        return array_map([$this, 'toDomain'], $entities);
+    }
+}

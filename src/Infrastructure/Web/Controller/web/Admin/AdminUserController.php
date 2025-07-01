@@ -2,6 +2,7 @@
 
 namespace itaxcix\Infrastructure\Web\Controller\web\Admin;
 
+use Exception;
 use itaxcix\Core\UseCases\Admin\User\GetUserWithRolesUseCase;
 use itaxcix\Core\UseCases\Admin\User\AdminUserListUseCase;
 use itaxcix\Core\UseCases\Admin\User\GetUserDetailUseCase;
@@ -176,7 +177,7 @@ class AdminUserController extends AbstractController
             $response = $this->adminUserListUseCase->execute($requestDTO);
             return $this->ok($response);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->error($e->getMessage());
         }
     }
@@ -231,7 +232,7 @@ class AdminUserController extends AbstractController
             $response = $this->getUserDetailUseCase->execute($userId);
             return $this->ok($response);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->error($e->getMessage());
         }
     }
@@ -306,44 +307,40 @@ class AdminUserController extends AbstractController
             $response = $this->getUserWithRolesUseCase->execute($requestDTO);
             return $this->ok($response);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->error($e->getMessage());
         }
     }
 
     #[OA\Put(
         path: "/api/v1/users/{userId}/roles",
-        operationId: "updateUserRoles",
-        description: "Actualiza los roles asignados a un usuario de forma masiva.",
+        description: "Permite actualizar los roles asignados a un usuario. No requiere motivo de administrador.",
         summary: "Actualizar roles de usuario",
-        security: [["bearerAuth" => []]],
-        tags: ["Admin - Usuarios"]
-    )]
-    #[OA\Parameter(
-        name: "userId",
-        description: "ID del usuario",
-        in: "path",
-        required: true,
-        schema: new OA\Schema(type: "integer", example: 1)
-    )]
-    #[OA\RequestBody(
-        required: true,
-        content: new OA\JsonContent(
-            required: ["roleIds"],
-            properties: [
-                new OA\Property(
-                    property: "roleIds",
-                    type: "array",
-                    items: new OA\Items(type: "integer"),
-                    example: [1, 3, 5]
-                ),
-                new OA\Property(property: "adminReason", type: "string", example: "Promoción a supervisor")
-            ]
-        )
-    )]
-    #[OA\Response(
-        response: 200,
-        description: "Roles actualizados exitosamente"
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ["roleIds"],
+                properties: [
+                    new OA\Property(property: "roleIds", description: "IDs de los roles a asignar", type: "array", items: new OA\Items(type: "integer"))
+                ]
+            )
+        ),
+        tags: ["Admin - Usuarios"],
+        parameters: [
+            new OA\Parameter(
+                name: "userId",
+                description: "ID del usuario",
+                in: "path",
+                required: true,
+                schema: new OA\Schema(type: "integer")
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Roles actualizados exitosamente"
+            )
+        ]
     )]
     public function updateUserRoles(ServerRequestInterface $request): ResponseInterface
     {
@@ -353,13 +350,12 @@ class AdminUserController extends AbstractController
 
             $response = $this->updateUserRolesUseCase->execute(
                 userId: $userId,
-                roleIds: $data['roleIds'],
-                adminReason: $data['adminReason'] ?? null
+                roleIds: $data['roleIds']
             );
 
             return $this->ok($response);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->error($e->getMessage());
         }
     }
@@ -408,7 +404,7 @@ class AdminUserController extends AbstractController
             $response = $this->changeUserStatusUseCase->execute($requestDTO);
             return $this->ok($response);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->error($e->getMessage());
         }
     }
@@ -457,7 +453,7 @@ class AdminUserController extends AbstractController
             $response = $this->forceVerifyContactUseCase->execute($requestDTO);
             return $this->ok($response);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->error($e->getMessage());
         }
     }
@@ -508,7 +504,7 @@ class AdminUserController extends AbstractController
             $response = $this->resetUserPasswordUseCase->execute($requestDTO);
             return $this->ok($response);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->error($e->getMessage());
         }
     }

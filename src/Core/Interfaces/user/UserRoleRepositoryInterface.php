@@ -8,6 +8,7 @@ use itaxcix\Core\Domain\user\UserRoleModel;
 
 interface UserRoleRepositoryInterface
 {
+    public function findAllUserRoleByUserId(int $userId): array;
     public function findRolesByUserId(int $userId, bool $web): ?array;
     public function saveUserRole(UserRoleModel $userRole): UserRoleModel;
     public function findUserRoleById(int $id): ?UserRoleModel;

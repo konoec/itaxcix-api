@@ -29,7 +29,7 @@ class UpdateUserRolesUseCase
         $this->roleRepository = $roleRepository;
     }
 
-    public function execute(int $userId, array $roleIds, ?string $adminReason = null): array
+    public function execute(int $userId, array $roleIds): array
     {
         // Validar que el usuario existe
         $user = $this->userRepository->findUserById($userId);
@@ -37,7 +37,7 @@ class UpdateUserRolesUseCase
             throw new \InvalidArgumentException("Usuario con ID {$userId} no encontrado");
         }
 
-        // Validar que todos los roles existen
+        // Validar que todos los roles existen y que todos son web=true
         $validRoles = [];
         foreach ($roleIds as $roleId) {
             $role = $this->roleRepository->findRoleById($roleId);
@@ -47,21 +47,24 @@ class UpdateUserRolesUseCase
             if (!$role->isActive()) {
                 throw new \InvalidArgumentException("Rol {$role->getName()} no está activo");
             }
+            if (!$role->isWeb()) {
+                throw new \InvalidArgumentException("No se puede asignar el rol '{$role->getName()}' porque no es un rol web");
+            }
             $validRoles[] = $role;
         }
 
         // Obtener roles actuales del usuario
         $currentUserRoles = $this->userRoleRepository->findAllUserRoleByUserId($userId);
 
-        // Desactivar roles actuales
+        // Desactivar solo los roles web actuales
         foreach ($currentUserRoles as $userRole) {
-            if ($userRole->isActive()) {
+            if ($userRole->isActive() && $userRole->getRole()->isWeb()) {
                 $userRole->setActive(false);
                 $this->userRoleRepository->saveUserRole($userRole);
             }
         }
 
-        // Asignar nuevos roles
+        // Asignar nuevos roles web
         $assignedRoles = [];
         foreach ($validRoles as $role) {
             $userRole = new UserRoleModel(
@@ -85,8 +88,7 @@ class UpdateUserRolesUseCase
             'message' => 'Roles de usuario actualizados exitosamente',
             'user' => [
                 'id' => $userId,
-                'assignedRoles' => $assignedRoles,
-                'adminReason' => $adminReason
+                'assignedRoles' => $assignedRoles
             ]
         ];
     }
