@@ -104,8 +104,8 @@ return function (RouteCollector $r) {
         $r->get('/users/{userId}/ratings/comments', [JwtMiddleware::class, [RatingController::class, 'getUserRatingsComments']]);
         $r->delete('/users/{userId}/vehicle/association', [JwtPermissionMiddleware::class, 'PERFIL CONDUCTOR', [VehicleAssociationController::class, 'disassociateVehicle']]);
         $r->post('/users/{userId}/vehicle/association', [JwtPermissionMiddleware::class, 'PERFIL CONDUCTOR', [VehicleAssociationController::class, 'associateVehicle']]);
-        $r->post('/users/{userId}/role-transition/citizen', [JwtPermissionMiddleware::class, 'PERFIL CONDUCTOR', [UserRoleTransitionController::class, 'transitionToCitizen']]);
-        $r->post('/users/{userId}/role-transition/driver', [JwtPermissionMiddleware::class, 'PERFIL CIUDADANO', [UserRoleTransitionController::class, 'transitionToDriver']]);
+        $r->post('/users/request-citizen-role', [JwtPermissionMiddleware::class, 'PERFIL CONDUCTOR', [UserRoleTransitionController::class, 'transitionToCitizen']]);
+        $r->post('/users/request-driver-role', [JwtPermissionMiddleware::class, 'PERFIL CIUDADANO', [UserRoleTransitionController::class, 'transitionToDriver']]);
 
         // Profile Routes
         $r->get('/profile/admin/{userId}', [JwtMiddleware::class, [ProfileController::class, 'getAdminProfile']]);

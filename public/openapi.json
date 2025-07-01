@@ -9398,23 +9398,27 @@
                     "User Role Transitions"
                 ],
                 "summary": "Solicitar rol de conductor",
-                "description": "Permite a un ciudadano solicitar convertirse en conductor asociando un vehículo. La solicitud quedará pendiente de aprobación del administrador.",
+                "description": "Permite a un ciudadano solicitar convertirse en conductor proporcionando la placa de su vehículo. El sistema validará automáticamente el vehículo con la API municipal y lo registrará si no existe. La solicitud quedará pendiente de aprobación del administrador.",
                 "operationId": "requestDriverRole",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
+                                "required": [
+                                    "userId",
+                                    "plateValue"
+                                ],
                                 "properties": {
                                     "userId": {
                                         "description": "ID del usuario ciudadano",
                                         "type": "integer",
                                         "example": 123
                                     },
-                                    "vehicleId": {
-                                        "description": "ID del vehículo a asociar",
-                                        "type": "integer",
-                                        "example": 456
+                                    "plateValue": {
+                                        "description": "Placa del vehículo a validar y asociar",
+                                        "type": "string",
+                                        "example": "ABC-123"
                                     }
                                 },
                                 "type": "object"
@@ -9472,7 +9476,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "El vehículo ya está asignado a otro usuario."
+                                            "example": "La placa ingresada no existe en el sistema municipal."
                                         },
                                         "errors": {
                                             "type": "array",
@@ -16766,10 +16770,6 @@
                                     "contactId": {
                                         "type": "integer",
                                         "example": 5
-                                    },
-                                    "adminReason": {
-                                        "type": "string",
-                                        "example": "Usuario reportó problema con SMS de verificación"
                                     }
                                 },
                                 "type": "object"
