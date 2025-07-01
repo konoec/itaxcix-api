@@ -57,8 +57,7 @@ class ChangeUserStatusUseCase
             'user' => [
                 'id' => $updatedUser->getId(),
                 'previousStatus' => $currentStatus->getName(),
-                'newStatus' => $newStatus->getName(),
-                'reason' => $request->reason
+                'newStatus' => $newStatus->getName()
             ]
         ];
     }

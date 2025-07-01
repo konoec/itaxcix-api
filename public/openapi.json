@@ -16714,10 +16714,6 @@
                                     "statusId": {
                                         "type": "integer",
                                         "example": 2
-                                    },
-                                    "reason": {
-                                        "type": "string",
-                                        "example": "Usuario suspendido por violación de términos"
                                     }
                                 },
                                 "type": "object"

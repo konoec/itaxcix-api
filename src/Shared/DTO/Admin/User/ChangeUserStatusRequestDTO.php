@@ -2,19 +2,16 @@
 
 namespace itaxcix\Shared\DTO\Admin\User;
 
-class ChangeUserStatusRequestDTO
+readonly class ChangeUserStatusRequestDTO
 {
-    public readonly int $userId;
-    public readonly int $statusId;
-    public readonly ?string $reason;
+    public int $userId;
+    public int $statusId;
 
     public function __construct(
         int $userId,
-        int $statusId,
-        ?string $reason = null
+        int $statusId
     ) {
         $this->userId = $userId;
         $this->statusId = $statusId;
-        $this->reason = $reason;
     }
 }

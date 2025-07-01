@@ -7,6 +7,7 @@ use itaxcix\Shared\DTO\useCases\UserStatus\UserStatusPaginationRequestDTO;
 
 interface UserStatusRepositoryInterface
 {
+    public function findUserStatusById(int $id): ?UserStatusModel;
     public function findUserStatusByName(string $name): ?UserStatusModel;
     public function findAll(UserStatusPaginationRequestDTO $request): array;
     public function findById(int $id): ?UserStatusModel;

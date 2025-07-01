@@ -380,8 +380,7 @@ class AdminUserController extends AbstractController
         content: new OA\JsonContent(
             required: ["statusId"],
             properties: [
-                new OA\Property(property: "statusId", type: "integer", example: 2),
-                new OA\Property(property: "reason", type: "string", example: "Usuario suspendido por violación de términos")
+                new OA\Property(property: "statusId", type: "integer", example: 2)
             ]
         )
     )]
@@ -397,8 +396,7 @@ class AdminUserController extends AbstractController
 
             $requestDTO = new ChangeUserStatusRequestDTO(
                 userId: $userId,
-                statusId: (int)$data['statusId'],
-                reason: $data['reason'] ?? null
+                statusId: (int)$data['statusId']
             );
 
             $response = $this->changeUserStatusUseCase->execute($requestDTO);

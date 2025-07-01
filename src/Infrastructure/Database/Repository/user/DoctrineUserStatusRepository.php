@@ -42,6 +42,15 @@ class DoctrineUserStatusRepository implements UserStatusRepositoryInterface
         return $entity ? $this->toDomain($entity) : null;
     }
 
+    public function findUserStatusById(int $id): ?UserStatusModel
+    {
+        $entity = $this->entityManager->getRepository(UserStatusEntity::class)->find($id);
+        if (!$entity || !$entity->isActive()) {
+            return null;
+        }
+        return $this->toDomain($entity);
+    }
+
     public function findAll(UserStatusPaginationRequestDTO $request): array
     {
         $qb = $this->createQueryBuilder($request);
