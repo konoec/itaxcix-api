@@ -70,9 +70,19 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
      */
     public function execute(RegistrationRequestDTO $dto): ?array
     {
+        // Validar que existan los roles requeridos y estén activos
+        $roleConductor = $this->roleRepository->findRoleByName("CONDUCTOR");
+        $roleCiudadano = $this->roleRepository->findRoleByName("CIUDADANO");
+        if (!$roleConductor || !$roleConductor->isActive()) {
+            throw new InvalidArgumentException('El rol CONDUCTOR no existe o no está activo.');
+        }
+        if (!$roleCiudadano || !$roleCiudadano->isActive()) {
+            throw new InvalidArgumentException('El rol CIUDADANO no existe o no está activo.');
+        }
+
         $contactType = $this->contactTypeRepository->findContactTypeById($dto->contactTypeId);
         $person = $this->personRepository->findPersonById($dto->personId);
-        $user = $this->userRepository->findAllUserByPersonId($dto->personId);
+        $existingUser = $this->userRepository->findAllUserByPersonId($dto->personId);
         $userContact = $this->userContactRepository->findAllUserContactByValue($dto->contactValue);
         $userStatus = $this->userStatusRepository->findUserStatusByName('ACTIVO');
         $userCodeType = $this->userCodeTypeRepository->findUserCodeTypeByName('VERIFICACIÓN');
@@ -93,10 +103,6 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
             throw new InvalidArgumentException('No existe una persona activa con ese ID.');
         }
 
-        if ($user) {
-            throw new InvalidArgumentException('Ya existe un usuario registrado con esa persona.');
-        }
-
         if ($person->getValidationDate() === null) {
             throw new InvalidArgumentException('La persona no ha sido validada biométricamente.');
         }
@@ -115,11 +121,55 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
             throw new InvalidArgumentException('El estado de usuario activo no existe.');
         }
 
+        // Determinar el rol objetivo basado en si es conductor o ciudadano
+        $targetRole = $dto->vehicleId !== null ? $roleConductor : $roleCiudadano;
+        $roleType = $dto->vehicleId !== null ? "CONDUCTOR" : "CIUDADANO";
+
+        // Verificar si el usuario ya existe
+        if ($existingUser) {
+            // El usuario ya existe, verificar si ya tiene el rol que intenta registrar
+            $existingRoles = $this->userRoleRepository->findActiveRolesByUserId($existingUser->getId());
+
+            foreach ($existingRoles as $userRole) {
+                if ($userRole->getRole()->getName() === $roleType) {
+                    throw new InvalidArgumentException("El usuario ya tiene el rol de $roleType asignado.");
+                }
+            }
+
+            // Verificar si ya tiene un perfil del tipo que intenta crear
+            if ($dto->vehicleId !== null) {
+                // Verificando si ya es conductor
+                $existingDriverProfile = $this->driverProfileRepository->findDriverProfileByUserId($existingUser->getId());
+                if ($existingDriverProfile) {
+                    throw new InvalidArgumentException('El usuario ya tiene un perfil de conductor.');
+                }
+            } else {
+                // Verificando si ya es ciudadano
+                $existingCitizenProfile = $this->citizenProfileRepository->findCitizenProfileByUserId($existingUser->getId());
+                if ($existingCitizenProfile) {
+                    throw new InvalidArgumentException('El usuario ya tiene un perfil de ciudadano.');
+                }
+            }
+
+            // El usuario existe pero no tiene este rol, proceder a agregarlo
+            $user = $existingUser;
+        } else {
+            // El usuario no existe, crear uno nuevo (flujo original)
+            $user = new UserModel(
+                id: null,
+                password: password_hash($dto->password, PASSWORD_DEFAULT),
+                person: $person,
+                status: $userStatus
+            );
+
+            $user = $this->userRepository->saveUser($user);
+        }
+
+        // Validaciones específicas para conductor
         $driverStatus = null;
         $vehicle = null;
 
         if ($dto->vehicleId !== null) {
-
             $vehicle = $this->vehicleRepository->findVehicleById($dto->vehicleId);
             $vehicleUser = $this->vehicleUserRepository->findVehicleUserByVehicleId($dto->vehicleId);
             $driverStatus = $this->driverStatusRepository->findDriverStatusByName('PENDIENTE');
@@ -137,18 +187,10 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
             }
         }
 
-        $newUser = new UserModel(
-            id: null,
-            password: password_hash($dto->password, PASSWORD_DEFAULT),
-            person: $person,
-            status: $userStatus
-        );
-
-        $newUser = $this->userRepository->saveUser($newUser);
-
+        // Crear o actualizar contacto del usuario
         $newUserContact = new UserContactModel(
             id: null,
-            user: $newUser,
+            user: $user,
             type: $contactType,
             value: $dto->contactValue,
             confirmed: false,
@@ -156,58 +198,52 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
         );
 
         $newUserContact = $this->userContactRepository->saveUserContact($newUserContact);
-        $newVehicleUser = null;
-        $role = null;
 
+        // Crear el perfil correspondiente
         if ($dto->vehicleId !== null) {
+            // Crear perfil de conductor
             $driverProfile = new DriverProfileModel(
                 id: null,
-                user: $newUser,
+                user: $user,
                 status: $driverStatus,
                 averageRating: 0.00,
-                ratingCount:0
+                ratingCount: 0
             );
 
-            $driverProfile = $this->driverProfileRepository->saveDriverProfile($driverProfile);
+            $this->driverProfileRepository->saveDriverProfile($driverProfile);
 
+            // Asociar vehículo al usuario
             $newVehicleUser = new VehicleUserModel(
                 id: null,
-                user: $newUser,
+                user: $user,
                 vehicle: $vehicle,
                 active: true
             );
 
             $this->vehicleUserRepository->saveVehicleUser($newVehicleUser);
-
-            // Asignar roles al usuario basado en el vehículo
-            $role = $this->roleRepository->findRoleByName("CONDUCTOR");
-        } else{
+        } else {
+            // Crear perfil de ciudadano
             $citizenProfile = new CitizenProfileModel(
                 id: null,
-                user: $newUser,
+                user: $user,
                 averageRating: 0.00,
                 ratingCount: 0
             );
 
-            $citizenProfile = $this->citizenProfileRepository->saveCitizenProfile($citizenProfile);
-
-            // Asignar roles al usuario basado en el ciudadano
-            $role = $this->roleRepository->findRoleByName("CIUDADANO");
+            $this->citizenProfileRepository->saveCitizenProfile($citizenProfile);
         }
 
-        if (!$role) {
-            throw new InvalidArgumentException('No se encontraron roles para asignar al usuario.');
-        }
-
+        // Asignar el nuevo rol al usuario
         $userRole = new UserRoleModel(
             id: null,
-            role: $role,
-            user: $newUser,
+            role: $targetRole,
+            user: $user,
             active: true
         );
 
-        $userRole = $this->userRoleRepository->saveUserRole($userRole);
+        $this->userRoleRepository->saveUserRole($userRole);
 
+        // Crear código de verificación
         $newUserCode = new UserCodeModel(
             id: null,
             type: $userCodeType,
@@ -220,11 +256,11 @@ class UserRegistrationUseCaseHandler implements UserRegistrationUseCase {
 
         $newUserCode = $this->userCodeRepository->saveUserCode($newUserCode);
 
-        // Enviar correo de confirmación, aquí va el servicio
+        // Enviar notificación
         $service = $this->notificationServiceFactory->getServiceForContactType($dto->contactTypeId);
         $service->send($newUserCode->getContact()->getValue(), 'Código de verificación', $newUserCode->getCode(), 'verification');
 
-        return ['userId' => $newUser->getId()];
+        return ['userId' => $user->getId()];
     }
 
     private function generateUserCode(int $length = 6): string

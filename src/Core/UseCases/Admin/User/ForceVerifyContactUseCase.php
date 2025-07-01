@@ -2,6 +2,7 @@
 
 namespace itaxcix\Core\UseCases\Admin\User;
 
+use InvalidArgumentException;
 use itaxcix\Core\Interfaces\user\UserRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserContactRepositoryInterface;
 use itaxcix\Shared\DTO\Admin\User\ForceVerifyContactRequestDTO;
@@ -31,22 +32,22 @@ class ForceVerifyContactUseCase
         // Validar que el usuario existe
         $user = $this->userRepository->findUserById($request->userId);
         if (!$user) {
-            throw new \InvalidArgumentException("Usuario con ID {$request->userId} no encontrado");
+            throw new InvalidArgumentException("Usuario con ID {$request->userId} no encontrado");
         }
 
         // Validar que el contacto existe y pertenece al usuario
         $contact = $this->userContactRepository->findUserContactById($request->contactId);
         if (!$contact) {
-            throw new \InvalidArgumentException("Contacto con ID {$request->contactId} no encontrado");
+            throw new InvalidArgumentException("Contacto con ID {$request->contactId} no encontrado");
         }
 
         if ($contact->getUser()->getId() !== $user->getId()) {
-            throw new \InvalidArgumentException("El contacto no pertenece al usuario especificado");
+            throw new InvalidArgumentException("El contacto no pertenece al usuario especificado");
         }
 
         // Verificar si ya está confirmado
         if ($contact->isConfirmed()) {
-            throw new \InvalidArgumentException("El contacto ya está verificado");
+            throw new InvalidArgumentException("El contacto ya está verificado");
         }
 
         // Verificar el contacto manualmente
@@ -62,8 +63,7 @@ class ForceVerifyContactUseCase
                 'id' => $updatedContact->getId(),
                 'type' => $updatedContact->getType()->getName(),
                 'value' => $updatedContact->getValue(),
-                'confirmed' => $updatedContact->isConfirmed(),
-                'adminReason' => $request->adminReason
+                'confirmed' => $updatedContact->isConfirmed()
             ]
         ];
     }

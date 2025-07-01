@@ -2,6 +2,7 @@
 
 namespace itaxcix\Infrastructure\Web\Controller\api\User;
 
+use Exception;
 use InvalidArgumentException;
 use itaxcix\Core\UseCases\User\CitizenToDriverUseCase;
 use itaxcix\Core\UseCases\User\DriverToCitizenUseCase;
@@ -114,7 +115,7 @@ class UserRoleTransitionController extends AbstractController
 
         } catch (InvalidArgumentException $e) {
             return $this->error($e->getMessage(), 400);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->error('Error interno del servidor', 500);
         }
     }
@@ -129,7 +130,7 @@ class UserRoleTransitionController extends AbstractController
             required: true,
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: "userId", type: "integer", example: 123, description: "ID del usuario conductor")
+                    new OA\Property(property: "userId", description: "ID del usuario conductor", type: "integer", example: 123)
                 ],
                 type: "object"
             )
@@ -201,7 +202,7 @@ class UserRoleTransitionController extends AbstractController
 
         } catch (InvalidArgumentException $e) {
             return $this->error($e->getMessage(), 400);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->error('Error interno del servidor', 500);
         }
     }

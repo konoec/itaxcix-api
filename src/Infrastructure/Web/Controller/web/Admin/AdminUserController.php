@@ -427,8 +427,7 @@ class AdminUserController extends AbstractController
         content: new OA\JsonContent(
             required: ["contactId", "adminReason"],
             properties: [
-                new OA\Property(property: "contactId", type: "integer", example: 5),
-                new OA\Property(property: "adminReason", type: "string", example: "Usuario reportó problema con SMS de verificación")
+                new OA\Property(property: "contactId", type: "integer", example: 5)
             ]
         )
     )]
@@ -444,8 +443,7 @@ class AdminUserController extends AbstractController
 
             $requestDTO = new ForceVerifyContactRequestDTO(
                 userId: $userId,
-                contactId: (int)$data['contactId'],
-                adminReason: $data['adminReason']
+                contactId: (int)$data['contactId']
             );
 
             $response = $this->forceVerifyContactUseCase->execute($requestDTO);

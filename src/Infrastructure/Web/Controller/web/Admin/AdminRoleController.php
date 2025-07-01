@@ -161,8 +161,8 @@ class AdminRoleController extends AbstractController
                 page: (int)($queryParams['page'] ?? 1),
                 limit: (int)($queryParams['limit'] ?? 20),
                 search: $queryParams['search'] ?? null,
-                webOnly: isset($queryParams['webOnly']) ? (bool)$queryParams['webOnly'] : null,
-                activeOnly: isset($queryParams['activeOnly']) ? (bool)$queryParams['activeOnly'] : true
+                webOnly: isset($queryParams['webOnly']) ? $this->parseBool($queryParams['webOnly']) : null,
+                activeOnly: isset($queryParams['activeOnly']) ? $this->parseBool($queryParams['activeOnly']) : null
             );
 
             $response = $this->listRolesUseCase->execute($requestDTO);
@@ -633,5 +633,16 @@ class AdminRoleController extends AbstractController
         } catch (\Exception $e) {
             return $this->error($e->getMessage());
         }
+    }
+
+    private function parseBool($value): ?bool {
+        if ($value === null) return null;
+        if (is_bool($value)) return $value;
+        if (is_string($value)) {
+            $v = strtolower($value);
+            if ($v === 'true' || $v === '1') return true;
+            if ($v === 'false' || $v === '0') return false;
+        }
+        return (bool)$value;
     }
 }
