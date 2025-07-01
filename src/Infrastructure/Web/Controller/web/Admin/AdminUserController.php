@@ -170,8 +170,8 @@ class AdminUserController extends AbstractController
                 roleId: isset($queryParams['roleId']) ? (int)$queryParams['roleId'] : null,
                 userType: $queryParams['userType'] ?? null,
                 driverStatus: $queryParams['driverStatus'] ?? null,
-                hasVehicle: isset($queryParams['hasVehicle']) ? (bool)$queryParams['hasVehicle'] : null,
-                contactVerified: isset($queryParams['contactVerified']) ? (bool)$queryParams['contactVerified'] : null
+                hasVehicle: isset($queryParams['hasVehicle']) ? $this->parseBool($queryParams['hasVehicle']) : null,
+                contactVerified: isset($queryParams['contactVerified']) ? $this->parseBool($queryParams['contactVerified']) : null
             );
 
             $response = $this->adminUserListUseCase->execute($requestDTO);
@@ -503,5 +503,16 @@ class AdminUserController extends AbstractController
         } catch (Exception $e) {
             return $this->error($e->getMessage());
         }
+    }
+
+    private function parseBool($value): ?bool {
+        if ($value === null) return null;
+        if (is_bool($value)) return $value;
+        if (is_string($value)) {
+            $v = strtolower($value);
+            if ($v === 'true' || $v === '1') return true;
+            if ($v === 'false' || $v === '0') return false;
+        }
+        return (bool)$value;
     }
 }
