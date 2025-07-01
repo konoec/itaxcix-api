@@ -44,40 +44,48 @@ class LoginUseCaseHandler implements LoginUseCase
             throw new InvalidArgumentException('No existe un usuario activo con ese documento.');
         }
 
-        // Verificar perfiles de conductor y ciudadano
-        $driverProfile = $this->driverProfileRepository->findDriverProfileByUserId($user->getId());
-        $citizenProfile = $this->citizenProfileRepository->findCitizenProfileByUserId($user->getId());
-
-        // Solo considerar válido el perfil de conductor si está APROBADO
-        $hasValidDriverProfile = $driverProfile && $driverProfile->getStatus()->getName() === 'APROBADO';
-
-        // Si tiene perfil de conductor pero no está aprobado, actuar como si no lo tuviera
-        if ($driverProfile && !$hasValidDriverProfile) {
-            $driverProfile = null; // Ignorar el perfil de conductor no aprobado
-        }
-
-        // Verificar que tenga al menos un perfil válido
-        if (!$citizenProfile && !$hasValidDriverProfile) {
-            throw new InvalidArgumentException('El usuario no tiene perfiles válidos activos.');
-        }
-
-        // Determinar el rating promedio del perfil activo
-        $averageRating = null;
-        if ($hasValidDriverProfile) {
-            $averageRating = $driverProfile->getAverageRating();
-        } elseif ($citizenProfile) {
-            $averageRating = $citizenProfile->getAverageRating();
-        }
-
-        // Verificar contacto confirmado
-        $userContact = $this->userContactRepository->findUserContactByUserId($user->getId());
-        if (!$userContact || !$userContact->isConfirmed()) {
-            throw new InvalidArgumentException('El usuario no tiene un contacto confirmado.');
-        }
-
         // Verificar contraseña
         if (!password_verify($dto->password, $user->getPassword())) {
             throw new InvalidArgumentException('Credenciales incorrectas.');
+        }
+
+        // Inicializar variables de perfiles
+        $driverProfile = null;
+        $citizenProfile = null;
+        $hasValidDriverProfile = false;
+        $averageRating = null;
+
+        // Solo verificar perfiles y contacto para usuarios móviles
+        if (!$dto->web) {
+            // Verificar perfiles de conductor y ciudadano
+            $driverProfile = $this->driverProfileRepository->findDriverProfileByUserId($user->getId());
+            $citizenProfile = $this->citizenProfileRepository->findCitizenProfileByUserId($user->getId());
+
+            // Solo considerar válido el perfil de conductor si está APROBADO
+            $hasValidDriverProfile = $driverProfile && $driverProfile->getStatus()->getName() === 'APROBADO';
+
+            // Si tiene perfil de conductor pero no está aprobado, actuar como si no lo tuviera
+            if ($driverProfile && !$hasValidDriverProfile) {
+                $driverProfile = null; // Ignorar el perfil de conductor no aprobado
+            }
+
+            // Verificar que tenga al menos un perfil válido
+            if (!$citizenProfile && !$hasValidDriverProfile) {
+                throw new InvalidArgumentException('El usuario no tiene perfiles válidos activos.');
+            }
+
+            // Determinar el rating promedio del perfil activo
+            if ($hasValidDriverProfile) {
+                $averageRating = $driverProfile->getAverageRating();
+            } elseif ($citizenProfile) {
+                $averageRating = $citizenProfile->getAverageRating();
+            }
+
+            // Verificar contacto confirmado
+            $userContact = $this->userContactRepository->findUserContactByUserId($user->getId());
+            if (!$userContact || !$userContact->isConfirmed()) {
+                throw new InvalidArgumentException('El usuario no tiene un contacto confirmado.');
+            }
         }
 
         // Obtener roles del usuario
