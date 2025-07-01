@@ -35,15 +35,16 @@ class UserRoleTransitionController extends AbstractController
     #[OA\Post(
         path: "/users/request-driver-role",
         operationId: "requestDriverRole",
-        description: "Permite a un ciudadano solicitar convertirse en conductor asociando un vehículo. La solicitud quedará pendiente de aprobación del administrador.",
+        description: "Permite a un ciudadano solicitar convertirse en conductor proporcionando la placa de su vehículo. El sistema validará automáticamente el vehículo con la API municipal y lo registrará si no existe. La solicitud quedará pendiente de aprobación del administrador.",
         summary: "Solicitar rol de conductor",
         security: [["bearerAuth" => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
+                required: ["userId", "plateValue"],
                 properties: [
                     new OA\Property(property: "userId", type: "integer", example: 123, description: "ID del usuario ciudadano"),
-                    new OA\Property(property: "vehicleId", type: "integer", example: 456, description: "ID del vehículo a asociar")
+                    new OA\Property(property: "plateValue", type: "string", example: "ABC-123", description: "Placa del vehículo a validar y asociar")
                 ],
                 type: "object"
             )
@@ -72,7 +73,7 @@ class UserRoleTransitionController extends AbstractController
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: "success", type: "boolean", example: false),
-                        new OA\Property(property: "message", type: "string", example: "El vehículo ya está asignado a otro usuario."),
+                        new OA\Property(property: "message", type: "string", example: "La placa ingresada no existe en el sistema municipal."),
                         new OA\Property(property: "errors", type: "array", items: new OA\Items(type: "string"))
                     ],
                     type: "object"

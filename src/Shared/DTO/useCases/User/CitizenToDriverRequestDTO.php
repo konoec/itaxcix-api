@@ -5,12 +5,12 @@ namespace itaxcix\Shared\DTO\useCases\User;
 class CitizenToDriverRequestDTO
 {
     public int $userId;
-    public int $vehicleId;
+    public string $plateValue;
 
-    public function __construct(int $userId, int $vehicleId)
+    public function __construct(int $userId, string $plateValue)
     {
         $this->userId = $userId;
-        $this->vehicleId = $vehicleId;
+        $this->plateValue = $plateValue;
     }
 
     public function getUserId(): int
@@ -18,8 +18,8 @@ class CitizenToDriverRequestDTO
         return $this->userId;
     }
 
-    public function getVehicleId(): int
+    public function getPlateValue(): string
     {
-        return $this->vehicleId;
+        return $this->plateValue;
     }
 }

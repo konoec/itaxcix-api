@@ -44,25 +44,33 @@ class LoginUseCaseHandler implements LoginUseCase
             throw new InvalidArgumentException('No existe un usuario activo con ese documento.');
         }
 
+        // Verificar perfiles de conductor y ciudadano
         $driverProfile = $this->driverProfileRepository->findDriverProfileByUserId($user->getId());
         $citizenProfile = $this->citizenProfileRepository->findCitizenProfileByUserId($user->getId());
 
-        if ($driverProfile && $driverProfile->getStatus()->getName() !== 'APROBADO') {
-            throw new InvalidArgumentException('El conductor no está aprobado.');
+        // Solo considerar válido el perfil de conductor si está APROBADO
+        $hasValidDriverProfile = $driverProfile && $driverProfile->getStatus()->getName() === 'APROBADO';
+
+        // Si tiene perfil de conductor pero no está aprobado, actuar como si no lo tuviera
+        if ($driverProfile && !$hasValidDriverProfile) {
+            $driverProfile = null; // Ignorar el perfil de conductor no aprobado
         }
 
+        // Verificar que tenga al menos un perfil válido
+        if (!$citizenProfile && !$hasValidDriverProfile) {
+            throw new InvalidArgumentException('El usuario no tiene perfiles válidos activos.');
+        }
+
+        // Determinar el rating promedio del perfil activo
         $averageRating = null;
-
-        if ($driverProfile){
+        if ($hasValidDriverProfile) {
             $averageRating = $driverProfile->getAverageRating();
-        }
-
-        if ($citizenProfile){
+        } elseif ($citizenProfile) {
             $averageRating = $citizenProfile->getAverageRating();
         }
 
+        // Verificar contacto confirmado
         $userContact = $this->userContactRepository->findUserContactByUserId($user->getId());
-
         if (!$userContact || !$userContact->isConfirmed()) {
             throw new InvalidArgumentException('El usuario no tiene un contacto confirmado.');
         }
@@ -79,14 +87,42 @@ class LoginUseCaseHandler implements LoginUseCase
             throw new InvalidArgumentException('Error en datos. Contacte al administrador.');
         }
 
-        // Obtener todos los permisos de todos los roles
-        $permissionsData = [];
-        $permissionNames = []; // Para mantener compatibilidad en el token
+        // Filtrar roles basado en perfiles válidos (solo para móvil)
+        $validRoles = [];
+        if (!$dto->web) {
+            foreach ($roles as $userRole) {
+                $roleName = $userRole->getRole()->getName();
 
-        foreach ($roles as $role) {
+                // Solo incluir rol CONDUCTOR si tiene perfil aprobado
+                if ($roleName === 'CONDUCTOR' && !$hasValidDriverProfile) {
+                    continue; // Omitir este rol
+                }
+
+                // Solo incluir rol CIUDADANO si tiene perfil de ciudadano
+                if ($roleName === 'CIUDADANO' && !$citizenProfile) {
+                    continue; // Omitir este rol
+                }
+
+                // Para otros roles (como ADMINISTRADOR), incluir siempre
+                $validRoles[] = $userRole;
+            }
+        } else {
+            // Para web, usar todos los roles sin filtrar
+            $validRoles = $roles;
+        }
+
+        // Verificar que tenga roles válidos después del filtrado
+        if (empty($validRoles)) {
+            throw new InvalidArgumentException('El usuario no tiene roles válidos para esta plataforma.');
+        }
+
+        // Obtener todos los permisos de todos los roles válidos
+        $permissionsData = [];
+        $permissionNames = [];
+
+        foreach ($validRoles as $role) {
             $perms = $this->rolePermissionRepository->findPermissionsByRoleId($role->getRole()->getId(), $dto->web);
             foreach ($perms as $permission) {
-                // Evitar duplicados por ID
                 if (!isset($permissionsData[$permission->getId()])) {
                     $permissionsData[$permission->getId()] = [
                         'id' => $permission->getId(),
@@ -97,50 +133,42 @@ class LoginUseCaseHandler implements LoginUseCase
             }
         }
 
-        // Convertir a array indexado para la respuesta
         $permissions = array_values($permissionsData);
 
-        // Verificar si el usuario tiene permisos
         if (empty($permissions)) {
             throw new InvalidArgumentException('El usuario no tiene permisos asignados. Contacte al administrador.');
         }
 
-        // Determinar tipo de usuario basado en perfiles reales o plataforma web
+        // Determinar tipos de usuario basado en perfiles válidos
         $userTypes = [];
-        $hasApprovedDriverProfile = false;
 
         if ($dto->web) {
-            // Si es acceso web, no importa driver/citizen
             $userTypes[] = 'web';
             $primaryUserType = 'web';
         } else {
-            // Verificar perfil de ciudadano
+            // Solo agregar tipos para perfiles válidos
             if ($citizenProfile) {
                 $userTypes[] = 'citizen';
             }
 
-            // Verificar perfil de conductor (solo si está aprobado)
-            if ($driverProfile && $driverProfile->getStatus()->getName() === 'APROBADO') {
+            if ($hasValidDriverProfile) {
                 $userTypes[] = 'driver';
-                $hasApprovedDriverProfile = true;
             }
 
-            // Si no tiene ningún perfil válido, error
             if (empty($userTypes)) {
                 throw new InvalidArgumentException('El usuario no tiene perfiles válidos activos.');
             }
 
-            // Para compatibilidad, el userType principal es driver si está aprobado, sino citizen
-            $primaryUserType = $hasApprovedDriverProfile ? 'driver' : 'citizen';
+            // Tipo principal: driver si está aprobado, sino citizen
+            $primaryUserType = $hasValidDriverProfile ? 'driver' : 'citizen';
         }
 
-        // Construir roles con ID y nombre
+        // Construir roles para respuesta
         $rolesData = [];
-        $roleNames = []; // Para mantener compatibilidad en el token
+        $roleNames = [];
 
-        foreach ($roles as $userRole) {
+        foreach ($validRoles as $userRole) {
             $role = $userRole->getRole();
-            // Evitar duplicados por ID
             if (!isset($rolesData[$role->getId()])) {
                 $rolesData[$role->getId()] = [
                     'id' => $role->getId(),
@@ -150,15 +178,13 @@ class LoginUseCaseHandler implements LoginUseCase
             }
         }
 
-        // Convertir a array indexado para la respuesta
         $rolesForResponse = array_values($rolesData);
 
-        // Generar token con userId y userTypes para validación de seguridad
+        // Generar token
         $tokenPayload = [
             'userId' => $user->getId(),
-            'userType' => $primaryUserType, // ← Tipo principal para compatibilidad
-            'userTypes' => $userTypes, // ← Todos los tipos disponibles para WebSocket
-            // Datos legacy para el panel web (mantenemos solo nombres para compatibilidad)
+            'userType' => $primaryUserType,
+            'userTypes' => $userTypes,
             'user_id' => $user->getId(),
             'roles' => $roleNames,
             'permissions' => $permissionNames
