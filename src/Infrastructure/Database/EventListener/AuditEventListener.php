@@ -2,13 +2,19 @@
 
 namespace itaxcix\Infrastructure\Database\EventListener;
 
+use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Event\PostPersistEventArgs;
 use Doctrine\ORM\Event\PostRemoveEventArgs;
 use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
+use Doctrine\ORM\Events;
 use itaxcix\Core\Interfaces\audit\AuditLogRepositoryInterface;
 use itaxcix\Infrastructure\Database\Entity\audit\AuditEntity;
 
+#[AsDoctrineListener(event: Events::preUpdate, priority: 500)]
+#[AsDoctrineListener(event: Events::postPersist, priority: 500)]
+#[AsDoctrineListener(event: Events::postUpdate, priority: 500)]
+#[AsDoctrineListener(event: Events::postRemove, priority: 500)]
 class AuditEventListener
 {
     private array $originalData = [];
@@ -22,11 +28,11 @@ class AuditEventListener
         $entity = $args->getObject();
 
         if ($entity instanceof AuditEntity) {
-            return; // No auditar la tabla de auditoría
+            return;
         }
 
-        // Guardar datos originales antes del update
-        $this->originalData[spl_object_id($entity)] = $this->extractEntityData($entity, $args->getEntityManager());
+        // Cambiar getEntityManager() por getObjectManager()
+        $this->originalData[spl_object_id($entity)] = $this->extractEntityData($entity, $args->getObjectManager());
     }
 
     public function postPersist(PostPersistEventArgs $args): void
@@ -65,7 +71,6 @@ class AuditEventListener
             $this->extractEntityData($entity, $args->getObjectManager())
         );
 
-        // Limpiar datos temporales
         unset($this->originalData[$objectId]);
     }
 
@@ -86,6 +91,7 @@ class AuditEventListener
         );
     }
 
+    // Resto de métodos privados sin cambios...
     private function getTableName(object $entity): string
     {
         $reflection = new \ReflectionClass($entity);
@@ -96,14 +102,12 @@ class AuditEventListener
             return $tableAttribute->name;
         }
 
-        // Fallback: usar el nombre de la clase convertido
         $className = $reflection->getShortName();
         return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', str_replace('Entity', '', $className)));
     }
 
     private function getCurrentUser(): string
     {
-        // Intentar obtener el usuario desde diferentes fuentes
         if (isset($_SERVER['HTTP_X_USER_ID'])) {
             return $_SERVER['HTTP_X_USER_ID'];
         }
@@ -112,7 +116,6 @@ class AuditEventListener
             return $_SERVER['PHP_AUTH_USER'];
         }
 
-        // Verificar si hay un token JWT en los headers
         $headers = getallheaders();
         if (isset($headers['Authorization'])) {
             $token = str_replace('Bearer ', '', $headers['Authorization']);
@@ -128,7 +131,6 @@ class AuditEventListener
     private function extractUserFromToken(string $token): ?string
     {
         try {
-            // Decodificar JWT básico (sin verificar firma para auditoría)
             $parts = explode('.', $token);
             if (count($parts) === 3) {
                 $payload = json_decode(base64_decode($parts[1]), true);
@@ -151,7 +153,6 @@ class AuditEventListener
             $data[$fieldName] = $this->serializeValue($value);
         }
 
-        // También incluir asociaciones simples (ManyToOne, OneToOne)
         foreach ($metadata->getAssociationNames() as $assocName) {
             if ($metadata->isSingleValuedAssociation($assocName)) {
                 $value = $metadata->getFieldValue($entity, $assocName);
