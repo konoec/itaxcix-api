@@ -13,16 +13,16 @@ class PaginationInfo
 {
     #[OA\Property(
         property: "current_page",
-        type: "integer",
         description: "Página actual",
+        type: "integer",
         example: 1
     )]
     public int $currentPage;
 
     #[OA\Property(
         property: "per_page",
-        type: "integer",
         description: "Elementos por página",
+        type: "integer",
         example: 10
     )]
     public int $perPage;

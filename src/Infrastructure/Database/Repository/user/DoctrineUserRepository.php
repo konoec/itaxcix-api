@@ -237,8 +237,8 @@ class DoctrineUserRepository implements UserRepositoryInterface {
 
         // Joins condicionales según los filtros necesarios
         $needsRoleJoin = isset($filters['roleId']) || isset($filters['userType']);
-        $needsDriverJoin = isset($filters['driverStatus']) || $filters['userType'] === 'driver';
-        $needsCitizenJoin = $filters['userType'] === 'citizen';
+        $needsDriverJoin = isset($filters['driverStatus']) || $filters['userType'] === 'driver' || $filters['userType'] === 'citizen';
+        $needsCitizenJoin = $filters['userType'] === 'citizen' || $filters['userType'] === 'driver';
         $needsContactJoin = isset($filters['contactVerified']);
         $needsVehicleJoin = isset($filters['hasVehicle']);
 
