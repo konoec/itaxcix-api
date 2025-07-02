@@ -11,4 +11,8 @@ interface IncidentRepositoryInterface {
     // Métodos para reporte administrativo de incidentes
     public function findReport(\itaxcix\Shared\DTO\useCases\IncidentReport\IncidentReportRequestDTO $dto): array;
     public function countReport(\itaxcix\Shared\DTO\useCases\IncidentReport\IncidentReportRequestDTO $dto): int;
+
+    // Método para obtener incidentes por usuario
+    public function findByUser(\itaxcix\Shared\DTO\useCases\Incident\GetUserIncidentsRequestDTO $dto): array;
+    public function countByUser(\itaxcix\Shared\DTO\useCases\Incident\GetUserIncidentsRequestDTO $dto): int;
 }

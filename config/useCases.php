@@ -199,15 +199,16 @@ use itaxcix\Core\UseCases\District\DistrictCreateUseCase;
 use itaxcix\Core\UseCases\District\DistrictDeleteUseCase;
 use itaxcix\Core\UseCases\District\DistrictListUseCase;
 use itaxcix\Core\UseCases\District\DistrictUpdateUseCase;
+use itaxcix\Core\UseCases\Driver\DriverTucStatusUseCase;
 use itaxcix\Core\UseCases\Driver\UpdateDriverTucUseCase;
 use itaxcix\Core\UseCases\DriverStatus\DriverStatusCreateUseCase;
 use itaxcix\Core\UseCases\DriverStatus\DriverStatusDeleteUseCase;
 use itaxcix\Core\UseCases\DriverStatus\DriverStatusListUseCase;
 use itaxcix\Core\UseCases\DriverStatus\DriverStatusUpdateUseCase;
-use itaxcix\Core\UseCases\Driver\DriverTucStatusUseCase;
 use itaxcix\Core\UseCases\Emergency\EmergencyNumberGetUseCase;
 use itaxcix\Core\UseCases\Emergency\EmergencyNumberSaveUseCase;
 use itaxcix\Core\UseCases\Incident\RegisterIncidentUseCase;
+use itaxcix\Core\UseCases\Incident\GetUserIncidentsUseCase;
 use itaxcix\Core\UseCases\IncidentReport\IncidentReportUseCase;
 use itaxcix\Core\UseCases\IncidentType\IncidentTypeCreateUseCase;
 use itaxcix\Core\UseCases\IncidentType\IncidentTypeDeleteUseCase;
@@ -438,6 +439,7 @@ return array(
 
     // Incident Use Cases
     RegisterIncidentUseCase::class => autowire(RegisterIncidentUseCaseHandler::class),
+    GetUserIncidentsUseCase::class => autowire(),
 
     // Admin Use Cases
     PermissionCreateUseCase::class => autowire(PermissionCreateUseCaseHandler::class),

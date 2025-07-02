@@ -4219,6 +4219,164 @@
                 ]
             }
         },
+        "/incidents/user/{userId}": {
+            "get": {
+                "tags": [
+                    "Incident"
+                ],
+                "summary": "Obtener incidentes por usuario",
+                "description": "Obtiene los incidentes de un usuario específico con filtros y paginación.",
+                "operationId": "getUserIncidents",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "description": "ID del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "travelId",
+                        "in": "query",
+                        "description": "ID del viaje (filtro opcional)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 123
+                        }
+                    },
+                    {
+                        "name": "typeId",
+                        "in": "query",
+                        "description": "ID del tipo de incidencia (filtro opcional)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "active",
+                        "in": "query",
+                        "description": "Estado activo del incidente (filtro opcional)",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "example": true
+                        }
+                    },
+                    {
+                        "name": "comment",
+                        "in": "query",
+                        "description": "Búsqueda en comentarios (filtro opcional)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "problema"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número de página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "perPage",
+                        "in": "query",
+                        "description": "Elementos por página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "maximum": 100,
+                            "minimum": 1,
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "sortBy",
+                        "in": "query",
+                        "description": "Campo de ordenamiento",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "id",
+                                "travelId",
+                                "typeId",
+                                "active"
+                            ],
+                            "example": "id"
+                        }
+                    },
+                    {
+                        "name": "sortDirection",
+                        "in": "query",
+                        "description": "Dirección del ordenamiento",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "ASC",
+                                "DESC"
+                            ],
+                            "example": "DESC"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Incidentes obtenidos correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetUserIncidentsResponseDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Errores de validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Errores de validación"
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "userId": "El ID del usuario es requerido"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/admin/incident-types": {
             "get": {
                 "tags": [
@@ -17033,6 +17191,32 @@
                 },
                 "type": "object"
             },
+            "PaginationInfo": {
+                "description": "Información de paginación",
+                "properties": {
+                    "current_page": {
+                        "description": "Página actual",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "per_page": {
+                        "description": "Elementos por página",
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "total_items": {
+                        "description": "Total de elementos",
+                        "type": "integer",
+                        "example": 100
+                    },
+                    "total_pages": {
+                        "description": "Total de páginas",
+                        "type": "integer",
+                        "example": 10
+                    }
+                },
+                "type": "object"
+            },
             "PermissionCreateRequestDTO": {
                 "description": "Datos para crear un permiso",
                 "properties": {
@@ -18292,6 +18476,132 @@
                 },
                 "type": "object"
             },
+            "GetUserIncidentsRequestDTO": {
+                "description": "DTO para obtener incidentes de un usuario",
+                "properties": {
+                    "userId": {
+                        "description": "ID del usuario",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "travelId": {
+                        "description": "ID del viaje (opcional)",
+                        "type": "integer",
+                        "example": 123,
+                        "nullable": true
+                    },
+                    "typeId": {
+                        "description": "ID del tipo de incidencia (opcional)",
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "active": {
+                        "description": "Estado activo del incidente (opcional)",
+                        "type": "boolean",
+                        "example": true,
+                        "nullable": true
+                    },
+                    "comment": {
+                        "description": "Búsqueda en comentarios (opcional)",
+                        "type": "string",
+                        "example": "problema",
+                        "nullable": true
+                    },
+                    "page": {
+                        "description": "Número de página",
+                        "type": "integer",
+                        "minimum": 1,
+                        "example": 1
+                    },
+                    "perPage": {
+                        "description": "Elementos por página",
+                        "type": "integer",
+                        "maximum": 100,
+                        "minimum": 1,
+                        "example": 10
+                    },
+                    "sortBy": {
+                        "description": "Campo de ordenamiento",
+                        "type": "string",
+                        "enum": [
+                            "id",
+                            "travelId",
+                            "typeId",
+                            "active"
+                        ],
+                        "example": "id"
+                    },
+                    "sortDirection": {
+                        "description": "Dirección del ordenamiento",
+                        "type": "string",
+                        "enum": [
+                            "ASC",
+                            "DESC"
+                        ],
+                        "example": "DESC"
+                    }
+                },
+                "type": "object"
+            },
+            "GetUserIncidentsResponseDTO": {
+                "description": "DTO de respuesta para los incidentes de un usuario",
+                "properties": {
+                    "incidents": {
+                        "description": "Lista de incidentes",
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "description": "ID del incidente",
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "userId": {
+                                    "description": "ID del usuario",
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "userName": {
+                                    "description": "Nombre completo del usuario",
+                                    "type": "string",
+                                    "example": "Juan Pérez"
+                                },
+                                "travelId": {
+                                    "description": "ID del viaje",
+                                    "type": "integer",
+                                    "example": 123
+                                },
+                                "typeId": {
+                                    "description": "ID del tipo de incidencia",
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "typeName": {
+                                    "description": "Nombre del tipo de incidencia",
+                                    "type": "string",
+                                    "example": "Problema técnico"
+                                },
+                                "comment": {
+                                    "description": "Comentario del incidente",
+                                    "type": "string",
+                                    "example": "El vehículo se detuvo"
+                                },
+                                "active": {
+                                    "description": "Estado activo",
+                                    "type": "boolean",
+                                    "example": true
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "pagination": {
+                        "$ref": "#/components/schemas/PaginationInfo"
+                    }
+                },
+                "type": "object"
+            },
             "RegisterIncidentRequestDTO": {
                 "description": "Datos necesarios para registrar un incidente",
                 "properties": {
@@ -18970,12 +19280,12 @@
             "description": "HelpCenter"
         },
         {
-            "name": "Admin - Incident Type",
-            "description": "Admin - Incident Type"
-        },
-        {
             "name": "Incident",
             "description": "Incident"
+        },
+        {
+            "name": "Admin - Incident Type",
+            "description": "Admin - Incident Type"
         },
         {
             "name": "Admin - Infraction Severity",

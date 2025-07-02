@@ -15,6 +15,7 @@ use itaxcix\Infrastructure\Web\Controller\api\District\DistrictController;
 use itaxcix\Infrastructure\Web\Controller\api\Driver\DriverTucStatusController;
 use itaxcix\Infrastructure\Web\Controller\api\Emergency\EmergencyNumberController;
 use itaxcix\Infrastructure\Web\Controller\api\Incident\RegisterIncidentController;
+use itaxcix\Infrastructure\Web\Controller\api\Incident\GetUserIncidentsController;
 use itaxcix\Infrastructure\Web\Controller\api\Profile\ProfileContactController;
 use itaxcix\Infrastructure\Web\Controller\api\Profile\ProfileController;
 use itaxcix\Infrastructure\Web\Controller\api\Rating\RatingController;
@@ -133,6 +134,7 @@ return function (RouteCollector $r) {
 
         // Incident Routes
         $r->post('/incidents/register', [JwtMiddleware::class, [RegisterIncidentController::class, 'register']]);
+        $r->get('/incidents/user/{userId}', [JwtMiddleware::class, [GetUserIncidentsController::class, 'getUserIncidents']]);
 
         // ===============================
         // TABLAS MAESTRAS - RUTAS COMPLETAS
