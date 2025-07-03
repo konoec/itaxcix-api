@@ -18257,6 +18257,76 @@
                 },
                 "type": "object"
             },
+            "TucInfoDto": {
+                "description": "Información detallada de una TUC",
+                "properties": {
+                    "id": {
+                        "description": "ID de la TUC",
+                        "type": "integer",
+                        "example": 456
+                    },
+                    "procedureDate": {
+                        "description": "Fecha de trámite",
+                        "type": "string",
+                        "example": "2024-01-15",
+                        "nullable": true
+                    },
+                    "issueDate": {
+                        "description": "Fecha de emisión",
+                        "type": "string",
+                        "example": "2024-01-20",
+                        "nullable": true
+                    },
+                    "expirationDate": {
+                        "description": "Fecha de vencimiento",
+                        "type": "string",
+                        "example": "2025-01-20",
+                        "nullable": true
+                    },
+                    "status": {
+                        "description": "Estado de la TUC",
+                        "type": "string",
+                        "example": "VIGENTE",
+                        "nullable": true
+                    },
+                    "procedureType": {
+                        "description": "Tipo de procedimiento",
+                        "type": "string",
+                        "example": "RENOVACIÓN",
+                        "nullable": true
+                    },
+                    "modality": {
+                        "description": "Modalidad",
+                        "type": "string",
+                        "example": "PRESENCIAL",
+                        "nullable": true
+                    },
+                    "company": {
+                        "description": "Empresa",
+                        "type": "string",
+                        "example": "EMPRESA DE TRANSPORTE S.A.",
+                        "nullable": true
+                    },
+                    "district": {
+                        "description": "Distrito",
+                        "type": "string",
+                        "example": "LIMA",
+                        "nullable": true
+                    },
+                    "daysUntilExpiration": {
+                        "description": "Días hasta el vencimiento",
+                        "type": "integer",
+                        "example": 30,
+                        "nullable": true
+                    },
+                    "isActive": {
+                        "description": "Indica si la TUC está vigente",
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
             "TucUpdateDto": {
                 "description": "Información de una TUC actualizada",
                 "properties": {
@@ -18290,7 +18360,7 @@
                     "totalVehiclesChecked": {
                         "description": "Total de vehículos verificados",
                         "type": "integer",
-                        "example": 3
+                        "example": 1
                     },
                     "tucsUpdated": {
                         "description": "Número de TUCs actualizadas",
@@ -18312,6 +18382,67 @@
                         "description": "Mensaje descriptivo del proceso",
                         "type": "string",
                         "example": "Se actualizaron 2 TUCs correctamente"
+                    },
+                    "vehicleInfo": {
+                        "description": "Información del vehículo del conductor",
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "allTucs": {
+                        "description": "Todas las TUCs del vehículo",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TucInfoDto"
+                        }
+                    },
+                    "furthestExpiringTuc": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/TucInfoDto"
+                            }
+                        ],
+                        "nullable": true,
+                        "description": "TUC con fecha de vencimiento más lejana"
+                    }
+                },
+                "type": "object"
+            },
+            "VehicleInfoDto": {
+                "description": "Información del vehículo del conductor",
+                "properties": {
+                    "id": {
+                        "description": "ID del vehículo",
+                        "type": "integer",
+                        "example": 123
+                    },
+                    "licensePlate": {
+                        "description": "Placa del vehículo",
+                        "type": "string",
+                        "example": "ABC-123"
+                    },
+                    "manufactureYear": {
+                        "description": "Año de fabricación",
+                        "type": "integer",
+                        "example": 2020,
+                        "nullable": true
+                    },
+                    "seatCount": {
+                        "description": "Número de asientos",
+                        "type": "integer",
+                        "example": 5,
+                        "nullable": true
+                    },
+                    "model": {
+                        "description": "Modelo del vehículo",
+                        "type": "string",
+                        "example": "Toyota Corolla",
+                        "nullable": true
+                    },
+                    "color": {
+                        "description": "Color del vehículo",
+                        "type": "string",
+                        "example": "Blanco",
+                        "nullable": true
                     }
                 },
                 "type": "object"
