@@ -158,9 +158,6 @@ class CreateAdminUserUseCase
             active: true
         );
 
-        // Guardar rol de usuario
-        $savedUserRoleModel = $this->userRoleRepository->saveUserRole($userRoleModel);
-
         // Crear directamente el modelo de dominio AdminProfileModel
         $adminProfileModel = new \itaxcix\Core\Domain\user\AdminProfileModel(
             id: null, // ID será asignado por la base de datos

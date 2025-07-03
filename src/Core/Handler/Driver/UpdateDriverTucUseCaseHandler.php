@@ -22,7 +22,6 @@ class UpdateDriverTucUseCaseHandler implements UpdateDriverTucUseCase
 {
     private VehicleUserRepositoryInterface $vehicleUserRepository;
     private TucProcedureRepositoryInterface $tucProcedureRepository;
-    private VehicleRepositoryInterface $vehicleRepository;
     private TucStatusRepositoryInterface $tucStatusRepository;
     private ProcedureTypeRepositoryInterface $procedureTypeRepository;
     private TucModalityRepositoryInterface $tucModalityRepository;
@@ -32,7 +31,6 @@ class UpdateDriverTucUseCaseHandler implements UpdateDriverTucUseCase
     public function __construct(
         VehicleUserRepositoryInterface $vehicleUserRepository,
         TucProcedureRepositoryInterface $tucProcedureRepository,
-        VehicleRepositoryInterface $vehicleRepository,
         TucStatusRepositoryInterface $tucStatusRepository,
         ProcedureTypeRepositoryInterface $procedureTypeRepository,
         TucModalityRepositoryInterface $tucModalityRepository,
@@ -41,7 +39,6 @@ class UpdateDriverTucUseCaseHandler implements UpdateDriverTucUseCase
     ) {
         $this->vehicleUserRepository = $vehicleUserRepository;
         $this->tucProcedureRepository = $tucProcedureRepository;
-        $this->vehicleRepository = $vehicleRepository;
         $this->tucStatusRepository = $tucStatusRepository;
         $this->procedureTypeRepository = $procedureTypeRepository;
         $this->tucModalityRepository = $tucModalityRepository;
@@ -75,7 +72,7 @@ class UpdateDriverTucUseCaseHandler implements UpdateDriverTucUseCase
 
             try {
                 // Consultar la API municipal para verificar TUCs actualizadas
-                $municipalData = $this->fakeMunicipalApi($vehicle->getPlate());
+                $municipalData = $this->fakeMunicipalApi($vehicle->getLicensePlate());
 
                 if (!$municipalData->found || empty($municipalData->vehicles)) {
                     continue;
@@ -112,7 +109,7 @@ class UpdateDriverTucUseCaseHandler implements UpdateDriverTucUseCase
 
                     $tucsUpdated++;
                     $updates[] = new TucUpdateDto(
-                        plate: $vehicle->getPlate(),
+                        plate: $vehicle->getLicensePlate(),
                         previousExpirationDate: null, // No hay TUC anterior específica
                         newExpirationDate: $municipalExpirationDate,
                         status: $vehicleData->estado ?? 'VIGENTE'
@@ -121,7 +118,7 @@ class UpdateDriverTucUseCaseHandler implements UpdateDriverTucUseCase
 
             } catch (\Exception $e) {
                 // Log del error pero continuar con otros vehículos
-                error_log("Error actualizando TUC para vehículo {$vehicle->getPlate()}: " . $e->getMessage());
+                error_log("Error actualizando TUC para vehículo {$vehicle->getLicensePlate()}: " . $e->getMessage());
                 continue;
             }
         }
@@ -149,13 +146,22 @@ class UpdateDriverTucUseCaseHandler implements UpdateDriverTucUseCase
         // Buscar empresa si existe en los datos
         $company = null;
         if (!empty($municipalTucData->empresa)) {
-            $company = $this->companyRepository->findAllCompanyByName($municipalTucData->empresa);
+            // Usar el método correcto que existe en DoctrineCompanyRepository
+            // Nota: Este método busca por nombre, si no existe tendrías que crearlo o buscar por RUC
+            $companies = $this->companyRepository->findAllCompanies();
+            foreach ($companies as $comp) {
+                if (strtolower($comp->getName()) === strtolower($municipalTucData->empresa)) {
+                    $company = $comp;
+                    break;
+                }
+            }
         }
 
         // Buscar distrito si existe en los datos
         $district = null;
         if (!empty($municipalTucData->distrito)) {
-            $district = $this->districtRepository->findAllDistrictByName($municipalTucData->distrito);
+            // Usar el método correcto que existe en DoctrineDistrictRepository
+            $district = $this->districtRepository->findDistrictByName($municipalTucData->distrito);
         }
 
         return new TucProcedureModel(
@@ -212,6 +218,7 @@ class UpdateDriverTucUseCaseHandler implements UpdateDriverTucUseCase
 
         return new VehicleResponseDTO(
             found: $found,
+            count: count($vehicles),
             vehicles: $vehicles
         );
     }
