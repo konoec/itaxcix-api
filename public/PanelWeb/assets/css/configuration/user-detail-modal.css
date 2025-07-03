@@ -134,6 +134,37 @@
     border-color: #d39e00;
 }
 
+/* Estado verificado para botones de verificación */
+.verification-btn.verified {
+    background-color: #28a745 !important;
+    border-color: #28a745 !important;
+    color: white !important;
+    cursor: default !important;
+    opacity: 0.8;
+}
+
+.verification-btn.verified:hover {
+    background-color: #28a745 !important;
+    border-color: #28a745 !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.verification-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.verification-btn:disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+#update-password:hover {
+    background-color: #e0a800;
+    border-color: #d39e00;
+}
+
 /* Estilo para el campo de contraseña */
 #user-new-password {
     padding: 3px 6px;

@@ -22,12 +22,34 @@ const UserDetailsController = (() => {
      * @param {string|number} userId - ID del usuario
      * @param {string} userName - Nombre del usuario
      * @param {string} userPhone - Teléfono del usuario (opcional)
+     * @param {object} userContactIds - ContactIds dinámicos {email: id, phone: id}
      */
-    function openRoleAssignmentModal(userId, userName, userPhone = null) {
-        console.log('🔍 Abriendo modal de asignación de roles para usuario:', { id: userId, name: userName, phone: userPhone });
+    function openRoleAssignmentModal(userId, userName, userPhone = null, userContactIds = null) {
+        console.log('🔍 Abriendo modal de asignación de roles para usuario:', { 
+            id: userId, 
+            name: userName, 
+            phone: userPhone,
+            contactIds: userContactIds 
+        });
         
         currentUserId = userId;
         currentUserName = userName;
+        
+        // 🔑 ALMACENAR CONTACTIDS DINÁMICOS GLOBALMENTE
+        if (userContactIds) {
+            window.currentUserContactIds = {
+                email: userContactIds.email,
+                phone: userContactIds.phone
+            };
+            console.log('🔑 ContactIds dinámicos almacenados desde parámetros:', window.currentUserContactIds);
+        } else {
+            // Inicializar con valores null si no se proporcionan
+            window.currentUserContactIds = {
+                email: null,
+                phone: null
+            };
+            console.log('⚠️ No se proporcionaron contactIds, inicializando con null');
+        }
         
         // Guardar el teléfono para usarlo después
         window.currentUserPhone = userPhone;
@@ -80,6 +102,7 @@ const UserDetailsController = (() => {
         
         // Limpiar información adicional del usuario
         window.currentUserPhone = null;
+        window.currentUserContactIds = null;  // 🔑 LIMPIAR CONTACTIDS
         
         // Restablecer valores por defecto en el modal
         const emailValue = document.getElementById('user-email-value');
@@ -573,6 +596,18 @@ const UserDetailsController = (() => {
         if (passwordToggleBtn) {
             passwordToggleBtn.addEventListener('click', togglePasswordVisibility);
         }
+
+        // Botones de verificación de contactos
+        const verifyEmailBtn = document.getElementById('verify-email');
+        const verifyPhoneBtn = document.getElementById('verify-phone');
+        
+        if (verifyEmailBtn) {
+            verifyEmailBtn.addEventListener('click', handleEmailVerification);
+        }
+        
+        if (verifyPhoneBtn) {
+            verifyPhoneBtn.addEventListener('click', handlePhoneVerification);
+        }
     }
 
     /**
@@ -807,6 +842,184 @@ const UserDetailsController = (() => {
         }
         
         console.log('✅ Información adicional actualizada');
+    }
+
+    /**
+     * Maneja la verificación del email del usuario
+     */
+    async function handleEmailVerification() {
+        if (!currentUserId) {
+            console.error('❌ No hay usuario seleccionado para verificar email');
+            const message = 'No hay usuario seleccionado';
+            if (typeof window.showToast === 'function') {
+                window.showToast(message, 'error');
+            } else {
+                showError(message);
+            }
+            return;
+        }
+
+        console.log(`📧 Iniciando verificación de email para usuario ${currentUserId}`);
+
+        // Verificar que el servicio esté disponible
+        if (typeof window.VerifyContactService === 'undefined') {
+            console.error('❌ VerifyContactService no está disponible');
+            const message = 'Servicio de verificación no disponible';
+            if (typeof window.showToast === 'function') {
+                window.showToast(message, 'error');
+            } else {
+                showError(message);
+            }
+            return;
+        }
+
+        try {
+            // Deshabilitar botón mientras se procesa
+            const verifyBtn = document.getElementById('verify-email');
+            if (verifyBtn) {
+                verifyBtn.disabled = true;
+                verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+            }
+
+            // 🔑 USAR CONTACTID DINÁMICO DEL EMAIL
+            // Verificar que tenemos el contactId dinámico almacenado
+            const emailContactId = window.currentUserContactIds?.email;
+            
+            console.log(`📧 Verificando email para usuario ${currentUserId} con contactId dinámico: ${emailContactId}`);
+            console.log('🔑 ContactIds disponibles:', window.currentUserContactIds);
+            console.log('🔍 Estructura completa currentUserContactIds:', JSON.stringify(window.currentUserContactIds, null, 2));
+            
+            if (!emailContactId) {
+                const errorMsg = 'No se encontró contactId de email para este usuario. Asegúrate de que el usuario tenga un email registrado y que se hayan cargado los detalles completos del usuario.';
+                console.error('❌ Error verificando email:', errorMsg);
+                throw new Error(errorMsg);
+            }
+
+            const result = await window.VerifyContactService.verifyEmailContact(currentUserId, emailContactId);
+
+            if (result.success) {
+                console.log('✅ Email verificado exitosamente');
+                if (typeof window.showToast === 'function') {
+                    window.showToast(result.message || 'Email verificado exitosamente', 'success');
+                } else {
+                    showSuccess(result.message || 'Email verificado exitosamente');
+                }
+                
+                // Actualizar el estado visual del botón
+                if (verifyBtn) {
+                    verifyBtn.innerHTML = '<i class="fas fa-check-circle"></i> Verificado';
+                    verifyBtn.classList.add('verified');
+                    verifyBtn.disabled = true;
+                }
+            } else {
+                throw new Error(result.message || 'Error al verificar email');
+            }
+
+        } catch (error) {
+            console.error('❌ Error al verificar email:', error);
+            const message = error.message || 'Error al verificar el email';
+            if (typeof window.showToast === 'function') {
+                window.showToast(message, 'error');
+            } else {
+                showError(message);
+            }
+        } finally {
+            // Restaurar botón si no fue verificado exitosamente
+            const verifyBtn = document.getElementById('verify-email');
+            if (verifyBtn && !verifyBtn.classList.contains('verified')) {
+                verifyBtn.disabled = false;
+                verifyBtn.innerHTML = '<i class="fas fa-check-circle"></i> Verificar';
+            }
+        }
+    }
+
+    /**
+     * Maneja la verificación del teléfono del usuario
+     */
+    async function handlePhoneVerification() {
+        if (!currentUserId) {
+            console.error('❌ No hay usuario seleccionado para verificar teléfono');
+            const message = 'No hay usuario seleccionado';
+            if (typeof window.showToast === 'function') {
+                window.showToast(message, 'error');
+            } else {
+                showError(message);
+            }
+            return;
+        }
+
+        console.log(`📱 Iniciando verificación de teléfono para usuario ${currentUserId}`);
+
+        // Verificar que el servicio esté disponible
+        if (typeof window.VerifyContactService === 'undefined') {
+            console.error('❌ VerifyContactService no está disponible');
+            const message = 'Servicio de verificación no disponible';
+            if (typeof window.showToast === 'function') {
+                window.showToast(message, 'error');
+            } else {
+                showError(message);
+            }
+            return;
+        }
+
+        try {
+            // Deshabilitar botón mientras se procesa
+            const verifyBtn = document.getElementById('verify-phone');
+            if (verifyBtn) {
+                verifyBtn.disabled = true;
+                verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+            }
+
+            // 🔑 USAR CONTACTID DINÁMICO DEL TELÉFONO
+            // Verificar que tenemos el contactId dinámico almacenado
+            const phoneContactId = window.currentUserContactIds?.phone;
+            
+            console.log(`📱 Verificando teléfono para usuario ${currentUserId} con contactId dinámico: ${phoneContactId}`);
+            console.log('🔑 ContactIds disponibles:', window.currentUserContactIds);
+            console.log('🔍 Estructura completa currentUserContactIds:', JSON.stringify(window.currentUserContactIds, null, 2));
+            
+            if (!phoneContactId) {
+                const errorMsg = 'No se encontró contactId de teléfono para este usuario. Asegúrate de que el usuario tenga un teléfono registrado y que se hayan cargado los detalles completos del usuario.';
+                console.error('❌ Error verificando teléfono:', errorMsg);
+                throw new Error(errorMsg);
+            }
+
+            const result = await window.VerifyContactService.verifyPhoneContact(currentUserId, phoneContactId);
+
+            if (result.success) {
+                console.log('✅ Teléfono verificado exitosamente');
+                if (typeof window.showToast === 'function') {
+                    window.showToast(result.message || 'Teléfono verificado exitosamente', 'success');
+                } else {
+                    showSuccess(result.message || 'Teléfono verificado exitosamente');
+                }
+                
+                // Actualizar el estado visual del botón
+                if (verifyBtn) {
+                    verifyBtn.innerHTML = '<i class="fas fa-check-circle"></i> Verificado';
+                    verifyBtn.classList.add('verified');
+                    verifyBtn.disabled = true;
+                }
+            } else {
+                throw new Error(result.message || 'Error al verificar teléfono');
+            }
+
+        } catch (error) {
+            console.error('❌ Error al verificar teléfono:', error);
+            const message = error.message || 'Error al verificar el teléfono';
+            if (typeof window.showToast === 'function') {
+                window.showToast(message, 'error');
+            } else {
+                showError(message);
+            }
+        } finally {
+            // Restaurar botón si no fue verificado exitosamente
+            const verifyBtn = document.getElementById('verify-phone');
+            if (verifyBtn && !verifyBtn.classList.contains('verified')) {
+                verifyBtn.disabled = false;
+                verifyBtn.innerHTML = '<i class="fas fa-check-circle"></i> Verificar';
+            }
+        }
     }
 
     // API pública del controlador

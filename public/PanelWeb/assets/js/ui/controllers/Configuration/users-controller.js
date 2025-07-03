@@ -359,19 +359,23 @@ class UsersController {
         // Obtener email desde contacts (no desde person.email)
         let email = 'Sin email';
         let emailVerified = false;
+        let emailContactId = null;  // 🔑 ALMACENAR CONTACTID DEL EMAIL
         const emailContact = contacts.find(c => c.type === 'CORREO ELECTRÓNICO');
         if (emailContact && emailContact.value) {
             email = emailContact.value;
             emailVerified = emailContact.confirmed || false;
+            emailContactId = emailContact.id || null;  // 🔑 GUARDAR CONTACTID
         }
         
         // Obtener teléfono desde contacts
         let phone = 'Sin teléfono';
         let phoneVerified = false;
+        let phoneContactId = null;  // 🔑 ALMACENAR CONTACTID DEL TELÉFONO
         const phoneContact = contacts.find(c => c.type === 'TELÉFONO MÓVIL');
         if (phoneContact && phoneContact.value) {
             phone = phoneContact.value;
             phoneVerified = phoneContact.confirmed || false;
+            phoneContactId = phoneContact.id || null;  // 🔑 GUARDAR CONTACTID
         }
         
         // Verificar si algún contacto está verificado (para compatibilidad)
@@ -389,10 +393,12 @@ class UsersController {
             lastname: person.lastName || 'Sin apellido',
             email: email,
             emailVerified: emailVerified,
+            emailContactId: emailContactId,  // 🔑 CONTACTID DEL EMAIL
             document: person.document || 'Sin documento',
             doctype: person.documentType || 'N/A',
             phone: phone,
             phoneVerified: phoneVerified,
+            phoneContactId: phoneContactId,  // 🔑 CONTACTID DEL TELÉFONO
             userType: userType,
             driverStatus: driverStatus,
             // 🔧 COHERENCIA: Usar status.id para TANTO badge como logout
@@ -827,7 +833,14 @@ class UsersController {
             const userName = user.fullName || user.name || `${user.firstname || ''} ${user.lastname || ''}`.trim();
             const userPhone = user.phone && user.phone !== 'Sin teléfono' ? user.phone : null;
             
-            window.UserDetailsController.openRoleAssignmentModal(userId, userName, userPhone);
+            // 🔑 PASAR CONTACTIDS DINÁMICOS AL MODAL
+            const userContactIds = {
+                email: user.emailContactId,
+                phone: user.phoneContactId
+            };
+            
+            console.log('🔑 Pasando contactIds al modal:', userContactIds);
+            window.UserDetailsController.openRoleAssignmentModal(userId, userName, userPhone, userContactIds);
         } else {
             // Fallback en caso de que el controlador no esté disponible
             const userDetailsModal = document.getElementById('user-details-modal');
@@ -1155,7 +1168,15 @@ class UsersController {
         // Verificar que el controlador de detalles de usuario esté disponible
         if (window.UserDetailsController && typeof window.UserDetailsController.openRoleAssignmentModal === 'function') {
             console.log('🔍 DEBUG - Abriendo modal con UserDetailsController');
-            window.UserDetailsController.openRoleAssignmentModal(userId, userName, userPhone);
+            
+            // 🔑 PASAR CONTACTIDS DINÁMICOS AL MODAL
+            const userContactIds = {
+                email: user.emailContactId,
+                phone: user.phoneContactId
+            };
+            
+            console.log('🔑 Pasando contactIds al modal (viewUserDetails):', userContactIds);
+            window.UserDetailsController.openRoleAssignmentModal(userId, userName, userPhone, userContactIds);
         } else {
             console.error('❌ UserDetailsController no está disponible');
             this.showToast('Error: El controlador de detalles de usuario no está disponible', 'error');
@@ -1613,6 +1634,29 @@ class UsersController {
         const contactsGrid = document.getElementById('contacts-profile-grid');
         const noContactsMessage = document.getElementById('no-contacts-message');
         
+        // 🔑 ALMACENAR CONTACTIDS REALES PARA VERIFICACIÓN DINÁMICA
+        // Inicializar el objeto global de contactIds si no existe
+        if (!window.currentUserContactIds) {
+            window.currentUserContactIds = {};
+        }
+        
+        // Resetear contactIds para el usuario actual
+        window.currentUserContactIds.email = null;
+        window.currentUserContactIds.phone = null;
+        
+        // Buscar y almacenar los contactIds reales
+        contacts.forEach(contact => {
+            if (contact.type === 'CORREO ELECTRÓNICO' && contact.id) {
+                window.currentUserContactIds.email = contact.id;
+                console.log(`📧 ContactId para EMAIL almacenado: ${contact.id}`);
+            } else if (contact.type === 'TELÉFONO MÓVIL' && contact.id) {
+                window.currentUserContactIds.phone = contact.id;
+                console.log(`📱 ContactId para TELÉFONO almacenado: ${contact.id}`);
+            }
+        });
+        
+        console.log('🔑 ContactIds dinámicos almacenados:', window.currentUserContactIds);
+        
         // Limpiar grid
         contactsGrid.innerHTML = '';
         
@@ -1634,6 +1678,10 @@ class UsersController {
                         <div class="contact-profile-item">
                             <label>Valor:</label>
                             <span>${contact.value || '-'}</span>
+                        </div>
+                        <div class="contact-profile-item">
+                            <label>ID Contacto:</label>
+                            <span class="contact-id">${contact.id || '-'}</span>
                         </div>
                         <div class="contact-profile-item">
                             <label>Confirmado:</label>
