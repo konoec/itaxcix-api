@@ -212,7 +212,7 @@ class UpdateDriverTucUseCaseHandler implements UpdateDriverTucUseCase
                 continue;
             }
 
-            if ($data['placa'] === $plateValue) {
+            if ($data['PLACA'] === $plateValue) {
                 $found = true;
                 // Crear objeto VehicleDTO con los datos del CSV
                 $vehicles[] = (object) $data;
