@@ -1,0 +1,2157 @@
+/* =============================================================================
+   GOOGLE FONTS IMPORT - POPPINS
+   Importación de fuente Poppins desde Google Fonts
+   ============================================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+/* =============================================================================
+   GLOBAL TYPOGRAPHY CONFIGURATION
+   Configuración tipográfica global con Poppins
+   ============================================================================= */
+* {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+body, html {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+}
+
+/* Elementos de formulario */
+input, select, textarea, button {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Elementos de tabla */
+table, th, td {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* =============================================================================
+   PERMISSIONS SYSTEM STYLES - CONFIGURATION MODULE
+   Estilos para el sistema de permisos del módulo de configuración
+   ============================================================================= */
+
+/* =============================================================================
+   NUEVA TABLA DE PERMISOS
+   Implementación completa de la tabla de permisos con diseño moderno
+   ============================================================================= */
+
+/* Contenedor principal de permisos */
+.content {
+    padding: 10px;
+    min-height: calc(100vh - 200px);
+}
+
+.permissions-panel {
+    background: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: 920px;
+    min-height: 400px;
+}
+
+/* Header con botón crear */
+.permissions-header {
+    padding: 6px 14px;
+    border-bottom: 1px solid #e9ecef;
+    background: linear-gradient(180deg, #22304a 0%, #16203a 100%);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.permissions-header-left {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.permissions-header-right {
+    display: flex;
+    align-items: center;
+}
+
+/* Contenedor de búsqueda */
+.search-container {
+    position: relative;
+    max-width: 300px;
+    width: 100%;
+}
+
+.search-input {
+    width: 100%;
+    padding: 6px 35px 6px 12px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 0px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 12px;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+}
+
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+}
+
+.search-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    pointer-events: none;
+}
+
+.clear-search-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    font-size: 12px;
+}
+
+.clear-search-btn:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Contenedor individual para cada input de búsqueda */
+.search-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.search-input-wrapper .search-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    pointer-events: none;
+}
+
+.search-input-wrapper .clear-search-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    font-size: 12px;
+}
+
+.search-input-wrapper .clear-search-btn:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Estilos para estado de búsqueda */
+.search-input.searching {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.search-container.searching .search-icon {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.7;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.7;
+    }
+}
+
+/* Estado de carga durante búsqueda */
+.search-container.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 35px;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: rgba(255, 255, 255, 0.8);
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: translateY(-50%) rotate(360deg);
+    }
+}
+
+/* Tabla en estado de búsqueda */
+.permissions-table.searching {
+    opacity: 0.8;
+}
+
+/* Mensaje de no resultados */
+.no-results-message {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+}
+
+.no-results-message i {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+    color: #dee2e6;
+}
+
+.no-results-message h3 {
+    margin-bottom: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #495057;
+}
+
+.no-results-message p {
+    margin: 0;
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.no-results-message .search-term {
+    font-weight: 600;
+    color: #22304a;
+}
+
+.no-results-message .btn-clear-filters {
+    margin-top: 16px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    color: #6c757d;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.no-results-message .btn-clear-filters:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+    color: #495057;
+}
+
+.create-permission-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.create-permission-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-1px);
+}
+
+.create-permission-btn i {
+    font-size: 16px;
+}
+
+/* Botón de refrescar con estilo similar pero azul */
+.refresh-users-btn {
+    background: rgba(56, 189, 248, 0.2);
+    border: 2px solid rgba(56, 189, 248, 0.3);
+    color: #38bdf8;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'Poppins', sans-serif;
+    margin-right: 10px;
+}
+
+.refresh-users-btn:hover {
+    background: rgba(56, 189, 248, 0.3);
+    border-color: rgba(56, 189, 248, 0.5);
+    transform: translateY(-1px);
+    color: #0ea5e9;
+}
+
+.refresh-users-btn i {
+    font-size: 16px;
+}
+
+.refresh-users-btn:hover i {
+    animation: spin 0.6s ease-in-out;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Contenedor de tabla responsive */
+.table-container {
+    overflow-x: auto;
+    background: white;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+    width: 100%;
+}
+
+/* --- Ajuste para que el espacio en blanco quede entre los items y el pie --- */
+.permissions-table {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- FIX: Responsive table header and body alignment --- */
+.permissions-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    font-size: 15px;
+    /* Remove flex properties for table */
+}
+.permissions-table thead {
+    display: table-header-group;
+    background: #f8f9fa;
+    border-bottom: 0px solid #e9ecef;
+}
+.permissions-table tbody {
+    display: table-row-group;
+}
+
+/* --- Responsive table header and row for horizontal scroll --- */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+.permissions-table {
+    min-width: 700px; /* ancho base general */
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    font-size: 15px;
+}
+.permissions-table thead,
+.permissions-table tr {
+    width: 100%;
+    display: table;
+    table-layout: fixed;
+}
+.permissions-table thead {
+    background: #f8f9fa;
+    border-bottom: 0px solid #e9ecef;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+@media (max-width: 600px) {
+    .permissions-table {
+        min-width: 400px; /* ancho base para móvil */
+    }
+    .permissions-table th,
+    .permissions-table td {
+        font-size: 10px;
+        padding: 8px 4px; /* un poco más de altura */
+    }
+    .table-container {
+        min-height: 380px; /* aumenta altura en responsive */
+    }
+}
+
+/* Estilos de la tabla */
+.permissions-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    font-size: 13px;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.permissions-table thead {
+    background: #f8f9fa;
+    border-bottom: 0px solid #e9ecef;
+}
+
+.permissions-table th {
+    padding: 12px 50px;
+    text-align: center;
+    font-weight: 600;
+    color: #495057;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.6px;
+    border-bottom: 1px solid #dee2e6;
+    vertical-align: middle;
+    font-family: 'Poppins', sans-serif;
+}
+
+.permissions-table tbody tr {
+    border-bottom: 1px solid #f1f3f4;
+    transition: all 0.2s ease;
+}
+
+.permissions-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.permissions-table td {
+    padding: 8px 16px;
+    vertical-align: middle;
+    color: #495057;
+    line-height: 1.2;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+}
+
+/* Alineación específica para la columna de nombres */
+.permissions-table td:first-child {
+    text-align: left;
+    font-weight: 500;
+}
+
+.permissions-table th:first-child {
+    text-align: left;
+}
+
+/* NOTA: Las distribuciones específicas de columnas por módulo 
+   se definen en archivos CSS específicos de cada módulo */
+
+/* Estilos específicos para la cabecera de detalles */
+.permissions-table th.details-header {
+    text-align: center;
+    width: 60px;
+    min-width: 60px;
+    padding: 12px 8px;
+}
+
+/* Botón de detalles */
+.details-btn {
+    background: transparent;
+    border: 1px solid #6c757d;
+    color: #6c757d;
+    border-radius: 4px;
+    padding: 6px 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 12px;
+}
+
+.details-btn:hover {
+    background-color: #6c757d;
+    color: white;
+    border-color: #6c757d;
+}
+
+/* Indicador de carga */
+.loading-row td {
+    text-align: center;
+    padding: 40px 20px !important;
+}
+
+.loading-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    color: #6c757d;
+}
+
+.spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #e9ecef;
+    border-top: 3px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-indicator p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Badges de estado y tipo */
+.status-badge, .type-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 50px;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Badges de estado */
+.status-badge.active {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-badge.inactive {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Badges de tipo */
+.type-badge.read {
+    background: #cce5ff;
+    color: #004085;
+    border: 1px solid #99d6ff;
+}
+
+.type-badge.write {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.type-badge.admin {
+    background: #e2e3e5;
+    color: #383d41;
+    border: 1px solid #d6d8db;
+}
+
+.type-badge.delete {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.type-badge.web {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+.type-badge.system {
+    background: #f8f9fa;
+    color: #495057;
+    border: 1px solid #dee2e6;
+}
+
+/* Botones de acción */
+.action-buttons {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.action-btn {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    min-width: 60px;
+    justify-content: center;
+    font-family: 'Poppins', sans-serif;
+}
+
+.action-btn.edit {
+    background: #e3f2fd;
+    color: #1976d2;
+    border: 1px solid #bbdefb;
+}
+
+.action-btn.edit:hover {
+    background: #bbdefb;
+    transform: translateY(-1px);
+}
+
+.action-btn.delete {
+    background: #ffebee;
+    color: #d32f2f;
+    border: 1px solid #ffcdd2;
+}
+
+.action-btn.delete:hover {
+    background: #ffcdd2;
+    transform: translateY(-1px);
+}
+
+/* Controles de paginación */
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3px 12px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    flex-shrink: 0;
+    margin-top: auto;
+    padding: 8px 16px 6px 16px;
+}
+
+.pagination-info {
+    color: #6c757d;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.pagination-controls {
+    display: flex;
+    gap: 6px;
+}
+
+.pagination-btn {
+    padding: 6px 10px;
+    border: 1px solid #dee2e6;
+    background: white;
+    color: #495057;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: #e9ecef;
+    border-color: #adb5bd;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Modal de permisos */
+/*
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease;
+}
+
+.modal-content h2 {
+    background: linear-gradient(180deg, #22304a 0%, #16203a 100%);
+    color: white;
+    margin: 0;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 12px 12px 0 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+*/
+
+/* Formulario de permisos */
+.permission-form {
+    padding: 16px;
+}
+
+.form-group {
+    margin-bottom: 12px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 600;
+    color: #495057;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 6px;
+    font-size: 13px;
+    transition: border-color 0.2s ease;
+    background: white;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+/* Acciones del formulario */
+.form-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    padding-top: 12px;
+    border-top: 1px solid #e9ecef;
+    margin-top: 16px;
+}
+
+.btn-cancel,
+.btn-save {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.btn-cancel {
+    background: #f8f9fa;
+    color: #6c757d;
+    border: 2px solid #e9ecef;
+}
+
+.btn-cancel:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+}
+
+.btn-save {
+    background: linear-gradient(180deg, #22304a 0%, #16203a 100%);
+    color: white;
+}
+
+.btn-save:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+/* =============================================================================
+   MODAL DE DETALLES DEL ROL - ASIGNACIÓN DE PERMISOS
+   Estilos específicos para el modal amplio de asignación de permisos
+   ============================================================================= */
+
+/* Modal base mejorado para detalles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background-color: white;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 0;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Modal específico para detalles de rol (más ancho) */
+.role-details-modal .modal-content,
+.wide-modal {
+    max-width: 850px !important;
+    width: 92% !important;
+    max-height: 88vh !important;
+}
+
+/* Header del modal optimizado */
+.modal-header {
+    background: linear-gradient(180deg, #22304a 0%, #16203a 100%);
+    color: white;
+    padding: 16px 20px;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
+.modal-header h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+    flex: 1;
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 0.3px;
+}
+
+.modal-header h2 i {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.modal-header .close-modal {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+    flex-shrink: 0;
+}
+
+.modal-header .close-modal:hover {
+    opacity: 1;
+}
+
+/* Container de búsqueda en header */
+.search-container-modal {
+    position: relative;
+    min-width: 220px;
+    max-width: 280px;
+    flex-shrink: 0;
+}
+
+.search-input-modal {
+    width: 100%;
+    padding: 6px 30px 6px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    font-size: 11px;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
+}
+
+.search-input-modal::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 11px;
+}
+
+.search-input-modal:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.search-icon-modal {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 11px;
+    pointer-events: none;
+}
+
+/* Body del modal optimizado */
+.modal-body {
+    padding: 0;
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* Container de asignación de permisos compacto */
+.permissions-assignment-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+}
+
+/* Header de la tabla de asignación más compacto */
+.assignment-header {
+    display: grid;
+    grid-template-columns: 1fr 100px 80px;
+    gap: 12px;
+    padding: 12px 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    font-weight: 600;
+    align-items: center;
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
+.assignment-title h3,
+.assignment-type h3,
+.assignment-action h3 {
+    margin: 0;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #495057;
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.assignment-title h3 {
+    text-align: left;
+}
+
+/* Lista de permisos optimizada */
+.permissions-list-container {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    background: white;
+}
+
+.permissions-assignment-list {
+    padding: 0;
+    margin: 0;
+}
+
+/* Item de permiso más compacto y alineado */
+.permission-assignment-item {
+    display: grid;
+    grid-template-columns: 1fr 100px 80px;
+    gap: 12px;
+    padding: 8px 20px;
+    border-bottom: 1px solid #f1f3f4;
+    transition: background-color 0.2s ease;
+    align-items: center;
+    box-sizing: border-box;
+    min-height: 44px;
+}
+
+.permission-assignment-item:hover {
+    background-color: #f8f9fa;
+}
+
+.permission-assignment-item:last-child {
+    border-bottom: none;
+}
+
+/* Nombre del permiso */
+.permission-name {
+    font-weight: 500;
+    color: #495057;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.3;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Tipo de permiso centrado */
+.permission-type {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Badges optimizados para el modal */
+.permission-type .type-badge {
+    font-size: 9px;
+    padding: 3px 6px;
+    border-radius: 3px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    line-height: 1;
+    white-space: nowrap;
+    border-width: 1px;
+    border-style: solid;
+}
+
+/* Container del checkbox centrado */
+.permission-checkbox-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+}
+
+/* Checkbox personalizado y compacto */
+.permission-checkbox {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: #22304a;
+    flex-shrink: 0;
+}
+
+.permission-checkbox:checked {
+    background-color: #22304a;
+    border-color: #22304a;
+}
+
+
+
+/* Footer del modal compacto */
+.modal-footer {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    padding: 16px 20px;
+    border-top: 1px solid #e9ecef;
+    background: white;
+    border-radius: 0 0 12px 12px;
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
+/* Indicador de carga en modal */
+.modal-body .loading-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    color: #6c757d;
+    min-height: 200px;
+}
+
+.modal-body .loading-indicator .spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #22304a;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+/* Mensaje cuando no hay permisos */
+#no-permissions-message {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+}
+
+/* Animación de entrada del modal */
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) translateY(-30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) translateY(0) scale(1);
+    }
+}
+
+/* Responsive optimizado para modal amplio */
+@media (max-width: 768px) {
+    .role-details-modal .modal-content,
+    .wide-modal {
+        width: 95% !important;
+        max-width: 95% !important;
+        margin: 1% auto !important;
+        max-height: 92vh !important;
+    }
+    
+    .modal-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+        padding: 14px 16px;
+    }
+    
+    .modal-header h2 {
+        justify-content: space-between;
+        font-size: 1.1rem;
+    }
+    
+    .search-container-modal {
+        min-width: auto;
+        max-width: none;
+    }
+    
+    .assignment-header {
+        grid-template-columns: 1fr 70px 60px;
+        gap: 8px;
+        padding: 10px 16px;
+    }
+    
+    .permission-assignment-item {
+        grid-template-columns: 1fr 70px 60px;
+        gap: 8px;
+        padding: 8px 16px;
+        min-height: 40px;
+    }
+    
+    .assignment-title h3,
+    .assignment-type h3,
+    .assignment-action h3 {
+        font-size: 9px;
+    }
+    
+    .permission-name {
+        font-size: 11px;
+    }
+    
+    .permission-checkbox {
+        width: 14px;
+        height: 14px;
+    }
+    
+    .modal-footer {
+        padding: 14px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .assignment-header {
+        grid-template-columns: 1fr 50px 45px;
+        gap: 6px;
+        padding: 8px 12px;
+    }
+    
+    .permission-assignment-item {
+        grid-template-columns: 1fr 50px 45px;
+        gap: 6px;
+        padding: 6px 12px;
+        min-height: 36px;
+    }
+    
+    .modal-header {
+        padding: 12px 14px;
+    }
+    
+    .modal-footer {
+        padding: 12px 14px;
+    }
+}
+
+/* =============================================================================
+   TYPOGRAPHY ENHANCEMENTS WITH POPPINS
+   Mejoras tipográficas específicas con fuente Poppins
+   ============================================================================= */
+
+/* Aplicación específica de Poppins a elementos del sistema */
+p, span, div, a, li, ul, ol {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Elementos de texto específicos */
+.no-results-message h3,
+.no-results-message p {
+    font-family: 'Poppins', sans-serif;
+}
+
+.no-results-message h3 {
+    font-weight: 600;
+}
+
+.no-results-message p {
+    font-weight: 400;
+}
+
+/* Elementos de búsqueda adicionales */
+.search-input::placeholder {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Botones especiales y elementos de interfaz */
+.clear-search-btn {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Opciones de select */
+.form-group select option {
+    font-family: 'Poppins', sans-serif;
+    padding: 8px 12px;
+    background: white;
+    color: #495057;
+}
+
+/* Elementos responsivos específicos */
+@media (max-width: 768px) {
+    /* Mantener Poppins en elementos responsive */
+    .form-group select {
+        font-family: 'Poppins', sans-serif;
+    }
+    
+    .form-group input {
+        font-family: 'Poppins', sans-serif;
+    }
+    
+    .form-group label {
+        font-family: 'Poppins', sans-serif;
+    }
+}
+
+@media (max-width: 480px) {
+    .card-header h3 {
+        font-family: 'Poppins', sans-serif !important;
+    }
+}
+
+/* =============================================================================
+   EMERGENCY MODULE MAIN STYLES
+   Estilos principales del módulo de emergencia
+   ============================================================================= */
+
+/* Cards container */
+.cards-container {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)) !important;
+    gap: 24px !important;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    padding: 10px !important;
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef;
+}
+
+.card:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+.emergency-header .card-header,
+.header-emergencia .card-header {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    color: white;
+}
+
+.card-header {
+    padding: 20px 24px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.1;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="white"/><circle cx="80" cy="20" r="2" fill="white"/><circle cx="20" cy="80" r="2" fill="white"/><circle cx="80" cy="80" r="2" fill="white"/><circle cx="50" cy="50" r="2" fill="white"/></svg>');
+}
+
+.card-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    font-family: 'Poppins', sans-serif;
+}
+
+.card-header i {
+    margin-right: 12px;
+    font-size: 1.4rem;
+    opacity: 0.9;
+}
+
+.card-body {
+    padding: 24px;
+}
+
+.card-body label {
+    display: block;
+    margin-bottom: 8px;
+    color: #2b3962;
+    font-weight: 600;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.card-body input[type="tel"],
+.card-body input[type="text"],
+.card-body input[type="email"] {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background-color: #fff;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+.card-body input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+.card-body p {
+    color: #6c757d;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+.form-message {
+    margin-top: 8px;
+    font-size: 0.85rem;
+    padding: 8px 12px;
+    border-radius: 6px;
+    display: none;
+    font-family: 'Poppins', sans-serif;
+}
+
+.form-message.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    display: block;
+}
+
+.form-message.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    display: block;
+}
+
+.form-message.info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+    display: block;
+}
+
+.card-footer {
+    padding: 20px 24px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.btn-cancel,
+.btn-save,
+.btn-create,
+.btn-list,
+.btn-edit,
+.btn-delete {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    min-width: 100px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+}
+
+.btn-cancel {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-cancel:hover {
+    background-color: #5a6268;
+    transform: translateY(-1px);
+}
+
+.btn-save {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-save:hover {
+    background-color: #218838;
+    transform: translateY(-1px);
+}
+
+.btn-create {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-create:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+}
+
+.btn-list {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.btn-list:hover {
+    background-color: #138496;
+    transform: translateY(-1px);
+}
+
+.btn-edit {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.btn-edit:hover {
+    background-color: #e0a800;
+    transform: translateY(-1px);
+}
+
+.btn-delete {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-delete:hover {
+    background-color: #c82333;
+    transform: translateY(-1px);
+}
+
+.btn-cancel:disabled,
+.btn-save:disabled,
+.btn-create:disabled,
+.btn-list:disabled,
+.btn-edit:disabled,
+.btn-delete:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.btn-loading {
+    position: relative;
+    color: transparent !important;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: button-spin 1s linear infinite;
+}
+
+@keyframes button-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 10000;
+    display: none;
+    animation: fadeIn 0.3s, fadeOut 0.3s 2.7s;
+    animation-fill-mode: forwards;
+    max-width: 350px;
+    word-wrap: break-word;
+    font-family: 'Poppins', sans-serif;
+}
+
+.toast.show {
+    display: block;
+}
+
+.toast.success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.toast.error {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.toast.info {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.toast.warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    color: #ffffff;
+}
+
+.configuration-content {
+    padding: 10px;
+    min-height: calc(100vh - 140px);
+    flex: 1;
+    overflow-y: auto;
+}
+
+@media (max-width: 1024px) {
+    .cards-container {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+        gap: 20px !important;
+        padding: 0 10px !important;
+    }
+    .configuration-content {
+        padding: 15px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .cards-container {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+        padding: 0 !important;
+    }
+    .configuration-content {
+        padding: 10px !important;
+    }
+    .card-footer {
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+    .card-footer button {
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .card-header {
+        padding: 16px 20px !important;
+    }
+    .card-body {
+        padding: 20px !important;
+    }
+    .card-footer {
+        padding: 16px 20px !important;
+    }
+    .card-header h3 {
+        font-size: 1.1rem !important;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.card:nth-child(1) { animation-delay: 0.1s; }
+.card:nth-child(2) { animation-delay: 0.2s; }
+.card:nth-child(3) { animation-delay: 0.3s; }
+.card:nth-child(4) { animation-delay: 0.4s; }
+
+/* =============================================================================
+   OPTIMIZATION FOR ROLES TABLE CONSISTENCY
+   Optimización para consistencia de tabla de roles
+   ============================================================================= */
+
+/* Asegurar que todas las filas de tabla tengan altura consistente y compacta */
+.permissions-table tbody tr,
+.roles-table tbody tr {
+    height: 48px; /* Altura fija para consistencia */
+    min-height: 48px;
+    max-height: 48px;
+}
+
+/* Padding compacto para celdas de tabla */
+.permissions-table td,
+.roles-table td {
+    padding: 8px 16px; /* Reducido de 10px a 8px para mayor compacidad */
+    vertical-align: middle;
+    color: #495057;
+    line-height: 1.2; /* Reducido de 1.3 a 1.2 para mayor compacidad */
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    white-space: nowrap; /* Evitar salto de línea */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Botones de acción más compactos */
+.action-btn {
+    padding: 4px 8px; /* Reducido de 6px 10px a 4px 8px */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    min-width: 55px; /* Reducido de 60px a 55px */
+    justify-content: center;
+    font-family: 'Poppins', sans-serif;
+    height: 28px; /* Altura fija para consistencia */
+}
+
+/* Botón de detalles más compacto */
+.details-btn {
+    background: transparent;
+    border: 1px solid #6c757d;
+    color: #6c757d;
+    border-radius: 4px;
+    padding: 4px 6px; /* Reducido de 6px 8px a 4px 6px */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 11px; /* Reducido de 12px a 11px */
+    height: 28px; /* Altura fija para consistencia */
+    width: 32px; /* Ancho fijo para consistencia */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Badges más compactos */
+.status-badge, .type-badge {
+    padding: 3px 8px; /* Reducido de 4px 10px a 3px 8px */
+    border-radius: 12px;
+    font-size: 9px; /* Reducido de 10px a 9px */
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 45px; /* Reducido de 50px a 45px */
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    height: 20px; /* Altura fija para consistencia */
+    line-height: 1;
+}
+
+/* Container de botones de acción más compacto */
+.action-buttons {
+    display: flex;
+    gap: 4px; /* Reducido de 6px a 4px */
+    align-items: center;
+    justify-content: flex-start;
+    height: 32px; /* Altura fija para el contenedor */
+}
+
+/* Asegurar alineación vertical en todas las columnas */
+.permissions-table th,
+.permissions-table td {
+    vertical-align: middle;
+}
+
+/* Optimización responsive para compacidad */
+@media (max-width: 768px) {
+    .permissions-table tbody tr,
+    .roles-table tbody tr {
+        height: 44px; /* Ligeramente más compacto en mobile */
+        min-height: 44px;
+        max-height: 44px;
+    }
+    
+    .permissions-table td,
+    .roles-table td {
+        padding: 6px 8px; /* Aún más compacto en mobile */
+        font-size: 12px;
+    }
+    
+    .action-btn {
+        padding: 3px 6px;
+        font-size: 9px;
+        min-width: 45px;
+        height: 24px;
+    }
+    
+    .details-btn {
+        padding: 3px 5px;
+        font-size: 10px;
+        height: 24px;
+        width: 28px;
+    }
+    
+    .status-badge, .type-badge {
+        padding: 2px 6px;
+        font-size: 8px;
+        min-width: 40px;
+        height: 18px;
+    }
+}
+
+/* =============================================================================
+   ROLES TABLE ALIGNMENT FIX
+   Corrección específica para alineación de tabla de roles
+   ============================================================================= */
+
+/* Asegurar alineación perfecta entre header y body de la tabla */
+.permissions-table thead tr,
+.permissions-table tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+/* Forzar el ancho exacto de las columnas para consistencia */
+.permissions-table thead th,
+.permissions-table tbody td {
+    display: table-cell;
+    vertical-align: middle;
+    box-sizing: border-box;
+}
+
+/* Definición exacta de anchos de columna para alineación perfecta */
+.permissions-table th:nth-child(1),
+.permissions-table td:nth-child(1) {
+    width: 20% !important;
+    min-width: 220px !important;
+    text-align: left !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+}
+
+.permissions-table th:nth-child(2),
+.permissions-table td:nth-child(2) {
+    width: 11% !important;
+    min-width: 100px !important;
+    text-align: center !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+}
+
+.permissions-table th:nth-child(3),
+.permissions-table td:nth-child(3) {
+    width: 25% !important;
+    min-width: 100px !important;
+    text-align: center !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+}
+
+.permissions-table th:nth-child(4),
+.permissions-table td:nth-child(4) {
+    text-align: left !important;
+    width: 12% !important;
+    min-width: 80px !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+}
+
+.permissions-table th:nth-child(5),
+.permissions-table td:nth-child(5) {
+    width: 11% !important;
+    min-width: 180px !important;
+    text-align: left !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+}
+
+/* Override para eliminar conflictos previos */
+.permissions-table th:nth-child(2),
+.permissions-table td:nth-child(2) {
+    padding-right: 8px !important; /* Override del padding-right: 70px anterior */
+}
+
+.permissions-table th:nth-child(3),
+.permissions-table td:nth-child(3) {
+    padding-right: 8px !important; /* Override del padding-right: 80px anterior */
+}
+
+.permissions-table th:nth-child(5),
+.permissions-table td:nth-child(5) {
+    padding-right: 16px !important; /* Override del padding-right: 90px anterior */
+}
+
+/* Responsive para tabla de roles */
+@media (max-width: 768px) {
+    .permissions-table th:nth-child(1),
+    .permissions-table td:nth-child(1) {
+        width: 35% !important;
+        min-width: 140px !important;
+    }
+    
+    .permissions-table th:nth-child(2),
+    .permissions-table td:nth-child(2) {
+        width: 15% !important;
+        min-width: 70px !important;
+    }
+    
+    .permissions-table th:nth-child(3),
+    .permissions-table td:nth-child(3) {
+        width: 15% !important;
+        min-width: 70px !important;
+    }
+    
+    .permissions-table th:nth-child(4),
+    .permissions-table td:nth-child(4) {
+        width: 10% !important;
+        min-width: 50px !important;
+    }
+    
+    .permissions-table th:nth-child(5),
+    .permissions-table td:nth-child(5) {
+        width: 25% !important;
+        min-width: 120px !important;
+    }
+}
+
+/* Alineación específica para columna de Detalles */
+
+
+.permissions-table td:nth-child(4) {
+    text-align: left !important;
+}
+
+.permissions-table td:nth-child(4) .details-btn {
+    margin: 0;
+    display: inline-flex;
+}
+
+/* Alineación específica para columna de Acciones */
+.permissions-table th:nth-child(5) {
+    text-align: left !important;
+}
+
+.permissions-table td:nth-child(5) {
+    text-align: left !important;
+}
+
+.permissions-table td:nth-child(5) .action-buttons {
+    justify-content: flex-start;
+    align-items: center;
+    margin: 0;
+}
+
+/* =============================================================================
+   FILTERS CONTAINER - CHECKBOXES FOR STATUS AND TYPE
+   Contenedor de filtros con checkboxes para estado y tipo
+   ============================================================================= */
+
+/* Container principal de filtros */
+.filters-container {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-left: 16px;
+    flex-wrap: wrap;
+}
+
+/* Grupo de filtros (Estado / Tipo) */
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Etiqueta del grupo de filtros */
+.filter-label {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 11px;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+/* Container de checkboxes */
+.filter-checkboxes {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* Estilo para checkbox de filtro */
+.filter-checkbox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.9);
+    font-family: 'Poppins', sans-serif;
+    gap: 6px;
+    transition: all 0.2s ease;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.filter-checkbox:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.filter-checkbox input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.filter-checkbox .checkmark {
+    height: 12px;
+    width: 12px;
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 2px;
+    position: relative;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.filter-checkbox:hover .checkmark {
+    background-color: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.filter-checkbox input:checked ~ .checkmark {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+}
+
+.filter-checkbox .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 3px;
+    top: 0px;
+    width: 3px;
+    height: 6px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.filter-checkbox input:checked ~ .checkmark:after {
+    display: block;
+}
+
+.filter-checkbox .checkbox-label {
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+}
+
+/* Estado checked del filtro */
+.filter-checkbox input:checked ~ .checkbox-label {
+    color: white;
+    font-weight: 600;
+}
+
+.filter-checkbox input:checked {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Responsive para filtros */
+@media (max-width: 768px) {
+    .filters-container {
+        flex-direction: column;
+        gap: 8px;
+        margin-left: 0;
+        margin-top: 8px;
+        width: 100%;
+    }
+    
+    .filter-group {
+        justify-content: flex-start;
+        width: 100%;
+    }
+    
+    .filter-checkboxes {
+        gap: 8px;
+    }
+    
+    .filter-checkbox {
+        font-size: 9px;
+        padding: 3px 6px;
+    }
+    
+    .filter-checkbox .checkmark {
+        height: 10px;
+        width: 10px;
+    }
+    
+    .filter-checkbox .checkmark:after {
+        left: 2px;
+        top: -1px;
+        width: 2px;
+        height: 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .permissions-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+    }
+    
+    .permissions-header-left {
+        order: 1;
+    }
+    
+    .permissions-header-right {
+        order: 2;
+        justify-content: center;
+    }
+    
+    .filters-container {
+        margin-left: 0;
+        margin-top: 0;
+    }
+}
+
+

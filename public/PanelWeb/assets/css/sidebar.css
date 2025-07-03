@@ -1,6 +1,20 @@
+/* =============================================================================
+   GOOGLE FONTS IMPORT - POPPINS
+   Importación de fuente Poppins para todo el sistema
+   ============================================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+/* =============================================================================
+   GLOBAL TYPOGRAPHY CONFIGURATION
+   Configuración tipográfica global con Poppins para sidebar
+   ============================================================================= */
+* {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
 /* Sidebar principal */
 .sidebar {
-    width: 250px;
+    width: 220px;
     background: linear-gradient(180deg, #22304a 0%, #16203a 100%);
     backdrop-filter: blur(12px);
     color: #ecf0f1;
@@ -31,7 +45,7 @@
 
 /* Estado colapsado - comportamiento diferente en desktop vs móvil */
 .sidebar.collapsed {
-    left: -250px; /* Para desktop - solo se oculta parcialmente pero no se usa realmente */
+    left: -220px; /* Para desktop - solo se oculta parcialmente pero no se usa realmente */
 }
 
 /* Encabezado del sidebar */
@@ -42,7 +56,7 @@
     justify-content: center;
     align-items: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-    height: 65px;
+    height: 48px;
     min-height: 0;
     position: relative;
     z-index: 2;
@@ -64,19 +78,20 @@
     margin: 0;
     padding: 0;
     background: none;
-    font-size: 1.75rem;
+    font-size: 1.1rem;
     font-weight: 700;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.2px;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
     z-index: 3;
+    font-family: 'Poppins', sans-serif;
 }
 
 .sidebar-header .sidebar-toggle {
     position: absolute;
-    right: 15px;
+    right: 12px;
     top: 50%;
     transform: translateY(-50%);
     z-index: 4;
@@ -85,8 +100,8 @@
 
 .sidebar-logo-img {
     display: inline-block;
-    width:140px;
-    height: 100px;
+    width: 85px;
+    height: 60px;
     background-image: url("../../assets/Recourse/logo/2.png");
     background-size: contain;
     background-repeat: no-repeat;
@@ -103,7 +118,7 @@
 /* Menú del sidebar */
 .sidebar-menu {
     flex: 1;
-    padding: 24px 0;
+    padding: 10px 0;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
@@ -118,23 +133,24 @@
 }
 
 .sidebar-menu li {
-    margin-bottom: 8px;
+    margin-bottom: 3px;
     position: relative;
 }
 
 .sidebar-menu li a {
     display: flex;
     align-items: center;
-    margin: 0 16px;
-    border-radius: 14px;
-    padding: 14px 18px;
+    margin: 0 12px;
+    border-radius: 10px;
+    padding: 10px 14px;
     color: rgba(255, 255, 255, 0.9);
     text-decoration: none;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-weight: 500;
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     position: relative;
     overflow: hidden;
+    font-family: 'Poppins', sans-serif;
 }
 
 .sidebar-menu li a::before {
@@ -151,13 +167,13 @@
 }
 
 .sidebar-menu li a i {
-    margin-right: 14px;
-    width: 20px;
-    height: 20px;
+    margin-right: 10px;
+    width: 16px;
+    height: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
+    font-size: 13px;
     position: relative;
     z-index: 1;
 }
@@ -183,6 +199,28 @@
 .sidebar-menu li.active a::before {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
     opacity: 1;
+}
+
+
+/* Mejoras visuales para submenus */
+.sidebar-menu .has-submenu.open .submenu {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estilo para la flecha cuando el submenu está abierto */
+.sidebar-menu .has-submenu.open .submenu-arrow {
+    color: #3498db;
 }
 
 /* Estilos de scrollbar para webkit browsers (Chrome, Safari, Edge) */
@@ -232,13 +270,13 @@
 /* Submenú */
 .sidebar-menu .submenu {
     display: none;
-    padding-left: 5px;
-    margin-right: 20px;
+    padding-left: 3px;
+    margin-right: 14px;
     width: auto;
-    min-width: 170px;
-    margin-left: 35px;
+    min-width: 150px;
+    margin-left: 18px;
     background: rgba(65, 96, 146, 0.322);
-    border-radius: 15px;
+    border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     overflow: visible;
 }
@@ -247,27 +285,51 @@
     display: block;
 }
 
+/* Estilo base para submenús */
 .sidebar-menu .submenu li a {
-    padding: 8px 11px;
-    margin: 2px 2px;
+    padding: 5px 8px;
+    margin: 1px 2px;
     transition: all 0.2s ease;
     white-space: nowrap;
     display: flex;
     align-items: center;
     justify-content: flex-start;
+    color: rgba(255, 255, 255, 0.9);
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.8rem;
 }
 
+/* Hover para submenús normales */
 .sidebar-menu .submenu li a:hover {
     background: rgba(255, 255, 255, 0.08);
     color: #fff;
     transform: translateX(0px);
 }
 
+/* Solo el submenú con clase active debe tener color celeste */
+.sidebar-menu .submenu li.active a {
+    background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%) !important;
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.25) !important;
+    color: #ffffff !important;
+    transform: translateX(2px) !important;
+}
+
+.sidebar-menu .submenu li.active a i {
+    color: #ffffff !important;
+}
+
+/* Evitar que el hover sobrescriba el estilo activo */
+.sidebar-menu .submenu li.active a:hover {
+    background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%) !important;
+    color: #ffffff !important;
+    transform: translateX(2px) !important;
+}
+
 .sidebar-menu .submenu li a i {
-    width: 16px;
-    height: 16px;
-    font-size: 14px;
-    margin-right: 10px;
+    width: 12px;
+    height: 12px;
+    font-size: 11px;
+    margin-right: 6px;
 }
 
 /* Submenu styles */
@@ -277,7 +339,7 @@
 
 .submenu-arrow {
     margin-left: auto;
-    font-size: 12px;
+    font-size: 10px;
     transition: transform 0.3s ease;
 }
 
@@ -292,7 +354,7 @@
 
 /* Pie del sidebar */
 .sidebar-footer {
-    padding: 20px;
+    padding: 12px;
     border-top: 1px solid rgba(255, 255, 255, 0.12);
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
     position: relative;
@@ -314,17 +376,18 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 5px;
     background-color: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 6px;
-    padding: 12px 16px;
+    border-radius: 5px;
+    padding: 8px 12px;
     color: #ffffff;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
     text-decoration: none;
+    font-family: 'Poppins', sans-serif;
 }
 
 .logout-btn:hover {
@@ -342,15 +405,15 @@
     background: none;
     border: none;
     color: #ffffff;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     cursor: pointer;
-    padding: 10px;
+    padding: 8px;
     transition: all 0.2s ease;
 }
 
 .sidebar-toggle:hover {
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
+    border-radius: 3px;
 }
 
 /* Ajustes para pantallas muy pequeñas */
@@ -370,6 +433,7 @@
         margin: 6px 8px;
         padding: 14px 16px;
         font-size: 15px;
+        font-family: 'Poppins', sans-serif;
     }
 
     .sidebar-menu li a i {
@@ -391,6 +455,7 @@
         margin: 1px 6px;
         font-size: 14px;
         border-radius: 8px;
+        font-family: 'Poppins', sans-serif;
     }    .submenu li a i {
              width: 18px;
              height: 18px;
@@ -402,6 +467,7 @@
     .logout-btn {
         padding: 16px 20px;
         font-size: 1rem;
+        font-family: 'Poppins', sans-serif;
     }
 }
 
@@ -413,6 +479,7 @@
     }    .sidebar-header h2 {
              font-size: 1.1rem;
              font-weight: 600;
+             font-family: 'Poppins', sans-serif;
          }
 
     .sidebar-menu li a {
@@ -420,6 +487,7 @@
         padding: 12px 14px;
         font-size: 14px;
         border-radius: 10px;
+        font-family: 'Poppins', sans-serif;
     }
 
     .sidebar-menu li a i {
@@ -443,6 +511,7 @@
         margin: 1px 4px;
         font-size: 13px;
         border-radius: 6px;
+        font-family: 'Poppins', sans-serif;
     }
 
     .submenu li a:hover {
@@ -470,12 +539,13 @@
         padding: 14px 16px;
         font-size: 0.9rem;
         border-radius: 10px;
+        font-family: 'Poppins', sans-serif;
     }
 }
 
 /* Estado colapsado del sidebar */
 .sidebar.collapsed {
-    left: -250px; /* Ocultar completamente hacia la izquierda */
+    left: -220px; /* Ocultar completamente hacia la izquierda */
 }
 
 /* Cuando el sidebar está colapsado, el contenido principal debe ocupar todo el ancho */
@@ -547,7 +617,27 @@
 
     /* El contenido principal siempre debe tener margen para el sidebar */
     .main-content {
-        margin-left: 250px !important;
-        width: calc(100% - 250px) !important;
+        margin-left: 220px !important;
+        width: calc(100% - 220px) !important;
     }
+}
+
+.permission-indicator {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 6px;
+    margin-right: 0;
+    position: relative;
+    top: 1px;
+    /* Evita que el icono cause salto de línea */
+    white-space: nowrap;
+}
+.permission-indicator i {
+    margin: 0 0 0 8px !important; /* margen izquierdo para separar del texto */
+    padding: 0 !important;
+    font-size: 13px !important;
+    color: #dc3545 !important;
+    vertical-align: middle;
+    position: relative;
+    left: 0;
 }

@@ -1,94 +1,150 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 /* ===== ESTILOS ESPECÍFICOS PARA ADMISIÓN DE CONDUCTORES ===== */
 
-/* Tabla específica de conductores */
+/* =============================================================================
+   POPPINS FONT APPLICATION FOR ADMISSION CONTROL MODULE
+   Aplicación de fuente Poppins para el módulo de control de admisión
+   ============================================================================= */
+* {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+/* Tabla específica de conductores - Diseño compacto consistente con configuración */
 .drivers-table {
     width: 100%;
     border-collapse: collapse;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
-    backdrop-filter: blur(16px);
-    border-spacing: 0;
-    border: none;
-    border-radius: 0px;
-    overflow: hidden;
-    box-shadow: none;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: white;
+    font-size: 13px;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.drivers-table thead {
+    background: #f8f9fa;
+    border-bottom: 0px solid #e9ecef;
+    position: sticky;
+    top: 0;
+    z-index: 2;
 }
 
 .drivers-table th {
-    padding:10px 12px;
-    text-align: left;
+    padding: 12px 16px;
+    text-align: center;
     font-weight: 600;
+    color: #495057;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.6px;
+    border-bottom: 1px solid #dee2e6;
     vertical-align: middle;
-    color: #ecf0f1;
-    background: linear-gradient(180deg, #314272 0%, #314479 100%);
-    backdrop-filter: blur(16px);
-    border: none;
-    letter-spacing: 0.5px;
-    font-size: 0.9em;
-    position: sticky;
-    z-index: 90;
-    box-shadow: none;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    -webkit-position: sticky;
+    font-family: 'Poppins', sans-serif;
 }
 
-/* Definir anchos específicos para tabla de conductores */
-.drivers-table th:nth-child(1) { width: 30%; min-width: 250px; } /* Nombre */
-.drivers-table th:nth-child(2) { width: 15%; min-width: 120px; } /* DNI */
+/* Definir anchos específicos para tabla de conductores - patrón Configuration.css */
+.drivers-table th:nth-child(1) { width: 35%; min-width: 220px; } /* Nombre */
+.drivers-table th:nth-child(2) { width: 15%; min-width: 100px; } /* DNI */
 .drivers-table th:nth-child(3) { width: 15%; min-width: 100px; } /* Placa */
 .drivers-table th:nth-child(4) { width: 20%; min-width: 180px; } /* Contacto */
-.drivers-table th:nth-child(5) { width: 15%; min-width: 150px; } /* Acciones */
+.drivers-table th:nth-child(5) { width: 15%; min-width: 120px; } /* Acciones */
+
+/* Alineación específica por columna - igual que Configuration.css */
+.drivers-table th:first-child,
+.drivers-table td:first-child {
+    text-align: left;
+    font-weight: 500;
+}
+
+.drivers-table th:nth-child(2),
+.drivers-table td:nth-child(2) {
+    text-align: right;
+    padding-right: 70px;
+}
+
+.drivers-table th:nth-child(3),
+.drivers-table td:nth-child(3) {
+    text-align: right;
+    padding-right: 80px;
+}
+
+.drivers-table th:nth-child(4),
+.drivers-table td:nth-child(4) {
+    text-align: right;
+    padding-right: 90px;
+}
+
+.drivers-table th:nth-child(5),
+.drivers-table td:nth-child(5) {
+    text-align: center;
+}
+
+/* Asegurar que el contenido de las celdas simples respete la alineación */
+.drivers-table td:nth-child(2) .cell-content,
+.drivers-table td:nth-child(3) .cell-content,
+.drivers-table td:nth-child(4) .cell-content {
+    text-align: inherit;
+    width: 100%;
+}
+
+.drivers-table tbody tr {
+    border-bottom: 1px solid #f1f3f4;
+    transition: all 0.2s ease;
+}
+
+.drivers-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
 
 .drivers-table td {
-    padding: 12px 15px;
-    border: none;
-    border-bottom: none;
+    padding: 10px 16px;
     vertical-align: middle;
-    height: auto;
-    min-height: 40px;
-    background: transparent;
-    color: #374151;
-    font-weight: 500;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: #495057;
+    line-height: 1.3;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    border-bottom: none;
+    height: 60px; /* Altura fija para alineación */
 }
 
 .driver-row {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.8) 100%);
-    backdrop-filter: blur(10px);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border-bottom: none;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f1f3f4;
+    height: 60px; /* Altura fija para todas las filas */
 }
 
 .driver-row:hover {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(241, 245, 249, 0.9) 100%);
-    transform: none;
-    box-shadow: none;
+    background-color: #f8f9fa;
 }
 
 /* Columna específica de nombre con avatar para conductores */
 .driver-name {
     display: flex;
     align-items: center;
-    gap: 19px;
+    gap: 12px;
     width: 100%;
-    min-height: 40px;
+    height: 100%; /* Usar toda la altura disponible */
+    text-align: left;
+}
+
+/* La columna de acciones debe estar centrada */
+.drivers-table td:nth-child(5) .actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
 }
 
 .avatar {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
     overflow: hidden;
-    background: linear-gradient(135deg, #2b3962 0%, #1e2a4a 100%);
+    background: #e9ecef;
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: none;
-    box-shadow: none;
-    transition: transform 0.3s ease;
+    border: 1px solid #dee2e6;
+    transition: transform 0.2s ease;
 }
 
 .avatar:hover {
@@ -103,21 +159,20 @@
 
 .driver-name span {
     flex: 1;
-    font-weight: 600;
-    color: #374151;
+    font-weight: 500;
+    color: #495057;
     line-height: 1.3;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     letter-spacing: 0.3px;
-    font-size: 14px;
-    text-shadow: none;
+    font-size: 13px;
 }
 
-/* Botones de acción mejorados */
+/* Botones de acción compactos consistentes con tablas de configuración */
 .actions {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     justify-content: center;
     align-items: center;
     white-space: nowrap;
@@ -125,29 +180,57 @@
 }
 
 .actions .btn {
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    margin: 0;
+    padding: 6px 10px;
     border: none;
-    border-radius: 8px;
+    border-radius: 4px;
     cursor: pointer;
-    display: inline-flex;
+    font-size: 10px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
     align-items: center;
+    gap: 3px;
+    min-width: 60px;
     justify-content: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-    backdrop-filter: blur(10px);
-    box-shadow: none;
+    font-family: 'Poppins', sans-serif;
+}
+
+.actions .btn.view {
+    background: #e3f2fd;
+    color: #1976d2;
+    border: 1px solid #bbdefb;
+}
+
+.actions .btn.view:hover {
+    background: #bbdefb;
+    transform: translateY(-1px);
+}
+
+.actions .btn.edit {
+    background: #e8f5e8;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+.actions .btn.edit:hover {
+    background: #c8e6c9;
+    transform: translateY(-1px);
+}
+
+.actions .btn.delete {
+    background: #ffebee;
+    color: #d32f2f;
+    border: 1px solid #ffcdd2;
+}
+
+.actions .btn.delete:hover {
+    background: #ffcdd2;
+    transform: translateY(-1px);
 }
 
 .actions .btn i {
-    font-size: 14px;
+    font-size: 12px;
     line-height: 1;
-    position: relative;
-    z-index: 1;
-    transition: transform 0.3s ease;
 }
 
 .actions .btn:hover i {
@@ -487,64 +570,39 @@
     animation: fadeIn 0.3s ease-out;
 }
 
+/* Indicador de carga compacto consistente con configuración */
 .loading-row td {
-    padding: 0;
-    border: none;
-    background: transparent;
+    text-align: center;
+    padding: 40px 20px !important;
 }
 
 .loading-indicator {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 40px 20px;
-    background: rgba(255, 255, 255, 0.95);
-    /* backdrop-filter: blur(15px); - Eliminado para prevenir overlay sobre tabla */
-    border-radius: 8px;
-    text-align: center;
-    min-height: 150px;
-    margin: 8px;
-    border: 1px solid rgba(43, 57, 98, 0.1);
-    /* box-shadow: 0 2px 8px rgba(43, 57, 98, 0.1); - Eliminado para reducir efectos visuales */
+    gap: 15px;
+    color: #6c757d;
 }
 
-.loading-indicator p {
-    margin: 20px 0 0 0;
-    color: rgba(43, 57, 98, 0.8);
-    font-size: 1.1em;
-    font-weight: 500;
-    letter-spacing: 0.025em;
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-}
-
-/* Spinner animado */
 .spinner {
-    width: 50px;
-    height: 50px;
-    border: 4px solid rgba(43, 57, 98, 0.1);
-    border-top: 4px solid rgba(43, 57, 98, 0.8);
+    width: 32px;
+    height: 32px;
+    border: 3px solid #e9ecef;
+    border-top: 3px solid #667eea;
     border-radius: 50%;
     animation: spin 1s linear infinite;
-    position: relative;
-}
-
-.spinner::before {
-    content: '';
-    position: absolute;
-    top: -4px;
-    left: -4px;
-    right: -4px;
-    bottom: -4px;
-    border: 2px solid transparent;
-    border-top: 2px solid rgba(31, 42, 73, 0.4);
-    border-radius: 50%;
-    animation: spin 2s linear infinite reverse;
 }
 
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+.loading-indicator p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif;
 }
 
 /* Estados del loading indicator */
@@ -573,15 +631,18 @@
 }
 
 .toast.success {
-    background-color: #10b981;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 .toast.error {
-    background-color: #ef4444;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 .toast.warning {
-    background-color: #f59e0b;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    border: 1px solid rgba(245, 158, 11, 0.3);
     color: #ffffff;
 }
 
@@ -771,6 +832,43 @@
     box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
 }
 
+/* =============================================================================
+   CONTENEDOR PRINCIPAL COMPACTO CONSISTENTE CON CONFIGURACIÓN
+   ============================================================================= */
+
+/* Contenedor principal de la tabla de conductores */
+.content {
+    padding: 10px;
+    min-height: calc(100vh - 200px);
+}
+
+.panel {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: 920px;
+    min-height: 400px;
+}
+
+/* Contenedor de tabla responsive */
+.table-container {
+    overflow-x: auto;
+    background: white;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+    width: 100%;
+}
+
+/* =============================================================================
+   TABLA DE CONDUCTORES CON DISEÑO COMPACTO
+   ============================================================================= */
+
 /* Responsive */
 @media (max-width: 992px) {
     .main-content {
@@ -805,26 +903,61 @@
         display: none;
     }
     
-    /* Reajustar anchos */
+    /* Reajustar anchos manteniendo alineaciones */
     .drivers-table th:nth-child(1) { width: 45%; min-width: 200px; }
     .drivers-table th:nth-child(2) { width: 20%; min-width: 100px; }
     .drivers-table th:nth-child(3) { width: 20%; min-width: 80px; }
     .drivers-table th:nth-child(5) { width: 15%; min-width: 120px; }
     
+    /* Mantener alineaciones específicas */
+    .drivers-table th:nth-child(2),
+    .drivers-table td:nth-child(2) {
+        text-align: right;
+        padding-right: 50px; /* Reducido para tablet */
+    }
+    
+    .drivers-table th:nth-child(3),
+    .drivers-table td:nth-child(3) {
+        text-align: right;
+        padding-right: 60px; /* Reducido para tablet */
+    }
+    
+    /* Asegurar que el contenido de las celdas simples respete la alineación en tablet */
+    .drivers-table td:nth-child(2) .cell-content,
+    .drivers-table td:nth-child(3) .cell-content {
+        text-align: inherit;
+        width: 100%;
+    }
+    
     .drivers-table th,
     .drivers-table td {
-        padding: 10px 12px;
-        font-size: 13px;
+        padding: 8px 10px;
+        font-size: 12px;
+        height: 50px; /* Altura reducida para tablet */
+    }
+    
+    .driver-row {
+        height: 50px;
     }
     
     .avatar {
-        width: 35px;
-        height: 35px;
+        width: 24px;
+        height: 24px;
     }
     
     .driver-name span {
-        font-size: 13px;
-    }    /* Responsive para modals en tablet */
+        font-size: 12px;
+    }
+    
+    .actions .btn {
+        padding: 4px 8px;
+        font-size: 9px;
+        min-width: 50px;
+    }
+    
+
+    
+    /* Responsive para modals en tablet */
     .modal-content {
         width: 90%;
         max-width: 600px;
@@ -887,6 +1020,11 @@
     .drivers-table td {
         padding: 8px 10px;
         font-size: 12px;
+        height: 48px; /* Altura para móviles medianos */
+    }
+    
+    .driver-row {
+        height: 48px;
     }
     
     .avatar {
@@ -907,6 +1045,8 @@
     .actions .btn i {
         font-size: 12px;
     }
+    
+
 }
 
 @media (max-width: 480px) {
@@ -914,11 +1054,16 @@
     .drivers-table td {
         padding: 6px 8px;
         font-size: 11px;
+        height: 44px; /* Altura para móviles pequeños */
+    }
+    
+    .driver-row {
+        height: 44px;
     }
     
     .avatar {
-        width: 28px;
-        height: 28px;
+        width: 22px;
+        height: 22px;
     }
     
     .driver-name span {
@@ -926,13 +1071,19 @@
     }
     
     .actions .btn {
-        width: 28px;
-        height: 28px;
+        padding: 3px 6px;
+        font-size: 8px;
+        min-width: 40px;
     }
     
-    .actions .btn i {
-        font-size: 10px;
+    /* Badges más pequeños en móviles */
+    .status-badge, .tuc-badge {
+        padding: 2px 6px;
+        font-size: 8px;
+        min-width: 40px;
     }
+    
+
 }
 
 /* Mejoras adicionales para responsividad */
@@ -976,10 +1127,11 @@
     .drivers-table td {
         padding: 4px 6px;
         font-size: 11px;
+        height: 40px; /* Altura muy compacta para landscape */
     }
     
-    .drivers-table td {
-        height: 5px;
+    .driver-row {
+        height: 40px;
     }
     
     .avatar {
@@ -1008,3 +1160,161 @@
         height: 35px;
     }
 }
+
+/* =============================================================================
+   BADGES DE ESTADO PARA TABLA DE CONDUCTORES (CONSISTENTES CON CONFIGURACIÓN)
+   ============================================================================= */
+
+/* Badges de estado */
+.status-badge, .tuc-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 50px;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Estados de conductores */
+.status-badge.approved {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-badge.pending {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.status-badge.rejected {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Estados de TUC */
+.tuc-badge.vigente {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.tuc-badge.vencido {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.tuc-badge.por-vencer {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+/* =============================================================================
+   PAGINACIÓN COMPACTA CONSISTENTE CON CONFIGURACIÓN
+   ============================================================================= */
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px 6px 16px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    flex-shrink: 0;
+    margin-top: auto;
+}
+
+.pagination-info {
+    color: #6c757d;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.pagination-controls {
+    display: flex;
+    gap: 6px;
+}
+
+.pagination-btn {
+    padding: 6px 10px;
+    border: 1px solid #dee2e6;
+    background: white;
+    color: #495057;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: #e9ecef;
+    border-color: #adb5bd;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* =============================================================================
+   ESTILOS ESPECÍFICOS PARA CELDAS DE CONTENIDO SIMPLE
+   Asegurar que DNI, Placa y Contacto se alineen perfectamente
+   ============================================================================= */
+
+/* Contenedor de celda simple para datos básicos */
+.cell-content {
+    display: inline-block;
+    width: 100%;
+    line-height: 1.3;
+    color: #495057;
+    font-size: 13px;
+    font-family: 'Poppins', sans-serif;
+    vertical-align: middle;
+}
+
+/* Asegurar que todas las celdas tengan el mismo comportamiento base */
+.drivers-table td {
+    position: relative;
+    box-sizing: border-box;
+}
+
+/* Mantener alineación del DNI en móvil */
+    .drivers-table th:nth-child(2),
+    .drivers-table td:nth-child(2) {
+        text-align: right;
+        padding-right: 30px; /* Reducido para móvil */
+    }
+    
+    /* Asegurar que el contenido de las celdas simples respete la alineación en móvil */
+    .drivers-table td:nth-child(2) .cell-content {
+        text-align: inherit;
+        width: 100%;
+    }
+
+/* Mantener alineación del DNI en móviles muy pequeños */
+    .drivers-table th:nth-child(2),
+    .drivers-table td:nth-child(2) {
+        text-align: right;
+        padding-right: 20px; /* Muy reducido para móviles pequeños */
+    }
+    
+    /* Asegurar que el contenido de las celdas simples respete la alineación */
+    .drivers-table td:nth-child(2) .cell-content {
+        text-align: inherit;
+        width: 100%;
+        font-size: 11px; /* Consistente con el tamaño general */
+    }

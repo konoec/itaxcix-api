@@ -94,7 +94,9 @@ class LoginController {
                 sessionStorage.setItem("userId", response.userId?.toString() || "");
                 sessionStorage.setItem("documentValue", response.documentValue || documentValue);
                 sessionStorage.setItem("userRoles", JSON.stringify(response.roles || []));
-                sessionStorage.setItem("userPermissions", JSON.stringify(response.permissions || []));
+                // Mapear permisos a nombres
+                const permissionNames = (response.permissions || []).map(p => p.name);
+                sessionStorage.setItem("userPermissions", JSON.stringify(permissionNames));
                 sessionStorage.setItem("userAvailability", response.availability?.toString() ?? "true");
                 
                 // Guardar información del nombre del usuario

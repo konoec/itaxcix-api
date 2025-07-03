@@ -1,29 +1,26 @@
 /**
- * Controlador para la gestión de permisos - Versión simplificada
- * Solo maneja la creación de permisos por ahora
+ * Controlador para la gestión de permisos
+ * Implementación completa con funcionalidad de tabla y modales
  */
 class PermissionsController {
     constructor() {
         this.isInitialized = false;
-        
-        // Referencias a elementos del DOM
-        this.createPermissionBtn = document.getElementById('create-permission');
-        this.listPermissionsBtn = document.querySelector('#card-permisos .btn-list'); // Botón "Listar Permisos"
-        this.createPermissionModal = document.getElementById('create-permission-modal');
-        this.createPermissionForm = document.getElementById('create-permission-form');
-        this.closeModalBtn = document.getElementById('close-create-permission');
-        this.cancelBtn = document.getElementById('cancel-create-permission');
-        
-        // Referencias para campos del formulario
-        this.permissionNameInput = document.getElementById('permission-name');
-        this.permissionActiveInput = document.getElementById('permission-active');
-        this.permissionWebInput = document.getElementById('permission-web');
-        
-        // Paginación
+        this.permissions = []; // Todos los permisos cargados desde la API
+        this.filteredPermissions = []; // Permisos filtrados por búsqueda
         this.currentPage = 1;
-        this.perPage = 10;
+        this.itemsPerPage = 9;
+        this.totalPermissions = 0;
+        this.totalPages = 0;
+        this.editingPermission = null;
+        this.searchTerm = '';
+        this.searchTimeout = null;
         
-        // Inicializar
+        // Filtros adicionales
+        this.activeFilters = {
+            status: [], // ['active', 'inactive']
+            type: []    // ['web', 'app']
+        };
+        
         this.init();
     }
 
@@ -31,15 +28,725 @@ class PermissionsController {
      * Inicializa el controlador
      */
     async init() {
-        console.log('🔐 Inicializando PermissionsController (versión simplificada)...');
+        console.log('🔐 Inicializando PermissionsController...');
         try {
             // Esperar a que los servicios estén disponibles
             await this.waitForServices();
+            
             this.setupEventListeners();
+            this.loadPermissions();
+            
             this.isInitialized = true;
             console.log('✅ PermissionsController inicializado correctamente');
+            
         } catch (error) {
             console.error('❌ Error al inicializar PermissionsController:', error);
+        }
+    }
+
+    /**
+     * Configura los event listeners
+     */
+    setupEventListeners() {
+        // Botón crear permiso
+        const createBtn = document.getElementById('create-permission-btn');
+        if (createBtn) {
+            createBtn.addEventListener('click', () => this.openCreateModal());
+        }
+
+        // Modal events
+        const modal = document.getElementById('permission-modal');
+        const closeBtn = document.getElementById('close-permission-modal');
+        const cancelBtn = document.getElementById('cancel-permission');
+        const form = document.getElementById('permission-form');
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => this.closeModal());
+        }
+
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => this.closeModal());
+        }
+
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    this.closeModal();
+                }
+            });
+        }
+
+        if (form) {
+            form.addEventListener('submit', (e) => this.handleFormSubmit(e));
+        }
+
+        // Paginación
+        const prevBtn = document.getElementById('prev-page');
+        const nextBtn = document.getElementById('next-page');
+
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => this.previousPage());
+        }
+
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => this.nextPage());
+        }
+
+        // Búsqueda
+        const searchInput = document.getElementById('search-permissions');
+        const clearSearchBtn = document.getElementById('clear-search');
+
+        if (searchInput) {
+            // Búsqueda dinámica en tiempo real
+            searchInput.addEventListener('input', (e) => this.handleDynamicSearch(e.target.value));
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.handleDynamicSearch(e.target.value);
+                }
+            });
+        }
+
+        if (clearSearchBtn) {
+            clearSearchBtn.addEventListener('click', () => this.clearDynamicSearch());
+        }
+
+        // Filtros de estado y tipo
+        this.setupFilterListeners();
+    }
+
+    /**
+     * Configura los event listeners para los filtros
+     */
+    setupFilterListeners() {
+        const filterCheckboxes = [
+            'filter-active',
+            'filter-inactive', 
+            'filter-web',
+            'filter-app'
+        ];
+
+        filterCheckboxes.forEach(filterId => {
+            const checkbox = document.getElementById(filterId);
+            if (checkbox) {
+                checkbox.addEventListener('change', () => this.handleFilterChange());
+            }
+        });
+    }
+
+    /**
+     * Carga los permisos desde la API con los filtros actuales
+     */
+    async loadPermissions() {
+        console.log('� Carga inicial de permisos desde API...');
+        // Usar el método unificado para cargar desde API
+        await this.reloadPermissionsFromAPI();
+    }
+
+    /**
+     * Muestra/oculta el indicador de carga
+     */
+    showLoading(show) {
+        const loadingRow = document.getElementById('permissions-loading-row');
+        const permissionsList = document.getElementById('permissions-list');
+        
+        if (loadingRow && permissionsList) {
+            loadingRow.style.display = show ? 'table-row-group' : 'none';
+            permissionsList.style.display = show ? 'none' : 'table-row-group';
+        }
+    }
+
+    /**
+     * Renderiza la tabla de permisos usando los datos filtrados y paginados
+     */
+    renderTable() {
+        const tbody = document.getElementById('permissions-list');
+        if (!tbody) return;
+
+        tbody.innerHTML = '';
+
+        // Si no hay permisos filtrados y hay filtros activos, mostrar mensaje de no resultados
+        if (this.filteredPermissions.length === 0 && (this.searchTerm || this.activeFilters.status.length > 0 || this.activeFilters.type.length > 0)) {
+            const row = document.createElement('tr');
+            const filtersText = this.getActiveFiltersText().replace(' (filtrado por: ', '').replace(')', '');
+            row.innerHTML = `
+                <td colspan="4" class="no-results-message">
+                    <i class="fas fa-search"></i>
+                    <h3>No se encontraron resultados</h3>
+                    <p>No hay permisos que coincidan con los filtros: <span class="search-term">${filtersText}</span></p>
+                    <button onclick="permissionsController.clearDynamicSearch()" class="btn-clear-filters">
+                        <i class="fas fa-times"></i> Limpiar filtros
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(row);
+            return;
+        }
+
+        // Si no hay permisos y no hay búsqueda, mostrar mensaje general
+        if (this.filteredPermissions.length === 0) {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td colspan="4" class="no-results-message">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>No hay permisos disponibles</h3>
+                    <p>Crea tu primer permiso haciendo clic en "Crear permiso"</p>
+                </td>
+            `;
+            tbody.appendChild(row);
+            return;
+        }
+
+        // Calcular la paginación local
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+        const end = start + this.itemsPerPage;
+        const pageItems = this.filteredPermissions.slice(start, end);
+
+        // Renderizar permisos de la página actual
+        pageItems.forEach(permission => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${permission.name || 'Sin nombre'}</td>
+                <td>
+                    <span class="status-badge ${permission.active ? 'active' : 'inactive'}" 
+                          data-permission-id="${permission.id}" 
+                          data-current-status="${permission.active}">
+                        ${permission.active ? 'Activo' : 'Inactivo'}
+                    </span>
+                </td>
+                <td>
+                    <span class="type-badge ${permission.web ? 'web' : 'system'}" 
+                          data-permission-id="${permission.id}" 
+                          data-current-type="${permission.web}">
+                        ${permission.web ? 'Web' : 'App'}
+                    </span>
+                </td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="action-btn edit" onclick="permissionsController.editPermission(${permission.id})">
+                            <i class="fas fa-edit"></i>
+                            Editar
+                        </button>
+                        <button class="action-btn delete" onclick="permissionsController.deletePermission(${permission.id})">
+                            <i class="fas fa-trash"></i>
+                            Eliminar
+                        </button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    /**
+     * Maneja la búsqueda dinámica en tiempo real (como en el ejemplo)
+     */
+    handleDynamicSearch(searchValue) {
+        // Limpiar el timeout anterior
+        if (this.searchTimeout) {
+            clearTimeout(this.searchTimeout);
+        }
+
+        // Mostrar/ocultar botón de limpiar búsqueda
+        const clearBtn = document.getElementById('clear-search');
+        const searchIcon = document.querySelector('.search-icon');
+        const searchContainer = document.querySelector('.search-container');
+        const searchInput = document.getElementById('search-permissions');
+        
+        if (searchValue.trim()) {
+            if (clearBtn) clearBtn.style.display = 'block';
+            if (searchIcon) searchIcon.style.display = 'none';
+            if (searchInput) searchInput.classList.add('searching');
+            if (searchContainer) searchContainer.classList.add('searching');
+        } else {
+            if (clearBtn) clearBtn.style.display = 'none';
+            if (searchIcon) searchIcon.style.display = 'block';
+            if (searchInput) searchInput.classList.remove('searching');
+            if (searchContainer) searchContainer.classList.remove('searching');
+        }
+
+        // Configurar nuevo timeout para la búsqueda (debounce de 300ms para mayor dinamismo)
+        this.searchTimeout = setTimeout(() => {
+            this.performDynamicSearch(searchValue);
+        }, 300);
+    }
+
+    /**
+     * Maneja los cambios en los filtros de estado y tipo
+     * Cada cambio de filtro hace una nueva petición a la API
+     */
+    handleFilterChange() {
+        console.log('🔄 Filtros cambiados, recargando desde API...');
+        this.updateActiveFilters();
+        this.reloadPermissionsFromAPI();
+    }
+
+    /**
+     * Actualiza los filtros activos basado en los checkboxes
+     */
+    updateActiveFilters() {
+        // Filtros de estado
+        this.activeFilters.status = [];
+        if (document.getElementById('filter-active')?.checked) {
+            this.activeFilters.status.push('active');
+        }
+        if (document.getElementById('filter-inactive')?.checked) {
+            this.activeFilters.status.push('inactive');
+        }
+
+        // Filtros de tipo
+        this.activeFilters.type = [];
+        if (document.getElementById('filter-web')?.checked) {
+            this.activeFilters.type.push('web');
+        }
+        if (document.getElementById('filter-app')?.checked) {
+            this.activeFilters.type.push('app');
+        }
+
+        console.log('🔍 Filtros actualizados:', this.activeFilters);
+    }
+
+    /**
+     * Recarga los permisos desde la API aplicando los filtros activos
+     */
+    async reloadPermissionsFromAPI() {
+        try {
+            this.showLoading(true);
+            
+            // Convertir filtros a parámetros de API
+            const searchTerm = this.searchTerm || null;
+            const webOnly = this.getWebOnlyFilter();
+            const activeOnly = this.getActiveOnlyFilter();
+            
+            console.log('📡 Enviando petición a API con filtros:', {
+                search: searchTerm,
+                webOnly,
+                activeOnly,
+                page: 1,
+                limit: 100
+            });
+            
+            // Hacer petición a la API con filtros
+            const response = await PermissionService.getPermissions(1, 100, searchTerm, webOnly, activeOnly);
+            
+            console.log('📋 Respuesta de API con filtros:', response);
+            
+            if (response.success === false) {
+                throw new Error(response.message || 'Error al cargar permisos filtrados');
+            }
+            
+            // Extraer datos según la estructura de la API
+            if (response.data && response.data.permissions) {
+                this.permissions = response.data.permissions;
+                this.filteredPermissions = [...this.permissions]; // Ya están filtrados por la API
+                console.log(`✅ ${this.permissions.length} permisos cargados con filtros desde API`);
+                
+                // Si hay más páginas, cargar todas iterativamente
+                const totalPages = response.data.totalPages || 1;
+                if (totalPages > 1) {
+                    console.log(`📄 Cargando ${totalPages - 1} páginas adicionales con filtros...`);
+                    
+                    for (let page = 2; page <= totalPages; page++) {
+                        const additionalResponse = await PermissionService.getPermissions(page, 100, searchTerm, webOnly, activeOnly);
+                        if (additionalResponse.success !== false && additionalResponse.data && additionalResponse.data.permissions) {
+                            this.permissions = this.permissions.concat(additionalResponse.data.permissions);
+                            this.filteredPermissions = [...this.permissions];
+                            console.log(`✅ Página ${page} cargada con filtros, total: ${this.permissions.length} permisos`);
+                        }
+                    }
+                }
+                
+            } else {
+                console.warn('⚠️ Respuesta sin data.permissions:', response);
+                this.permissions = [];
+                this.filteredPermissions = [];
+            }
+            
+            // Actualizar paginación
+            this.totalPermissions = this.filteredPermissions.length;
+            this.totalPages = Math.ceil(this.totalPermissions / this.itemsPerPage);
+            this.currentPage = 1;
+            
+            this.showLoading(false);
+            this.renderTable();
+            this.updatePagination();
+            
+        } catch (error) {
+            console.error('❌ Error recargando permisos con filtros desde API:', error);
+            this.showLoading(false);
+            
+            if (window.showToast) {
+                window.showToast(`Error al aplicar filtros: ${error.message}`, 'error');
+            }
+        }
+    }
+
+    /**
+     * Convierte los filtros de tipo a parámetro webOnly para la API
+     * @returns {boolean|null} true = solo web, false = solo app, null = ambos
+     */
+    getWebOnlyFilter() {
+        const hasWeb = this.activeFilters.type.includes('web');
+        const hasApp = this.activeFilters.type.includes('app');
+        
+        if (hasWeb && hasApp) {
+            return null; // Ambos tipos
+        } else if (hasWeb) {
+            return true; // Solo web
+        } else if (hasApp) {
+            return false; // Solo app
+        } else {
+            return null; // Sin filtros de tipo
+        }
+    }
+
+    /**
+     * Convierte los filtros de estado a parámetro activeOnly para la API
+     * @returns {boolean|null} true = solo activos, false = solo inactivos, null = ambos
+     */
+    getActiveOnlyFilter() {
+        const hasActive = this.activeFilters.status.includes('active');
+        const hasInactive = this.activeFilters.status.includes('inactive');
+        
+        if (hasActive && hasInactive) {
+            return null; // Ambos estados
+        } else if (hasActive) {
+            return true; // Solo activos
+        } else if (hasInactive) {
+            return false; // Solo inactivos
+        } else {
+            return null; // Sin filtros de estado
+        }
+    }
+
+    /**
+     * Obtiene un resumen legible de los filtros activos
+     */
+    getActiveFiltersText() {
+        const filterInfo = [];
+        
+        if (this.searchTerm) {
+            filterInfo.push(`búsqueda: "${this.searchTerm}"`);
+        }
+        
+        if (this.activeFilters.status.length > 0) {
+            const statusLabels = this.activeFilters.status.map(s => s === 'active' ? 'Activo' : 'Inactivo');
+            filterInfo.push(`estado: [${statusLabels.join(', ')}]`);
+        }
+        
+        if (this.activeFilters.type.length > 0) {
+            const typeLabels = this.activeFilters.type.map(t => t === 'web' ? 'Web' : 'App');
+            filterInfo.push(`tipo: [${typeLabels.join(', ')}]`);
+        }
+        
+        return filterInfo.length > 0 ? ` (filtrado por: ${filterInfo.join(', ')})` : '';
+    }
+
+    /**
+     * Ejecuta la búsqueda dinámica haciendo petición a la API
+     */
+    performDynamicSearch(searchValue) {
+        const trimmedSearch = searchValue.trim().toLowerCase();
+        this.searchTerm = trimmedSearch;
+        
+        console.log(`🔍 Búsqueda dinámica con API: "${this.searchTerm}"`);
+        
+        // Recargar desde API con el nuevo término de búsqueda y filtros actuales
+        this.reloadPermissionsFromAPI();
+    }
+
+    /**
+     * Limpia la búsqueda dinámica y los filtros, recargando desde API
+     */
+    clearDynamicSearch() {
+        const searchInput = document.getElementById('search-permissions');
+        const clearBtn = document.getElementById('clear-search');
+        const searchIcon = document.querySelector('.search-icon');
+        const searchContainer = document.querySelector('.search-container');
+        
+        if (searchInput) {
+            searchInput.value = '';
+            searchInput.classList.remove('searching');
+        }
+        
+        if (clearBtn) clearBtn.style.display = 'none';
+        if (searchIcon) searchIcon.style.display = 'block';
+        if (searchContainer) {
+            searchContainer.classList.remove('searching');
+            searchContainer.classList.remove('loading');
+        }
+
+        // Limpiar también todos los filtros
+        this.clearAllFilters();
+        
+        // Limpiar término de búsqueda
+        this.searchTerm = '';
+        
+        // Recargar todos los permisos desde API sin filtros
+        this.reloadPermissionsFromAPI();
+        
+        console.log('🔍 Búsqueda y filtros limpiados, recargando todos los permisos desde API');
+    }
+
+    /**
+     * Limpia todos los filtros de estado y tipo
+     */
+    clearAllFilters() {
+        // Desmarcar todos los checkboxes
+        const filterCheckboxes = [
+            'filter-active',
+            'filter-inactive', 
+            'filter-web',
+            'filter-app'
+        ];
+
+        filterCheckboxes.forEach(filterId => {
+            const checkbox = document.getElementById(filterId);
+            if (checkbox) {
+                checkbox.checked = false;
+            }
+        });
+
+        // Resetear filtros activos
+        this.activeFilters = {
+            status: [],
+            type: []
+        };
+    }
+
+    /**
+     * Actualiza la UI después de una búsqueda o filtrado
+     */
+    updateSearchUI() {
+        const paginationInfo = document.getElementById('pagination-info');
+        if (paginationInfo) {
+            const startItem = this.totalPermissions === 0 ? 0 : (this.currentPage - 1) * this.itemsPerPage + 1;
+            const endItem = Math.min(this.currentPage * this.itemsPerPage, this.totalPermissions);
+            
+            let infoText = `Mostrando ${startItem}-${endItem} de ${this.totalPermissions} permisos`;
+            infoText += this.getActiveFiltersText();
+            
+            paginationInfo.textContent = infoText;
+        }
+    }
+
+    /**
+     * Actualiza la información de paginación
+     */
+    updatePagination() {
+        this.updateSearchUI();
+
+        const prevBtn = document.getElementById('prev-page');
+        const nextBtn = document.getElementById('next-page');
+        
+        if (prevBtn) {
+            prevBtn.disabled = this.currentPage === 1;
+        }
+        
+        if (nextBtn) {
+            nextBtn.disabled = this.currentPage >= this.totalPages;
+        }
+    }
+
+    /**
+     * Página anterior
+     */
+    previousPage() {
+        if (this.currentPage > 1) {
+            this.currentPage--;
+            this.renderTable();
+            this.updatePagination();
+        }
+    }
+
+    /**
+     * Página siguiente
+     */
+    nextPage() {
+        if (this.currentPage < this.totalPages) {
+            this.currentPage++;
+            this.renderTable();
+            this.updatePagination();
+        }
+    }
+
+    /**
+     * Abre el modal para crear permiso
+     */
+    openCreateModal() {
+        this.editingPermission = null;
+        this.resetForm();
+        document.getElementById('modal-title').textContent = 'Crear Permiso';
+        document.getElementById('permission-modal').style.display = 'block';
+    }
+
+    /**
+     * Abre el modal para editar permiso
+     */
+    editPermission(id) {
+        const permission = this.permissions.find(p => p.id === id);
+        if (!permission) return;
+
+        this.editingPermission = permission;
+        this.populateForm(permission);
+        document.getElementById('modal-title').textContent = 'Editar Permiso';
+        document.getElementById('permission-modal').style.display = 'block';
+    }
+
+    /**
+     * Elimina un permiso
+     */
+    async deletePermission(id) {
+        const permission = this.permissions.find(p => p.id == id);
+        const permissionName = permission ? permission.name : `ID ${id}`;
+        
+        if (confirm(`¿Está seguro de que desea eliminar el permiso "${permissionName}"?`)) {
+            try {
+                console.log('🗑️ Eliminando permiso con ID:', id);
+                const response = await PermissionService.deletePermission(id);
+                console.log('📋 Respuesta del servicio deletePermission:', response);
+                
+                if (response.success === true) {
+                    // Éxito: Mostrar mensaje de éxito
+                    const successMessage = response.message || 'Permiso eliminado exitosamente';
+                    console.log('✅ Permiso eliminado exitosamente:', successMessage);
+                    
+                    if (window.showToast) {
+                        window.showToast(successMessage, 'success');
+                    }
+                    
+                    // Recargar la lista después de eliminar
+                    await this.loadPermissions();
+                    
+                } else {
+                    // Error: Mostrar mensaje específico del servidor
+                    const errorMessage = response.message || 'Error desconocido al eliminar el permiso';
+                    console.error('❌ Error al eliminar permiso:', errorMessage);
+                    
+                    if (window.showToast) {
+                        window.showToast(errorMessage, 'error');
+                    }
+                }
+                
+            } catch (error) {
+                console.error('❌ Excepción eliminando permiso:', error);
+                const errorMessage = error.message || 'Error de conexión al eliminar el permiso';
+                
+                if (window.showToast) {
+                    window.showToast(errorMessage, 'error');
+                }
+            }
+        }
+    }
+
+    /**
+     * Cierra el modal
+     */
+    closeModal() {
+        document.getElementById('permission-modal').style.display = 'none';
+        this.resetForm();
+        this.editingPermission = null;
+    }
+
+    /**
+     * Resetea el formulario
+     */
+    resetForm() {
+        const form = document.getElementById('permission-form');
+        if (form) {
+            form.reset();
+        }
+        
+        // Habilitar el campo de nombre para creación
+        const nameField = document.getElementById('permission-name');
+        if (nameField) {
+            nameField.readOnly = false;
+            nameField.style.backgroundColor = '';
+            nameField.style.cursor = '';
+            nameField.title = '';
+        }
+    }
+
+    /**
+     * Llena el formulario con datos del permiso
+     */
+    populateForm(permission) {
+        const nameField = document.getElementById('permission-name');
+        if (nameField) {
+            nameField.value = permission.name || '';
+            // Bloquear el campo de nombre para edición
+            nameField.readOnly = true;
+            nameField.style.backgroundColor = '#f5f5f5';
+            nameField.style.cursor = 'not-allowed';
+            nameField.title = 'El nombre del permiso no se puede modificar';
+        }
+        
+        document.getElementById('permission-active').value = permission.active ? 'true' : 'false';
+        document.getElementById('permission-web').value = permission.web ? 'true' : 'false';
+    }
+
+    /**
+     * Maneja el envío del formulario
+     */
+    async handleFormSubmit(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const permissionData = {
+            name: formData.get('name'),
+            active: formData.get('active') === 'true',
+            web: formData.get('web') === 'true'
+        };
+
+        // Validación básica
+        if (!permissionData.name || permissionData.name.trim().length === 0) {
+            if (window.showToast) {
+                window.showToast('El nombre del permiso es requerido', 'error');
+            }
+            return;
+        }
+
+        try {
+            if (this.editingPermission) {
+                // Actualizar permiso existente - NO incluir el nombre (no se puede cambiar)
+                const permissionToUpdate = {
+                    id: this.editingPermission.id,
+                    name: this.editingPermission.name, // Mantener el nombre original
+                    active: permissionData.active,
+                    web: permissionData.web
+                };
+                const response = await PermissionService.updatePermission(permissionToUpdate);
+                
+                if (!response.success || response.success === false) {
+                    throw new Error(response.message || 'Error al actualizar el permiso');
+                }
+                
+                if (window.showToast) {
+                    window.showToast('Permiso actualizado exitosamente', 'success');
+                }
+            } else {
+                // Crear nuevo permiso - incluir todos los campos
+                const response = await PermissionService.createPermission(permissionData);
+                
+                if (!response.success || response.success === false) {
+                    throw new Error(response.message || 'Error al crear el permiso');
+                }
+                
+                if (window.showToast) {
+                    window.showToast('Permiso creado exitosamente', 'success');
+                }
+            }
+
+            // Recargar la lista después de guardar
+            await this.loadPermissions();
+            this.closeModal();
+            
+        } catch (error) {
+            console.error('Error guardando permiso:', error);
+            
+            if (window.showToast) {
+                window.showToast(error.message || 'Error al guardar el permiso', 'error');
+            }
         }
     }
 
@@ -49,622 +756,16 @@ class PermissionsController {
     async waitForServices() {
         return new Promise((resolve) => {
             const checkServices = () => {
-                if (window.ConfigurationService) {
-                    console.log('✅ ConfigurationService detectado en PermissionsController');
+                if (typeof PermissionService !== 'undefined') {
                     resolve();
                 } else {
-                    console.log('⏳ Esperando ConfigurationService...');
                     setTimeout(checkServices, 100);
                 }
             };
             checkServices();
         });
     }
-
-    /**
-     * Configura los event listeners
-     */
-    setupEventListeners() {
-        // Botón para abrir modal de crear permiso
-        if (this.createPermissionBtn) {
-            this.createPermissionBtn.addEventListener('click', () => {
-                this.openCreateModal();
-            });
-        }
-
-        // Botón para cerrar modal (X)
-        if (this.closeModalBtn) {
-            this.closeModalBtn.addEventListener('click', () => {
-                this.closeCreateModal();
-            });
-        }
-
-        // Botón cancelar
-        if (this.cancelBtn) {
-            this.cancelBtn.addEventListener('click', () => {
-                this.closeCreateModal();
-            });
-        }
-
-        // Formulario de crear permiso
-        if (this.createPermissionForm) {
-            this.createPermissionForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.createPermission();
-            });
-        }
-
-        // Cerrar modal al hacer clic fuera
-        if (this.createPermissionModal) {
-            this.createPermissionModal.addEventListener('click', (e) => {
-                if (e.target === this.createPermissionModal) {
-                    this.closeCreateModal();
-                }
-            });
-        }
-
-        // Botón para listar permisos
-        if (this.listPermissionsBtn) {
-            this.listPermissionsBtn.addEventListener('click', () => {
-                this.openListModal();
-            });
-        }
-    }
-
-    /**
-     * Abre el modal para crear permiso
-     */
-    openCreateModal() {
-        if (this.createPermissionModal) {
-            this.clearForm();
-            this.createPermissionModal.classList.add('show');
-            this.createPermissionModal.style.display = 'flex';
-            console.log('📂 Modal de crear permiso abierto');
-        }
-    }
-
-    /**
-     * Cierra el modal de crear permiso
-     */
-    closeCreateModal() {
-        if (this.createPermissionModal) {
-            this.createPermissionModal.classList.remove('show');
-            this.createPermissionModal.style.display = 'none';
-            this.clearForm();
-            console.log('📂 Modal de crear permiso cerrado');
-        }
-    }
-
-    /**
-     * Abre el modal de listar permisos
-     */
-    openListModal() {
-        console.log('📋 Abriendo modal de lista de permisos...');
-        const modal = document.getElementById('list-permissions-modal');
-        if (modal) {
-            modal.classList.add('show');
-            modal.style.display = 'flex';
-            
-            // Verificar que el servicio esté disponible antes de cargar permisos
-            if (window.ConfigurationService) {
-                // Cargar permisos automáticamente
-                this.listPermissions(1);
-            } else {
-                console.error('❌ ConfigurationService no está disponible');
-                this.showToast('Servicio no disponible. Por favor, recarga la página.', 'error');
-            }
-            
-            // Configurar event listeners del modal si no están configurados
-            this.setupListModalEventListeners();
-        } else {
-            console.error('❌ Modal de lista de permisos no encontrado');
-        }
-    }
-
-    /**
-     * Configura los event listeners del modal de listar permisos
-     */
-    setupListModalEventListeners() {
-        // Botón de cerrar modal (solo configurar una vez)
-        const closeBtn = document.getElementById('close-list-permissions');
-        if (closeBtn && !closeBtn.hasListenerConfigured) {
-            closeBtn.addEventListener('click', () => {
-                this.closeListModal();
-            });
-            closeBtn.hasListenerConfigured = true;
-        }
-        
-        // Cerrar modal al hacer clic fuera (solo configurar una vez)
-        const modal = document.getElementById('list-permissions-modal');
-        if (modal && !modal.hasListenerConfigured) {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    this.closeListModal();
-                }
-            });
-            modal.hasListenerConfigured = true;
-        }
-    }
-
-    /**
-     * Cierra el modal de listar permisos
-     */
-    closeListModal() {
-        const modal = document.getElementById('list-permissions-modal');
-        if (modal) {
-            modal.classList.remove('show');
-            modal.style.display = 'none';
-            console.log('📋 Modal de lista de permisos cerrado');
-        }
-    }
-
-    /**
-     * Limpia el formulario
-     */
-    clearForm() {
-        if (this.permissionNameInput) this.permissionNameInput.value = '';
-        if (this.permissionActiveInput) this.permissionActiveInput.checked = true;
-        if (this.permissionWebInput) this.permissionWebInput.checked = false;
-    }
-
-    /**
-     * Crea un nuevo permiso
-     */
-    async createPermission() {
-        try {
-            // Obtener datos del formulario
-            const permissionData = {
-                name: this.permissionNameInput?.value?.trim(),
-                active: this.permissionActiveInput?.checked || false,
-                web: this.permissionWebInput?.checked || false
-            };
-
-            // Validar datos básicos
-            if (!permissionData.name) {
-                this.showToast('El nombre del permiso es obligatorio', 'error');
-                return;
-            }
-
-            console.log('📝 Creando permiso:', permissionData);
-
-            // Llamar al servicio de configuración
-            const response = await window.ConfigurationService.createPermission(permissionData);
-
-            if (response.success) {
-                this.showToast('Permiso creado exitosamente', 'success');
-                this.closeCreateModal();
-                console.log('✅ Permiso creado:', response);
-            } else {
-                // Manejar errores de la API
-                const errorMessage = response.message || 'Error al crear el permiso';
-                this.showToast(errorMessage, 'error');
-                console.error('❌ Error al crear permiso:', response);
-            }
-        } catch (error) {
-            console.error('❌ Error de conexión al crear permiso:', error);
-            this.showToast('Error de conexión al crear el permiso', 'error');
-        }
-    }
-
-    /**
-     * Lista todos los permisos
-     */
-    /**
-     * Muestra la lista de permisos en la consola (temporal)
-     * En el futuro se puede crear un modal o tabla para mostrar los datos
-     */
-    displayPermissionsList(data) {
-        console.group('📋 Lista de Permisos');
-        console.log('Metadatos:', data.meta);
-        console.table(data.items);
-        console.groupEnd();
-        
-        // Mostrar información resumida en el toast
-        const { total, currentPage, lastPage } = data.meta;
-        const message = `Página ${currentPage} de ${lastPage} - Total: ${total} permisos`;
-        this.showToast(message, 'info');
-    }
-
-    /**
-     * Renderiza la lista de permisos en la tabla
-     */
-    renderPermissions(permissions) {
-        const permissionsTableBody = document.getElementById('permissions-table-body');
-        
-        if (permissionsTableBody) {
-            // Limpiar tabla
-            permissionsTableBody.innerHTML = '';
-            
-            // Agregar filas por cada permiso
-            permissions.forEach(permiso => {
-                const row = document.createElement('tr');
-                
-                row.innerHTML = `
-                    <td>${permiso.name}</td>
-                    <td>${permiso.active ? 'Sí' : 'No'}</td>
-                    <td>${permiso.web ? 'Sí' : 'No'}</td>
-                `;
-                
-                permissionsTableBody.appendChild(row);
-            });
-        }
-    }
-
-    /**
-     * Configura la paginación
-     */
-    setupPagination(totalItems, currentPage) {
-        const paginationContainer = document.getElementById('pagination');
-        
-        if (paginationContainer) {
-            // Limpiar paginación
-            paginationContainer.innerHTML = '';
-            
-            // Calcular total de páginas
-            const totalPages = Math.ceil(totalItems / this.perPage);
-            
-            // Crear botones de paginación
-            for (let i = 1; i <= totalPages; i++) {
-                const button = document.createElement('button');
-                button.textContent = i;
-                button.className = 'pagination-button';
-                
-                if (i === currentPage) {
-                    button.classList.add('active');
-                }
-                
-                button.addEventListener('click', () => {
-                    this.currentPage = i;
-                    this.listPermissions(i);
-                });
-                
-                paginationContainer.appendChild(button);
-            }
-        }
-    }
-
-    /**
-     * Lista permisos con paginación
-     */
-    async listPermissions(page = 1) {
-        try {
-            console.log(`📋 🆕 INICIANDO CARGA DE PERMISOS - página ${page}...`);
-            console.log(`📋 Página actual antes: ${this.currentPage}`);
-            console.log(`📋 Página solicitada: ${page}`);
-            
-            // Verificar que el servicio esté disponible
-            if (!window.ConfigurationService) {
-                throw new Error('ConfigurationService no está disponible. Verifica que el servicio se haya cargado correctamente.');
-            }
-            
-            // Mostrar loading
-            const loadingElement = document.getElementById('permissions-list-loading');
-            const tableContainer = document.querySelector('.permissions-table-container');
-            const emptyState = document.getElementById('permissions-empty-state');
-            
-            if (loadingElement) loadingElement.style.display = 'block';
-            if (tableContainer) tableContainer.style.display = 'none';
-            if (emptyState) emptyState.style.display = 'none';
-            
-            // Obtener permisos del servicio
-            console.log('🔄 Llamando a ConfigurationService.getPermissions...');
-            const response = await window.ConfigurationService.getPermissions(page, this.perPage);
-            
-            // Log detallado de la respuesta
-            console.log('📝 Respuesta completa de la API:', response);
-            
-            // Verificar la estructura de la respuesta
-            if (!response) {
-                throw new Error('No se recibió respuesta del servidor');
-            }
-            
-            if (response.success) {
-                console.log('✅ Respuesta exitosa, verificando datos...');
-                console.log('📊 response.data:', response.data);
-                
-                // Verificar que response.data exista
-                if (!response.data) {
-                    throw new Error('La respuesta no contiene datos (response.data es undefined)');
-                }
-                
-                // Manejar diferentes estructuras de respuesta
-                let items, meta;
-                
-                // Caso 1: Estructura estándar con items y meta
-                if (response.data.items && response.data.meta) {
-                    items = response.data.items;
-                    meta = response.data.meta;
-                }
-                // Caso 2: response.data es directamente un array
-                else if (Array.isArray(response.data)) {
-                    items = response.data;
-                    meta = {
-                        total: response.data.length,
-                        currentPage: page,
-                        lastPage: 1,
-                        perPage: this.perPage
-                    };
-                }
-                // Caso 3: Los datos están directamente en response (sin data wrapper)
-                else if (response.items && response.meta) {
-                    items = response.items;
-                    meta = response.meta;
-                }
-                // Caso 4: La API retorna "permissions" como objeto con items y meta
-                else if (response.data.permissions && response.data.permissions.items) {
-                    items = response.data.permissions.items;
-                    meta = response.data.permissions.meta || {
-                        total: response.data.permissions.items.length,
-                        currentPage: page,
-                        lastPage: Math.ceil(response.data.permissions.items.length / this.perPage),
-                        perPage: this.perPage
-                    };
-                }
-                // Caso 5: La API retorna "permissions" como array directo
-                else if (response.data.permissions && Array.isArray(response.data.permissions)) {
-                    items = response.data.permissions;
-                    meta = response.data.meta || {
-                        total: response.data.permissions.length,
-                        currentPage: page,
-                        lastPage: Math.ceil(response.data.permissions.length / this.perPage),
-                        perPage: this.perPage
-                    };
-                }
-                // Caso 6: Intentar extraer propiedades conocidas
-                else {
-                    console.log('🔍 Estructura de respuesta no reconocida, intentando extraer datos...');
-                    console.log('🔍 Propiedades disponibles en response.data:', Object.keys(response.data));
-                    
-                    // Buscar propiedades que puedan contener los datos
-                    const possibleItemsKeys = ['items', 'data', 'permissions', 'results', 'list'];
-                    const possibleMetaKeys = ['meta', 'pagination', 'info'];
-                    
-                    let foundItems = null;
-                    let foundMeta = null;
-                    
-                    for (const key of possibleItemsKeys) {
-                        if (response.data[key] && Array.isArray(response.data[key])) {
-                            foundItems = response.data[key];
-                            break;
-                        }
-                    }
-                    
-                    for (const key of possibleMetaKeys) {
-                        if (response.data[key]) {
-                            foundMeta = response.data[key];
-                            break;
-                        }
-                    }
-                    
-                    if (foundItems) {
-                        items = foundItems;
-                        meta = foundMeta || {
-                            total: foundItems.length,
-                            currentPage: page,
-                            lastPage: 1,
-                            perPage: this.perPage
-                        };
-                    } else {
-                        throw new Error(`Estructura de respuesta no reconocida. Propiedades disponibles: ${Object.keys(response.data).join(', ')}`);
-                    }
-                }
-                
-                console.log(`📋 Items procesados: ${items ? items.length : 0}`);
-                console.log('📊 Meta procesada:', meta);
-                
-                // Ocultar loading
-                if (loadingElement) loadingElement.style.display = 'none';
-                
-                // Actualizar página actual antes de configurar paginación
-                this.currentPage = page;
-                
-                if (items && items.length > 0) {
-                    // Mostrar tabla y llenar datos
-                    if (tableContainer) tableContainer.style.display = 'block';
-                    this.populatePermissionsTable(items);
-                    this.updatePaginationInfo(meta);
-                    this.setupPaginationControls(meta);
-                } else {
-                    // Mostrar estado vacío
-                    if (emptyState) {
-                        emptyState.style.display = 'block';
-                        emptyState.innerHTML = `
-                            <i class="fas fa-shield-alt"></i>
-                            <h3>No hay permisos disponibles</h3>
-                            <p>No se encontraron permisos en el sistema.</p>
-                        `;
-                    }
-                }
-                
-                console.log(`✅ Permisos cargados correctamente: ${items ? items.length : 0} elementos`);
-            } else {
-                // La API retornó success: false
-                const errorMessage = response.message || 'Error desconocido del servidor';
-                console.log('❌ La API retornó success: false:', errorMessage);
-                throw new Error(errorMessage);
-            }
-        } catch (error) {
-            console.error('❌ Error al cargar permisos:', error);
-            
-            // Ocultar loading
-            const loadingElement = document.getElementById('permissions-list-loading');
-            if (loadingElement) loadingElement.style.display = 'none';
-            
-            // Mostrar estado de error
-            const emptyState = document.getElementById('permissions-empty-state');
-            if (emptyState) {
-                emptyState.style.display = 'block';
-                emptyState.innerHTML = `
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <h3>Error al cargar permisos</h3>
-                    <p>${error.message}</p>
-                    <small style="color: #666; font-style: italic;">
-                        Verifica la conexión y que tengas permisos para acceder a esta funcionalidad.
-                    </small>
-                `;
-            }
-            
-            this.showToast(`Error: ${error.message}`, 'error');
-        }
-    }
-
-    /**
-     * Llena la tabla de permisos con los datos
-     */
-    populatePermissionsTable(permissions) {
-        const tableBody = document.getElementById('permissions-table-body');
-        
-        if (tableBody) {
-            tableBody.innerHTML = '';
-            
-            permissions.forEach(permission => {
-                const row = document.createElement('tr');
-                
-                row.innerHTML = `
-                    <td>${permission.id}</td>
-                    <td>${permission.name}</td>
-                    <td>
-                        <span class="status-badge ${permission.active ? 'active' : 'inactive'}">
-                            ${permission.active ? 'Activo' : 'Inactivo'}
-                        </span>
-                    </td>
-                    <td>
-                        <span class="type-badge ${permission.web ? 'web' : 'mobile'}">
-                            ${permission.web ? 'Web' : 'Móvil'}
-                        </span>
-                    </td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn-action edit" title="Editar" onclick="editPermission(${permission.id})">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-action delete" title="Eliminar" onclick="deletePermission(${permission.id})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                `;
-                
-                tableBody.appendChild(row);
-            });
-        }
-    }
-
-    /**
-     * Actualiza la información de paginación
-     */
-    updatePaginationInfo(meta) {
-        const totalInfo = document.getElementById('permissions-total-info');
-        const pageInfo = document.getElementById('permissions-page-info');
-        
-        console.log(`📊 Actualizando info de paginación - Página: ${this.currentPage}, Total: ${meta.total}, Última: ${meta.lastPage}`);
-        
-        if (totalInfo) {
-            totalInfo.textContent = `Total: ${meta.total} permisos`;
-        }
-        
-        if (pageInfo) {
-            pageInfo.textContent = `Página ${this.currentPage} de ${meta.lastPage}`;
-        }
-    }
-
-    /**
-     * Configura los controles de paginación
-     */
-    setupPaginationControls(meta) {
-        const prevBtn = document.getElementById('permissions-prev-page');
-        const nextBtn = document.getElementById('permissions-next-page');
-        
-        console.log(`🔧 Configurando paginación - Página actual: ${this.currentPage}, Última página: ${meta.lastPage}`);
-        console.log(`🔧 Botones encontrados - Anterior: ${!!prevBtn}, Siguiente: ${!!nextBtn}`);
-        
-        if (prevBtn) {
-            // Configurar estado del botón anterior
-            prevBtn.disabled = this.currentPage <= 1;
-            
-            // Remover listeners anteriores y agregar nuevo
-            const newPrevBtn = prevBtn.cloneNode(true);
-            prevBtn.parentNode.replaceChild(newPrevBtn, prevBtn);
-            
-            newPrevBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log(`📖 Click en botón anterior - Página actual: ${this.currentPage}`);
-                if (this.currentPage > 1) {
-                    console.log(`📖 Navegando a página anterior: ${this.currentPage - 1}`);
-                    this.listPermissions(this.currentPage - 1);
-                } else {
-                    console.log('⚠️ Ya estás en la primera página');
-                }
-            });
-            
-            console.log(`🔧 Botón anterior configurado - Deshabilitado: ${newPrevBtn.disabled}`);
-        }
-        
-        if (nextBtn) {
-            // Configurar estado del botón siguiente
-            nextBtn.disabled = this.currentPage >= meta.lastPage;
-            
-            // Remover listeners anteriores y agregar nuevo
-            const newNextBtn = nextBtn.cloneNode(true);
-            nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
-            
-            newNextBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log(`📖 Click en botón siguiente - Página actual: ${this.currentPage}, Última: ${meta.lastPage}`);
-                if (this.currentPage < meta.lastPage) {
-                    console.log(`📖 Navegando a página siguiente: ${this.currentPage + 1}`);
-                    this.listPermissions(this.currentPage + 1);
-                } else {
-                    console.log('⚠️ Ya estás en la última página');
-                }
-            });
-            
-            console.log(`🔧 Botón siguiente configurado - Deshabilitado: ${newNextBtn.disabled}`);
-        }
-        
-        console.log(`✅ Paginación configurada correctamente`);
-    }
-
-    /**
-     * Muestra una notificación toast
-     */
-    showToast(message, type = 'info') {
-        const toast = document.getElementById('toast');
-        const toastMessage = document.getElementById('toast-message');
-        
-        if (toast && toastMessage) {
-            // Configurar el mensaje
-            toastMessage.textContent = message;
-            
-            // Remover clases de tipo anteriores
-            toast.classList.remove('success', 'error', 'info', 'warning');
-            
-            // Agregar la clase del tipo correspondiente
-            toast.classList.add(type);
-            
-            // Mostrar el toast
-            toast.classList.add('show');
-            
-            // Ocultar después de 3 segundos
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-    }
 }
 
-// Exportar para uso global
-window.PermissionsController = PermissionsController;
-
-// Auto-inicialización cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', () => {
-    // Verificar si estamos en la página de configuración
-    const createPermissionBtn = document.getElementById('create-permission');
-    
-    if (createPermissionBtn && !window.permissionsController) {
-        window.permissionsController = new PermissionsController();
-        console.log('🔐 PermissionsController auto-inicializado');
-    }
-});
+// El controlador se inicializa desde permissions-initializer.js
+// No se inicializa automáticamente aquí para evitar duplicación

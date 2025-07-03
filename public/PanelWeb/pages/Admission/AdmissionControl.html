@@ -21,7 +21,6 @@
     <link rel="stylesheet" href="../../assets/css/profile.css">
     <link rel="stylesheet" href="../../assets/css/admission-control.css">
     <link rel="stylesheet" href="../../assets/css/confirmation-modal.css">
-    <link rel="stylesheet" href="../../assets/css/permissions.css">
     <!-- Font Awesome para iconografía -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -90,11 +89,18 @@
                     </li>
 
                     <!-- Módulo de Configuración -->
-                    <li id="menu-configuracion">
-                        <a href="../Configuration/Configuration.html" class="module-config">
+                    <li class="has-submenu" id="menu-configuracion">
+                        <a href="javascript:void(0)" class="module-config">
                             <i class="fas fa-cog"></i>
                             Configuración
+                            <span class="submenu-arrow"></span>
                         </a>
+                        <ul class="submenu">
+                            <li><a href="../Configuration/EmergencyConfiguration.html"><i class="fas fa-phone-alt"></i>Emergencia</a></li>
+                            <li><a href="../Configuration/PermissionsManagement.html"><i class="fas fa-shield-alt"></i>Permisos</a></li>
+                            <li><a href="../Configuration/RolesManagement.html"><i class="fas fa-user-tag"></i>Roles</a></li>
+                            <li><a href="../Configuration/UsersManagement.html"><i class="fas fa-users"></i>Usuarios</a></li>
+                        </ul>
                     </li>
                 </ul>
             </div>
@@ -153,6 +159,21 @@
                                 <!-- Datos dinámicos cargados por JavaScript -->
                             </tbody>
                         </table>
+                    </div>
+                    
+                    <!-- Controles de paginación -->
+                    <div class="pagination-container">
+                        <div class="pagination-info">
+                            <span id="pagination-info" class="pagination-info">Página 1 de 1</span>
+                        </div>
+                        <div class="pagination-controls">
+                            <button id="prev-page-btn" class="pagination-btn" disabled>
+                                <i class="fas fa-chevron-left"></i> Anterior
+                            </button>
+                            <button id="next-page-btn" class="pagination-btn" disabled>
+                                Siguiente <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -289,6 +310,14 @@
         <div id="toast-message">Conductor aprobado exitosamente</div>
     </div>
 
+    <!-- Toast notification for profile operations (mismo estilo que recuperación de contraseña) -->
+    <div id="recovery-toast" class="recovery-toast">
+        <div class="recovery-toast-content">
+            <i class="fas fa-check-circle"></i>
+            <span id="recovery-toast-message">Conductor aprobado exitosamente</span>
+        </div>
+    </div>
+
     <!-- Modal de confirmación personalizado -->
     <div id="confirmation-modal" class="confirmation-modal">
         <div class="confirmation-content">
@@ -314,6 +343,7 @@
         </div>
     </div>    <!-- Carga de scripts en orden específico para manejar dependencias -->
     <!-- 1. Utilidades y herramientas base -->
+    <script src="../../assets/js/global-initializer.js"></script>
     <script src="../../assets/js/auth/auth-checker.js"></script>
     <script src="../../assets/js/auth/permissions.js"></script>
     <script src="../../assets/js/auth/route-guard.js"></script>
@@ -329,7 +359,9 @@
     <!-- 3. Servicios de API -->
     <script src="../../assets/js/api/services/driver-service.js"></script>
     <script src="../../assets/js/api/services/profile-service.js"></script>
-        <!-- 4. Controladores de UI -->
+    <script src="../../assets/js/api/services/Configuration/user-service.js"></script>
+    <!-- 4. Controladores de UI -->
+    <script src="../../assets/js/ui/global-toast.js"></script>
     <script src="../../assets/js/ui/controllers/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/profile-controller.js"></script>

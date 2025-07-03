@@ -24,5 +24,27 @@
             <span id="recovery-toast-message">Foto de perfil actualizada correctamente</span>
         </div>
     </div>
+
+    <!-- Sidebar menu -->
+    <div class="sidebar-menu">
+        <ul>
+            <li><a href="../Configuration/EmergencyConfiguration.html"><i class="fas fa-phone-alt"></i>Emergencia</a></li>
+            <li><a href="../Configuration/PermissionsManagement.html"><i class="fas fa-shield-alt"></i>Permisos</a></li>
+            <li><a href="../Configuration/RolesManagement.html"><i class="fas fa-user-tag"></i>Roles</a></li>
+            <li><a href="../Configuration/UsersManagement.html"><i class="fas fa-users"></i>Usuarios</a></li>
+        </ul>
+    </div>
+
+    <!-- Scripts básicos de autenticación -->
+    <script src="../../assets/js/global-initializer.js"></script>
+    <script src="../../assets/js/auth/auth-checker.js"></script>
+    <script src="../../assets/js/auth/route-guard.js"></script>
+    <script src="../../assets/js/api/services/Configuration/user-service.js"></script>
+    <script>
+        // Verificar autenticación básica
+        if (typeof window.authChecker !== 'undefined') {
+            window.authChecker.checkAuthentication();
+        }
+    </script>
 </body>
 </html>

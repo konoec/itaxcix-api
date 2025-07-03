@@ -137,9 +137,27 @@ class LoginService {
       if (!baseResponse.data || !baseResponse.data.token) {
         throw new Error('Respuesta del servidor incompleta');
       }
-      
-      // Devolver los datos de autenticación (AuthLoginResponseDTO)
-      return baseResponse.data;
+      // Devolver todos los datos relevantes del usuario
+      const {
+        token,
+        userId,
+        documentValue,
+        firstName,
+        lastName,
+        roles,
+        permissions,
+        rating
+      } = baseResponse.data;
+      return {
+        token,
+        userId,
+        documentValue,
+        firstName,
+        lastName,
+        roles,
+        permissions,
+        rating
+      };
       
     } catch (error) {
       console.error("Error al verificar credenciales:", error);

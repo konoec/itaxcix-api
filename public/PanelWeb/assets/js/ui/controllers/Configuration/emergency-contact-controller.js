@@ -35,11 +35,13 @@ class EmergencyContactController {
         console.log('🚨 Inicializando EmergencyContactController...');
         try {
             // Verificar que el servicio real esté disponible
-            if (!window.ConfigurationService) {
-                console.error('❌ ConfigurationService no está disponible. Verifica que configuration-service.js se haya cargado correctamente.');
+            if (!window.EmergencyService) {
+                console.error('❌ EmergencyService no está disponible. Verifica que emergency-service.js se haya cargado correctamente.');
+                console.log('🔍 Servicios disponibles en window:', Object.keys(window).filter(key => key.includes('Service')));
                 return;
             }
             
+            console.log('✅ EmergencyService disponible:', typeof window.EmergencyService);
             this.setupEventListeners();
             await this.loadEmergencyNumberInline();
             this.isInitialized = true;
@@ -153,7 +155,7 @@ class EmergencyContactController {
 
         try {
             console.log('🔄 Cargando número de emergencia desde API...');
-            const response = await window.ConfigurationService.getEmergencyNumber();
+            const response = await window.EmergencyService.getEmergencyNumber();
             
             console.log('📡 Respuesta del servidor:', response);
             
@@ -222,10 +224,12 @@ class EmergencyContactController {
             console.log('💾 Guardando número de emergencia inline:', emergencyNumber);
             this.showInlineMessage('Guardando...', 'info');
             
-            const response = await window.ConfigurationService.updateEmergencyNumber(emergencyNumber);
+            const response = await window.EmergencyService.updateEmergencyNumber(emergencyNumber);
             
             if (response.success) {
-                this.showInlineMessage('Número guardado exitosamente', 'success');
+                // Limpiar mensaje inline y mostrar toast de éxito
+                this.showInlineMessage('', '');
+                window.showRecoveryToast('Configuración guardada exitosamente', 'success');
                 console.log('✅ Número de emergencia guardado correctamente');
             } else {
                 this.showInlineMessage('Error al guardar el número', 'error');
@@ -335,7 +339,7 @@ class EmergencyContactController {
             console.log('💾 Guardando número de emergencia desde modal:', emergencyNumber);
             this.showModalMessage('Guardando...', 'info');
             
-            const response = await window.ConfigurationService.updateEmergencyNumber(emergencyNumber);
+            const response = await window.EmergencyService.updateEmergencyNumber(emergencyNumber);
             
             if (response.success) {
                 this.showModalMessage('Número guardado exitosamente', 'success');
@@ -398,35 +402,6 @@ class EmergencyContactController {
                 this.emergencyMessage.style.color = '#2b3962';
         }
     }
-
-    /**
-     * Muestra una notificación toast
-     * @param {string} message - Mensaje a mostrar
-     * @param {string} type - Tipo de notificación (success, error, info, warning)
-     */
-    showToast(message, type = 'info') {
-        const toast = document.getElementById('toast');
-        const toastMessage = document.getElementById('toast-message');
-        
-        if (toast && toastMessage) {
-            // Configurar el mensaje
-            toastMessage.textContent = message;
-            
-            // Remover clases de tipo anteriores
-            toast.classList.remove('success', 'error', 'info', 'warning');
-            
-            // Agregar la clase del tipo correspondiente
-            toast.classList.add(type);
-            
-            // Mostrar el toast
-            toast.classList.add('show');
-            
-            // Ocultar después de 3 segundos
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-    }
 }
 
 // Exportar para uso global
@@ -438,7 +413,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const emergencyElements = document.getElementById('card-emergencia') || 
                              document.getElementById('emergency-inline-form');
     
-    if (emergencyElements && !window.emergencyContactController) {
+    // Solo auto-inicializar si no existe una instancia global
+    if (emergencyElements && !window.emergencyContactController && !window.emergencyContactControllerInstance) {
         window.emergencyContactController = new EmergencyContactController();
         console.log('🚨 EmergencyContactController auto-inicializado');
     }

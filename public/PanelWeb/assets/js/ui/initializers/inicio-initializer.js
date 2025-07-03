@@ -1,5 +1,14 @@
 /**
- * Inicializador específico para la página de Inicio
+ * Inicializador espec            if (window.InicioController) {
+                window.inicioControllerInstance = new window.InicioController();
+                console.log('🏠 InicioController inicializado');
+            }
+            
+            // NO iniciar monitoreo local - el sistema global se encarga del monitoreo
+            // El GlobalUserMonitor ya se encarga de verificar el estado del usuario
+            // if (typeof initUserStatusMonitoring === 'function') {
+            //     initUserStatusMonitoring();
+            // }a la página de Inicio
  * Maneja solo los controladores necesarios para esta página específica
  */
 class InicioInitializer {
@@ -28,7 +37,14 @@ class InicioInitializer {
             if (!window.inicioController) {
                 window.inicioController = new InicioController();
                 console.log('🏠 InicioController inicializado');
-            }            // Configurar permisos inmediatamente con pantalla de carga
+            }
+            
+            // Iniciar monitoreo automático de estado de usuario web
+            if (typeof initUserStatusMonitoring === 'function') {
+                initUserStatusMonitoring();
+            }
+
+            // Configurar permisos inmediatamente con pantalla de carga
             if (window.PermissionsService) {
                 console.log('🔧 Inicializando sistema de permisos...');
                 window.PermissionsService.initializePermissions();

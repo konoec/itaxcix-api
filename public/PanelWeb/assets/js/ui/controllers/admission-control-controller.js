@@ -33,37 +33,27 @@ class AdmissionControlController {
         this.confirmationIcon = document.getElementById('confirmation-icon');
         this.confirmationCancel = document.getElementById('confirmation-cancel');
         this.confirmationConfirm = document.getElementById('confirmation-confirm');
+
+        // Variables para paginación
+        this.allDrivers = [];
+        this.currentPage = 0;
+        this.perPage = 9;
+        this.totalPages = 1;
+        // CORREGIDO: IDs de los botones de paginación
+        this.prevPageBtn = document.getElementById('prev-page-btn');
+        this.nextPageBtn = document.getElementById('next-page-btn');
+        this.paginationInfo = document.getElementById('pagination-info');
     }// Método principal que inicializa la aplicación - CORREGIDO
     // Es async porque realiza operaciones asíncronas (como cargar datos de la API)
-    async init() {        try {
-            this.showLoading(true);            const conductoresData = await this.conductorService.obtenerConductoresPendientes(0, 8);
-            console.log('Respuesta de la API conductores:', conductoresData);
-
-            // LIMITAR A 8 CONDUCTORES EN EL FRONTEND (ya que la API no respeta el parámetro)
-            const conductoresLimitados = conductoresData.slice(0, 8);
-            console.log(`🔧 Limitando conductores de ${conductoresData.length} a ${conductoresLimitados.length}`);
-
-            // CONVERTIR A INSTANCIAS DE LA CLASE CONDUCTOR
-            const conductores = conductoresLimitados.map(data => Conductor.fromApiData(data));
-
-            // Verificar si hay conductores pendientes
-            if (conductores.length === 0) {
-                // No hay conductores pendientes - mostrar mensaje
-                this.driversList.innerHTML = `
-                    <tr>
-                        <td colspan="5" class="no-data">
-                            <i class="fas fa-info-circle"></i>
-                            Aún no hay solicitudes de conductores pendientes por revisar.
-                        </td>
-                    </tr>
-                `;
-            } else {
-                // Renderizar conductores existentes
-                conductores.forEach(conductor => {
-                    this.renderConductor(conductor);
-                });
-            }
-
+    async init() {
+        try {
+            this.showLoading(true);
+            // Obtener todos los conductores pendientes de la API (sin paginación)
+            const conductoresData = await this.conductorService.obtenerConductoresPendientes();
+            this.allDrivers = conductoresData.map(data => Conductor.fromApiData(data));
+            this.totalPages = Math.ceil(this.allDrivers.length / this.perPage);
+            this.currentPage = 0;
+            this.renderDriversPage();
             this.initializeEvents();
             this.showLoading(false);
         } catch (error) {
@@ -99,32 +89,73 @@ class AdmissionControlController {
         row.className = 'driver-row';
         row.dataset.id = conductor.driverId;
 
+        // Crear estructura HTML completamente nueva con celdas simples
         row.innerHTML = `
-            <td class="driver-name">
-                <div class="avatar">
-                    <img src="${conductor.getImagenUrl()}" 
-                         alt="Foto de perfil"
-                         onerror="this.onerror=null; this.src='../../assets/Recourse/Imagenes/register_foto_defecto.png';">
+            <td>
+                <div class="driver-name">
+                    <div class="avatar">
+                        <img src="${conductor.getImagenUrl()}" 
+                             alt="Foto de perfil"
+                             onerror="this.onerror=null; this.src='../../assets/Recourse/Imagenes/register_foto_defecto.png';">
+                    </div>
+                    <span>${conductor.getNombreCompleto()}</span>
                 </div>
-                <span>${conductor.getNombreCompleto()}</span>
             </td>
-            <td>${conductor.documentValue || 'N/A'}</td>
-            <td>${conductor.plateValue || 'N/A'}</td>
-            <td>${conductor.contactValue || 'N/A'}</td>
-            <td class="actions">
-                <button class="btn btn-details" data-id="${conductor.driverId}" title="Ver detalles">
-                    <i class="fas fa-eye"></i>
-                </button>
-                <button class="btn btn-approve" data-id="${conductor.driverId}" title="Aprobar conductor">
-                    <i class="fas fa-check"></i>
-                </button>
-                <button class="btn btn-reject" data-id="${conductor.driverId}" title="Rechazar conductor">
-                    <i class="fas fa-times"></i>
-                </button>
+            <td>
+                <span class="cell-content">${conductor.documentValue || 'N/A'}</span>
+            </td>
+            <td>
+                <span class="cell-content">${conductor.plateValue || 'N/A'}</span>
+            </td>
+            <td>
+                <span class="cell-content">${conductor.contactValue || 'N/A'}</span>
+            </td>
+            <td>
+                <div class="actions">
+                    <button class="btn btn-details" data-id="${conductor.driverId}" title="Ver detalles">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-approve" data-id="${conductor.driverId}" title="Aprobar conductor">
+                        <i class="fas fa-check"></i>
+                    </button>
+                    <button class="btn btn-reject" data-id="${conductor.driverId}" title="Rechazar conductor">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
             </td>
         `;
         
         this.driversList.appendChild(row);
+    }
+
+    // Método para renderizar la página de conductores según la paginación
+    renderDriversPage() {
+        this.driversList.innerHTML = '';
+        const start = this.currentPage * this.perPage;
+        const end = start + this.perPage;
+        const driversToShow = this.allDrivers.slice(start, end);
+        if (driversToShow.length === 0) {
+            this.driversList.innerHTML = `
+                <tr>
+                    <td colspan="5" class="no-data">
+                        <i class="fas fa-info-circle"></i>
+                        Aún no hay solicitudes de conductores pendientes por revisar.
+                    </td>
+                </tr>
+            `;
+        } else {
+            driversToShow.forEach(conductor => this.renderConductor(conductor));
+        }
+        this.updatePaginationControls();
+    }
+
+    // Método para actualizar los controles de paginación
+    updatePaginationControls() {
+        if (this.prevPageBtn && this.nextPageBtn && this.paginationInfo) {
+            this.prevPageBtn.disabled = this.currentPage <= 0;
+            this.nextPageBtn.disabled = this.currentPage >= this.totalPages - 1;
+            this.paginationInfo.textContent = `Página ${this.totalPages === 0 ? 0 : this.currentPage + 1} de ${this.totalPages}`;
+        }
     }
 
     // Método para inicializar eventos - LIMPIO
@@ -176,6 +207,24 @@ class AdmissionControlController {
         }
         if (this.closeSidebarBtn) {
             this.closeSidebarBtn.addEventListener('click', () => this.toggleSidebar());
+        }
+
+        // Eventos de paginación
+        if (this.prevPageBtn) {
+            this.prevPageBtn.addEventListener('click', () => {
+                if (this.currentPage > 0) {
+                    this.currentPage--;
+                    this.renderDriversPage();
+                }
+            });
+        }
+        if (this.nextPageBtn) {
+            this.nextPageBtn.addEventListener('click', () => {
+                if (this.currentPage < this.totalPages - 1) {
+                    this.currentPage++;
+                    this.renderDriversPage();
+                }
+            });
         }
     }
 
@@ -290,52 +339,22 @@ class AdmissionControlController {
     }    // Método para recargar conductores - NUEVO
     async recargarConductores() {
         try {
-            this.driversList.innerHTML = '';            const conductoresData = await this.conductorService.obtenerConductoresPendientes(0, 8);
-            
-            // LIMITAR A 8 CONDUCTORES EN EL FRONTEND (ya que la API no respeta el parámetro)
-            const conductoresLimitados = conductoresData.slice(0, 8);
-            console.log(`🔧 Recarga: Limitando conductores de ${conductoresData.length} a ${conductoresLimitados.length}`);
-            
-            const conductores = conductoresLimitados.map(data => Conductor.fromApiData(data));
-            
-            // Verificar si hay conductores pendientes
-            if (conductores.length === 0) {
-                // No hay conductores pendientes - mostrar mensaje
-                this.driversList.innerHTML = `
-                    <tr>
-                        <td colspan="5" class="no-data">
-                            <i class="fas fa-info-circle"></i>
-                            Aún no hay solicitudes de conductores pendientes por revisar.
-                        </td>
-                    </tr>
-                `;
-            } else {
-                // Renderizar conductores existentes
-                conductores.forEach(conductor => {
-                    this.renderConductor(conductor);
-                });
-            }
+            this.showLoading(true);
+            const conductoresData = await this.conductorService.obtenerConductoresPendientes();
+            this.allDrivers = conductoresData.map(data => Conductor.fromApiData(data));
+            this.totalPages = Math.ceil(this.allDrivers.length / this.perPage);
+            if (this.currentPage >= this.totalPages) this.currentPage = 0;
+            this.renderDriversPage();
+            this.showLoading(false);
         } catch (error) {
             console.error('Error al recargar conductores:', error);
             this.showToast('Error al recargar la lista de conductores', 'error');
         }
     }
 
-    // Método para mostrar mensajes toast mejorado - ACTUALIZADO
-    showToast(message, type = 'info') {
-        if (this.toast && this.toastMessage) {
-            this.toastMessage.textContent = message;
-            this.toast.className = `toast show ${type}`;
-            this.toast.style.display = 'block';
-            
-            setTimeout(() => {
-                this.toast.style.display = 'none';
-                this.toast.className = 'toast';
-            }, 3000);
-        } else {
-            // Fallback si no hay toast
-            alert(message);
-        }
+    // Método para mostrar mensajes toast (utiliza la función global)
+    showToast(message, type = 'success') {
+        window.showRecoveryToast(message, type);
     }
 
     // Método para alternar la visibilidad del sidebar

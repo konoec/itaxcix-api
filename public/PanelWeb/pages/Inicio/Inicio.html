@@ -22,7 +22,6 @@
     <link rel="stylesheet" href="../../assets/css/topbar.css">
     <link rel="stylesheet" href="../../assets/css/profile.css">
     <link rel="stylesheet" href="../../assets/css/confirmation-modal.css">
-    <link rel="stylesheet" href="../../assets/css/permissions.css">
     <link rel="stylesheet" href="../../assets/css/inicio.css">
     
     <!-- Font Awesome para iconografía -->
@@ -96,11 +95,18 @@
                     </li>
 
                     <!-- Módulo de Configuración -->
-                    <li id="menu-configuracion">
-                        <a href="../Configuration/Configuration.html" class="module-config">
+                    <li class="has-submenu" id="menu-configuracion">
+                        <a href="javascript:void(0)" class="module-config">
                             <i class="fas fa-cog"></i>
                             Configuración
+                            <span class="submenu-arrow"></span>
                         </a>
+                        <ul class="submenu">
+                            <li><a href="../Configuration/EmergencyConfiguration.html"><i class="fas fa-phone-alt"></i>Emergencia</a></li>
+                            <li><a href="../Configuration/PermissionsManagement.html"><i class="fas fa-shield-alt"></i>Permisos</a></li>
+                            <li><a href="../Configuration/RolesManagement.html"><i class="fas fa-user-tag"></i>Roles</a></li>
+                            <li><a href="../Configuration/UsersManagement.html"><i class="fas fa-users"></i>Usuarios</a></li>
+                        </ul>
                     </li>
                 </ul>
             </div>
@@ -244,6 +250,7 @@
     <!-- 1. Utilidades y herramientas base -->
     <!-- Carga de scripts en orden específico para manejar dependencias -->
     <!-- 1. Utilidades y herramientas base -->
+    <script src="../../assets/js/global-initializer.js"></script>
     <script src="../../assets/js/auth/permissions.js"></script>
     <script src="../../assets/js/auth/auth-checker.js"></script>
     <script src="../../assets/js/auth/route-guard.js"></script>
@@ -255,8 +262,10 @@
     
     <!-- 2. Servicios de API -->
     <script src="../../assets/js/api/services/profile-service.js"></script>
+    <script src="../../assets/js/api/services/Configuration/user-service.js"></script>
 
     <!-- 3. Controladores de UI -->
+    <script src="../../assets/js/ui/global-toast.js"></script>
     <script src="../../assets/js/ui/controllers/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/profile-controller.js"></script>

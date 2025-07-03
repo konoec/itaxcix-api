@@ -123,6 +123,158 @@ function setupLogoutButton() {
 }
 
 /**
+ * Verificador automático de estado de usuario
+ * Verifica periódicamente si el usuario web sigue activo en el sistema
+ */
+class UserStatusMonitor {
+    constructor() {
+        this.intervalId = null;
+        this.checkInterval = 2 * 60 * 1000; // 2 minutos (más frecuente)
+        this.isMonitoring = false;
+    }
+
+    /**
+     * Inicia el monitoreo automático del estado del usuario
+     */
+    startMonitoring() {
+        if (this.isMonitoring) {
+            console.log('🔍 UserStatusMonitor: Ya está activo');
+            return;
+        }
+
+        // Solo monitorear usuarios web
+        const userRoles = sessionStorage.getItem('userRoles');
+        if (!userRoles) {
+            console.log('🔍 UserStatusMonitor: No hay roles de usuario en sesión');
+            return;
+        }
+
+        try {
+            const roles = JSON.parse(userRoles);
+            const hasWebRoles = roles.some(role => role.web === true);
+            
+            if (!hasWebRoles) {
+                console.log('🔍 UserStatusMonitor: Usuario no tiene roles web, no es necesario monitorear');
+                return;
+            }
+        } catch (e) {
+            console.log('🔍 UserStatusMonitor: Error al parsear roles');
+            return;
+        }
+
+        console.log('🔍 UserStatusMonitor: Iniciando monitoreo para usuario web');
+        this.isMonitoring = true;
+
+        // Verificación inicial comentada para evitar logout inmediato al cargar la página
+        // Solo usar verificación periódica y on-demand
+        // this.checkUserStatus();
+
+        // Configurar verificación periódica
+        this.intervalId = setInterval(() => {
+            this.checkUserStatus();
+        }, this.checkInterval);
+    }
+
+    /**
+     * Detiene el monitoreo
+     */
+    stopMonitoring() {
+        if (this.intervalId) {
+            clearInterval(this.intervalId);
+            this.intervalId = null;
+        }
+        this.isMonitoring = false;
+        console.log('🔍 UserStatusMonitor: Monitoreo detenido');
+    }
+
+    /**
+     * Verifica el estado actual del usuario
+     */
+    async checkUserStatus() {
+        try {
+            // Verificar que UserService esté disponible
+            if (typeof window.UserService === 'undefined') {
+                console.log('🔍 UserStatusMonitor: UserService no disponible, saltando verificación');
+                return;
+            }
+
+            console.log('🔍 UserStatusMonitor: Verificación periódica del estado del usuario...');
+            
+            // Usar verificación ligera para monitoreo periódico (solo estado activo, no roles)
+            const statusResult = await window.UserService.getCurrentUserStatusLight();
+
+            if (statusResult.needsLogin) {
+                console.log('🚫 UserStatusMonitor: Usuario requiere login');
+                this.handleUserDeactivated(statusResult.message);
+            } else if (statusResult.success) {
+                console.log('✅ UserStatusMonitor: Usuario activo');
+            } else {
+                console.log('⚠️ UserStatusMonitor: Error en verificación:', statusResult.message);
+            }
+
+        } catch (error) {
+            console.error('❌ UserStatusMonitor: Error al verificar estado:', error);
+        }
+    }
+
+    /**
+     * Fuerza una verificación inmediata del estado del usuario
+     * Método público para uso externo
+     */
+    async forceCheck() {
+        console.log('🔍 UserStatusMonitor: Forzando verificación inmediata...');
+        await this.checkUserStatus();
+    }
+
+    /**
+     * Maneja el caso cuando el usuario ha sido desactivado
+     */
+    handleUserDeactivated(message) {
+        console.log('🚫 UserStatusMonitor: Usuario desactivado, cerrando sesión...');
+        
+        this.stopMonitoring();
+        
+        // Mostrar mensaje al usuario con color celeste específico para desactivación
+        if (typeof window.showToast === 'function') {
+            window.showToast('Tu cuenta ha sido desactivada. Serás redirigido al login.', 'deactivated');
+        } else if (typeof window.GlobalToast !== 'undefined' && window.GlobalToast.show) {
+            window.GlobalToast.show('Tu cuenta ha sido desactivada. Serás redirigido al login.', 'deactivated');
+        } else {
+            alert('Tu cuenta ha sido desactivada. Serás redirigido al login.');
+        }
+
+        // Esperar un momento para que se muestre el mensaje
+        setTimeout(() => {
+            // Limpiar sesión
+            if (typeof cleanSession === 'function') {
+                cleanSession();
+            }
+            
+            // Redirigir al login
+            window.location.href = "../../index.html";
+        }, 2000);
+    }
+}
+
+// Crear instancia global del monitor
+const userStatusMonitor = new UserStatusMonitor();
+
+/**
+ * Función de utilidad para inicializar automáticamente el monitoreo
+ * Se puede llamar desde cualquier página web
+ */
+function initUserStatusMonitoring() {
+    if (window.authChecker && window.authChecker.userStatusMonitor) {
+        console.log('🔍 Iniciando monitoreo automático de estado de usuario...');
+        window.authChecker.userStatusMonitor.startMonitoring();
+        return true;
+    } else {
+        console.log('⚠️ Monitor de estado de usuario no disponible');
+        return false;
+    }
+}
+
+/**
  * Exporta las funciones como un objeto global para uso en otros archivos.
  * Permite acceder a las funciones desde cualquier parte de la aplicación.
  */
@@ -130,5 +282,10 @@ window.authChecker = {
     checkAuthentication,
     updateUserDisplay,
     checkTokenExpiration,
-    setupLogoutButton
+    setupLogoutButton,
+    userStatusMonitor, // Añadir el monitor al objeto global
+    initUserStatusMonitoring // Añadir función de utilidad
 };
+
+// Exportar también la función de utilidad globalmente
+window.initUserStatusMonitoring = initUserStatusMonitoring;

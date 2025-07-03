@@ -14,7 +14,7 @@
     <link rel="icon" type="image/png" href="../../assets/Recourse/Logo/1.png">
     <link rel="shortcut icon" href="../../assets/Recourse/Logo/1.png">
     
-    <title>Panel de Administración - Configuración de Emergencia</title>
+    <title>Panel de Administración - Gestión de Permisos</title>
     
     <!-- Hojas de estilo -->
     <link rel="stylesheet" href="../../assets/css/base.css">
@@ -104,8 +104,8 @@
                             <span class="submenu-arrow"></span>
                         </a>
                         <ul class="submenu">
-                            <li class="active"><a href="../Configuration/EmergencyConfiguration.html"><i class="fas fa-phone-alt"></i>Emergencia</a></li>
-                            <li><a href="../Configuration/PermissionsManagement.html"><i class="fas fa-shield-alt"></i>Permisos</a></li>
+                            <li><a href="../Configuration/EmergencyConfiguration.html"><i class="fas fa-phone-alt"></i>Emergencia</a></li>
+                            <li class="active"><a href="../Configuration/PermissionsManagement.html"><i class="fas fa-shield-alt"></i>Permisos</a></li>
                             <li><a href="../Configuration/RolesManagement.html"><i class="fas fa-user-tag"></i>Roles</a></li>
                             <li><a href="../Configuration/UsersManagement.html"><i class="fas fa-users"></i>Usuarios</a></li>
                         </ul>
@@ -129,7 +129,7 @@
                 <button id="open-sidebar" class="sidebar-toggle">
                     <i class="fas fa-bars"></i>
                 </button>
-                <h3>CONFIGURACIÓN DE EMERGENCIA</h3>
+                <h3>GESTIÓN DE PERMISOS</h3>
                 <div class="profile-container" id="profile-container" style="cursor: pointer;" title="Ver mi perfil">
                     <div class="profile-image" id="profile-image"></div>
                     <div class="user-info">
@@ -139,23 +139,104 @@
                 </div>
             </div>
             
-            <!-- Contenido de configuración de emergencia -->
-            <div class="configuration-content">
-                <div class="cards-container">
-                    <!-- Configuración de Emergencia Principal -->
-                    <div class="card header-emergencia" id="card-emergencia">
-                        <div class="card-header">
-                            <i class="fas fa-phone-alt"></i>
-                            <h3>Configuración de Contacto de Emergencia</h3>
+            <!-- Contenido de gestión de permisos -->
+            <div class="content">
+                <div class="permissions-panel">
+                    <!-- Header con búsqueda y botón de crear permiso -->
+                    <div class="permissions-header">
+                        <div class="permissions-header-left">
+                            <div class="search-container">
+                                <input type="text" id="search-permissions" placeholder="Buscar permisos..." class="search-input">
+                                <i class="fas fa-search search-icon"></i>
+                                <button id="clear-search" class="clear-search-btn" style="display: none;">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Filtros de estado y tipo -->
+                            <div class="filters-container">
+                                <div class="filter-group">
+                                    <label class="filter-label">Estado:</label>
+                                    <div class="filter-checkboxes">
+                                        <label class="filter-checkbox">
+                                            <input type="checkbox" id="filter-active" value="active">
+                                            <span class="checkmark"></span>
+                                            <span class="checkbox-label">Activo</span>
+                                        </label>
+                                        <label class="filter-checkbox">
+                                            <input type="checkbox" id="filter-inactive" value="inactive">
+                                            <span class="checkmark"></span>
+                                            <span class="checkbox-label">Inactivo</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="filter-group">
+                                    <label class="filter-label">Tipo:</label>
+                                    <div class="filter-checkboxes">
+                                        <label class="filter-checkbox">
+                                            <input type="checkbox" id="filter-web" value="web">
+                                            <span class="checkmark"></span>
+                                            <span class="checkbox-label">Web</span>
+                                        </label>
+                                        <label class="filter-checkbox">
+                                            <input type="checkbox" id="filter-app" value="app">
+                                            <span class="checkmark"></span>
+                                            <span class="checkbox-label">App</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <label for="emergencia">Número de emergencia:</label>
-                            <input type="tel" id="emergencia" name="emergency-number" placeholder="Ej: +51999999999" maxlength="15" required>
-                            <div class="form-message" id="emergency-inline-message"></div>
+                        <div class="permissions-header-right">
+                            <button class="create-permission-btn" id="create-permission-btn">
+                                <i class="fas fa-plus"></i>
+                                Crear permiso
+                            </button>
                         </div>
-                        <div class="card-footer">
-                            <button type="button" class="btn-cancel">Cancelar</button>
-                            <button type="submit" class="btn-save">Guardar Configuración</button>
+                    </div>
+
+                    <!-- Contenedor responsive de la tabla -->
+                    <div class="table-container">
+                        <!-- Tabla de permisos -->
+                        <table class="permissions-table">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Estado</th>
+                                    <th>Ámbito</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <!-- Indicador de carga -->
+                            <tbody id="permissions-loading-row" class="loading-row">
+                                <tr>
+                                    <td colspan="4">
+                                        <div id="permissions-loading-indicator" class="loading-indicator">
+                                            <div class="spinner"></div>
+                                            <p>Cargando permisos...</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tbody id="permissions-list">
+                                <!-- Datos dinámicos cargados por JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Controles de paginación -->
+                    <div class="pagination-container">
+                        <div class="pagination-info">
+                            <span id="pagination-info">Mostrando 1-10 de 25 permisos</span>
+                        </div>
+                        <div class="pagination-controls">
+                            <button class="pagination-btn" id="prev-page" disabled>
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="pagination-btn" id="next-page">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -229,6 +310,55 @@
         </div>
     </div>
 
+    <!-- Modal para crear/editar permiso -->
+    <div id="permission-modal" class="modal">
+        <div class="modal-content">
+            <h2>
+                <span id="modal-title">Crear Permiso</span>
+                <span class="close-modal" id="close-permission-modal">&times;</span>
+            </h2>
+            
+            <!-- Formulario del permiso -->
+            <form id="permission-form" class="permission-form">
+                <div class="form-group">
+                    <label for="permission-name">Nombre del Permiso:</label>
+                    <input type="text" id="permission-name" name="name" placeholder="Ingrese el nombre del permiso" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="permission-active">Estado:</label>
+                        <select id="permission-active" name="active" required>
+                            <option value="">Seleccionar estado</option>
+                            <option value="true">Activo</option>
+                            <option value="false">Inactivo</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="permission-web">Ámbito:</label>
+                        <select id="permission-web" name="web" required>
+                            <option value="">Seleccionar ámbito</option>
+                            <option value="true">Web</option>
+                            <option value="false">App</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" id="cancel-permission">Cancelar</button>
+                    <button type="submit" class="btn-save">
+                        <i class="fas fa-save"></i>
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modales para gestión de permisos - Serán implementados desde cero -->
+    <!-- Modal crear/editar permiso será agregado aquí -->
+
     <!-- Sistema de notificaciones toast -->
     <div id="toast" class="toast">
         <div id="toast-message">Configuration saved successfully</div>
@@ -257,10 +387,12 @@
     <!-- 2. Servicios de API -->
     <script src="../../assets/js/api/services/profile-service.js"></script>
     <script src="../../assets/js/api/services/Configuration/user-service.js"></script>
-    <script src="../../assets/js/api/services/Configuration/emergency-service.js"></script>
+    <script src="../../assets/js/api/services/Configuration/permission-service.js"></script>
     
     <!-- 2.1. Modelos de datos -->
     <script src="../../assets/js/api/models/user.js"></script>
+    <script src="../../assets/js/api/models/permission.js"></script>
+    <script src="../../assets/js/api/models/role.js"></script>
     <script src="../../assets/js/api/models/configuration.js"></script>
     
     <!-- 3. Controladores de UI -->
@@ -269,10 +401,10 @@
     <script src="../../assets/js/ui/controllers/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/profile-controller.js"></script>
     
-    <!-- Controlador específico de configuración de emergencia -->
-    <script src="../../assets/js/ui/controllers/Configuration/emergency-contact-controller.js"></script>
+    <!-- Controladores específicos de configuración -->
+    <script src="../../assets/js/ui/controllers/configuration/permissions-controller.js"></script>
     
-    <!-- Inicializador dedicado de emergencia (modular) -->
-    <script src="../../assets/js/ui/initializers/emergency-initializer.js"></script>
+    <!-- Inicializador dedicado para permisos -->
+    <script src="../../assets/js/ui/initializers/permissions-initializer.js"></script>
 </body>
 </html>

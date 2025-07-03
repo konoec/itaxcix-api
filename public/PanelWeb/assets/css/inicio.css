@@ -1,5 +1,13 @@
 /* ===== ESTILOS ESPECÍFICOS DEL MÓDULO INICIO ===== */
 
+/* =============================================================================
+   POPPINS FONT APPLICATION FOR INICIO MODULE
+   Aplicación de fuente Poppins para el módulo de inicio
+   ============================================================================= */
+* {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
 .inicio-content {
     padding: 10px;
     min-height: calc(100vh - 140px);
@@ -20,12 +28,14 @@
     margin: 0 0 10px 0;
     font-size: 2.5rem;
     font-weight: 300;
+    font-family: 'Poppins', sans-serif;
 }
 
 .welcome-section p {
     margin: 0;
     font-size: 1.1rem;
     opacity: 0.9;
+    font-family: 'Poppins', sans-serif;
 }
 
 .stats-grid {

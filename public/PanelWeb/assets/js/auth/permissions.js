@@ -26,6 +26,27 @@ class PermissionsService {    constructor() {
                 menuId: 'menu-configuracion',
                 title: 'Configuración',
                 icon: 'fas fa-cog'
+            },
+            'CONFIGURACIÓN - PERMISOS': {
+                permission: 'CONFIGURACIÓN',
+                route: '/pages/Configuration/PermissionsManagement.html',
+                menuId: 'menu-configuracion',
+                title: 'Permisos',
+                icon: 'fas fa-shield-alt'
+            },
+            'CONFIGURACIÓN - ROLES': {
+                permission: 'CONFIGURACIÓN',
+                route: '/pages/Configuration/RolesManagement.html',
+                menuId: 'menu-configuracion',
+                title: 'Roles',
+                icon: 'fas fa-user-tag'
+            },
+            'CONFIGURACIÓN - EMERGENCIA': {
+                permission: 'CONFIGURACIÓN',
+                route: '/pages/Configuration/EmergencyConfiguration.html',
+                menuId: 'menu-configuracion',
+                title: 'Emergencia',
+                icon: 'fas fa-phone-alt'
             }
         };        // Página por defecto (sin permisos requeridos)
         this.defaultRoute = '/pages/Inicio/Inicio.html';
@@ -100,10 +121,10 @@ class PermissionsService {    constructor() {
 
         for (const [permission, moduleInfo] of Object.entries(this.modulePermissions)) {
             const menuElement = document.getElementById(moduleInfo.menuId);
-            
+            // CAMBIO: Usar moduleInfo.permission para la verificación
+            const requiredPermission = moduleInfo.permission;
             if (menuElement) {
-                const hasPermission = userPermissions.includes(permission);
-                
+                const hasPermission = userPermissions.includes(requiredPermission);
                 if (hasPermission) {
                     // Habilitar elemento
                     this.enableMenuItem(menuElement, moduleInfo);
@@ -387,20 +408,15 @@ class PermissionsService {    constructor() {
     validateCurrentRoute(currentPath) {
         // Normalizar ruta
         const normalizedPath = currentPath.toLowerCase();
-        
         console.log(`🔍 Validando acceso a ruta: ${currentPath}`);
-          // Si es la página de inicio, siempre permitir acceso
         if (normalizedPath.includes('/inicio/') || normalizedPath.includes('inicio.html')) {
             console.log(`✅ Acceso permitido al inicio (página por defecto)`);
             return true;
         }
-          // Buscar si la ruta actual corresponde a algún módulo protegido
         for (const [permission, moduleInfo] of Object.entries(this.modulePermissions)) {
-            // Saltar módulos sin ruta específica (como menús desplegables)
             if (!moduleInfo.route) {
                 continue;
             }
-            
             const modulePath = moduleInfo.route.toLowerCase();
             
             // Verificar si la ruta actual corresponde a este módulo
@@ -412,15 +428,15 @@ class PermissionsService {    constructor() {
                 normalizedPath.includes(moduleInfo.menuId.replace('menu-', ''));
             
             if (isThisModule) {
-                const hasAccess = this.hasPermission(permission);
-                
+                // CAMBIO: Usar moduleInfo.permission para la verificación
+                const requiredPermission = moduleInfo.permission;
+                const hasAccess = this.hasPermission(requiredPermission);
                 if (!hasAccess) {
-                    console.warn(`🚫 Acceso denegado a: ${moduleInfo.title} (permiso requerido: ${permission})`);
+                    console.warn(`🚫 Acceso denegado a: ${moduleInfo.title} (permiso requerido: ${requiredPermission})`);
                     this.redirectToAuthorizedRoute();
                     return false;
                 }
-                
-                console.log(`✅ Acceso autorizado a: ${moduleInfo.title} (permiso: ${permission})`);
+                console.log(`✅ Acceso autorizado a: ${moduleInfo.title} (permiso: ${requiredPermission})`);
                 return true;
             }
         }

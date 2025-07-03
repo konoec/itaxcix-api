@@ -12,8 +12,11 @@ class ConductorService {
      */
     async obtenerConductorPendientePorId(id) {
         try {
+            console.log(`🔍 Obteniendo detalles del conductor con ID: ${id}`);
             const url = `${this.apiUrl}/drivers/pending/${id}`;
+            console.log(`📡 URL completa: ${url}`);
             const token = sessionStorage.getItem('authToken');
+            
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
@@ -22,27 +25,44 @@ class ConductorService {
                 }
             });
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('Respuesta de error:', errorText);
-                throw new Error(`Error HTTP: ${response.status}`);
-            }
+            console.log('📡 Status de respuesta HTTP:', response.status);
 
             const responseData = await response.json();
-            console.log('Respuesta detalle conductor:', responseData); // Para depuración
+            console.log('📋 Respuesta detalle conductor:', responseData);
             
+            // Verificar si hay errores de validación, conductor no encontrado o errores internos
             if (responseData.success === false) {
-                throw new Error(responseData.message || 'Error al obtener conductor');
+                let errorMessage = responseData.message || 'Error al obtener conductor';
+                
+                // Si hay un error interno con detalles adicionales
+                if (responseData.error && responseData.error.message) {
+                    errorMessage += `: ${responseData.error.message}`;
+                }
+                
+                console.error('❌ Error de la API:', errorMessage);
+                throw new Error(errorMessage);
             }
             
-            // Extraer los datos del conductor del objeto data
-            if (responseData.data) {
+            // Si no hay campo success (respuesta exitosa directa) y el status HTTP es ok
+            if (responseData.success === undefined && response.ok) {
+                // La API devuelve directamente los datos del conductor
+                if (responseData.driverId) {
+                    console.log('✅ Conductor obtenido exitosamente:', responseData.fullName);
+                    return responseData;
+                }
+            }
+            
+            // Si hay un campo data (formato con wrapper)
+            if (responseData.data && responseData.data.driverId) {
+                console.log('✅ Conductor obtenido exitosamente:', responseData.data.fullName);
                 return responseData.data;
             }
             
+            console.warn('⚠️ Respuesta inesperada de la API');
             return null;
+            
         } catch (error) {
-            console.error('Error al obtener detalles del conductor:', error);
+            console.error('❌ Error al obtener detalles del conductor:', error);
             throw error;
         }
     }

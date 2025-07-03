@@ -1859,42 +1859,11 @@ class ProfileController {    constructor() {
     /**
      * Muestra mensaje toast (mismo estilo que recuperación de contraseña)
      */
+    /**
+     * Muestra mensaje toast (utiliza la función global)
+     */
     showToast(message, type = 'success') {
-        console.log(`📢 Toast ${type}: ${message}`);
-        
-        const toast = document.getElementById('recovery-toast');
-        const toastMessage = document.getElementById('recovery-toast-message');
-        const toastContent = toast?.querySelector('.recovery-toast-content');
-        const toastIcon = toast?.querySelector('i');
-        
-        if (toast && toastMessage && toastContent) {
-            // Configurar el mensaje
-            toastMessage.textContent = message;
-            
-            // Configurar estilos según el tipo
-            if (type === 'error') {
-                toastContent.classList.add('error');
-                if (toastIcon) {
-                    toastIcon.className = 'fas fa-times-circle';
-                }
-            } else {
-                toastContent.classList.remove('error');
-                if (toastIcon) {
-                    toastIcon.className = 'fas fa-check-circle';
-                }
-            }
-            
-            // Mostrar la notificación
-            toast.classList.add('show');
-            
-            // Ocultar automáticamente después de 4 segundos
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 4000);
-        } else {
-            // Fallback: crear toast temporal si no existe el sistema
-            this.createTemporaryToast(message, type);
-        }
+        window.showRecoveryToast(message, type);
     }
 }
 
