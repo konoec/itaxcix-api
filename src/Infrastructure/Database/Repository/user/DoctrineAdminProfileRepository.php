@@ -64,6 +64,8 @@ class DoctrineAdminProfileRepository implements AdminProfileRepositoryInterface
             ->join('ap.user', 'u')
             ->where('u.id = :userId')
             ->setParameter('userId', $userId)
+            ->orderBy('ap.id', 'DESC')
+            ->setMaxResults(1)
             ->getQuery();
 
         $entity = $query->getOneOrNullResult();

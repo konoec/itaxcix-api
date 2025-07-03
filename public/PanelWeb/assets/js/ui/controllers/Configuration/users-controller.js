@@ -144,6 +144,12 @@ class UsersController {
         if (verifiedContactFilter) {
             verifiedContactFilter.addEventListener('change', () => this.handleContactVerifiedFilter());
         }
+
+        // Filtro de vehículo asociado
+        const hasVehicleFilter = document.getElementById('filter-has-vehicle');
+        if (hasVehicleFilter) {
+            hasVehicleFilter.addEventListener('change', () => this.handleHasVehicleFilter());
+        }
     }
 
     /**
@@ -199,6 +205,21 @@ class UsersController {
         const checked = document.getElementById('filter-verified-contact')?.checked;
         this.activeFilters.contactVerified = checked ? true : null;
         
+        // Marcar como cambio de filtro para evitar notificaciones
+        this.lastAction = 'filter_change';
+        this.currentPage = 1;
+        this.loadUsers();
+    }
+
+    /**
+     * Maneja filtro de vehículo asociado
+     */
+    handleHasVehicleFilter() {
+        const checked = document.getElementById('filter-has-vehicle')?.checked;
+        this.activeFilters.hasVehicle = checked ? true : null;
+
+        console.log('🔍 Filtro de vehículo asociado actualizado:', this.activeFilters.hasVehicle);
+
         // Marcar como cambio de filtro para evitar notificaciones
         this.lastAction = 'filter_change';
         this.currentPage = 1;
@@ -364,7 +385,7 @@ class UsersController {
 
         const result = {
             id: apiUser.id,
-            firstname: person.name || 'Sin nombre',  // La API usa "name", no "firstName"
+            firstname: person.firstName || person.name || 'Sin nombre',  // La API nueva devuelve firstName
             lastname: person.lastName || 'Sin apellido',
             email: email,
             emailVerified: emailVerified,
@@ -408,7 +429,7 @@ class UsersController {
                 'No se encontraron usuarios';
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="9" style="text-align: center; padding: 40px; color: #6c757d;">
+                    <td colspan="6" style="text-align: center; padding: 40px; color: #6c757d;">
                         <i class="fas fa-users" style="font-size: 48px; margin-bottom: 16px;"></i>
                         <p>${message}</p>
                     </td>
@@ -462,31 +483,13 @@ class UsersController {
                         ${user.active ? 'Activo' : 'Inactivo'}
                     </span>
                 </td>
-                <td class="col-stage">
-                    ${user.driverStatus ? 
-                        `<span class="driver-status ${user.driverStatus.toLowerCase()}">${user.driverStatus}</span>` : 
-                        '-'
-                    }
-                </td>
-                <td class="col-vehicle">
-                    ${user.hasVehicle ? 
-                        `<div class="vehicle-info">
-                            <i class="fas fa-car"></i>
-                            ${user.vehiclePlate || 'Con vehículo'}
-                        </div>` : 
-                        `<div class="no-vehicle">
-                            <i class="fas fa-times-circle"></i>
-                            Sin vehículo
-                        </div>`
-                    }
-                </td>
                 <td class="col-actions">
                     <div class="action-buttons">
                         <button class="action-btn edit" onclick="usersController.viewUserDetails(${user.id})" title="Editar usuario">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button class="action-btn delete" onclick="usersController.deleteUser(${user.id})" title="Eliminar usuario">
-                            <i class="fas fa-trash"></i>
+                        <button class="action-btn view" onclick="usersController.viewUserFullDetails(${user.id})" title="Ver usuario">
+                            <i class="fas fa-eye"></i>
                         </button>
                     </div>
                 </td>
@@ -505,7 +508,7 @@ class UsersController {
         if (tbody) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="9" style="text-align: center; padding: 40px; color: #dc3545;">
+                    <td colspan="6" style="text-align: center; padding: 40px; color: #dc3545;">
                         <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 16px;"></i>
                         <p><strong>Error:</strong> ${message}</p>
                         <button class="btn-secondary" onclick="usersController.loadUsers()" style="margin-top: 16px;">
@@ -567,9 +570,9 @@ class UsersController {
         // Actualizar término de búsqueda
         this.searchTerm = searchTerm.trim();
         
-        // Log para debug de búsqueda por placa
+        // Log para debug de búsqueda
         if (this.searchTerm) {
-            console.log(`🔍 Término de búsqueda: "${this.searchTerm}" - Se enviará a la API para búsqueda en nombre, documento, placa y email`);
+            console.log(`🔍 Término de búsqueda: "${this.searchTerm}" - Se enviará a la API para búsqueda en nombre, documento y email`);
         }
         
         // Mostrar/ocultar botón limpiar
@@ -632,7 +635,7 @@ class UsersController {
         const filterCheckboxes = [
             'filter-citizen', 'filter-driver', 'filter-admin',
             'filter-pending', 'filter-approved', 'filter-rejected',
-            'filter-verified-contact'
+            'filter-verified-contact', 'filter-has-vehicle'
         ];
         
         filterCheckboxes.forEach(checkboxId => {
@@ -746,8 +749,6 @@ class UsersController {
         // Obtener datos del formulario
         const formData = new FormData(e.target);
         const userData = {
-            firstName: formData.get('firstname'), // Cambiar a firstName para coincidir con la API
-            lastName: formData.get('lastname'),   // Cambiar a lastName para coincidir con la API
             document: formData.get('document'),
             email: formData.get('email'),
             password: formData.get('password'),
@@ -756,8 +757,8 @@ class UsersController {
         };
 
         // Validar datos requeridos
-        if (!userData.firstName || !userData.lastName || !userData.document || !userData.email || !userData.password) {
-            this.showToast('Todos los campos marcados son obligatorios', 'error');
+        if (!userData.document || !userData.email || !userData.password) {
+            this.showToast('Los campos documento, correo y contraseña son obligatorios', 'error');
             return;
         }
 
@@ -952,13 +953,13 @@ class UsersController {
                     } else {
                         // Fallback manual
                         console.log('⚠️ Método de verificación no disponible, ejecutando logout manual...');
-                        alert('Tu cuenta ha sido desactivada. Serás redirigido al login.');
+                        this.showToast('Tu cuenta ha sido desactivada. Serás redirigido al login.', 'warning');
                         setTimeout(() => {
                             if (typeof cleanSession === 'function') {
                                 cleanSession();
                             }
                             window.location.href = "../../index.html";
-                        }, 1000);
+                        }, 2000); // Dar tiempo para que se vea el toast
                         return;
                     }
                 }
@@ -1076,8 +1077,25 @@ class UsersController {
         if (window.GlobalToast && typeof window.GlobalToast.show === 'function') {
             window.GlobalToast.show(message, type);
         } else {
-            // Fallback a alert
-            alert(message);
+            // Fallback a console.log con formato visible
+            console.log(`🔔 NOTIFICACIÓN [${type.toUpperCase()}]: ${message}`);
+            
+            // Intentar usar el toast del recovery si está disponible
+            const recoveryToast = document.getElementById('recovery-toast');
+            const recoveryToastMessage = document.getElementById('recovery-toast-message');
+            
+            if (recoveryToast && recoveryToastMessage) {
+                recoveryToastMessage.textContent = message;
+                recoveryToast.style.display = 'block';
+                recoveryToast.classList.add('show');
+                
+                setTimeout(() => {
+                    recoveryToast.classList.remove('show');
+                    setTimeout(() => {
+                        recoveryToast.style.display = 'none';
+                    }, 300);
+                }, 3000);
+            }
         }
     }
 
@@ -1140,7 +1158,7 @@ class UsersController {
             window.UserDetailsController.openRoleAssignmentModal(userId, userName, userPhone);
         } else {
             console.error('❌ UserDetailsController no está disponible');
-            alert('Error: El controlador de detalles de usuario no está disponible');
+            this.showToast('Error: El controlador de detalles de usuario no está disponible', 'error');
         }
     }
 
@@ -1180,14 +1198,14 @@ class UsersController {
                 const userActive = userData.person?.active !== false;
                 if (!userActive) {
                     console.log('🚨 Usuario actual está INACTIVO - Forzando logout');
-                    alert('Tu cuenta ha sido desactivada. Serás redirigido al login.');
+                    this.showToast('Tu cuenta ha sido desactivada. Serás redirigido al login.', 'warning');
                     
                     setTimeout(() => {
                         if (typeof cleanSession === 'function') {
                             cleanSession();
                         }
                         window.location.href = "../../index.html";
-                    }, 1000);
+                    }, 2000); // Dar tiempo para que se vea el toast
                 } else {
                     console.log('✅ Usuario actual está ACTIVO - Continuando sesión');
                 }
@@ -1198,7 +1216,7 @@ class UsersController {
             console.error('❌ Error en verificación manual:', error);
             // En caso de error, asumir que el usuario puede estar desactivado
             console.log('🚨 Error al verificar - Asumiendo posible desactivación y haciendo logout preventivo');
-            alert('Tu sesión puede haber sido desactivada. Serás redirigido al login.');
+            this.showToast('Tu sesión puede haber sido desactivada. Serás redirigido al login.', 'warning');
             
             setTimeout(() => {
                 if (typeof cleanSession === 'function') {
@@ -1232,7 +1250,7 @@ class UsersController {
                 // Los permisos se manejan en auth-permissions.js
                 if (!currentUser.active) {
                     console.log('🚨 ALERTA: Usuario actual está INACTIVO - Forzando logout inmediato');
-                    alert('Tu cuenta ha sido desactivada. Serás redirigido al login.');
+                    this.showToast('Tu cuenta ha sido desactivada. Serás redirigido al login.', 'warning');
                     
                     setTimeout(() => {
                         if (typeof cleanSession === 'function') {
@@ -1462,6 +1480,309 @@ class UsersController {
             active: isActive,
             statusInfo: statusInfo
         };
+    }
+
+    /**
+     * Abre el modal con detalles completos del usuario
+     */
+    async viewUserFullDetails(userId) {
+        console.log('👁️ Abriendo detalles completos del usuario:', userId);
+        
+        const modal = document.getElementById('user-full-details-modal');
+        const loadingIndicator = document.getElementById('user-details-loading');
+        const errorDiv = document.getElementById('user-details-error');
+        
+        if (!modal) {
+            console.error('❌ Modal de detalles completos no encontrado');
+            return;
+        }
+
+        // Mostrar el modal con la nueva clase
+        modal.classList.add('show');
+        
+        // Mostrar loading y ocultar error
+        if (loadingIndicator) loadingIndicator.style.display = 'block';
+        if (errorDiv) errorDiv.style.display = 'none';
+        
+        // Ocultar todas las secciones
+        this.hideAllDetailsSections();
+
+        try {
+            // Llamar a la API para obtener detalles del usuario
+            const response = await UserService.getUserFullDetails(userId);
+            
+            if (response && response.success && response.data) {
+                this.populateUserDetailsModal(response.data, userId);
+            } else {
+                throw new Error(response?.message || 'Error al obtener detalles del usuario');
+            }
+        } catch (error) {
+            console.error('❌ Error al cargar detalles del usuario:', error);
+            this.showUserDetailsError(error.message);
+        } finally {
+            loadingIndicator.style.display = 'none';
+        }
+    }
+
+    /**
+     * Oculta todas las secciones de detalles
+     */
+    hideAllDetailsSections() {
+        const sections = [
+            'user-basic-info',
+            'contacts-info-section',
+            'roles-info-section', 
+            'profiles-info-section',
+            'vehicle-info-section'
+        ];
+        
+        sections.forEach(sectionId => {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.style.display = 'none';
+            }
+        });
+    }
+
+    /**
+     * Llena el modal con los datos del usuario
+     */
+    populateUserDetailsModal(data, userId) {
+        // Actualizar el título del modal con el nombre del usuario
+        const modalTitle = document.getElementById('user-full-details-title');
+        if (modalTitle && data.person) {
+            const fullName = `${data.person.name || ''} ${data.person.lastName || ''}`.trim();
+            modalTitle.textContent = fullName || `Usuario ${userId}`;
+        }
+        
+        // Información básica del usuario (siempre mostrar)
+        this.populateBasicInfo(data, userId);
+        
+        // Información de contactos (si existen)
+        if (data.contacts && Array.isArray(data.contacts)) {
+            this.populateContactsInfo(data.contacts);
+        }
+        
+        // Información de roles (si existen)
+        if (data.roles && Array.isArray(data.roles)) {
+            this.populateRolesInfo(data.roles);
+        }
+        
+        // Perfiles de usuario (si existen)
+        this.populateProfilesInfo(data);
+        
+        // Información del vehículo (si existe)
+        if (data.vehicle) {
+            this.populateVehicleInfo(data.vehicle);
+        }
+    }
+
+    /**
+     * Llena la información básica del usuario
+     */
+    populateBasicInfo(data, userId) {
+        const basicInfoSection = document.getElementById('user-basic-info');
+        
+        if (data.person) {
+            const fullName = `${data.person.name || ''} ${data.person.lastName || ''}`.trim();
+            document.getElementById('detail-user-fullname').textContent = fullName || '-';
+            document.getElementById('detail-user-document').textContent = data.person.document || '-';
+            document.getElementById('detail-user-doctype').textContent = data.person.documentType?.name || '-';
+            // Manejar fecha de validación que puede ser null o no existir
+            document.getElementById('detail-user-validation').textContent = 
+                data.person.validationDate ? this.formatDateTime(data.person.validationDate) : '-';
+            document.getElementById('detail-person-active').textContent = data.person.active ? 'Activo' : 'Inactivo';
+        } else {
+            document.getElementById('detail-user-fullname').textContent = '-';
+            document.getElementById('detail-user-document').textContent = '-';
+            document.getElementById('detail-user-doctype').textContent = '-';
+            document.getElementById('detail-user-validation').textContent = '-';
+            document.getElementById('detail-person-active').textContent = '-';
+        }
+        
+        document.getElementById('detail-user-status').textContent = data.userStatus?.name || '-';
+        
+        basicInfoSection.style.display = 'block';
+    }
+
+    /**
+     * Llena la información de contactos
+     */
+    populateContactsInfo(contacts) {
+        const contactsSection = document.getElementById('contacts-info-section');
+        const contactsGrid = document.getElementById('contacts-profile-grid');
+        const noContactsMessage = document.getElementById('no-contacts-message');
+        
+        // Limpiar grid
+        contactsGrid.innerHTML = '';
+        
+        if (contacts.length === 0) {
+            noContactsMessage.style.display = 'block';
+        } else {
+            noContactsMessage.style.display = 'none';
+            
+            contacts.forEach(contact => {
+                const contactCard = document.createElement('div');
+                contactCard.className = 'contact-profile-card';
+                
+                contactCard.innerHTML = `
+                    <div class="contact-profile-header">
+                        <i class="fas fa-address-book"></i>
+                        <h4>${contact.type?.name || 'Contacto'}</h4>
+                    </div>
+                    <div class="contact-profile-info">
+                        <div class="contact-profile-item">
+                            <label>Valor:</label>
+                            <span>${contact.value || '-'}</span>
+                        </div>
+                        <div class="contact-profile-item">
+                            <label>Confirmado:</label>
+                            <span class="status-${contact.confirmed ? 'confirmed' : 'not-confirmed'}">${contact.confirmed ? 'Confirmado' : 'No Confirmado'}</span>
+                        </div>
+                        <div class="contact-profile-item">
+                            <label>Estado:</label>
+                            <span class="status-${contact.active ? 'active' : 'inactive'}">${contact.active ? 'Activo' : 'Inactivo'}</span>
+                        </div>
+                    </div>
+                `;
+                
+                contactsGrid.appendChild(contactCard);
+            });
+        }
+        
+        contactsSection.style.display = 'block';
+    }
+
+    /**
+     * Llena la información de roles
+     */
+    populateRolesInfo(roles) {
+        const rolesSection = document.getElementById('roles-info-section');
+        const rolesGrid = document.getElementById('roles-profile-grid');
+        const noRolesMessage = document.getElementById('no-roles-message-details');
+        
+        // Limpiar grid
+        rolesGrid.innerHTML = '';
+        
+        if (roles.length === 0) {
+            noRolesMessage.style.display = 'block';
+        } else {
+            noRolesMessage.style.display = 'none';
+            
+            roles.forEach(role => {
+                const roleCard = document.createElement('div');
+                roleCard.className = 'role-profile-card';
+                
+                roleCard.innerHTML = `
+                    <div class="role-profile-header">
+                        <i class="fas fa-user-tag"></i>
+                        <h4>${role.name || 'Rol'}</h4>
+                    </div>
+                    <div class="role-profile-info">
+                        <div class="role-profile-item">
+                            <label>Estado:</label>
+                            <span class="status-${role.active ? 'active' : 'inactive'}">${role.active ? 'Activo' : 'Inactivo'}</span>
+                        </div>
+                        <div class="role-profile-item">
+                            <label>Plataforma:</label>
+                            <span class="role-${role.web ? 'web' : 'mobile'}">${role.web ? 'Web' : 'Móvil'}</span>
+                        </div>
+                    </div>
+                `;
+                
+                rolesGrid.appendChild(roleCard);
+            });
+        }
+        
+        rolesSection.style.display = 'block';
+    }
+
+    /**
+     * Llena la información de perfiles
+     */
+    populateProfilesInfo(data) {
+        const profilesSection = document.getElementById('profiles-info-section');
+        const citizenProfile = document.getElementById('citizen-profile');
+        const driverProfile = document.getElementById('driver-profile');
+        
+        let hasProfiles = false;
+        
+        // Perfil de ciudadano
+        if (data.citizenProfile) {
+            document.getElementById('citizen-rating').textContent = data.citizenProfile.averageRating || '0';
+            document.getElementById('citizen-rating-count').textContent = data.citizenProfile.ratingCount || '0';
+            citizenProfile.style.display = 'block';
+            hasProfiles = true;
+        } else {
+            citizenProfile.style.display = 'none';
+        }
+        
+        // Perfil de conductor
+        if (data.driverProfile) {
+            // Estado del conductor con styling
+            const statusElement = document.getElementById('driver-status');
+            const statusName = data.driverProfile.status?.name || '-';
+            statusElement.innerHTML = `<span class="driver-status-badge ${statusName.toLowerCase()}">${statusName}</span>`;
+            
+            document.getElementById('driver-rating').textContent = data.driverProfile.averageRating || '0';
+            document.getElementById('driver-rating-count').textContent = data.driverProfile.ratingCount || '0';
+            driverProfile.style.display = 'block';
+            hasProfiles = true;
+        } else {
+            driverProfile.style.display = 'none';
+        }
+        
+        if (hasProfiles) {
+            profilesSection.style.display = 'block';
+        }
+    }
+
+    /**
+     * Llena la información del vehículo
+     */
+    populateVehicleInfo(vehicle) {
+        const vehicleSection = document.getElementById('vehicle-info-section');
+        
+        document.getElementById('detail-vehicle-plate').textContent = vehicle?.plate || '-';
+        document.getElementById('detail-vehicle-brand').textContent = vehicle?.brand?.name || '-';
+        document.getElementById('detail-vehicle-model').textContent = vehicle?.model?.name || '-';
+        document.getElementById('detail-vehicle-year').textContent = vehicle?.year || '-';
+        document.getElementById('detail-vehicle-color').textContent = vehicle?.color?.id || '-';
+        
+        vehicleSection.style.display = 'block';
+    }
+
+    /**
+     * Formatea una fecha y hora
+     */
+    formatDateTime(dateTimeString) {
+        if (!dateTimeString) return '-';
+        try {
+            const date = new Date(dateTimeString);
+            return date.toLocaleString('es-PE', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        } catch (error) {
+            return dateTimeString;
+        }
+    }
+
+    /**
+     * Muestra un error en el modal de detalles
+     */
+    showUserDetailsError(message) {
+        const errorDiv = document.getElementById('user-details-error');
+        const errorText = document.getElementById('user-details-error-text');
+        
+        errorText.textContent = message;
+        errorDiv.style.display = 'block';
+        
+        this.hideAllDetailsSections();
     }
 }
 

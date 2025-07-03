@@ -17,7 +17,7 @@ class UserService {
      * Obtiene la lista de usuarios con paginación y filtros avanzados
      * @param {number} page - Número de página (default: 1)
      * @param {number} limit - Cantidad de elementos por página (default: 20)
-     * @param {string} search - Término de búsqueda por nombre, apellido o documento (opcional)
+     * @param {string} search - Término de búsqueda por nombre, documento o email (opcional)
      * @param {string|null} userType - Tipo de usuario: 'citizen', 'driver', 'admin' (opcional)
      * @param {string|null} driverStatus - Estado del conductor: 'PENDIENTE', 'APROBADO', 'RECHAZADO' (opcional)
      * @param {boolean|null} hasVehicle - Filtrar usuarios con vehículo asociado (opcional)
@@ -188,7 +188,7 @@ class UserService {
     }
 
     /**
-     * Busca usuarios por nombre, apellido o documento
+     * Busca usuarios por nombre, documento o email
      * @param {string} searchTerm - Término de búsqueda
      * @param {number} page - Número de página (default: 1)
      * @param {number} limit - Cantidad de elementos por página (default: 20)
@@ -449,10 +449,7 @@ class UserService {
     /**
      * Crea un nuevo usuario en el sistema
      * @param {Object} userData - Datos del usuario a crear
-     * @param {string} userData.firstName - Nombre del usuario
-     * @param {string} userData.lastName - Apellido del usuario
      * @param {string} userData.document - Documento de identidad
-     * @param {number} userData.documentTypeId - ID del tipo de documento (opcional, por defecto 1)
      * @param {string} userData.email - Correo electrónico
      * @param {string} userData.password - Contraseña
      * @param {string} userData.area - Área de trabajo (opcional)
@@ -461,7 +458,7 @@ class UserService {
      */
     static async createUser(userData) {
         try {
-            console.log('🔄 UserService: Creando nuevo usuario:', userData.firstName, userData.lastName);
+            console.log('🔄 UserService: Creando nuevo usuario para documento:', userData.document);
             
             const token = UserService.getAuthToken();
             if (!token) {
@@ -469,7 +466,7 @@ class UserService {
             }
             
             // Validar campos obligatorios
-            const requiredFields = ['firstName', 'lastName', 'document', 'email', 'password'];
+            const requiredFields = ['document', 'email', 'password'];
             for (const field of requiredFields) {
                 if (!userData[field] || !userData[field].toString().trim()) {
                     throw new Error(`El campo ${field} es obligatorio`);
@@ -487,12 +484,9 @@ class UserService {
                 throw new Error('La contraseña debe tener al menos 6 caracteres');
             }
             
-            // Preparar datos para envío (con valores por defecto)
+            // Preparar datos para envío según la nueva API
             const requestData = {
-                firstName: userData.firstName.trim(),
-                lastName: userData.lastName.trim(),
                 document: userData.document.trim(),
-                documentTypeId: userData.documentTypeId || 1, // Por defecto tipo 1
                 email: userData.email.trim(),
                 password: userData.password,
                 area: userData.area ? userData.area.trim() : '',
@@ -713,7 +707,14 @@ class UserService {
                     } else if (typeof window.GlobalToast !== 'undefined' && window.GlobalToast.show) {
                         window.GlobalToast.show('Tu cuenta ha sido desactivada. Serás redirigido al login.', 'deactivated');
                     } else {
-                        alert('Tu cuenta ha sido desactivada. Serás redirigido al login.');
+                        // Usar el sistema de toast del controlador si está disponible
+                        const usersController = window.usersController || window.UsersController;
+                        if (usersController && typeof usersController.showToast === 'function') {
+                            usersController.showToast('Tu cuenta ha sido desactivada. Serás redirigido al login.', 'warning');
+                        } else {
+                            console.log('⚠️ No hay sistema de notificaciones disponible - usando console');
+                            console.warn('NOTIFICACIÓN: Tu cuenta ha sido desactivada. Serás redirigido al login.');
+                        }
                     }
                     
                     // Limpiar sesión y redirigir
@@ -836,6 +837,73 @@ class UserService {
         } catch (error) {
             console.error('❌ Error en verificación ligera:', error);
             return { success: false, message: 'Error de red', needsLogin: false };
+        }
+    }
+
+    /**
+     * Obtiene los detalles completos de un usuario específico
+     * @param {number} userId - ID del usuario
+     * @returns {Promise<Object>} Respuesta de la API con detalles completos
+     */
+    static async getUserFullDetails(userId) {
+        try {
+            console.log(`🔄 UserService: Obteniendo detalles completos del usuario ${userId}`);
+            
+            const token = UserService.getAuthToken();
+            if (!token) {
+                console.error('❌ No hay token de autenticación');
+                return { success: false, message: 'No autorizado' };
+            }
+
+            const response = await fetch(`${UserService.API_BASE_URL}/users/${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            });
+
+            console.log(`📡 Respuesta del servidor para usuario ${userId}:`, response.status);
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    console.error('🚫 Token expirado o inválido');
+                    return { success: false, message: 'Sesión expirada', needsLogin: true };
+                }
+                
+                if (response.status === 404) {
+                    console.error('🚫 Usuario no encontrado');
+                    return { success: false, message: 'Usuario no encontrado' };
+                }
+                
+                const errorText = await response.text();
+                console.error('❌ Error HTTP:', response.status, errorText);
+                return { success: false, message: `Error del servidor: ${response.status}` };
+            }
+
+            const data = await response.json();
+            console.log('✅ Detalles del usuario obtenidos exitosamente:', {
+                userId: userId,
+                hasVehicle: !!data.data?.vehicle,
+                vehiclePlate: data.data?.vehicle?.plate || 'No disponible',
+                rolesCount: data.data?.roles?.length || 0,
+                contactsCount: data.data?.contacts?.length || 0
+            });
+
+            return {
+                success: true,
+                data: data.data,
+                message: data.message || 'Detalles obtenidos exitosamente'
+            };
+
+        } catch (error) {
+            console.error('❌ Error al obtener detalles del usuario:', error);
+            return { 
+                success: false, 
+                message: error.message || 'Error de conexión',
+                needsLogin: false 
+            };
         }
     }
 }

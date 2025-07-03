@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="../../assets/css/configuration/users-management.css">
     <link rel="stylesheet" href="../../assets/css/configuration/role-details-modal.css">
     <link rel="stylesheet" href="../../assets/css/configuration/user-detail-modal.css">
+    <link rel="stylesheet" href="../../assets/css/configuration/user-details-modal.css">
     
 </head>
 <body>
@@ -114,7 +115,7 @@
                             <div class="search-container">
                                 <!-- Búsqueda unificada -->
                                 <div class="search-input-wrapper">
-                                    <input type="text" id="search-users" placeholder="Buscar por nombre, documento, placa o email..." class="search-input">
+                                    <input type="text" id="search-users" placeholder="Buscar por nombre, documento o email..." class="search-input">
                                     <i class="fas fa-search search-icon"></i>
                                     <button id="clear-search" class="clear-search-btn" style="display: none;">
                                     </button>
@@ -173,6 +174,11 @@
                                             <span class="checkmark"></span>
                                             <span class="checkbox-label">Contacto Verificado</span>
                                         </label>
+                                        <label class="filter-checkbox">
+                                            <input type="checkbox" id="filter-has-vehicle" value="hasVehicle">
+                                            <span class="checkmark"></span>
+                                            <span class="checkbox-label">Con Vehículo</span>
+                                        </label>
                                     </div>
                                 </div>
                             </div>
@@ -199,8 +205,6 @@
                                     <th class="col-email">Correo</th>
                                     <th class="col-phone">Teléfono</th>
                                     <th class="col-status">Estado</th>
-                                    <th class="col-stage">Etapa</th>
-                                    <th class="col-vehicle">Vehículo</th>
                                     <th class="col-actions">Acciones</th>
                                 </tr>
                             </thead>
@@ -229,19 +233,13 @@
                                     <td class="col-status">
                                         <span class="status-badge active">Activo</span>
                                     </td>
-                                    <td class="col-stage">-</td>
-                                    <td class="col-vehicle">
-                                        <div class="no-vehicle">
-                                            Sin vehículo
-                                        </div>
-                                    </td>
                                     <td class="col-actions">
                                         <div class="action-buttons">
                                             <button class="action-btn edit" title="Editar usuario">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                            <button class="action-btn delete" title="Eliminar usuario">
-                                                <i class="fas fa-trash"></i>
+                                            <button class="action-btn view" title="Ver usuario">
+                                                <i class="fas fa-eye"></i>
                                             </button>
                                         </div>
                                     </td>
@@ -270,19 +268,13 @@
                                     <td class="col-status">
                                         <span class="status-badge active">Activo</span>
                                     </td>
-                                    <td class="col-stage">-</td>
-                                    <td class="col-vehicle">
-                                        <div class="no-vehicle">
-                                            Sin vehículo
-                                        </div>
-                                    </td>
                                     <td class="col-actions">
                                         <div class="action-buttons">
                                             <button class="action-btn edit" title="Editar usuario">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                            <button class="action-btn delete" title="Eliminar usuario">
-                                                <i class="fas fa-trash"></i>
+                                            <button class="action-btn view" title="Ver usuario">
+                                                <i class="fas fa-eye"></i>
                                             </button>
                                         </div>
                                     </td>
@@ -311,22 +303,13 @@
                                     <td class="col-status">
                                         <span class="status-badge active">Activo</span>
                                     </td>
-                                    <td class="col-stage">
-                                        <span class="driver-status aprobado">APROBADO</span>
-                                    </td>
-                                    <td class="col-vehicle">
-                                        <div class="vehicle-info">
-                                            <i class="fas fa-car"></i>
-                                            M5B698
-                                        </div>
-                                    </td>
                                     <td class="col-actions">
                                         <div class="action-buttons">
                                             <button class="action-btn edit" title="Editar usuario">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                            <button class="action-btn delete" title="Eliminar usuario">
-                                                <i class="fas fa-trash"></i>
+                                            <button class="action-btn view" title="Ver usuario">
+                                                <i class="fas fa-eye"></i>
                                             </button>
                                         </div>
                                     </td>
@@ -442,16 +425,6 @@
             <!-- Formulario del usuario -->
             <form id="user-form" class="permission-form">
                 <div class="form-group">
-                    <label for="user-firstname">NOMBRE</label>
-                    <input type="text" id="user-firstname" name="firstname" placeholder="" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="user-lastname">APELLIDOS</label>
-                    <input type="text" id="user-lastname" name="lastname" placeholder="" required>
-                </div>
-                
-                <div class="form-group">
                     <label for="user-document">DOCUMENTO</label>
                     <input type="text" id="user-document" name="document" placeholder="" required>
                 </div>
@@ -497,16 +470,6 @@
             <!-- Formulario del usuario -->
             <form id="create-user-form" class="permission-form">
                 <div class="form-group">
-                    <label for="create-user-firstname">NOMBRE:</label>
-                    <input type="text" id="create-user-firstname" name="firstname" placeholder="Ingrese el nombre" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="create-user-lastname">APELLIDOS:</label>
-                    <input type="text" id="create-user-lastname" name="lastname" placeholder="Ingrese los apellidos" required>
-                </div>
-                
-                <div class="form-group">
                     <label for="create-user-document">DOCUMENTO:</label>
                     <input type="text" id="create-user-document" name="document" placeholder="Ingrese el documento" required>
                 </div>
@@ -518,7 +481,12 @@
                 
                 <div class="form-group">
                     <label for="create-user-password">CONTRASEÑA:</label>
-                    <input type="password" id="create-user-password" name="password" placeholder="Ingrese la contraseña" required>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="create-user-password" name="password" placeholder="Ingrese la contraseña" required>
+                        <button type="button" class="password-toggle-btn" id="toggle-create-password-visibility">
+                            <i class="fas fa-eye" id="create-password-toggle-icon"></i>
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -652,6 +620,198 @@
         </div>
     </div>
     
+    <!-- Modal de detalles completos del usuario - Estructura mejorada -->
+    <div id="user-full-details-modal" class="user-details-modal">
+        <div class="user-details-modal-overlay">
+            <div class="user-details-modal-content">
+                <!-- Header del modal -->
+                <div class="user-details-modal-header">
+                    <div class="user-details-header-content">
+                        <div class="user-details-title">
+                            <h2 id="user-full-details-title">Detalles del Usuario</h2>
+                            <span class="user-details-subtitle" id="user-details-subtitle">Información completa</span>
+                        </div>
+                        <button class="user-details-close-btn" id="close-user-full-details-modal">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Body del modal -->
+                <div class="user-details-modal-body">
+                    <!-- Loading indicator -->
+                    <div id="user-details-loading" class="user-details-loading" style="display: none;">
+                        <div class="user-details-spinner"></div>
+                        <p>Cargando detalles del usuario...</p>
+                    </div>
+                    
+                    <!-- Error message -->
+                    <div id="user-details-error" class="user-details-error" style="display: none;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span id="user-details-error-text">Error al cargar los detalles del usuario</span>
+                    </div>
+                    
+                    <!-- Contenido principal -->
+                    <div class="user-details-content">
+                        <!-- Información básica -->
+                        <div id="user-basic-info" class="user-details-section">
+                            <div class="section-header">
+                                <h3><i class="fas fa-user"></i> Información Básica</h3>
+                            </div>
+                            <div class="section-content">
+                                <div class="info-grid">
+                                    <div class="info-card">
+                                        <label>Nombre Completo</label>
+                                        <span id="detail-user-fullname">-</span>
+                                    </div>
+                                    <div class="info-card">
+                                        <label>Documento</label>
+                                        <span id="detail-user-document">-</span>
+                                    </div>
+                                    <div class="info-card">
+                                        <label>Tipo Documento</label>
+                                        <span id="detail-user-doctype">-</span>
+                                    </div>
+                                    <div class="info-card">
+                                        <label>Estado Usuario</label>
+                                        <span id="detail-user-status">-</span>
+                                    </div>
+                                    <div class="info-card">
+                                        <label>Fecha Validación</label>
+                                        <span id="detail-user-validation">-</span>
+                                    </div>
+                                    <div class="info-card">
+                                        <label>Estado Persona</label>
+                                        <span id="detail-person-active">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Información de contactos -->
+                        <div id="contacts-info-section" class="user-details-section" style="display: none;">
+                            <div class="section-header">
+                                <h3><i class="fas fa-address-book"></i> Contactos</h3>
+                            </div>
+                            <div class="section-content">
+                                <div class="contacts-profile-grid" id="contacts-profile-grid">
+                                    <!-- Contactos se cargarán aquí dinámicamente como tarjetas -->
+                                </div>
+                                <div id="no-contacts-message" class="empty-message" style="display: none;">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>No se encontraron contactos para este usuario</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Información de roles -->
+                        <div id="roles-info-section" class="user-details-section" style="display: none;">
+                            <div class="section-header">
+                                <h3><i class="fas fa-user-tag"></i> Roles Asignados</h3>
+                            </div>
+                            <div class="section-content">
+                                <div class="roles-profile-grid" id="roles-profile-grid">
+                                    <!-- Roles se cargarán aquí dinámicamente como tarjetas -->
+                                </div>
+                                <div id="no-roles-message-details" class="empty-message" style="display: none;">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>No se encontraron roles para este usuario</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Perfiles de usuario -->
+                        <div id="profiles-info-section" class="user-details-section" style="display: none;">
+                            <div class="section-header">
+                                <h3><i class="fas fa-id-card"></i> Perfiles de Usuario</h3>
+                            </div>
+                            <div class="section-content">
+                                <div class="profiles-grid">
+                                    <!-- Perfil Ciudadano -->
+                                    <div id="citizen-profile" class="profile-card" style="display: none;">
+                                        <div class="profile-header">
+                                            <i class="fas fa-user-circle"></i>
+                                            <h4>Perfil Ciudadano</h4>
+                                        </div>
+                                        <div class="profile-info">
+                                            <div class="profile-item">
+                                                <label>Rating Promedio:</label>
+                                                <span id="citizen-rating">-</span>
+                                            </div>
+                                            <div class="profile-item">
+                                                <label>Cantidad de Ratings:</label>
+                                                <span id="citizen-rating-count">-</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Perfil Conductor -->
+                                    <div id="driver-profile" class="profile-card" style="display: none;">
+                                        <div class="profile-header">
+                                            <i class="fas fa-car"></i>
+                                            <h4>Perfil Conductor</h4>
+                                        </div>
+                                        <div class="profile-info">
+                                            <div class="profile-item">
+                                                <label>Estado:</label>
+                                                <span id="driver-status">-</span>
+                                            </div>
+                                            <div class="profile-item">
+                                                <label>Rating Promedio:</label>
+                                                <span id="driver-rating">-</span>
+                                            </div>
+                                            <div class="profile-item">
+                                                <label>Cantidad de Ratings:</label>
+                                                <span id="driver-rating-count">-</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Información del vehículo -->
+                        <div id="vehicle-info-section" class="user-details-section" style="display: none;">
+                            <div class="section-header">
+                                <h3><i class="fas fa-car"></i> Información del Vehículo</h3>
+                            </div>
+                            <div class="section-content">
+                                <div class="vehicle-grid">
+                                    <div class="vehicle-card">
+                                        <div class="vehicle-main-info">
+                                            <div class="vehicle-plate">
+                                                <label>Placa:</label>
+                                                <span id="detail-vehicle-plate" class="plate-number">-</span>
+                                            </div>
+                                        </div>
+                                        <div class="vehicle-details">
+                                            <div class="vehicle-info-item">
+                                                <label>Marca:</label>
+                                                <span id="detail-vehicle-brand">-</span>
+                                            </div>
+                                            <div class="vehicle-info-item">
+                                                <label>Modelo:</label>
+                                                <span id="detail-vehicle-model">-</span>
+                                            </div>
+                                            <div class="vehicle-info-item">
+                                                <label>Año:</label>
+                                                <span id="detail-vehicle-year">-</span>
+                                            </div>
+                                            <div class="vehicle-info-item">
+                                                <label>Color:</label>
+                                                <span id="detail-vehicle-color">-</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Sistema de notificaciones toast -->
     <div id="toast" class="toast">
         <div id="toast-message">Usuario guardado correctamente</div>
@@ -711,6 +871,75 @@
             console.log('- AssignRoleService:', typeof window.AssignRoleService !== 'undefined' ? '✅ Disponible' : '❌ No disponible');
             console.log('- ResetPasswordService:', typeof window.ResetPasswordService !== 'undefined' ? '✅ Disponible' : '❌ No disponible');
             console.log('- UserDetailsController:', typeof window.UserDetailsController !== 'undefined' ? '✅ Disponible' : '❌ No disponible');
+            console.log('- usersController:', typeof window.usersController !== 'undefined' ? '✅ Disponible' : '❌ No disponible');
+            
+            // Verificar después de un delay para dar tiempo a la inicialización
+            setTimeout(() => {
+                console.log('🔍 Verificación después de 3 segundos:');
+                console.log('- usersController:', typeof window.usersController !== 'undefined' ? '✅ Disponible' : '❌ No disponible');
+                if (window.usersController) {
+                    console.log('- viewUserFullDetails method:', typeof window.usersController.viewUserFullDetails === 'function' ? '✅ Disponible' : '❌ No disponible');
+                }
+                
+                // Prueba directa de elementos del DOM
+                console.log('🔍 Verificando elementos del modal de vehículo:');
+                const vehicleSection = document.getElementById('vehicle-info-section');
+                const plateElement = document.getElementById('detail-vehicle-plate');
+                const brandElement = document.getElementById('detail-vehicle-brand');
+                
+                console.log('- Vehicle section:', !!vehicleSection);
+                console.log('- Plate element:', !!plateElement);
+                console.log('- Brand element:', !!brandElement);
+                
+                if (plateElement) {
+                    console.log('- Plate element value:', plateElement.textContent);
+                }
+                
+                // Función de prueba temporal para test del modal
+                window.testVehicleModal = function() {
+                    console.log('🧪 Ejecutando prueba del modal de vehículo...');
+                    
+                    const testData = {
+                        userId: 999,
+                        person: {
+                            name: "TEST",
+                            lastName: "USER",
+                            document: "12345678",
+                            documentType: { name: "DNI" },
+                            validationDate: null,
+                            active: true
+                        },
+                        userStatus: { name: "ACTIVO" },
+                        vehicle: {
+                            id: 123,
+                            plate: "TEST-123",
+                            brand: { name: "TOYOTA" },
+                            model: { name: "COROLLA" },
+                            year: 2020,
+                            color: { id: 1, active: true }
+                        }
+                    };
+                    
+                    if (window.usersController && window.usersController.populateUserDetailsModal) {
+                        // Abrir modal primero
+                        const modal = document.getElementById('user-full-details-modal');
+                        if (modal) {
+                            modal.style.display = 'flex';
+                            // Ocultar loading
+                            const loading = document.getElementById('user-details-loading');
+                            if (loading) loading.style.display = 'none';
+                            
+                            // Poblar con datos de prueba
+                            window.usersController.populateUserDetailsModal(testData, 999);
+                            console.log('✅ Modal poblado con datos de prueba');
+                        }
+                    } else {
+                        console.error('❌ usersController no disponible para prueba');
+                    }
+                };
+                
+                console.log('🧪 Función de prueba creada: window.testVehicleModal()');
+            }, 3000);
             
             if (typeof window.ResetPasswordService !== 'undefined') {
                 console.log('- ResetPasswordService.resetUserPassword:', typeof window.ResetPasswordService.resetUserPassword === 'function' ? '✅ Disponible' : '❌ No disponible');
@@ -726,12 +955,12 @@
             
             // Añadir eventos para cerrar el modal
             const userDetailsModal = document.getElementById('user-details-modal');
-            const closeUserDetailsModal = document.getElementById('close-user-details-modal');
+            const closeUserDetailsBtn = document.getElementById('close-user-details-modal');
             const cancelUserDetails = document.getElementById('cancel-user-details');
             
             // Cerrar el modal con el botón X
-            if (closeUserDetailsModal) {
-                closeUserDetailsModal.addEventListener('click', function() {
+            if (closeUserDetailsBtn) {
+                closeUserDetailsBtn.addEventListener('click', function() {
                     userDetailsModal.style.display = 'none';
                 });
             }
@@ -749,6 +978,56 @@
                     userDetailsModal.style.display = 'none';
                 }
             });
+            
+            // Event listeners para el modal de detalles completos
+            const userFullDetailsModal = document.getElementById('user-full-details-modal');
+            const closeUserFullDetailsModal = document.getElementById('close-user-full-details-modal');
+            const closeUserFullDetails = document.getElementById('close-user-full-details');
+            
+            // Función para cerrar el modal
+            function closeUserDetailsModal() {
+                if (userFullDetailsModal) {
+                    userFullDetailsModal.classList.remove('show');
+                }
+            }
+            
+            // Cerrar el modal con el botón X
+            if (closeUserFullDetailsModal) {
+                closeUserFullDetailsModal.addEventListener('click', closeUserDetailsModal);
+            }
+            
+            // Cerrar el modal con el botón Cerrar
+            if (closeUserFullDetails) {
+                closeUserFullDetails.addEventListener('click', closeUserDetailsModal);
+            }
+            
+            // Cerrar el modal haciendo clic en el overlay
+            if (userFullDetailsModal) {
+                userFullDetailsModal.addEventListener('click', function(event) {
+                    if (event.target === userFullDetailsModal || event.target.classList.contains('user-details-modal-overlay')) {
+                        closeUserDetailsModal();
+                    }
+                });
+            }
+            
+            // Toggle de visibilidad de contraseña en modal de crear usuario
+            const toggleCreatePasswordBtn = document.getElementById('toggle-create-password-visibility');
+            const createPasswordInput = document.getElementById('create-user-password');
+            const createPasswordIcon = document.getElementById('create-password-toggle-icon');
+            
+            if (toggleCreatePasswordBtn && createPasswordInput && createPasswordIcon) {
+                toggleCreatePasswordBtn.addEventListener('click', function() {
+                    if (createPasswordInput.type === 'password') {
+                        createPasswordInput.type = 'text';
+                        createPasswordIcon.classList.remove('fa-eye');
+                        createPasswordIcon.classList.add('fa-eye-slash');
+                    } else {
+                        createPasswordInput.type = 'password';
+                        createPasswordIcon.classList.remove('fa-eye-slash');
+                        createPasswordIcon.classList.add('fa-eye');
+                    }
+                });
+            }
         });
     </script>
 </body>

@@ -812,6 +812,44 @@
     background: rgba(43, 57, 98, 0.5);
 }
 
+/* Estilos para el input de contraseña con toggle de visibilidad */
+#create-user-modal .password-input-wrapper {
+    position: relative;
+    display: block;
+    width: 100%;
+}
+
+#create-user-modal .password-input-wrapper input {
+    padding-right: 35px; /* Espacio para el botón del ojo */
+    width: 100%;
+}
+
+#create-user-modal .password-toggle-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: #6c757d;
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+    z-index: 10;
+    border-radius: 2px;
+}
+
+#create-user-modal .password-toggle-btn:hover {
+    color: #007bff;
+    background: rgba(0, 123, 255, 0.1);
+}
+
+#create-user-modal .password-toggle-btn:focus {
+    outline: none;
+    color: #007bff;
+}
+
 /* Indicador visual de scroll disponible */
 .scrollable-modal::before {
     content: '';
@@ -836,3 +874,11 @@
 #create-user-modal .permission-form {
     padding-right: 20px;
 }
+
+/* =============================================================================
+   FINAL TABLE CONTAINER STYLING
+   Estilos finales del contenedor de tabla - Modal styles moved to user-details-modal.css
+   ============================================================================= */
+
+/* Estilos del modal de detalles completos del usuario han sido movidos al archivo dedicado:
+   assets/css/configuration/user-details-modal.css para evitar conflictos de CSS */

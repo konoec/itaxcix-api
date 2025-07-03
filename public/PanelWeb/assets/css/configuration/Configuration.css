@@ -1851,7 +1851,7 @@ p, span, div, a, li, ul, ol {
 /* Definición exacta de anchos de columna para alineación perfecta */
 .permissions-table th:nth-child(1),
 .permissions-table td:nth-child(1) {
-    width: 20% !important;
+    width: 24% !important;
     min-width: 220px !important;
     text-align: left !important;
     padding-left: 16px !important;
