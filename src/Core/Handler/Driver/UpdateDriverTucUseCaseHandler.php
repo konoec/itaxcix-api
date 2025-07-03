@@ -17,6 +17,8 @@ use itaxcix\Core\UseCases\Driver\UpdateDriverTucUseCase;
 use itaxcix\Shared\DTO\client\VehicleResponseDTO;
 use itaxcix\Shared\DTO\useCases\Driver\TucUpdateDto;
 use itaxcix\Shared\DTO\useCases\Driver\UpdateTucResponseDto;
+use itaxcix\Shared\DTO\useCases\Driver\VehicleInfoDto;
+use itaxcix\Shared\DTO\useCases\Driver\TucInfoDto;
 
 class UpdateDriverTucUseCaseHandler implements UpdateDriverTucUseCase
 {
@@ -65,19 +67,23 @@ class UpdateDriverTucUseCaseHandler implements UpdateDriverTucUseCase
         $tucsUpdated = 0;
         $tucsUpToDate = 0;
         $updates = [];
+        $vehicleInfo = null;
+        $allTucs = [];
+        $furthestExpiringTuc = null;
 
-        foreach ($vehicleUsers as $vehicleUser) {
-            $vehicle = $vehicleUser->getVehicle();
-            $totalVehiclesChecked++;
+        // Como solo hay un vehículo por conductor, obtenemos el primero
+        $vehicleUser = $vehicleUsers[0];
+        $vehicle = $vehicleUser->getVehicle();
+        $totalVehiclesChecked++;
 
-            try {
-                // Consultar la API municipal para verificar TUCs actualizadas
-                $municipalData = $this->fakeMunicipalApi($vehicle->getLicensePlate());
+        // Crear información del vehículo
+        $vehicleInfo = $this->createVehicleInfoDto($vehicle);
 
-                if (!$municipalData->found || empty($municipalData->vehicles)) {
-                    continue;
-                }
+        try {
+            // Consultar la API municipal para verificar TUCs actualizadas
+            $municipalData = $this->fakeMunicipalApi($vehicle->getLicensePlate());
 
+            if ($municipalData->found && !empty($municipalData->vehicles)) {
                 // Obtener TODAS las TUCs existentes del vehículo en la base de datos
                 $existingTucs = $this->tucProcedureRepository->findAllTucProceduresByVehicleId($vehicle->getId());
 
@@ -115,12 +121,21 @@ class UpdateDriverTucUseCaseHandler implements UpdateDriverTucUseCase
                         status: $vehicleData->estado ?? 'VIGENTE'
                     );
                 }
-
-            } catch (\Exception $e) {
-                // Log del error pero continuar con otros vehículos
-                error_log("Error actualizando TUC para vehículo {$vehicle->getLicensePlate()}: " . $e->getMessage());
-                continue;
             }
+
+            // Obtener todas las TUCs actualizadas del vehículo
+            $allTucModels = $this->tucProcedureRepository->findAllTucProceduresByVehicleId($vehicle->getId());
+            $allTucs = $this->createTucInfoDtos($allTucModels);
+            $furthestExpiringTuc = $this->findFurthestExpiringTuc($allTucs);
+
+        } catch (\Exception $e) {
+            // Log del error pero continuar
+            error_log("Error actualizando TUC para vehículo {$vehicle->getLicensePlate()}: " . $e->getMessage());
+
+            // Aún así, obtener las TUCs existentes para mostrar información
+            $allTucModels = $this->tucProcedureRepository->findAllTucProceduresByVehicleId($vehicle->getId());
+            $allTucs = $this->createTucInfoDtos($allTucModels);
+            $furthestExpiringTuc = $this->findFurthestExpiringTuc($allTucs);
         }
 
         $message = "Se verificaron {$totalVehiclesChecked} vehículos. ";
@@ -132,7 +147,10 @@ class UpdateDriverTucUseCaseHandler implements UpdateDriverTucUseCase
             tucsUpdated: $tucsUpdated,
             tucsUpToDate: $tucsUpToDate,
             updates: $updates,
-            message: $message
+            message: $message,
+            vehicleInfo: $vehicleInfo,
+            allTucs: $allTucs,
+            furthestExpiringTuc: $furthestExpiringTuc
         );
     }
 
@@ -208,11 +226,11 @@ class UpdateDriverTucUseCaseHandler implements UpdateDriverTucUseCase
             $data = array_combine($headers, $row);
 
             // Validar que array_combine fue exitoso y que existe la clave 'placa'
-            if ($data === false || !isset($data['PLACA'])) {
+            if ($data === false || !isset($data['placa'])) {
                 continue;
             }
 
-            if ($data['PLACA'] === $plateValue) {
+            if ($data['placa'] === $plateValue) {
                 $found = true;
                 // Crear objeto VehicleDTO con los datos del CSV
                 $vehicles[] = (object) $data;
@@ -226,5 +244,87 @@ class UpdateDriverTucUseCaseHandler implements UpdateDriverTucUseCase
             count: count($vehicles),
             vehicles: $vehicles
         );
+    }
+
+    /**
+     * Crea un DTO con información del vehículo
+     */
+    private function createVehicleInfoDto($vehicle): VehicleInfoDto
+    {
+        return new VehicleInfoDto(
+            id: $vehicle->getId(),
+            licensePlate: $vehicle->getLicensePlate(),
+            manufactureYear: $vehicle->getManufactureYear(),
+            seatCount: $vehicle->getSeatCount(),
+            model: $vehicle->getModel()?->getName(),
+            color: $vehicle->getColor()?->getName()
+        );
+    }
+
+    /**
+     * Convierte un array de TucProcedureModel a array de TucInfoDto
+     */
+    private function createTucInfoDtos(array $tucModels): array
+    {
+        $tucInfoDtos = [];
+        $now = new DateTime();
+
+        foreach ($tucModels as $tucModel) {
+            $daysUntilExpiration = null;
+            $isActive = false;
+
+            if ($tucModel->getExpirationDate()) {
+                $expirationDate = $tucModel->getExpirationDate();
+                $interval = $now->diff($expirationDate);
+                $daysUntilExpiration = $interval->days;
+
+                // Si la fecha de vencimiento es futura, está activa
+                $isActive = $expirationDate > $now;
+
+                // Si la fecha ya pasó, los días serán negativos
+                if ($expirationDate < $now) {
+                    $daysUntilExpiration = -$daysUntilExpiration;
+                }
+            }
+
+            $tucInfoDtos[] = new TucInfoDto(
+                id: $tucModel->getId(),
+                procedureDate: $tucModel->getProcedureDate()?->format('Y-m-d'),
+                issueDate: $tucModel->getIssueDate()?->format('Y-m-d'),
+                expirationDate: $tucModel->getExpirationDate()?->format('Y-m-d'),
+                status: $tucModel->getStatus()?->getName(),
+                procedureType: $tucModel->getType()?->getName(),
+                modality: $tucModel->getModality()?->getName(),
+                company: $tucModel->getCompany()?->getName(),
+                district: $tucModel->getDistrict()?->getName(),
+                daysUntilExpiration: $daysUntilExpiration,
+                isActive: $isActive
+            );
+        }
+
+        return $tucInfoDtos;
+    }
+
+    /**
+     * Encuentra la TUC con fecha de vencimiento más lejana en el futuro
+     */
+    private function findFurthestExpiringTuc(array $tucInfoDtos): ?TucInfoDto
+    {
+        $furthestTuc = null;
+        $furthestDate = null;
+
+        foreach ($tucInfoDtos as $tucInfo) {
+            // Solo considerar TUCs activas (con fecha de vencimiento futura)
+            if ($tucInfo->isActive && $tucInfo->expirationDate) {
+                $expirationDate = DateTime::createFromFormat('Y-m-d', $tucInfo->expirationDate);
+
+                if ($furthestDate === null || $expirationDate > $furthestDate) {
+                    $furthestDate = $expirationDate;
+                    $furthestTuc = $tucInfo;
+                }
+            }
+        }
+
+        return $furthestTuc;
     }
 }
