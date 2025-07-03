@@ -108,61 +108,65 @@ class CreateAdminUserUseCase
         }
 
         // 8. INICIAR CREACIÓN DE ENTIDADES (todo validado)
-        // Usamos el patrón de crear entidades directamente y usar repositorios para persistir
+        // Crear directamente el modelo de dominio PersonModel
+        $personModel = new \itaxcix\Core\Domain\person\PersonModel(
+            id: null, // ID será asignado por la base de datos
+            name: $request->firstName,
+            lastName: $request->lastName,
+            documentType: $documentType,
+            document: $request->document,
+            validationDate: new DateTime(),
+            image: null,
+            active: true
+        );
 
-        // Crear persona entity
-        $personEntity = new PersonEntity();
-        $personEntity->setName($request->firstName);
-        $personEntity->setLastName($request->lastName);
-        $personEntity->setDocument($request->document);
-        $personEntity->setDocumentType($documentType->toEntity());
-        $personEntity->setActive(true);
-        $personEntity->setValidationDate(new DateTime());
-
-        // Convertir a modelo de dominio y guardar
-        $personModel = $this->personRepository->toDomain($personEntity);
+        // Guardar persona
         $savedPersonModel = $this->personRepository->savePerson($personModel);
 
-        // Crear usuario entity
-        $userEntity = new UserEntity();
-        $userEntity->setPerson($savedPersonModel->toEntity());
-        $userEntity->setPassword(password_hash($request->password, PASSWORD_DEFAULT));
-        $userEntity->setStatus($activeStatus->toEntity());
+        // Crear directamente el modelo de dominio UserModel
+        $userModel = new \itaxcix\Core\Domain\user\UserModel(
+            id: null, // ID será asignado por la base de datos
+            password: password_hash($request->password, PASSWORD_DEFAULT),
+            person: $savedPersonModel,
+            status: $activeStatus
+        );
 
-        // Convertir a modelo de dominio y guardar
-        $userModel = $this->userRepository->toDomain($userEntity);
+        // Guardar usuario
         $savedUserModel = $this->userRepository->saveUser($userModel);
 
-        // Crear contacto entity
-        $contactEntity = new UserContactEntity();
-        $contactEntity->setUser($savedUserModel->toEntity());
-        $contactEntity->setType($emailContactType->toEntity());
-        $contactEntity->setValue($request->email);
-        $contactEntity->setConfirmed(true); // Auto-confirmado para admins
-        $contactEntity->setActive(true);
+        // Crear directamente el modelo de dominio UserContactModel
+        $contactModel = new \itaxcix\Core\Domain\user\UserContactModel(
+            id: null, // ID será asignado por la base de datos
+            user: $savedUserModel,
+            type: $emailContactType,
+            value: $request->email,
+            confirmed: true, // Auto-confirmado para admins
+            active: true
+        );
 
-        // Convertir a modelo de dominio y guardar
-        $contactModel = $this->userContactRepository->toDomain($contactEntity);
+        // Guardar contacto
         $savedContactModel = $this->userContactRepository->saveUserContact($contactModel);
 
-        // Asignar rol de administrador entity
-        $userRoleEntity = new UserRoleEntity();
-        $userRoleEntity->setUser($savedUserModel->toEntity());
-        $userRoleEntity->setRole($adminRole->toEntity());
-        $userRoleEntity->setActive(true);
+        // Crear directamente el modelo de dominio UserRoleModel
+        $userRoleModel = new \itaxcix\Core\Domain\user\UserRoleModel(
+            id: null, // ID será asignado por la base de datos
+            role: $adminRole,
+            user: $savedUserModel,
+            active: true
+        );
 
-        // Convertir a modelo de dominio y guardar
-        $userRoleModel = $this->userRoleRepository->toDomain($userRoleEntity);
+        // Guardar rol de usuario
         $savedUserRoleModel = $this->userRoleRepository->saveUserRole($userRoleModel);
 
-        // Crear perfil de administrador entity
-        $adminProfileEntity = new AdminProfileEntity();
-        $adminProfileEntity->setUser($savedUserModel->toEntity());
-        $adminProfileEntity->setArea($request->area);
-        $adminProfileEntity->setPosition($request->position);
+        // Crear directamente el modelo de dominio AdminProfileModel
+        $adminProfileModel = new \itaxcix\Core\Domain\user\AdminProfileModel(
+            id: null, // ID será asignado por la base de datos
+            user: $savedUserModel,
+            area: $request->area,
+            position: $request->position
+        );
 
-        // Convertir a modelo de dominio y guardar
-        $adminProfileModel = $this->adminProfileRepository->toDomain($adminProfileEntity);
+        // Guardar perfil de administrador
         $savedAdminProfileModel = $this->adminProfileRepository->saveAdminProfile($adminProfileModel);
 
         return [
