@@ -207,6 +207,11 @@ class UpdateDriverTucUseCaseHandler implements UpdateDriverTucUseCase
 
             $data = array_combine($headers, $row);
 
+            // Validar que array_combine fue exitoso y que existe la clave 'placa'
+            if ($data === false || !isset($data['PLACA'])) {
+                continue;
+            }
+
             if ($data['placa'] === $plateValue) {
                 $found = true;
                 // Crear objeto VehicleDTO con los datos del CSV
