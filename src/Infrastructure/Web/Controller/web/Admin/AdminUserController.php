@@ -509,20 +509,17 @@ class AdminUserController extends AbstractController
     #[OA\Post(
         path: "/api/v1/users",
         operationId: "createAdminUser",
-        description: "Crea un nuevo usuario administrador con perfil completo siguiendo el flujo: persona -> usuario -> contacto -> rol -> perfil admin.",
-        summary: "Crear usuario administrador",
+        description: "Crea un nuevo usuario administrador ingresando solo el documento DNI. El sistema obtiene automáticamente el nombre y apellido mediante una simulación de API externa (similar al validador de documentos).",
+        summary: "Crear usuario administrador con DNI",
         security: [["bearerAuth" => []]],
         tags: ["Admin - Usuarios"]
     )]
     #[OA\RequestBody(
         required: true,
         content: new OA\JsonContent(
-            required: ["firstName", "lastName", "document", "documentTypeId", "email", "password", "area", "position"],
+            required: ["document", "email", "password", "area", "position"],
             properties: [
-                new OA\Property(property: "firstName", type: "string", example: "Administrador"),
-                new OA\Property(property: "lastName", type: "string", example: "Principal"),
-                new OA\Property(property: "document", type: "string", example: "12345678"),
-                new OA\Property(property: "documentTypeId", type: "integer", example: 1, description: "ID del tipo de documento (ej: 1 = DNI)"),
+                new OA\Property(property: "document", type: "string", example: "12345678", description: "Documento DNI del usuario - El nombre y apellido se obtienen automáticamente"),
                 new OA\Property(property: "email", type: "string", example: "admin@itaxcix.com"),
                 new OA\Property(property: "password", type: "string", example: "Password@123", description: "Mínimo 8 caracteres, debe contener mayúscula, minúscula y número"),
                 new OA\Property(property: "area", type: "string", example: "Sistemas"),
@@ -544,8 +541,8 @@ class AdminUserController extends AbstractController
                             property: "user",
                             properties: [
                                 new OA\Property(property: "id", type: "integer", example: 1),
-                                new OA\Property(property: "firstName", type: "string", example: "Administrador"),
-                                new OA\Property(property: "lastName", type: "string", example: "Principal"),
+                                new OA\Property(property: "firstName", type: "string", example: "JUAN", description: "Nombre obtenido automáticamente de la fake API"),
+                                new OA\Property(property: "lastName", type: "string", example: "PEREZ GONZALES", description: "Apellido obtenido automáticamente de la fake API"),
                                 new OA\Property(property: "document", type: "string", example: "12345678"),
                                 new OA\Property(property: "email", type: "string", example: "admin@itaxcix.com"),
                                 new OA\Property(property: "role", type: "string", example: "ADMINISTRADOR"),
@@ -576,10 +573,7 @@ class AdminUserController extends AbstractController
             $data = $this->getJsonBody($request);
 
             $requestDTO = new CreateAdminUserRequestDTO(
-                firstName: $data['firstName'],
-                lastName: $data['lastName'],
                 document: $data['document'],
-                documentTypeId: (int)$data['documentTypeId'],
                 email: $data['email'],
                 password: $data['password'],
                 area: $data['area'],

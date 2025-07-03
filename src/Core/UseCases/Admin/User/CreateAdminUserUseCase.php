@@ -71,22 +71,22 @@ class CreateAdminUserUseCase
         // 1. VALIDACIONES PREVIAS (sin crear nada en DB)
         $this->validateRequest($request);
 
-        // 2. Verificar que no existe usuario con ese documento
+        // 2. Validar que el tipo de documento DNI existe
+        $documentType = $this->documentTypeRepository->findDocumentTypeByName('DNI');
+        if (!$documentType) {
+            throw new InvalidArgumentException("Tipo de documento DNI no encontrado en el sistema");
+        }
+
+        // 3. Verificar que no existe usuario con ese documento
         $existingUser = $this->userRepository->findUserByPersonDocument($request->document);
         if ($existingUser) {
             throw new InvalidArgumentException("Ya existe un usuario con el documento {$request->document}");
         }
 
-        // 3. Verificar que no existe contacto con ese email
+        // 4. Verificar que no existe contacto con ese email
         $existingContact = $this->userContactRepository->findAllUserContactByValue($request->email);
         if ($existingContact) {
             throw new InvalidArgumentException("Ya existe un usuario con el email {$request->email}");
-        }
-
-        // 4. Validar que el tipo de documento existe
-        $documentType = $this->documentTypeRepository->findById($request->documentTypeId);
-        if (!$documentType) {
-            throw new InvalidArgumentException("Tipo de documento con ID {$request->documentTypeId} no encontrado");
         }
 
         // 5. Validar que existe estado ACTIVO para usuarios
@@ -107,12 +107,15 @@ class CreateAdminUserUseCase
             throw new InvalidArgumentException("Rol ADMINISTRADOR web no encontrado o no está activo");
         }
 
-        // 8. INICIAR CREACIÓN DE ENTIDADES (todo validado)
+        // 8. Obtener nombre y apellido desde fake API
+        $personData = $this->fakeReniecApi($request->document);
+
+        // 9. INICIAR CREACIÓN DE ENTIDADES (todo validado)
         // Crear directamente el modelo de dominio PersonModel
         $personModel = new \itaxcix\Core\Domain\person\PersonModel(
             id: null, // ID será asignado por la base de datos
-            name: $request->firstName,
-            lastName: $request->lastName,
+            name: $personData['name'],
+            lastName: $personData['lastName'],
             documentType: $documentType,
             document: $request->document,
             validationDate: new DateTime(),
@@ -187,14 +190,6 @@ class CreateAdminUserUseCase
     private function validateRequest(CreateAdminUserRequestDTO $request): void
     {
         // Validar campos requeridos
-        if (empty(trim($request->firstName))) {
-            throw new InvalidArgumentException("El nombre es requerido");
-        }
-
-        if (empty(trim($request->lastName))) {
-            throw new InvalidArgumentException("El apellido es requerido");
-        }
-
         if (empty(trim($request->document))) {
             throw new InvalidArgumentException("El documento es requerido");
         }
@@ -231,14 +226,6 @@ class CreateAdminUserUseCase
         }
 
         // Validar longitud de campos
-        if (strlen($request->firstName) > 100) {
-            throw new InvalidArgumentException("El nombre no puede superar los 100 caracteres");
-        }
-
-        if (strlen($request->lastName) > 100) {
-            throw new InvalidArgumentException("El apellido no puede superar los 100 caracteres");
-        }
-
         if (strlen($request->document) > 20) {
             throw new InvalidArgumentException("El documento no puede superar los 20 caracteres");
         }
@@ -254,5 +241,20 @@ class CreateAdminUserUseCase
         if (strlen($request->position) > 100) {
             throw new InvalidArgumentException("El cargo no puede superar los 100 caracteres");
         }
+    }
+
+    private function fakeReniecApi(string $documentValue): array
+    {
+        $nombres = ['JUAN', 'MARIA', 'PATRICIO', 'LUIS', 'ANA', 'CARLOS', 'JESUS', 'SOFIA'];
+        $apellidos = ['GONZALES', 'PEREZ', 'RAMIREZ', 'GARCIA', 'RODRIGUEZ', 'LOPEZ', 'FERNANDEZ', 'SANCHEZ'];
+
+        $nombre = $nombres[array_rand($nombres)];
+        $apellido1 = $apellidos[array_rand($apellidos)];
+        $apellido2 = $apellidos[array_rand($apellidos)];
+
+        return [
+            'name' => $nombre,
+            'lastName' => $apellido1 . ' ' . $apellido2,
+        ];
     }
 }

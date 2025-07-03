@@ -16619,8 +16619,8 @@
                 "tags": [
                     "Admin - Usuarios"
                 ],
-                "summary": "Crear usuario administrador",
-                "description": "Crea un nuevo usuario administrador con perfil completo siguiendo el flujo: persona -> usuario -> contacto -> rol -> perfil admin.",
+                "summary": "Crear usuario administrador con DNI",
+                "description": "Crea un nuevo usuario administrador ingresando solo el documento DNI. El sistema obtiene automáticamente el nombre y apellido mediante una simulación de API externa (similar al validador de documentos).",
                 "operationId": "createAdminUser",
                 "requestBody": {
                     "required": true,
@@ -16628,32 +16628,17 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "firstName",
-                                    "lastName",
                                     "document",
-                                    "documentTypeId",
                                     "email",
                                     "password",
                                     "area",
                                     "position"
                                 ],
                                 "properties": {
-                                    "firstName": {
-                                        "type": "string",
-                                        "example": "Administrador"
-                                    },
-                                    "lastName": {
-                                        "type": "string",
-                                        "example": "Principal"
-                                    },
                                     "document": {
+                                        "description": "Documento DNI del usuario - El nombre y apellido se obtienen automáticamente",
                                         "type": "string",
                                         "example": "12345678"
-                                    },
-                                    "documentTypeId": {
-                                        "description": "ID del tipo de documento (ej: 1 = DNI)",
-                                        "type": "integer",
-                                        "example": 1
                                     },
                                     "email": {
                                         "type": "string",
@@ -16702,12 +16687,14 @@
                                                             "example": 1
                                                         },
                                                         "firstName": {
+                                                            "description": "Nombre obtenido automáticamente de la fake API",
                                                             "type": "string",
-                                                            "example": "Administrador"
+                                                            "example": "JUAN"
                                                         },
                                                         "lastName": {
+                                                            "description": "Apellido obtenido automáticamente de la fake API",
                                                             "type": "string",
-                                                            "example": "Principal"
+                                                            "example": "PEREZ GONZALES"
                                                         },
                                                         "document": {
                                                             "type": "string",
