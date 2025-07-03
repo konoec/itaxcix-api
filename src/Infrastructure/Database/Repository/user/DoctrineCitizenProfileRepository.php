@@ -63,6 +63,7 @@ class DoctrineCitizenProfileRepository implements CitizenProfileRepositoryInterf
             ->join('cp.user', 'u')
             ->where('u.id = :userId')
             ->setParameter('userId', $userId)
+            ->orderBy('cp.id', 'DESC')
             ->setMaxResults(1);
 
         $entity = $query->getQuery()->getOneOrNullResult();
