@@ -132,11 +132,16 @@ class DashboardController {
 
         console.log('🎨 Renderizando dashboard con datos:', this.statsData);
 
-        // Renderizar estadísticas principales
-        this.renderMainStats();
-        
-        // Renderizar métricas secundarias
-        this.renderSecondaryMetrics();
+        // Verificar si es modo bienvenida o estadísticas completas
+        if (this.statsData.isWelcomeMode) {
+            this.renderWelcomeDashboard();
+        } else {
+            // Renderizar estadísticas principales
+            this.renderMainStats();
+            
+            // Renderizar métricas secundarias
+            this.renderSecondaryMetrics();
+        }
 
         // Mostrar el dashboard
         this.showDashboard();
@@ -292,6 +297,83 @@ class DashboardController {
                 </div>
             </div>
         `;
+    }
+
+    /**
+     * Renderiza el dashboard de bienvenida para usuarios sin permisos de configuración
+     */
+    renderWelcomeDashboard() {
+        const statsGrid = document.getElementById('dashboard-stats-grid');
+        if (!statsGrid) return;
+
+        console.log('🏠 Renderizando dashboard de bienvenida');
+
+        // Crear contenido de bienvenida
+        statsGrid.innerHTML = `
+            <div class="welcome-card">
+                <div class="welcome-header">
+                    <div class="welcome-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <div class="welcome-text">
+                        <h2>${this.statsData.welcomeMessage}</h2>
+                        <p class="welcome-subtitle">${this.statsData.subtitle}</p>
+                    </div>
+                </div>
+                <div class="welcome-content">
+                    <div class="system-info-card">
+                        <h3><i class="fas fa-info-circle"></i> Información del Sistema</h3>
+                        <div class="system-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Sistema:</span>
+                                <span class="detail-value">${this.statsData.systemInfo.name}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Versión:</span>
+                                <span class="detail-value">${this.statsData.systemInfo.version}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Estado:</span>
+                                <span class="status-badge status-${this.statsData.systemInfo.status.toLowerCase()}">
+                                    ${this.statsData.systemInfo.status}
+                                </span>
+                            </div>
+                        </div>
+                        <p class="system-description">${this.statsData.systemInfo.description}</p>
+                    </div>
+                    
+                    <div class="modules-info-card">
+                        <h3><i class="fas fa-th-large"></i> Módulos Disponibles</h3>
+                        <div class="modules-list">
+                            ${this.statsData.availableModules.map(module => `
+                                <div class="module-item">
+                                    <div class="module-icon">
+                                        <i class="${module.icon}"></i>
+                                    </div>
+                                    <div class="module-details">
+                                        <span class="module-name">${module.name}</span>
+                                        <span class="module-description">${module.description}</span>
+                                    </div>
+                                    <span class="module-status status-${module.status.toLowerCase()}">
+                                        ${module.status}
+                                    </span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="user-message">
+                            <i class="fas fa-info-circle"></i>
+                            <span>${this.statsData.userMessage}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Limpiar métricas secundarias para el modo bienvenida
+        const secondaryMetrics = document.getElementById('dashboard-secondary-metrics');
+        if (secondaryMetrics) {
+            secondaryMetrics.innerHTML = '';
+        }
     }
 
     /**

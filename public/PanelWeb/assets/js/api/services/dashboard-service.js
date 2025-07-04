@@ -50,8 +50,14 @@ class DashboardService {
                         }
                         break;
                     case 403:
-                        errorMessage = 'Acceso denegado - Sin permisos de CONFIGURACIÓN';
-                        break;
+                        // Usuario sin permisos de configuración - mostrar bienvenida
+                        console.log('⚠️ Usuario sin permisos de configuración - mostrando bienvenida');
+                        return {
+                            success: true,
+                            data: this.getWelcomeData(),
+                            message: 'Bienvenido al sistema',
+                            isWelcomeMode: true
+                        };
                     case 500:
                         errorMessage = 'Error interno del servidor';
                         break;
@@ -89,6 +95,100 @@ class DashboardService {
                 data: null
             };
         }
+    }
+
+    /**
+     * Obtiene datos de bienvenida para usuarios sin permisos de configuración
+     * @returns {Object} Datos de bienvenida
+     */
+    getWelcomeData() {
+        console.log('🏠 Generando datos de bienvenida para usuario sin permisos de configuración');
+        
+        // Obtener módulos disponibles según permisos del usuario
+        const availableModules = this.getAvailableModules();
+        
+        return {
+            // Información de bienvenida
+            welcomeMessage: 'Bienvenido a iTaxCix',
+            subtitle: 'Sistema de Gestión Municipal',
+            
+            // Información del sistema
+            systemInfo: {
+                name: 'Panel iTaxCix',
+                version: '1.0.0',
+                description: 'Sistema integral de gestión municipal para la administración de servicios de transporte y ciudadanía.',
+                status: 'Operativo'
+            },
+            
+            // Módulos disponibles según permisos
+            availableModules: availableModules,
+            
+            // Información adicional
+            userMessage: availableModules.length > 1 
+                ? 'Puedes acceder a los módulos listados según tus permisos asignados.'
+                : 'Para acceder a funcionalidades adicionales, contacte con el administrador del sistema.',
+            
+            // Flags para el controlador
+            isWelcomeMode: true,
+            showStats: false
+        };
+    }
+
+    /**
+     * Obtiene los módulos disponibles para el usuario actual
+     * @returns {Array} Lista de módulos disponibles
+     */
+    getAvailableModules() {
+        const modules = [
+            {
+                name: 'Inicio',
+                description: 'Panel principal del sistema',
+                icon: 'fas fa-home',
+                status: 'Activo'
+            }
+        ];
+
+        // Si hay sistema de permisos disponible, agregar módulos según permisos
+        if (typeof window.PermissionsService !== 'undefined' && window.PermissionsService) {
+            try {
+                const permissionsService = window.PermissionsService;
+                const userPermissions = permissionsService.getUserPermissions();
+                
+                // Mapear permisos a módulos
+                const permissionModules = {
+                    'ADMISIÓN DE CONDUCTORES': {
+                        name: 'Admisión de Conductores',
+                        description: 'Gestión de admisión de conductores',
+                        icon: 'fas fa-user-plus',
+                        status: 'Activo'
+                    },
+                    'AUDITORIA': {
+                        name: 'Auditoría',
+                        description: 'Registro y reportes de auditoría',
+                        icon: 'fas fa-clipboard-list',
+                        status: 'Activo'
+                    },
+                    'TABLAS MAESTRAS': {
+                        name: 'Tablas Maestras',
+                        description: 'Gestión de datos maestros',
+                        icon: 'fas fa-table',
+                        status: 'Activo'
+                    }
+                };
+
+                // Agregar módulos según permisos del usuario
+                userPermissions.forEach(permission => {
+                    if (permissionModules[permission]) {
+                        modules.push(permissionModules[permission]);
+                    }
+                });
+                
+            } catch (error) {
+                console.warn('⚠️ Error al obtener permisos del usuario:', error);
+            }
+        }
+
+        return modules;
     }
 
     /**
