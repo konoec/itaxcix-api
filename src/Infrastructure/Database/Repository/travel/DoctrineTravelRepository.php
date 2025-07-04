@@ -194,8 +194,8 @@ class DoctrineTravelRepository implements TravelRepositoryInterface
             if ($entity instanceof TravelEntity) {
                 $result[] = [
                     'id' => $entity->getId(),
-                    'citizenName' => $entity->getCitizen()?->getPerson()?->getName() ?? null,
-                    'driverName' => $entity->getDriver()?->getPerson()?->getName() ?? null,
+                    'citizenName' => $entity->getCitizen()?->getPerson()?->getName() . ' ' . $entity->getCitizen()?->getPerson()?->getLastName() ?? null,
+                    'driverName' => $entity->getDriver()?->getPerson()?->getName() . ' ' . $entity->getDriver()?->getPerson()?->getLastName() ?? null,
                     'origin' => $entity->getOrigin()?->getName() ?? null,
                     'destination' => $entity->getDestination()?->getName() ?? null,
                     'startDate' => $entity->getStartDate()?->format('Y-m-d H:i:s'),
