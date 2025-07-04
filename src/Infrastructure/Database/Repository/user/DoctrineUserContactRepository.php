@@ -122,6 +122,32 @@ class DoctrineUserContactRepository implements UserContactRepositoryInterface
         return $entity ? $this->toDomain($entity) : null;
     }
 
+    /**
+     * Encuentra un contacto confirmado y activo por usuario y tipo
+     * Este método se usa específicamente cuando necesitamos garantizar
+     * que el contacto esté verificado para mostrar en perfiles
+     */
+    public function findConfirmedContactByUserAndType(int $userId, int $contactTypeId): ?UserContactModel
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('uc')
+            ->from(UserContactEntity::class, 'uc')
+            ->where('uc.user = :userId')
+            ->andWhere('uc.type = :typeId')
+            ->andWhere('uc.active = true')
+            ->andWhere('uc.confirmed = true')
+            ->setParameter('userId', $userId)
+            ->setParameter('typeId', $contactTypeId)
+            ->orderBy('uc.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery();
+
+        $results = $query->getResult();
+        $entity = !empty($results) ? $results[0] : null;
+
+        return $entity ? $this->toDomain($entity) : null;
+    }
+
     public function deleteContact(int $contactId): void
     {
         try {

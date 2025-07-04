@@ -36,8 +36,8 @@ class GetDriverProfileUseCaseHandler implements GetDriverProfileUseCase
             throw new \InvalidArgumentException('El usuario no tiene un perfil de conductor asociado.');
         }
 
-        $email = $this->userContactRepository->findUserContactByUserIdAndContactTypeId($userId, 1);
-        $phone = $this->userContactRepository->findUserContactByUserIdAndContactTypeId($userId, 2);
+        $email = $this->userContactRepository->findConfirmedContactByUserAndType($userId, 1);
+        $phone = $this->userContactRepository->findConfirmedContactByUserAndType($userId, 2);
 
         $vehicle = $this->vehicleUserRepository->findVehicleUserByUserId($userId);
 

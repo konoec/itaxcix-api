@@ -29,8 +29,8 @@ class GetAdminProfileUseCaseHandler implements GetAdminProfileUseCase
             throw new InvalidArgumentException('El usuario no tiene un perfil de administrador.');
         }
 
-        $email = $this->userContactRepository->findUserContactByUserIdAndContactTypeId($userId, 1);
-        $phone = $this->userContactRepository->findUserContactByUserIdAndContactTypeId($userId, 2);
+        $email = $this->userContactRepository->findConfirmedContactByUserAndType($userId, 1);
+        $phone = $this->userContactRepository->findConfirmedContactByUserAndType($userId, 2);
 
         return new AdminProfileResponseDTO(
             firstName: $profile->getUser()->getPerson()->getName(),
@@ -44,4 +44,3 @@ class GetAdminProfileUseCaseHandler implements GetAdminProfileUseCase
         );
     }
 }
-

@@ -30,8 +30,8 @@ class GetCitizenProfileUseCaseHandler implements GetCitizenProfileUseCase
             throw new \InvalidArgumentException('No se encontró un perfil de ciudadano para este usuario.');
         }
 
-        $email = $this->userContactRepository->findUserContactByUserIdAndContactTypeId($userId, 1);
-        $phone = $this->userContactRepository->findUserContactByUserIdAndContactTypeId($userId, 2);
+        $email = $this->userContactRepository->findConfirmedContactByUserAndType($userId, 1);
+        $phone = $this->userContactRepository->findConfirmedContactByUserAndType($userId, 2);
 
         return new CitizenProfileResponseDTO(
             firstName: $profile->getUser()->getPerson()->getName(),
