@@ -222,6 +222,87 @@ const RolesController = (() => {
     }
 
     /**
+     * Configura el botón de refrescar
+     */
+    function setupRefreshButton() {
+        const refreshBtn = document.getElementById('refresh-roles-btn');
+        
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', async () => {
+                console.log('🔄 Refrescando tabla de roles...');
+                
+                // Mostrar indicador de carga en el botón
+                const icon = refreshBtn.querySelector('i');
+                const originalText = refreshBtn.innerHTML;
+                
+                if (icon) {
+                    icon.classList.add('fa-spin');
+                }
+                
+                try {
+                    // Resetear filtros y búsqueda
+                    currentSearchTerm = '';
+                    clearAllFilters();
+                    
+                    // Limpiar el input de búsqueda
+                    const searchInput = document.getElementById('search-roles');
+                    const clearBtn = document.getElementById('clear-search');
+                    
+                    if (searchInput) {
+                        searchInput.value = '';
+                    }
+                    
+                    if (clearBtn) {
+                        clearBtn.style.display = 'none';
+                    }
+                    
+                    // Resetear checkboxes de filtros
+                    const filterCheckboxes = [
+                        'filter-active',
+                        'filter-inactive', 
+                        'filter-web',
+                        'filter-app'
+                    ];
+                    
+                    filterCheckboxes.forEach(filterId => {
+                        const checkbox = document.getElementById(filterId);
+                        if (checkbox) {
+                            checkbox.checked = false;
+                        }
+                    });
+                    
+                    // Resetear página a la primera
+                    currentPage = 1;
+                    
+                    // Recargar datos desde la API
+                    await fetchRoles(1);
+                    
+                    // Mostrar mensaje de éxito
+                    if (typeof window.showToast === 'function') {
+                        window.showToast('Lista de roles actualizada correctamente', 'success');
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ Error al refrescar roles:', error);
+                    
+                    if (typeof window.showToast === 'function') {
+                        window.showToast('Error al actualizar la lista de roles', 'error');
+                    } else {
+                        alert('Error al actualizar la lista de roles');
+                    }
+                } finally {
+                    // Quitar indicador de carga del botón
+                    if (icon) {
+                        icon.classList.remove('fa-spin');
+                    }
+                }
+            });
+        } else {
+            console.warn('⚠️ Botón de refrescar no encontrado (refresh-roles-btn)');
+        }
+    }
+
+    /**
      * Configura los event listeners para los filtros
      */
     function setupFilterListeners() {
@@ -937,6 +1018,9 @@ const RolesController = (() => {
         
         // Configurar búsqueda
         setupSearch();
+        
+        // Configurar botón de refrescar
+        setupRefreshButton();
         
         // Configurar eventos del modal de crear/editar
         setupModalEvents();

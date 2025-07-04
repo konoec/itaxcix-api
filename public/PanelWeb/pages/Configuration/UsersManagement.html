@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="../../assets/css/configuration/role-details-modal.css">
     <link rel="stylesheet" href="../../assets/css/configuration/user-edit-modal.css">
     <link rel="stylesheet" href="../../assets/css/configuration/user-details-modal.css">
+    <link rel="stylesheet" href="../../assets/css/configuration/users-shadcn.css">
     
 </head>
 <body>
@@ -61,11 +62,16 @@
                         </ul>
                     </li>
                     <!-- Módulo de Auditoría -->
-                    <li id="menu-auditoria">
+                    <li class="has-submenu" id="menu-auditoria">
                         <a href="javascript:void(0)" class="module-auditoria">
                             <i class="fas fa-search"></i>
                             Auditoría
+                            <span class="submenu-arrow"></span>
                         </a>
+                        <ul class="submenu">
+                            <li><a href="../Audit/AuditRegistry.html"><i class="fas fa-history"></i>Registro de Auditoría</a></li>
+                            <li><a href="../Audit/AuditReports.html"><i class="fas fa-chart-bar"></i>Reportes de Auditoría</a></li>
+                        </ul>
                     </li>
                     <!-- Módulo de Configuración -->
                     <li class="has-submenu open" id="menu-configuracion">
@@ -108,208 +114,204 @@
             </div>
             <!-- Contenido principal de usuarios -->
             <div class="content">
-                <div class="permissions-panel">
+                <!-- Contenedor principal con estilo ShadCN -->
+                <div class="shadcn-users-container">
                     <!-- Header con búsqueda y filtros -->
-                    <div class="permissions-header">
-                        <div class="permissions-header-left">
-                            <div class="search-container">
+                    <div class="shadcn-users-header">
+                        <div class="shadcn-users-header-content">
+                            <div class="shadcn-users-header-left">
                                 <!-- Búsqueda unificada -->
-                                <div class="search-input-wrapper">
-                                    <input type="text" id="search-users" placeholder="Buscar por nombre, documento o email..." class="search-input">
-                                    <i class="fas fa-search search-icon"></i>
-                                    <button id="clear-search" class="clear-search-btn" style="display: none;">
+                                <div class="shadcn-users-search-container">
+                                    <input type="text" id="search-users" placeholder="Buscar por nombre, documento o email..." class="shadcn-users-search-input">
+                                    <i class="fas fa-search shadcn-users-search-icon"></i>
+                                    <button id="clear-search" class="shadcn-users-clear-search" style="display: none;">
+                                        <i class="fas fa-times"></i>
                                     </button>
                                 </div>
-                            </div>
-                            
-                            <!-- Filtros específicos de usuarios -->
-                            <div class="filters-container">
-                                <div class="filter-group">
-                                    <label class="filter-label">Tipo de Usuario:</label>
-                                    <div class="filter-checkboxes">
-                                        <label class="filter-checkbox">
-                                            <input type="checkbox" id="filter-citizen" value="citizen">
-                                            <span class="checkmark"></span>
-                                            <span class="checkbox-label">Ciudadano</span>
-                                        </label>
-                                        <label class="filter-checkbox">
-                                            <input type="checkbox" id="filter-driver" value="driver">
-                                            <span class="checkmark"></span>
-                                            <span class="checkbox-label">Conductor</span>
-                                        </label>
-                                        <label class="filter-checkbox">
-                                            <input type="checkbox" id="filter-admin" value="admin">
-                                            <span class="checkmark"></span>
-                                            <span class="checkbox-label">Administrador</span>
-                                        </label>
-                                    </div>
-                                </div>
                                 
-                                <div class="filter-group">
-                                    <label class="filter-label">Estado Conductor:</label>
-                                    <div class="filter-checkboxes">
-                                        <label class="filter-checkbox">
-                                            <input type="checkbox" id="filter-pending" value="PENDIENTE">
-                                            <span class="checkmark"></span>
-                                            <span class="checkbox-label">Pendiente</span>
-                                        </label>
-                                        <label class="filter-checkbox">
-                                            <input type="checkbox" id="filter-approved" value="APROBADO">
-                                            <span class="checkmark"></span>
-                                            <span class="checkbox-label">Aprobado</span>
-                                        </label>
-                                        <label class="filter-checkbox">
-                                            <input type="checkbox" id="filter-rejected" value="RECHAZADO">
-                                            <span class="checkmark"></span>
-                                            <span class="checkbox-label">Rechazado</span>
-                                        </label>
+                                <!-- Filtros específicos de usuarios -->
+                                <div class="shadcn-users-filters-container">
+                                    <div class="shadcn-users-filter-group">
+                                        <label class="shadcn-users-filter-label">Tipo:</label>
+                                        <div class="shadcn-users-filter-checkboxes">
+                                            <label class="shadcn-users-filter-checkbox">
+                                                <input type="checkbox" id="filter-citizen" value="citizen">
+                                                <span class="checkbox-label">Ciudadano</span>
+                                            </label>
+                                            <label class="shadcn-users-filter-checkbox">
+                                                <input type="checkbox" id="filter-driver" value="driver">
+                                                <span class="checkbox-label">Conductor</span>
+                                            </label>
+                                            <label class="shadcn-users-filter-checkbox">
+                                                <input type="checkbox" id="filter-admin" value="admin">
+                                                <span class="checkbox-label">Administrador</span>
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
-                                
-                                <div class="filter-group">
-                                    <label class="filter-label">Adicionales:</label>
-                                    <div class="filter-checkboxes">
-                                        <label class="filter-checkbox">
-                                            <input type="checkbox" id="filter-verified-contact" value="verified">
-                                            <span class="checkmark"></span>
-                                            <span class="checkbox-label">Contacto Verificado</span>
-                                        </label>
-                                        <label class="filter-checkbox">
-                                            <input type="checkbox" id="filter-has-vehicle" value="hasVehicle">
-                                            <span class="checkmark"></span>
-                                            <span class="checkbox-label">Con Vehículo</span>
-                                        </label>
+                                    
+                                    <div class="shadcn-users-filter-group">
+                                        <label class="shadcn-users-filter-label">Estado:</label>
+                                        <div class="shadcn-users-filter-checkboxes">
+                                            <label class="shadcn-users-filter-checkbox">
+                                                <input type="checkbox" id="filter-pending" value="PENDIENTE">
+                                                <span class="checkbox-label">Pendiente</span>
+                                            </label>
+                                            <label class="shadcn-users-filter-checkbox">
+                                                <input type="checkbox" id="filter-approved" value="APROBADO">
+                                                <span class="checkbox-label">Aprobado</span>
+                                            </label>
+                                            <label class="shadcn-users-filter-checkbox">
+                                                <input type="checkbox" id="filter-rejected" value="RECHAZADO">
+                                                <span class="checkbox-label">Rechazado</span>
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="permissions-header-right">
-                            <button class="refresh-users-btn" id="refresh-users-btn" title="Refrescar lista de usuarios">
-                                <i class="fas fa-sync-alt"></i>
-                                Refrescar
-                            </button>
-                            <button class="create-permission-btn" id="create-user-btn">
-                                <i class="fas fa-plus"></i>
-                                Crear usuario
-                            </button>
+                            <div class="shadcn-users-header-right">
+                                <button class="shadcn-users-refresh-btn" id="refresh-users-btn" title="Refrescar lista de usuarios">
+                                    <i class="fas fa-sync-alt"></i>
+                                    Refrescar
+                                </button>
+                                <button class="shadcn-users-create-btn" id="create-user-btn">
+                                    <i class="fas fa-plus"></i>
+                                    Crear usuario
+                                </button>
+                            </div>
                         </div>
                     </div>
                     
                     <!-- Contenedor responsive de la tabla -->
-                    <div class="table-container">
-                        <table class="permissions-table">
+                    <div class="shadcn-users-scroll">
+                        <table class="shadcn-users-table">
                             <thead>
                                 <tr>
-                                    <th class="col-user">Usuario</th>
-                                    <th class="col-document">Documento</th>
-                                    <th class="col-email">Correo</th>
-                                    <th class="col-phone">Teléfono</th>
-                                    <th class="col-status">Estado</th>
-                                    <th class="col-actions">Acciones</th>
+                                    <th>Usuario</th>
+                                    <th>Documento</th>
+                                    <th>Correo</th>
+                                    <th>Teléfono</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
+                            <!-- Loading indicator -->
+                            <tbody id="users-loading-row" style="display: none;">
+                                <tr>
+                                    <td colspan="6" class="shadcn-users-loading-state">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                        <span>Cargando usuarios...</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <!-- Contenido de usuarios -->
                             <tbody id="users-list">
                                 <tr>
-                                    <td class="col-user">
+                                    <td>
                                         <div class="user-info">
                                             <div class="user-details">
                                                 <h6>Administrador Principal</h6>
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="col-document">00000000</td>
-                                    <td class="col-email">
+                                    <td>00000000</td>
+                                    <td>
                                         <div class="contact-info">
                                             <div class="contact-item">
                                                 itaxcix@gmail.com
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="col-phone">
+                                    <td>
                                         <div class="contact-item">
                                             +51944107761
                                         </div>
                                     </td>
-                                    <td class="col-status">
-                                        <span class="status-badge active">Activo</span>
+                                    <td>
+                                        <span class="shadcn-users-badge status-active">Activo</span>
                                     </td>
-                                    <td class="col-actions">
-                                        <div class="action-buttons">
-                                            <button class="action-btn edit" title="Editar usuario">
+                                    <td>
+                                        <div class="shadcn-users-action-buttons">
+                                            <button class="shadcn-users-action-btn edit" title="Editar usuario">
                                                 <i class="fas fa-edit"></i>
+                                                Editar
                                             </button>
-                                            <button class="action-btn view" title="Ver usuario">
+                                            <button class="shadcn-users-action-btn view" title="Ver usuario">
                                                 <i class="fas fa-eye"></i>
+                                                Ver
                                             </button>
                                         </div>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="col-user">
+                                    <td>
                                         <div class="user-info">
                                             <div class="user-details">
                                                 <h6>Jesus Perez Sanchez</h6>
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="col-document">71879697</td>
-                                    <td class="col-email">
+                                    <td>71879697</td>
+                                    <td>
                                         <div class="contact-info">
                                             <div class="contact-item">
                                                 rodolfova260802@gmail.com
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="col-phone">
+                                    <td>
                                         <div class="contact-item text-muted">
                                             Sin teléfono
                                         </div>
                                     </td>
-                                    <td class="col-status">
-                                        <span class="status-badge active">Activo</span>
+                                    <td>
+                                        <span class="shadcn-users-badge status-active">Activo</span>
                                     </td>
-                                    <td class="col-actions">
-                                        <div class="action-buttons">
-                                            <button class="action-btn edit" title="Editar usuario">
+                                    <td>
+                                        <div class="shadcn-users-action-buttons">
+                                            <button class="shadcn-users-action-btn edit" title="Editar usuario">
                                                 <i class="fas fa-edit"></i>
+                                                Editar
                                             </button>
-                                            <button class="action-btn view" title="Ver usuario">
+                                            <button class="shadcn-users-action-btn view" title="Ver usuario">
                                                 <i class="fas fa-eye"></i>
+                                                Ver
                                             </button>
                                         </div>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="col-user">
+                                    <td>
                                         <div class="user-info">
                                             <div class="user-details">
                                                 <h6>Sofia Lopez Ramirez</h6>
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="col-document">22222222</td>
-                                    <td class="col-email">
+                                    <td>22222222</td>
+                                    <td>
                                         <div class="contact-info">
                                             <div class="contact-item">
                                                 rodolfovri260802@gmail.com
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="col-phone">
+                                    <td>
                                         <div class="contact-item text-muted">
                                             Sin teléfono
                                         </div>
                                     </td>
-                                    <td class="col-status">
-                                        <span class="status-badge active">Activo</span>
+                                    <td>
+                                        <span class="shadcn-users-badge status-active">Activo</span>
                                     </td>
-                                    <td class="col-actions">
-                                        <div class="action-buttons">
-                                            <button class="action-btn edit" title="Editar usuario">
+                                    <td>
+                                        <div class="shadcn-users-action-buttons">
+                                            <button class="shadcn-users-action-btn edit" title="Editar usuario">
                                                 <i class="fas fa-edit"></i>
+                                                Editar
                                             </button>
-                                            <button class="action-btn view" title="Ver usuario">
+                                            <button class="shadcn-users-action-btn view" title="Ver usuario">
                                                 <i class="fas fa-eye"></i>
+                                                Ver
                                             </button>
                                         </div>
                                     </td>
@@ -319,18 +321,15 @@
                     </div>
                     
                     <!-- Controles de paginación -->
-                    <div class="pagination-container">
-                        <div class="pagination-info">
-                            <span id="page-info">Mostrando 1-10 de 25 usuarios</span>
+                    <div class="shadcn-users-pagination">
+                        <div class="shadcn-users-pagination-info">
+                            <span id="pagination-info">Mostrando 1-3 de 3 usuarios</span>
                         </div>
-                        <div class="pagination-controls">
-                            <button class="pagination-btn" id="prev-page" disabled>
+                        <div class="shadcn-users-pagination-controls">
+                            <button class="shadcn-users-pagination-btn" id="prev-page" disabled>
                                 <i class="fas fa-chevron-left"></i>
                             </button>
-                            <div class="page-numbers" id="page-numbers">
-                                <!-- Números de página generados dinámicamente -->
-                            </div>
-                            <button class="pagination-btn" id="next-page">
+                            <button class="shadcn-users-pagination-btn" id="next-page" disabled>
                                 <i class="fas fa-chevron-right"></i>
                             </button>
                         </div>

@@ -113,6 +113,93 @@ class PermissionsController {
 
         // Filtros de estado y tipo
         this.setupFilterListeners();
+        
+        // Botón de refrescar
+        this.setupRefreshButton();
+    }
+
+    /**
+     * Configura el botón de refrescar
+     */
+    setupRefreshButton() {
+        const refreshBtn = document.getElementById('refresh-permissions-btn');
+        
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', async () => {
+                console.log('🔄 Refrescando tabla de permisos...');
+                
+                // Mostrar indicador de carga en el botón
+                const icon = refreshBtn.querySelector('i');
+                const originalText = refreshBtn.innerHTML;
+                
+                if (icon) {
+                    icon.classList.add('fa-spin');
+                }
+                
+                try {
+                    // Resetear filtros y búsqueda
+                    this.searchTerm = '';
+                    this.activeFilters = {
+                        status: [],
+                        type: []
+                    };
+                    
+                    // Limpiar el input de búsqueda
+                    const searchInput = document.getElementById('search-permissions');
+                    const clearBtn = document.getElementById('clear-search');
+                    
+                    if (searchInput) {
+                        searchInput.value = '';
+                    }
+                    
+                    if (clearBtn) {
+                        clearBtn.style.display = 'none';
+                    }
+                    
+                    // Resetear checkboxes de filtros
+                    const filterCheckboxes = [
+                        'filter-active',
+                        'filter-inactive', 
+                        'filter-web',
+                        'filter-app'
+                    ];
+                    
+                    filterCheckboxes.forEach(filterId => {
+                        const checkbox = document.getElementById(filterId);
+                        if (checkbox) {
+                            checkbox.checked = false;
+                        }
+                    });
+                    
+                    // Resetear página a la primera
+                    this.currentPage = 1;
+                    
+                    // Recargar datos desde la API
+                    await this.loadPermissions();
+                    
+                    // Mostrar mensaje de éxito
+                    if (typeof window.showToast === 'function') {
+                        window.showToast('Lista de permisos actualizada correctamente', 'success');
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ Error al refrescar permisos:', error);
+                    
+                    if (typeof window.showToast === 'function') {
+                        window.showToast('Error al actualizar la lista de permisos', 'error');
+                    } else {
+                        alert('Error al actualizar la lista de permisos');
+                    }
+                } finally {
+                    // Quitar indicador de carga del botón
+                    if (icon) {
+                        icon.classList.remove('fa-spin');
+                    }
+                }
+            });
+        } else {
+            console.warn('⚠️ Botón de refrescar no encontrado (refresh-permissions-btn)');
+        }
     }
 
     /**
@@ -224,12 +311,10 @@ class PermissionsController {
                 <td>
                     <div class="action-buttons">
                         <button class="action-btn edit" onclick="permissionsController.editPermission(${permission.id})">
-                            <i class="fas fa-edit"></i>
-                            Editar
+                            <i class="fas fa-pen"></i> Editar
                         </button>
                         <button class="action-btn delete" onclick="permissionsController.deletePermission(${permission.id})">
-                            <i class="fas fa-trash"></i>
-                            Eliminar
+                            <i class="fas fa-trash-alt"></i> Eliminar
                         </button>
                     </div>
                 </td>

@@ -23,22 +23,26 @@
 }
 
 .dashboard-refresh {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
+    background: rgba(56, 189, 248, 0.2);
+    border: 2px solid rgba(56, 189, 248, 0.3);
+    color: #38bdf8;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
     font-weight: 600;
+    cursor: pointer;
     transition: all 0.3s ease;
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 5px;
+    font-family: 'Poppins', sans-serif;
 }
 
 .dashboard-refresh:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    background: rgba(56, 189, 248, 0.3);
+    border-color: rgba(56, 189, 248, 0.5);
+    transform: translateY(-1px);
+    color: #0ea5e9;
 }
 
 .dashboard-refresh:disabled {
@@ -52,11 +56,12 @@
 }
 
 .dashboard-refresh .fa-sync-alt {
+    font-size: 16px;
     transition: transform 0.3s ease;
 }
 
 .dashboard-refresh:hover .fa-sync-alt {
-    transform: rotate(180deg);
+    animation: spin 0.6s ease-in-out;
 }
 
 /* Grid de estadísticas */

@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../../assets/css/configuration/Configuration.css">
     <link rel="stylesheet" href="../../assets/css/configuration/role-details-modal.css">
+    <link rel="stylesheet" href="../../assets/css/configuration/roles-shadcn.css">
     
 </head>
 <body>
@@ -58,11 +59,16 @@
                         </ul>
                     </li>
                     <!-- Módulo de Auditoría -->
-                    <li id="menu-auditoria">
+                    <li class="has-submenu" id="menu-auditoria">
                         <a href="javascript:void(0)" class="module-auditoria">
                             <i class="fas fa-search"></i>
                             Auditoría
+                            <span class="submenu-arrow"></span>
                         </a>
+                        <ul class="submenu">
+                            <li><a href="../Audit/AuditRegistry.html"><i class="fas fa-history"></i>Registro de Auditoría</a></li>
+                            <li><a href="../Audit/AuditReports.html"><i class="fas fa-chart-bar"></i>Reportes de Auditoría</a></li>
+                        </ul>
                     </li>
                     <!-- Módulo de Configuración -->
                     <li class="has-submenu open" id="menu-configuracion">
@@ -106,98 +112,106 @@
             <!-- Tabla de roles (idéntica a permisos, solo cambia textos) -->
             <div class="content">
                 <div class="permissions-panel">
-                    <!-- Header con búsqueda y botón de crear rol -->
-                    <div class="permissions-header">
-                        <div class="permissions-header-left">
-                            <div class="search-container">
-                                <input type="text" id="search-roles" placeholder="Buscar roles..." class="search-input">
-                                <i class="fas fa-search search-icon"></i>
-                                <button id="clear-search" class="clear-search-btn" style="display: none;">
-                                    <i class="fas fa-times"></i>
+                    <!-- Header con búsqueda y botón de crear rol con ShadCN -->
+                    <div class="shadcn-roles-container">
+                        <div class="shadcn-roles-header">
+                            <div class="shadcn-roles-header-content">
+                                <div class="shadcn-roles-header-left">
+                                    <div class="shadcn-roles-search-container">
+                                        <input type="text" id="search-roles" placeholder="Buscar roles..." class="shadcn-roles-search-input">
+                                        <i class="fas fa-search shadcn-roles-search-icon"></i>
+                                        <button id="clear-search" class="shadcn-roles-clear-search" style="display: none;">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Filtros de estado y tipo con ShadCN -->
+                                    <div class="shadcn-roles-filters-container">
+                                        <div class="shadcn-roles-filter-group">
+                                            <label class="shadcn-roles-filter-label">Estado:</label>
+                                            <div class="shadcn-roles-filter-checkboxes">
+                                                <label class="shadcn-roles-filter-checkbox">
+                                                    <input type="checkbox" id="filter-active" value="active">
+                                                    <span class="checkbox-label">Activo</span>
+                                                </label>
+                                                <label class="shadcn-roles-filter-checkbox">
+                                                    <input type="checkbox" id="filter-inactive" value="inactive">
+                                                    <span class="checkbox-label">Inactivo</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="shadcn-roles-filter-group">
+                                            <label class="shadcn-roles-filter-label">Tipo:</label>
+                                            <div class="shadcn-roles-filter-checkboxes">
+                                                <label class="shadcn-roles-filter-checkbox">
+                                                    <input type="checkbox" id="filter-web" value="web">
+                                                    <span class="checkbox-label">Web</span>
+                                                </label>
+                                                <label class="shadcn-roles-filter-checkbox">
+                                                    <input type="checkbox" id="filter-app" value="app">
+                                                    <span class="checkbox-label">App</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="shadcn-roles-header-right">
+                                    <button class="shadcn-roles-refresh-btn" id="refresh-roles-btn" title="Refrescar lista de roles">
+                                        <i class="fas fa-sync-alt"></i>
+                                        Refrescar
+                                    </button>
+                                    <button class="shadcn-roles-create-btn" id="create-role-btn">
+                                        <i class="fas fa-plus"></i>
+                                        Crear rol
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contenedor de scroll horizontal para la tabla -->
+                        <div class="shadcn-roles-scroll">
+                            <!-- Tabla de roles con ShadCN -->
+                            <table class="shadcn-roles-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Estado</th>
+                                        <th>Ámbito</th>
+                                        <th>Detalles</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <!-- Indicador de carga -->
+                                <tbody id="roles-loading-row" class="loading-row">
+                                    <tr>
+                                        <td colspan="5">
+                                            <div class="shadcn-roles-loading-state">
+                                                <div class="shadcn-roles-loading-spinner"></div>
+                                                <p>Cargando roles...</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tbody id="roles-list">
+                                    <!-- Datos dinámicos cargados por JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Controles de paginación con ShadCN -->
+                        <div class="shadcn-roles-pagination">
+                            <div class="shadcn-roles-pagination-info">
+                                <span id="pagination-info">Mostrando 1-10 de 25 roles</span>
+                            </div>
+                            <div class="shadcn-roles-pagination-controls">
+                                <button class="shadcn-roles-pagination-btn" id="prev-page" disabled>
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button class="shadcn-roles-pagination-btn" id="next-page">
+                                    <i class="fas fa-chevron-right"></i>
                                 </button>
                             </div>
-                            
-                            <!-- Filtros de estado y tipo -->
-                            <div class="filters-container">
-                                <div class="filter-group">
-                                    <label class="filter-label">Estado:</label>
-                                    <div class="filter-checkboxes">
-                                        <label class="filter-checkbox">
-                                            <input type="checkbox" id="filter-active" value="active">
-                                            <span class="checkmark"></span>
-                                            <span class="checkbox-label">Activo</span>
-                                        </label>
-                                        <label class="filter-checkbox">
-                                            <input type="checkbox" id="filter-inactive" value="inactive">
-                                            <span class="checkmark"></span>
-                                            <span class="checkbox-label">Inactivo</span>
-                                        </label>
-                                    </div>
-                                </div>
-                                
-                                <div class="filter-group">
-                                    <label class="filter-label">Tipo:</label>
-                                    <div class="filter-checkboxes">
-                                        <label class="filter-checkbox">
-                                            <input type="checkbox" id="filter-web" value="web">
-                                            <span class="checkmark"></span>
-                                            <span class="checkbox-label">Web</span>
-                                        </label>
-                                        <label class="filter-checkbox">
-                                            <input type="checkbox" id="filter-app" value="app">
-                                            <span class="checkmark"></span>
-                                            <span class="checkbox-label">App</span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="permissions-header-right">
-                            <button class="create-permission-btn" id="create-role-btn">
-                                <i class="fas fa-plus"></i>
-                                Crear rol
-                            </button>
-                        </div>
-                    </div>
-                    <!-- Contenedor responsive de la tabla -->
-                    <div class="table-container">
-                        <table class="permissions-table">
-                            <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Estado</th>
-                                    <th>Ámbito</th>
-                                    <th>Detalles</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="roles-loading-row" class="loading-row">
-                                <tr>
-                                    <td colspan="5">
-                                        <div id="roles-loading-indicator" class="loading-indicator">
-                                            <div class="spinner"></div>
-                                            <p>Cargando roles...</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                            <tbody id="roles-list">
-                                <!-- Datos dinámicos cargados por JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- Controles de paginación -->
-                    <div class="pagination-container">
-                        <div class="pagination-info">
-                            <span id="pagination-info">Mostrando 1-10 de 25 roles</span>
-                        </div>
-                        <div class="pagination-controls">
-                            <button class="pagination-btn" id="prev-page" disabled>
-                                <i class="fas fa-chevron-left"></i>
-                            </button>
-                            <button class="pagination-btn" id="next-page">
-                                <i class="fas fa-chevron-right"></i>
-                            </button>
                         </div>
                     </div>
                 </div>

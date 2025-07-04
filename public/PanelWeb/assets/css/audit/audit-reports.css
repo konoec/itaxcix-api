@@ -1,0 +1,768 @@
+/**
+ * Estilos para el módulo de Reportes de Auditoría
+ * Basado en el sistema de diseño SHADCN/UI
+ */
+
+/* Variables CSS para consistencia */
+:root {
+    --background: hsl(0 0% 100%);
+    --foreground: hsl(222.2 84% 4.9%);
+    --card: hsl(0 0% 100%);
+    --card-foreground: hsl(222.2 84% 4.9%);
+    --popover: hsl(0 0% 100%);
+    --popover-foreground: hsl(222.2 84% 4.9%);
+    --primary: hsl(221.2 83.2% 53.3%);
+    --primary-foreground: hsl(210 40% 98%);
+    --secondary: hsl(210 40% 96%);
+    --secondary-foreground: hsl(222.2 84% 4.9%);
+    --muted: hsl(210 40% 96%);
+    --muted-foreground: hsl(215.4 16.3% 46.9%);
+    --accent: hsl(210 40% 96%);
+    --accent-foreground: hsl(222.2 84% 4.9%);
+    --destructive: hsl(0 84.2% 60.2%);
+    --destructive-foreground: hsl(210 40% 98%);
+    --border: hsl(214.3 31.8% 91.4%);
+    --input: hsl(214.3 31.8% 91.4%);
+    --ring: hsl(221.2 83.2% 53.3%);
+    --radius: 0.5rem;
+}
+
+/* Reset y base */
+* {
+    border-color: var(--border);
+}
+
+/* Asegurar que el contenido no interfiera con el topbar */
+.content {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    position: relative;
+    z-index: 1;
+}
+
+.main-content {
+    position: relative;
+    z-index: 1;
+}
+
+.top-bar {
+    position: relative;
+    z-index: 1000; /* Asegurar que el topbar esté por encima de todo */
+}
+
+/* Contenedor principal - extremadamente compacto */
+.incidents-main-container {
+    min-height: calc(100vh - 80px);
+    background-color: hsl(210 40% 98%);
+    padding: 0.25rem; /* Ultra reducido */
+    position: relative;
+    margin-top: 0;
+    overflow-y: auto;
+    /* Evitar que el contenido se superponga al topbar */
+    padding-top: 0.25rem;
+    margin-top: 0;
+    /* Asegurar que siempre esté debajo del topbar */
+    z-index: 1;
+}
+
+/* Header del módulo - ultra compacto */
+.incidents-header {
+    margin-bottom: 0.5rem; /* Ultra reducido */
+    position: relative;
+    z-index: 1;
+    margin-top: 0;
+}
+
+.incidents-title-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 0.75rem; /* Ultra reducido */
+    border-radius: var(--radius);
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.incidents-title {
+    margin: 0;
+    font-size: 1.25rem; /* Ultra reducido */
+    font-weight: 700;
+    line-height: 1.1;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem; /* Ultra reducido */
+}
+
+.incidents-title i {
+    font-size: 1rem; /* Ultra reducido */
+}
+
+.incidents-subtitle {
+    margin: 0.125rem 0 0 0; /* Ultra reducido */
+    font-size: 0.75rem; /* Ultra reducido */
+    opacity: 0.9;
+    font-weight: 400;
+}
+
+/* Panel de filtros - extremadamente compacto */
+.incidents-filters-card {
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background-color: var(--card);
+    color: var(--card-foreground);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    margin-bottom: 0.25rem; /* Ultra reducido */
+    /* Asegurar que no se superponga al topbar */
+    position: relative;
+    z-index: 1;
+}
+
+.card-header {
+    flex: none;
+    padding: 0.375rem 0.5rem; /* Extremadamente reducido */
+    border-bottom: 1px solid var(--border);
+    background-color: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top-left-radius: var(--radius);
+    border-top-right-radius: var(--radius);
+}
+
+.card-header h3 {
+    margin: 0;
+    font-size: 0.7rem; /* Extremadamente reducido */
+    font-weight: 600;
+    color: var(--foreground);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem; /* Ultra reducido */
+}
+
+.btn-toggle-filters {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius);
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+    background: transparent;
+    border: none;
+    padding: 0.25rem; /* Ultra reducido */
+    color: var(--muted-foreground);
+    cursor: pointer;
+    font-size: 0.75rem;
+}
+
+.btn-toggle-filters:hover {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+}
+
+/* Contenido de filtros - extremadamente compacto */
+.filters-content {
+    padding: 0.375rem 0.5rem; /* Extremadamente reducido */
+    transition: all 0.3s ease;
+}
+
+.filters-content.collapsed {
+    display: none;
+}
+
+/* Selector de tipo de reporte - extremadamente compacto */
+.report-type-selector {
+    margin-bottom: 0.25rem; /* Extremadamente reducido */
+    padding: 0.25rem; /* Extremadamente reducido */
+    background: hsl(214 100% 97%);
+    border-radius: var(--radius);
+    border: 1px solid hsl(214 32% 91%);
+}
+
+.report-type-selector label {
+    display: block;
+    font-size: 0.6rem; /* Extremadamente reducido */
+    font-weight: 500;
+    color: var(--foreground);
+    margin-bottom: 0.125rem; /* Ultra reducido */
+}
+
+.report-type-selector select {
+    width: 100%;
+    height: 1.375rem; /* Extremadamente reducido */
+    padding: 0.125rem 0.25rem; /* Ultra reducido */
+    border: 1px solid var(--input);
+    border-radius: var(--radius);
+    background-color: var(--background);
+    font-size: 0.6rem; /* Extremadamente reducido */
+    transition: all 0.2s ease-in-out;
+}
+
+.report-type-selector select:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--ring);
+}
+
+/* Grid de filtros - extremadamente compacto */
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); /* Extremadamente reducido */
+    gap: 0.25rem; /* Extremadamente reducido */
+    margin-bottom: 0.25rem; /* Extremadamente reducido */
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem; /* Ultra reducido */
+}
+
+.filter-group.filter-wide {
+    grid-column: 1 / -1;
+    max-width: 220px; /* Extremadamente reducido */
+}
+
+.filter-group label {
+    font-size: 0.6rem; /* Extremadamente reducido */
+    font-weight: 500;
+    color: var(--foreground);
+    line-height: 1.1;
+}
+
+.filter-group input,
+.filter-group select {
+    height: 1.375rem; /* Extremadamente reducido */
+    padding: 0.125rem 0.25rem; /* Ultra reducido */
+    border: 1px solid var(--input);
+    border-radius: var(--radius);
+    background-color: var(--background);
+    font-size: 0.6rem; /* Extremadamente reducido */
+    transition: all 0.2s ease-in-out;
+}
+
+.filter-group input:focus,
+.filter-group select:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--ring);
+}
+
+/* Grupo de botones de acción integrado en el grid */
+.filter-actions-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem; /* Ultra reducido */
+    justify-content: flex-end;
+}
+
+.filter-actions-group label {
+    font-size: 0.6rem; /* Invisible label para mantener alineación */
+    visibility: hidden;
+}
+
+.filter-actions-inline {
+    display: flex;
+    gap: 0.25rem; /* Extremadamente reducido */
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* Asegurar que las secciones de filtros sean compactas */
+.filters-section {
+    position: relative;
+    z-index: 1;
+}
+
+.filters-section:not([style*="display: none"]) {
+    padding-bottom: 0; /* Sin padding extra */
+}
+
+/* Botones base - extremadamente compactos para solo íconos */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius);
+    font-size: 0.75rem; /* Ultra reducido */
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+    border: none;
+    cursor: pointer;
+    padding: 0.375rem; /* Padding ultra reducido para solo íconos */
+    gap: 0.25rem; /* Ultra reducido */
+    text-decoration: none;
+    min-height: 1.75rem; /* Ultra reducido */
+    min-width: 1.75rem; /* Ancho mínimo ultra reducido */
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+}
+
+.btn-primary:hover {
+    background-color: hsl(221.2 83.2% 46%);
+}
+
+.btn-secondary {
+    background-color: var(--secondary);
+    color: var(--secondary-foreground);
+    border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+    background-color: var(--accent);
+}
+
+.btn-success {
+    background-color: hsl(142.1 76.2% 36.3%);
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: hsl(142.1 76.2% 32%);
+}
+
+.btn-info {
+    background-color: hsl(198.6 88.7% 48.4%);
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: hsl(198.6 88.7% 42%);
+}
+
+/* Botones SHADCN específicos */
+.shadcn-primary-btn {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+    border: none;
+    cursor: pointer;
+    padding: 0.375rem 0.75rem;
+    gap: 0.375rem;
+    text-decoration: none;
+    min-height: 2rem;
+}
+
+.shadcn-primary-btn:hover {
+    background-color: hsl(221.2 83.2% 46%);
+}
+
+.shadcn-secondary-btn {
+    background-color: var(--secondary);
+    color: var(--secondary-foreground);
+    border: 1px solid var(--border);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    padding: 0.375rem 0.75rem;
+    gap: 0.375rem;
+    text-decoration: none;
+    min-height: 2rem;
+}
+
+.shadcn-secondary-btn:hover {
+    background-color: var(--accent);
+}
+
+/* Contenedor de tabla - no interferir con topbar */
+.shadcn-table-container {
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background-color: var(--card);
+    overflow: hidden;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    /* Asegurar posicionamiento correcto */
+    position: relative;
+    z-index: 1;
+    margin-top: 0;
+}
+
+/* Asegurar que todos los elementos respeten el topbar */
+.incidents-header,
+.incidents-filters-card,
+.shadcn-table-container {
+    transform: none !important; /* Evitar cualquier transform que pueda causar superposición */
+}
+
+/* Estados especiales */
+.shadcn-loading-state,
+.shadcn-empty-state,
+.shadcn-error-state {
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.shadcn-loading-spinner {
+    width: 2rem;
+    height: 2rem;
+    border: 2px solid var(--muted);
+    border-top: 2px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.empty-icon,
+.error-icon {
+    font-size: 2.5rem;
+    color: var(--muted-foreground);
+    margin-bottom: 1rem;
+}
+
+.shadcn-empty-state h3,
+.shadcn-error-state h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.shadcn-empty-state p,
+.shadcn-error-state p {
+    margin: 0 0 1.5rem 0;
+    color: var(--muted-foreground);
+}
+
+.empty-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Estado sin reporte */
+.no-report-state {
+    background-color: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 3rem 2rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.no-report-content {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.no-report-icon {
+    width: 4rem;
+    height: 4rem;
+    margin: 0 auto 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.75rem;
+}
+
+.no-report-state h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.no-report-state p {
+    margin: 0;
+    color: var(--muted-foreground);
+    line-height: 1.6;
+}
+
+/* Tabla - extremadamente compacta */
+.shadcn-table-scroll {
+    overflow: auto;
+    max-height: 65vh;
+}
+
+.shadcn-table {
+    width: 100%;
+    caption-side: bottom;
+    font-size: 0.7rem; /* Ultra reducido */
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.shadcn-table th {
+    height: 1.75rem; /* Ultra reducido */
+    padding: 0.25rem 0.5rem; /* Ultra reducido */
+    text-align: left;
+    font-weight: 500;
+    color: var(--muted-foreground);
+    background-color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    font-size: 0.65rem; /* Extremadamente reducido */
+}
+
+.shadcn-table th:first-child {
+    border-top-left-radius: var(--radius);
+}
+
+.shadcn-table th:last-child {
+    border-top-right-radius: var(--radius);
+}
+
+.shadcn-table td {
+    padding: 0.25rem 0.5rem; /* Ultra reducido */
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+}
+
+.shadcn-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.shadcn-table tbody tr:hover {
+    background-color: var(--muted);
+}
+
+/* Badges */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.375rem;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status-badge.active {
+    background-color: hsl(142.1 70.6% 45.3% / 0.1);
+    color: hsl(142.1 70.6% 45.3%);
+}
+
+.status-badge.inactive {
+    background-color: hsl(0 84.2% 60.2% / 0.1);
+    color: hsl(0 84.2% 60.2%);
+}
+
+.type-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.375rem;
+    border-radius: var(--radius);
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+.type-badge.minor {
+    background-color: hsl(47.9 95.8% 53.1% / 0.1);
+    color: hsl(47.9 95.8% 35%);
+}
+
+.type-badge.major {
+    background-color: hsl(24.6 95% 53.1% / 0.1);
+    color: hsl(24.6 95% 35%);
+}
+
+.type-badge.critical {
+    background-color: hsl(0 84.2% 60.2% / 0.1);
+    color: hsl(0 84.2% 60.2%);
+}
+
+/* Botones de acción */
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    margin-right: 0.25rem;
+}
+
+.action-btn:last-child {
+    margin-right: 0;
+}
+
+.action-btn.view {
+    background-color: hsl(214.3 100% 97%);
+    color: hsl(214.3 100% 45%);
+}
+
+.action-btn.view:hover {
+    background-color: hsl(214.3 100% 92%);
+}
+
+/* Paginación - extremadamente compacta y SIEMPRE VISIBLE */
+.shadcn-pagination {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem; /* Ultra reducido */
+    border-top: 1px solid var(--border);
+    background-color: var(--muted);
+    flex-wrap: wrap;
+    gap: 0.5rem; /* Ultra reducido */
+    position: relative;
+    z-index: 1;
+}
+
+.shadcn-pagination-info {
+    font-size: 0.7rem; /* Ultra reducido */
+    color: var(--muted-foreground);
+}
+
+.shadcn-pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.125rem; /* Ultra reducido */
+}
+
+.shadcn-pagination-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius);
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+    background-color: var(--background);
+    border: 1px solid var(--border);
+    color: var(--foreground);
+    cursor: pointer;
+    width: 1.5rem; /* Ultra reducido */
+    height: 1.5rem; /* Ultra reducido */
+    font-size: 0.7rem; /* Ultra reducido */
+}
+
+.shadcn-pagination-btn:hover:not(:disabled) {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+}
+
+.shadcn-pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.shadcn-pagination-size {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem; /* Ultra reducido */
+    font-size: 0.7rem; /* Ultra reducido */
+    color: var(--muted-foreground);
+}
+
+.shadcn-pagination-size label {
+    font-size: 0.65rem; /* Extremadamente reducido */
+    font-weight: 500;
+}
+
+.shadcn-pagination-size select,
+.shadcn-pagination-size select,
+.shadcn-select {
+    height: 1.5rem; /* Ultra reducido */
+    padding: 0.125rem 0.25rem; /* Ultra reducido */
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background-color: var(--background);
+    font-size: 0.65rem; /* Extremadamente reducido */
+}
+
+/* Responsivo - extremadamente compacto */
+@media (max-width: 768px) {
+    .incidents-main-container {
+        padding: 0.5rem; /* Ultra reducido */
+    }
+    
+    .incidents-title {
+        font-size: 1.125rem; /* Ultra reducido */
+    }
+    
+    .filters-grid {
+        grid-template-columns: 1fr;
+        gap: 0.25rem; /* Ultra reducido */
+    }
+    
+    .filter-actions-inline {
+        flex-direction: column;
+        gap: 0.125rem; /* Ultra reducido */
+    }
+    
+    .shadcn-pagination {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.375rem; /* Ultra reducido */
+        padding: 0.375rem 0.5rem; /* Ultra reducido */
+    }
+    
+    .shadcn-pagination-controls {
+        justify-content: center;
+    }
+    
+    .shadcn-table-scroll {
+        max-height: 55vh;
+    }
+    
+    /* En móviles, hacer los elementos aún más compactos */
+    .card-header {
+        padding: 0.25rem 0.375rem; /* Extremadamente reducido */
+    }
+    
+    .filters-content {
+        padding: 0.25rem 0.375rem; /* Extremadamente reducido */
+    }
+    
+    .filter-group input,
+    .filter-group select {
+        height: 1.25rem; /* Extremadamente reducido para móvil */
+        font-size: 0.6rem; /* Ultra reducido */
+    }
+    
+    /* Hacer los botones más compactos en móvil */
+    .filter-actions-group {
+        grid-column: 1 / -1; /* Ocupar todo el ancho en móvil */
+    }
+    
+    .filter-actions-inline {
+        justify-content: center; /* Centrar en móvil */
+    }
+}
+
+/* Estados de carga para botones */
+.btn.loading,
+.shadcn-primary-btn.loading,
+.shadcn-secondary-btn.loading {
+    position: relative;
+    color: transparent;
+}
+
+.btn.loading::after,
+.shadcn-primary-btn.loading::after,
+.shadcn-secondary-btn.loading::after {
+    content: '';
+    position: absolute;
+    width: 1rem;
+    height: 1rem;
+    top: 50%;
+    left: 50%;
+    margin-left: -0.5rem;
+    margin-top: -0.5rem;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}

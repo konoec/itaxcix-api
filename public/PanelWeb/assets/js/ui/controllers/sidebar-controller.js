@@ -171,6 +171,11 @@ class SidebarController {    constructor() {
     }
 }
 
+// Exponer globalmente el SidebarController
+if (typeof window !== 'undefined') {
+    window.SidebarController = SidebarController;
+}
+
 // NOTA: La inicialización automática está comentada para evitar doble inicialización
 // El SidebarController debe ser inicializado por el inicializador específico de cada página
 /*
