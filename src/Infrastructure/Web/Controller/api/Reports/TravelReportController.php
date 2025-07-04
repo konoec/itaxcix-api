@@ -2,24 +2,25 @@
 
 namespace itaxcix\Infrastructure\Web\Controller\api\Reports;
 
+use itaxcix\Core\Handler\TravelReport\TravelReportUseCaseHandler;
+use itaxcix\Core\UseCases\TravelReport\TravelReportUseCase;
 use itaxcix\Infrastructure\Web\Controller\generic\AbstractController;
 use itaxcix\Shared\DTO\useCases\TravelReport\TravelReportRequestDTO;
 use itaxcix\Shared\Validators\useCases\TravelReport\TravelReportValidator;
-use itaxcix\Core\Handler\TravelReport\TravelReportUseCaseHandler;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class TravelReportController extends AbstractController
 {
-    private TravelReportUseCaseHandler $handler;
+    private TravelReportUseCase $useCase;
     private TravelReportValidator $validator;
 
     public function __construct(
-        TravelReportUseCaseHandler $handler,
+        TravelReportUseCase $useCase,
         TravelReportValidator $validator
     ) {
-        $this->handler = $handler;
+        $this->useCase = $useCase;
         $this->validator = $validator;
     }
 
@@ -96,7 +97,7 @@ class TravelReportController extends AbstractController
                 return $this->validationError($validationErrors);
             }
             $dto = TravelReportRequestDTO::fromArray($queryParams);
-            $result = $this->handler->handle($dto);
+            $result = $this->useCase->execute($dto);
             return $this->ok($result->toArray());
         } catch (\Exception $e) {
             return $this->error('Error al obtener el reporte de viajes: ' . $e->getMessage());
