@@ -699,6 +699,6 @@ return array(
     InfractionReportUseCase::class => autowire(InfractionReportUseCaseHandler::class),
     InfractionReportValidator::class => autowire(InfractionReportValidator::class),
 
-    AuditLogUseCase::class => autowire(AuditLogUseCaseHandler::class),
+    AuditLogUseCase::class => autowire(),
     AuditLogValidator::class => autowire(AuditLogValidator::class),
 );
