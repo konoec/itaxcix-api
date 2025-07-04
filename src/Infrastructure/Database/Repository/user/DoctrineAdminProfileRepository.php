@@ -68,7 +68,9 @@ class DoctrineAdminProfileRepository implements AdminProfileRepositoryInterface
             ->setMaxResults(1)
             ->getQuery();
 
-        $entity = $query->getOneOrNullResult();
+        $results = $query->getResult();
+        $entity = !empty($results) ? $results[0] : null;
+
         return $entity ? $this->toDomain($entity) : null;
     }
 }
