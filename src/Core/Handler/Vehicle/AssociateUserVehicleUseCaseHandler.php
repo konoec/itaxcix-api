@@ -81,7 +81,7 @@ class AssociateUserVehicleUseCaseHandler implements AssociateUserVehicleUseCase
             try {
                 $validationDto = new VehicleValidationRequestDTO(
                     documentTypeId: $user->getPerson()->getDocumentType()->getId(),
-                    documentValue: $user->getPerson()->getDocumentValue(),
+                    documentValue: $user->getPerson()->getDocument(),
                     plateValue: $dto->plateValue
                 );
 
