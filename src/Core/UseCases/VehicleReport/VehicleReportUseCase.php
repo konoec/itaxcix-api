@@ -2,16 +2,16 @@
 
 namespace itaxcix\Core\UseCases\VehicleReport;
 
-use itaxcix\Core\Interfaces\vehicle\VehicleReportRepositoryInterface;
+use itaxcix\Core\Interfaces\vehicle\VehicleRepositoryInterface;
 use itaxcix\Shared\DTO\useCases\VehicleReport\VehicleReportRequestDTO;
 use itaxcix\Shared\DTO\useCases\VehicleReport\VehicleReportPaginationResponseDTO;
 use itaxcix\Shared\DTO\useCases\VehicleReport\VehicleReportResponseDTO;
 
 class VehicleReportUseCase
 {
-    private VehicleReportRepositoryInterface $repository;
+    private VehicleRepositoryInterface $repository;
 
-    public function __construct(VehicleReportRepositoryInterface $repository)
+    public function __construct(VehicleRepositoryInterface $repository)
     {
         $this->repository = $repository;
     }

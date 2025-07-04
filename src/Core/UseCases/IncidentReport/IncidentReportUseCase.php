@@ -2,16 +2,16 @@
 
 namespace itaxcix\Core\UseCases\IncidentReport;
 
-use itaxcix\Core\Interfaces\incident\IncidentReportRepositoryInterface;
+use itaxcix\Core\Interfaces\incident\IncidentRepositoryInterface;
 use itaxcix\Shared\DTO\useCases\IncidentReport\IncidentReportRequestDTO;
 use itaxcix\Shared\DTO\useCases\IncidentReport\IncidentReportPaginationResponseDTO;
 use itaxcix\Shared\DTO\useCases\IncidentReport\IncidentReportResponseDTO;
 
 class IncidentReportUseCase
 {
-    private IncidentReportRepositoryInterface $repository;
+    private IncidentRepositoryInterface $repository;
 
-    public function __construct(IncidentReportRepositoryInterface $repository)
+    public function __construct(IncidentRepositoryInterface $repository)
     {
         $this->repository = $repository;
     }

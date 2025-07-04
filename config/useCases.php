@@ -684,19 +684,19 @@ return array(
 
     UserCodeTypeValidator::class => autowire(UserCodeTypeValidator::class),
 
-    TravelReportUseCase::class => autowire(TravelReportUseCaseHandler::class),
+    TravelReportUseCase::class => autowire(),
     TravelReportValidator::class => autowire(TravelReportValidator::class),
 
-    UserReportUseCase::class => autowire(UserReportUseCaseHandler::class),
+    UserReportUseCase::class => autowire(),
     UserReportValidator::class => autowire(UserReportValidator::class),
 
-    VehicleReportUseCase::class => autowire(VehicleReportUseCaseHandler::class),
+    VehicleReportUseCase::class => autowire(),
     VehicleReportValidator::class => autowire(VehicleReportValidator::class),
 
-    IncidentReportUseCase::class => autowire(IncidentReportUseCaseHandler::class),
+    IncidentReportUseCase::class => autowire(),
     IncidentReportValidator::class => autowire(IncidentReportValidator::class),
 
-    InfractionReportUseCase::class => autowire(InfractionReportUseCaseHandler::class),
+    InfractionReportUseCase::class => autowire(),
     InfractionReportValidator::class => autowire(InfractionReportValidator::class),
 
     AuditLogUseCase::class => autowire(),

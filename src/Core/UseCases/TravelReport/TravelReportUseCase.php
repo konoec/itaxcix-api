@@ -2,16 +2,16 @@
 
 namespace itaxcix\Core\UseCases\TravelReport;
 
-use itaxcix\Core\Interfaces\travel\TravelReportRepositoryInterface;
+use itaxcix\Core\Interfaces\travel\TravelRepositoryInterface;
 use itaxcix\Shared\DTO\useCases\TravelReport\TravelReportRequestDTO;
 use itaxcix\Shared\DTO\useCases\TravelReport\TravelReportPaginationResponseDTO;
 use itaxcix\Shared\DTO\useCases\TravelReport\TravelReportResponseDTO;
 
 class TravelReportUseCase
 {
-    private TravelReportRepositoryInterface $repository;
+    private TravelRepositoryInterface $repository;
 
-    public function __construct(TravelReportRepositoryInterface $repository)
+    public function __construct(TravelRepositoryInterface $repository)
     {
         $this->repository = $repository;
     }

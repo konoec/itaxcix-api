@@ -2,15 +2,15 @@
 
 namespace itaxcix\Core\UseCases\UserReport;
 
-use itaxcix\Core\Interfaces\user\UserReportRepositoryInterface;
+use itaxcix\Core\Interfaces\user\UserRepositoryInterface;
 use itaxcix\Shared\DTO\useCases\UserReport\UserReportRequestDTO;
 use itaxcix\Shared\DTO\useCases\UserReport\UserReportPaginationResponseDTO;
 use itaxcix\Shared\DTO\useCases\UserReport\UserReportResponseDTO;
 
 class UserReportUseCase
 {
-    private UserReportRepositoryInterface $repository;
-    public function __construct(UserReportRepositoryInterface $repository)
+    private UserRepositoryInterface $repository;
+    public function __construct(UserRepositoryInterface $repository)
     {
         $this->repository = $repository;
     }

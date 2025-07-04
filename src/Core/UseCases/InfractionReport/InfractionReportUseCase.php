@@ -2,16 +2,16 @@
 
 namespace itaxcix\Core\UseCases\InfractionReport;
 
-use itaxcix\Core\Interfaces\infraction\InfractionReportRepositoryInterface;
+use itaxcix\Core\Interfaces\infraction\InfractionRepositoryInterface;
 use itaxcix\Shared\DTO\useCases\InfractionReport\InfractionReportRequestDTO;
 use itaxcix\Shared\DTO\useCases\InfractionReport\InfractionReportPaginationResponseDTO;
 use itaxcix\Shared\DTO\useCases\InfractionReport\InfractionReportResponseDTO;
 
 class InfractionReportUseCase
 {
-    private InfractionReportRepositoryInterface $repository;
+    private InfractionRepositoryInterface $repository;
 
-    public function __construct(InfractionReportRepositoryInterface $repository)
+    public function __construct(InfractionRepositoryInterface $repository)
     {
         $this->repository = $repository;
     }
