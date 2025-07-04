@@ -16,6 +16,21 @@ class TravelReportResponseDTO
         public readonly string $status
     ) {}
 
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            id: $data['id'],
+            citizenName: $data['citizenName'] ?? null,
+            driverName: $data['driverName'] ?? null,
+            origin: $data['origin'] ?? null,
+            destination: $data['destination'] ?? null,
+            startDate: $data['startDate'] ?? null,
+            endDate: $data['endDate'] ?? null,
+            creationDate: $data['creationDate'],
+            status: $data['status']
+        );
+    }
+
     public function toArray(): array
     {
         return [
@@ -31,4 +46,3 @@ class TravelReportResponseDTO
         ];
     }
 }
-
