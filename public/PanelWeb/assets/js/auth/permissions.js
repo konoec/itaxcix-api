@@ -20,6 +20,20 @@ class PermissionsService {    constructor() {
                 menuId: 'menu-auditoria',
                 title: 'Auditoría',
                 icon: 'fas fa-clipboard-list'
+            },
+            'AUDITORIA - REGISTRO': {
+                permission: 'AUDITORIA',
+                route: '/pages/Audit/AuditRegistry.html',
+                menuId: 'menu-auditoria-registro',
+                title: 'Registro de Auditoría',
+                icon: 'fas fa-history'
+            },
+            'AUDITORIA - REPORTES': {
+                permission: 'AUDITORIA',
+                route: '/pages/Audit/AuditReports.html',
+                menuId: 'menu-auditoria-reportes',
+                title: 'Reportes de Auditoría',
+                icon: 'fas fa-chart-bar'
             },            'CONFIGURACIÓN': {
                 permission: 'CONFIGURACIÓN',
                 route: '/pages/Configuration/Configuration.html',

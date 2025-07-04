@@ -65,8 +65,8 @@
                             <span class="submenu-arrow"></span>
                         </a>
                         <ul class="submenu">
-                            <li><a href="../Audit/AuditRegistry.html"><i class="fas fa-history"></i>Registro de Auditoría</a></li>
-                            <li class="active"><a href="../Audit/AuditReports.html"><i class="fas fa-chart-bar"></i>Reportes de Auditoría</a></li>
+                            <li id="menu-auditoria-registro"><a href="../Audit/AuditRegistry.html"><i class="fas fa-history"></i>Registro de Auditoría</a></li>
+                            <li id="menu-auditoria-reportes" class="active"><a href="../Audit/AuditReports.html"><i class="fas fa-chart-bar"></i>Reportes de Auditoría</a></li>
                         </ul>
                     </li>
                     <!-- Módulo de Configuración -->
@@ -907,7 +907,7 @@
     <script src="../../assets/js/auth/permissions.js"></script>
     <script src="../../assets/js/auth/route-guard.js"></script>
     <script>
-        // Inicializa RouteGuard para proteger la página
+        // Inicializa RouteGuard para proteger la página (igual que otros módulos)
         window.routeGuard = new RouteGuard("../../index.html");
         
         // Diagnóstico temporal para verificar autenticación

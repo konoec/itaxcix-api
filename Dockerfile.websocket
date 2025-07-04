@@ -13,10 +13,8 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 WORKDIR /app
 
-# 👇 COPIAR TODO TU CÓDIGO PRIMERO
 COPY . .
 
-# 👇 LUEGO INSTALAR DEPENDENCIAS
 RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
 # Etapa final

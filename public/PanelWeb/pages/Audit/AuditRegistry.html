@@ -65,8 +65,8 @@
                             <span class="submenu-arrow"></span>
                         </a>
                         <ul class="submenu">
-                            <li class="active"><a href="../Audit/AuditRegistry.html"><i class="fas fa-history"></i>Registro de Auditoría</a></li>
-                            <li><a href="../Audit/AuditReports.html"><i class="fas fa-chart-bar"></i>Reportes de Auditoría</a></li>
+                            <li id="menu-auditoria-registro" class="active"><a href="../Audit/AuditRegistry.html"><i class="fas fa-history"></i>Registro de Auditoría</a></li>
+                            <li id="menu-auditoria-reportes"><a href="../Audit/AuditReports.html"><i class="fas fa-chart-bar"></i>Reportes de Auditoría</a></li>
                         </ul>
                     </li>
                     <!-- Módulo de Configuración -->
@@ -444,6 +444,11 @@
         console.log('Módulo: Auditoría - Registro');
         console.log('=== FIN DIAGNÓSTICO ===');
     </script>
+    
+    <!-- Autenticación y protección de rutas -->
+    <script src="../../assets/js/auth/auth-checker.js"></script>
+    <script src="../../assets/js/auth/permissions.js"></script>
+    <script src="../../assets/js/auth/route-guard.js"></script>
     
     <!-- Servicios básicos -->
     <script src="../../assets/js/api/services/profile-service.js"></script>
