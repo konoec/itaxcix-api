@@ -39,19 +39,38 @@ class AuditLogUseCase
     public function export(AuditLogRequestDTO $dto): string
     {
         $logs = $this->repository->findAuditLogs($dto, false); // sin paginación para exportar todo
-        $csv = "ID,Tabla,Operación,Usuario,Fecha,Dato Anterior,Dato Nuevo\n";
+
+        // Usar output buffering para capturar la salida de fputcsv
+        ob_start();
+        $output = fopen('php://output', 'w');
+
+        // Escribir encabezados
+        fputcsv($output, ['ID', 'Tabla', 'Operación', 'Usuario', 'Fecha', 'Dato Anterior', 'Dato Nuevo']);
+
+        // Escribir datos
         foreach ($logs as $log) {
-            $csv .= sprintf(
-                '"%d","%s","%s","%s","%s","%s","%s"\n',
+            // Procesar datos JSON para que sean seguros en CSV
+            $previousData = $log['previousData'] ? json_encode($log['previousData'], JSON_UNESCAPED_UNICODE) : 'null';
+            $newData = $log['newData'] ? json_encode($log['newData'], JSON_UNESCAPED_UNICODE) : 'null';
+
+            // Limpiar saltos de línea problemáticos en JSON
+            $previousData = str_replace(["\r", "\n"], ['', ''], $previousData);
+            $newData = str_replace(["\r", "\n"], ['', ''], $newData);
+
+            fputcsv($output, [
                 $log['id'],
                 $log['affectedTable'],
                 $log['operation'],
                 $log['systemUser'],
                 $log['date'],
-                json_encode($log['previousData'], JSON_UNESCAPED_UNICODE),
-                json_encode($log['newData'], JSON_UNESCAPED_UNICODE)
-            );
+                $previousData,
+                $newData
+            ]);
         }
+
+        fclose($output);
+        $csv = ob_get_clean();
+
         return $csv;
     }
 }
