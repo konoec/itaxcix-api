@@ -2,16 +2,16 @@
 
 namespace itaxcix\Core\UseCases\RatingReport;
 
-use itaxcix\Core\Interfaces\rating\RatingReportRepositoryInterface;
+use itaxcix\Core\Interfaces\rating\RatingRepositoryInterface;
 use itaxcix\Shared\DTO\useCases\RatingReport\RatingReportRequestDTO;
 use itaxcix\Shared\DTO\useCases\RatingReport\RatingReportPaginationResponseDTO;
 use itaxcix\Shared\DTO\useCases\RatingReport\RatingReportResponseDTO;
 
 class RatingReportUseCase
 {
-    private RatingReportRepositoryInterface $repository;
+    private RatingRepositoryInterface $repository;
 
-    public function __construct(RatingReportRepositoryInterface $repository)
+    public function __construct(RatingRepositoryInterface $repository)
     {
         $this->repository = $repository;
     }
