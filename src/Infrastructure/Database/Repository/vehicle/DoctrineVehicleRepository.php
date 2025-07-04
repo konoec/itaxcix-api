@@ -39,7 +39,6 @@ class DoctrineVehicleRepository implements VehicleRepositoryInterface {
         $this->fuelTypeRepository = $fuelTypeRepository;
         $this->vehicleClassRepository = $vehicleClassRepository;
         $this->vehicleCategoryRepository = $vehicleCategoryRepository;
-
     }
 
     public function toDomain(VehicleEntity $entity): VehicleModel {
@@ -214,9 +213,10 @@ class DoctrineVehicleRepository implements VehicleRepositoryInterface {
                 ->setParameter('active', $dto->active);
         }
 
-        // Filtros por relación con TUC (empresa, distrito, estado, tipo trámite, modalidad)
+        // Filtros por relación con TUC - solo agregamos JOIN si hay filtros TUC
         if ($dto->companyId || $dto->districtId || $dto->statusId || $dto->procedureTypeId || $dto->modalityId) {
-            $qb->leftJoin('itaxcix\\Infrastructure\\Database\\Entity\\vehicle\\TucProcedureEntity', 'tp', 'WITH', 'tp.vehicle = v.id');
+            $qb->leftJoin('itaxcix\\Infrastructure\\Database\\Entity\\vehicle\\TucProcedureEntity', 'tp', 'WITH', 'tp.vehicle = v');
+
             if ($dto->companyId) {
                 $qb->andWhere('tp.company = :companyId')
                     ->setParameter('companyId', $dto->companyId);
@@ -250,12 +250,7 @@ class DoctrineVehicleRepository implements VehicleRepositoryInterface {
             'colorId' => 'c.id',
             'fuelTypeId' => 'f.id',
             'vehicleClassId' => 'vc.id',
-            'categoryId' => 'cat.id',
-            'companyId' => 'tp.company',
-            'districtId' => 'tp.district',
-            'statusId' => 'tp.status',
-            'procedureTypeId' => 'tp.type',
-            'modalityId' => 'tp.modality'
+            'categoryId' => 'cat.id'
         ];
         $sortBy = $allowedSort[$dto->sortBy] ?? 'v.licensePlate';
         $sortDirection = strtoupper($dto->sortDirection) === 'DESC' ? 'DESC' : 'ASC';
@@ -265,7 +260,10 @@ class DoctrineVehicleRepository implements VehicleRepositoryInterface {
 
         $entities = $qb->getQuery()->getResult();
         $result = [];
-        foreach ($entities as $entity) {
+
+        foreach ($entities as $row) {
+            $entity = is_array($row) ? $row[0] : $row;
+
             if ($entity instanceof VehicleEntity) {
                 $model = $entity->getModel();
                 $brand = $model?->getBrand();
@@ -273,16 +271,10 @@ class DoctrineVehicleRepository implements VehicleRepositoryInterface {
                 $fuelType = $entity->getFuelType();
                 $vehicleClass = $entity->getVehicleClass();
                 $category = $entity->getCategory();
-                // Buscar TUC activo (si hay)
-                $tuc = null;
-                if (property_exists($entity, 'tucProcedures')) {
-                    foreach ($entity->tucProcedures as $tp) {
-                        if ($tp->getVehicle()->getId() === $entity->getId()) {
-                            $tuc = $tp;
-                            break;
-                        }
-                    }
-                }
+
+                // Obtener TUC usando consulta directa para evitar dependencia circular
+                $tucData = $this->getTucDataForVehicle($entity->getId());
+
                 $result[] = [
                     'id' => $entity->getId(),
                     'licensePlate' => $entity->getLicensePlate(),
@@ -296,11 +288,11 @@ class DoctrineVehicleRepository implements VehicleRepositoryInterface {
                     'vehicleClassName' => $vehicleClass?->getName(),
                     'categoryName' => $category?->getName(),
                     'active' => $entity->isActive(),
-                    'companyName' => $tuc?->getCompany()?->getName() ?? null,
-                    'districtName' => $tuc?->getDistrict()?->getName() ?? null,
-                    'statusName' => $tuc?->getStatus()?->getName() ?? null,
-                    'procedureTypeName' => $tuc?->getType()?->getName() ?? null,
-                    'modalityName' => $tuc?->getModality()?->getName() ?? null
+                    'companyName' => $tucData['companyName'] ?? null,
+                    'districtName' => $tucData['districtName'] ?? null,
+                    'statusName' => $tucData['statusName'] ?? null,
+                    'procedureTypeName' => $tucData['procedureTypeName'] ?? null,
+                    'modalityName' => $tucData['modalityName'] ?? null
                 ];
             }
         }
@@ -367,7 +359,7 @@ class DoctrineVehicleRepository implements VehicleRepositoryInterface {
                 ->setParameter('active', $dto->active);
         }
         if ($dto->companyId || $dto->districtId || $dto->statusId || $dto->procedureTypeId || $dto->modalityId) {
-            $qb->leftJoin('itaxcix\\Infrastructure\\Database\\Entity\\vehicle\\TucProcedureEntity', 'tp', 'WITH', 'tp.vehicle = v.id');
+            $qb->leftJoin('itaxcix\\Infrastructure\\Database\\Entity\\vehicle\\TucProcedureEntity', 'tp', 'WITH', 'tp.vehicle = v');
             if ($dto->companyId) {
                 $qb->andWhere('tp.company = :companyId')
                     ->setParameter('companyId', $dto->companyId);
@@ -390,5 +382,35 @@ class DoctrineVehicleRepository implements VehicleRepositoryInterface {
             }
         }
         return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * Obtiene datos TUC para un vehículo específico usando consulta directa
+     * para evitar dependencias circulares
+     */
+    private function getTucDataForVehicle(int $vehicleId): array
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('c.name as companyName', 'd.name as districtName', 's.name as statusName', 't.name as procedureTypeName', 'm.name as modalityName')
+            ->from('itaxcix\\Infrastructure\\Database\\Entity\\vehicle\\TucProcedureEntity', 'tp')
+            ->leftJoin('tp.company', 'c')
+            ->leftJoin('tp.district', 'd')
+            ->leftJoin('tp.status', 's')
+            ->leftJoin('tp.type', 't')
+            ->leftJoin('tp.modality', 'm')
+            ->where('tp.vehicle = :vehicleId')
+            ->setParameter('vehicleId', $vehicleId)
+            ->orderBy('tp.expirationDate', 'DESC')
+            ->setMaxResults(1);
+
+        $result = $qb->getQuery()->getOneOrNullResult();
+
+        return $result ?? [
+            'companyName' => null,
+            'districtName' => null,
+            'statusName' => null,
+            'procedureTypeName' => null,
+            'modalityName' => null
+        ];
     }
 }
