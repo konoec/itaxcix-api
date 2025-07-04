@@ -8,7 +8,7 @@ class LoginController {
         
           this.baseUrl = window.location.hostname.includes('github.io') 
             ? '/PanelWeb'
-            : '';
+            : '/PanelWeb';
         this.init();
     }    init() {
         // Prevenir comportamiento por defecto del formulario
