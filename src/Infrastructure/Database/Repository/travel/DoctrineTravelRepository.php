@@ -115,17 +115,14 @@ class DoctrineTravelRepository implements TravelRepositoryInterface
         return $entity ? $this->toDomain($entity) : null;
     }
 
-    public function findTravelsByUserId(int $userId, int $page, int $perPage): array
+    public function findTravelsByUserId(int $userId, int $offset, int $perPage): array
     {
-        // Cambiar esta línea para que sea consistente con el handler
-        $offset = ($page - 1) * $perPage;
-
         $query = $this->entityManager->createQueryBuilder()
             ->select('t')
             ->from(TravelEntity::class, 't')
             ->where('t.citizen = :userId OR t.driver = :userId')
             ->setParameter('userId', $userId)
-            ->setFirstResult($offset)  // Usar la variable calculada
+            ->setFirstResult($offset)  // Usar directamente el offset recibido
             ->setMaxResults($perPage)
             ->getQuery();
 
