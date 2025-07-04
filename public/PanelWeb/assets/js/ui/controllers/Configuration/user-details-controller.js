@@ -54,8 +54,8 @@ const UserDetailsController = (() => {
         // Guardar el teléfono para usarlo después
         window.currentUserPhone = userPhone;
         
-        const modal = document.getElementById('user-details-modal');
-        const titleElement = document.getElementById('user-details-title');
+        const modal = document.getElementById('user-edit-modal');
+        const titleElement = document.getElementById('user-edit-title');
         
         console.log('🔍 DEBUG - Modal element:', modal);
         console.log('🔍 DEBUG - Title element:', titleElement);
@@ -90,7 +90,7 @@ const UserDetailsController = (() => {
      * Cierra el modal de asignación de roles
      */
     function closeRoleAssignmentModal() {
-        const modal = document.getElementById('user-details-modal');
+        const modal = document.getElementById('user-edit-modal');
         if (modal) modal.style.display = 'none';
         
         // Limpiar estado
@@ -543,8 +543,8 @@ const UserDetailsController = (() => {
      */
     function setupModalEvents() {
         // Botón de cerrar
-        const closeBtn = document.getElementById('close-user-details-modal');
-        const cancelBtn = document.getElementById('cancel-user-details');
+        const closeBtn = document.getElementById('close-user-edit-modal');
+        const cancelBtn = document.getElementById('cancel-user-edit');
         const saveBtn = document.getElementById('save-user-roles');
         
         if (closeBtn) {
@@ -560,7 +560,7 @@ const UserDetailsController = (() => {
         }
         
         // Cerrar modal al hacer clic fuera
-        const modal = document.getElementById('user-details-modal');
+        const modal = document.getElementById('user-edit-modal');
         if (modal) {
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) {

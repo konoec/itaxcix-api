@@ -242,8 +242,8 @@ class CreateAdminUserUseCase
 
     private function fakeReniecApi(string $documentValue): array
     {
-        $nombres = ['JUAN', 'MARIA', 'PATRICIO', 'LUIS', 'ANA', 'CARLOS', 'JESUS', 'SOFIA'];
-        $apellidos = ['GONZALES', 'PEREZ', 'RAMIREZ', 'GARCIA', 'RODRIGUEZ', 'LOPEZ', 'FERNANDEZ', 'SANCHEZ'];
+        $nombres = ['JUAN', 'MARIA', 'PATRICIO', 'LUIS', 'ANA', 'CARLOS', 'JESUS', 'SOFIA', 'MIGUEL', 'LAURA', 'ANDREA', 'PEDRO', 'JORGE', 'VALERIA', 'DANIEL', 'PAULA', 'MARTIN', 'CAMILA', 'ALBERTO', 'ELENA'];
+        $apellidos = ['GONZALES', 'PEREZ', 'RAMIREZ', 'GARCIA', 'RODRIGUEZ', 'LOPEZ', 'FERNANDEZ', 'SANCHEZ', 'CASTILLO', 'MORALES', 'TORRES', 'RAMOS', 'CRUZ', 'DIAZ', 'VARGAS', 'REYES', 'FLORES', 'MEDINA', 'ROMERO', 'HERRERA'];
 
         $nombre = $nombres[array_rand($nombres)];
         $apellido1 = $apellidos[array_rand($apellidos)];

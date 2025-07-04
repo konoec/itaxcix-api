@@ -1,14 +1,5 @@
 /**
- * Inicializador espec            if (window.InicioController) {
-                window.inicioControllerInstance = new window.InicioController();
-                console.log('🏠 InicioController inicializado');
-            }
-            
-            // NO iniciar monitoreo local - el sistema global se encarga del monitoreo
-            // El GlobalUserMonitor ya se encarga de verificar el estado del usuario
-            // if (typeof initUserStatusMonitoring === 'function') {
-            //     initUserStatusMonitoring();
-            // }a la página de Inicio
+ * Inicializador específico para la página de Inicio
  * Maneja solo los controladores necesarios para esta página específica
  */
 class InicioInitializer {
@@ -23,7 +14,9 @@ class InicioInitializer {
             if (!window.sidebarControllerInstance) {
                 window.sidebarControllerInstance = new SidebarController();
                 console.log('📁 SidebarController inicializado');
-            }            // Inicializar TopBarController
+            }
+            
+            // Inicializar TopBarController
             if (!window.topBarControllerInstance) {
                 window.topBarControllerInstance = new TopBarController();
                 console.log('📊 TopBarController inicializado');
@@ -33,16 +26,16 @@ class InicioInitializer {
             if (!window.profileControllerInstance) {
                 window.profileControllerInstance = new ProfileController();
                 console.log('👤 ProfileController inicializado');
-            }            // Inicializar InicioController específico de esta página
-            if (!window.inicioController) {
-                window.inicioController = new InicioController();
-                console.log('🏠 InicioController inicializado');
             }
             
-            // Iniciar monitoreo automático de estado de usuario web
-            if (typeof initUserStatusMonitoring === 'function') {
-                initUserStatusMonitoring();
+            // Inicializar DashboardController específico de esta página
+            if (!window.dashboardControllerInstance) {
+                window.dashboardControllerInstance = new DashboardController();
+                console.log('📊 DashboardController inicializado');
             }
+            
+            // NO iniciar monitoreo local - el sistema global se encarga del monitoreo
+            // El GlobalUserMonitor ya se encarga de verificar el estado del usuario
 
             // Configurar permisos inmediatamente con pantalla de carga
             if (window.PermissionsService) {
@@ -56,7 +49,7 @@ class InicioInitializer {
             // Esperar un poco para asegurar que todo esté inicializado
             setTimeout(() => {
                 console.log('🔄 Verificación final de inicialización...');
-                if (window.topBarControllerInstance && window.profileControllerInstance) {
+                if (window.topBarControllerInstance && window.profileControllerInstance && window.dashboardControllerInstance) {
                     console.log('✅ Todos los controladores están disponibles');
                 } else {
                     console.warn('⚠️ Algunos controladores pueden no estar completamente inicializados');

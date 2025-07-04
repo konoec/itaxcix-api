@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="../../assets/css/profile.css">
     <link rel="stylesheet" href="../../assets/css/confirmation-modal.css">
     <link rel="stylesheet" href="../../assets/css/inicio.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard.css">
     
     <!-- Font Awesome para iconografía -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -32,7 +33,7 @@
     <div id="permissions-loading" class="permissions-loading-overlay">
         <div class="loading-content">
             <div class="loading-car">🚕</div>
-            <h2 class="loading-title">Configurando Permisos</h2>
+            <h2 class="loading-title">Cargando Panel</h2>
             <p class="loading-message">
                 Estamos configurando tu sesión y verificando los permisos asignados...
             </p>
@@ -136,40 +137,62 @@
                     </div>
                 </div>
             </div>
-         <!-- Contenido del inicio -->
-            <div class="inicio-content">
-                <!-- Sección de bienvenida -->
-                <div class="welcome-section">
-                    <h1>¡Bienvenido al Panel de Administración!</h1>
-                    <p>Gestiona los diferentes módulos del sistema según tus permisos asignados.</p>
-                </div>
 
-                <!-- Grid de estadísticas/módulos -->
-                <div class="stats-grid" id="modules-grid">
-                    <div class="loading-placeholder">
-                        <i class="fas fa-spinner"></i>
-                        Cargando información de módulos...
+            <!-- Contenido del dashboard -->
+            <div class="content">
+                <!-- Dashboard principal -->
+                <div class="dashboard-container">
+                    <!-- Loading del dashboard -->
+                    <div id="dashboard-loading" class="dashboard-loading">
+                        <div class="dashboard-loading-spinner"></div>
+                        <h3>Cargando estadísticas...</h3>
+                        <p>Obteniendo datos del sistema</p>
                     </div>
-                </div>
 
-                <!-- Acciones rápidas -->
-                <div class="quick-actions">
-                    <h3><i class="fas fa-bolt"></i> Acciones Rápidas</h3>
-                    <div class="actions-grid" id="quick-actions-grid">
-                        <div class="loading-placeholder">
-                            <i class="fas fa-spinner"></i>
-                            Cargando acciones...
+                    <!-- Error del dashboard -->
+                    <div id="dashboard-error" class="dashboard-error" style="display: none;">
+                        <div class="dashboard-error-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="dashboard-error-title">Error al cargar el dashboard</div>
+                        <div class="dashboard-error-message" id="dashboard-error-message">
+                            No se pudieron obtener las estadísticas del sistema
+                        </div>
+                        <button class="dashboard-error-retry" id="dashboard-error-retry">
+                            <i class="fas fa-redo"></i> Reintentar
+                        </button>
+                    </div>
+
+                    <!-- Contenido del dashboard -->
+                    <div id="dashboard-content" style="display: none;">
+                        <!-- Header del dashboard -->
+                        <div class="dashboard-header">
+                            <h1 class="dashboard-title">Dashboard del Sistema</h1>
+                            <p class="dashboard-subtitle">Estadísticas y métricas generales del panel de administración</p>
+                            <button class="dashboard-refresh" id="dashboard-refresh-btn">
+                                <i class="fas fa-sync-alt"></i>
+                                Actualizar
+                            </button>
+                        </div>
+
+                        <!-- Grid de estadísticas principales -->
+                        <div class="dashboard-stats-grid" id="dashboard-stats-grid">
+                            <!-- Las estadísticas se cargarán dinámicamente -->
+                        </div>
+
+                        <!-- Grid de métricas secundarias -->
+                        <div class="dashboard-metrics-grid">
+                            <!-- Métrica de acceso web -->
+                            <div class="dashboard-metric-card" id="web-access-metrics">
+                                <!-- Se carga dinámicamente -->
+                            </div>
+
+                            <!-- Métrica de distribución de roles -->
+                            <div class="dashboard-metric-card" id="role-distribution">
+                                <!-- Se carga dinámicamente -->
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Información del sistema -->
-                <div class="info-section">
-                    <h3><i class="fas fa-info-circle"></i> Información del Sistema</h3>
-                    <p><strong>Panel de Administración</strong> - Sistema de gestión integral</p>
-                    <p>Esta página de inicio te proporciona acceso centralizado a todos los módulos del sistema según los permisos asignados a tu cuenta.</p>
-                    <p>Si necesitas acceso a algún módulo específico que aparece como restringido, contacta al administrador del sistema.</p>
-                    <p id="user-permissions-info">Cargando información de permisos...</p>
                 </div>
             </div>
         </div>
@@ -243,11 +266,9 @@
         </div>
     </div>    <!-- Sistema de notificaciones toast -->
     <div id="toast" class="toast">
-        <div id="toast-message">Inicio cargado correctamente</div>
+        <div id="toast-message">Página cargada correctamente</div>
     </div>
 
-    <!-- Carga de scripts en orden específico para manejar dependencias -->
-    <!-- 1. Utilidades y herramientas base -->
     <!-- Carga de scripts en orden específico para manejar dependencias -->
     <!-- 1. Utilidades y herramientas base -->
     <script src="../../assets/js/global-initializer.js"></script>
@@ -262,23 +283,23 @@
     
     <!-- 2. Servicios de API -->
     <script src="../../assets/js/api/services/profile-service.js"></script>
-    <script src="../../assets/js/api/services/Configuration/user-service.js"></script>
+    <script src="../../assets/js/api/services/dashboard-service.js"></script>
 
     <!-- 3. Controladores de UI -->
     <script src="../../assets/js/ui/global-toast.js"></script>
     <script src="../../assets/js/ui/controllers/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/profile-controller.js"></script>
-    <script src="../../assets/js/ui/controllers/inicio-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/dashboard-controller.js"></script>
 
     <!-- 4. Inicializador específico de la página -->
     <script src="../../assets/js/ui/initializers/inicio-initializer.js"></script>
 
-    <!-- Toast notification for profile operations (mismo estilo que recuperación de contraseña) -->
+    <!-- Toast notification for profile operations -->
     <div id="recovery-toast" class="recovery-toast">
         <div class="recovery-toast-content">
             <i class="fas fa-check-circle"></i>
-            <span id="recovery-toast-message">Foto de perfil actualizada correctamente</span>
+            <span id="recovery-toast-message">Operación completada correctamente</span>
         </div>
     </div>
 </body>

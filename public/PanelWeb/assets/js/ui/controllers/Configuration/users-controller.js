@@ -843,10 +843,10 @@ class UsersController {
             window.UserDetailsController.openRoleAssignmentModal(userId, userName, userPhone, userContactIds);
         } else {
             // Fallback en caso de que el controlador no esté disponible
-            const userDetailsModal = document.getElementById('user-details-modal');
+            const userEditModal = document.getElementById('user-edit-modal');
             
             // Actualizar el título del modal
-            const modalTitle = document.getElementById('user-details-title');
+            const modalTitle = document.getElementById('user-edit-title');
             if (modalTitle) modalTitle.textContent = user.fullName || user.name;
             
             // Actualizar información de contacto
@@ -864,7 +864,7 @@ class UsersController {
             }
             
             // Mostrar el modal
-            if (userDetailsModal) userDetailsModal.style.display = 'flex';
+            if (userEditModal) userEditModal.style.display = 'flex';
         }
     }
 
