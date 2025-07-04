@@ -318,20 +318,32 @@ class PermissionsController {
             const webOnly = this.getWebOnlyFilter();
             const activeOnly = this.getActiveOnlyFilter();
             
-            console.log('📡 Enviando petición a API con filtros:', {
+            console.log('📡 === DEBUGGING PETICIÓN API ===');
+            console.log('📡 Parámetros enviados a la API:', {
                 search: searchTerm,
                 webOnly,
                 activeOnly,
                 page: 1,
                 limit: 100
             });
+            console.log('📡 URL de la API:', `${PermissionService.API_BASE_URL}/permissions`);
             
             // Hacer petición a la API con filtros
             const response = await PermissionService.getPermissions(1, 100, searchTerm, webOnly, activeOnly);
             
-            console.log('📋 Respuesta de API con filtros:', response);
+            console.log('📋 === DEBUGGING RESPUESTA API ===');
+            console.log('📋 Respuesta completa:', response);
+            console.log('📋 Estado de éxito:', response.success);
+            console.log('📋 Mensaje:', response.message);
+            console.log('📋 Estructura de data:', response.data);
+            
+            if (response.data && response.data.permissions) {
+                console.log('📋 Número de permisos recibidos:', response.data.permissions.length);
+                console.log('📋 Primeros 3 permisos:', response.data.permissions.slice(0, 3));
+            }
             
             if (response.success === false) {
+                console.error('❌ API devolvió error:', response.message);
                 throw new Error(response.message || 'Error al cargar permisos filtrados');
             }
             
@@ -340,6 +352,17 @@ class PermissionsController {
                 this.permissions = response.data.permissions;
                 this.filteredPermissions = [...this.permissions]; // Ya están filtrados por la API
                 console.log(`✅ ${this.permissions.length} permisos cargados con filtros desde API`);
+                
+                // Debugging detallado de los permisos recibidos
+                if (this.searchTerm) {
+                    console.log(`🔍 === ANÁLISIS DE RESULTADOS DE BÚSQUEDA ===`);
+                    console.log(`🔍 Término buscado: "${this.searchTerm}"`);
+                    console.log(`🔍 Permisos encontrados: ${this.permissions.length}`);
+                    this.permissions.forEach((permission, index) => {
+                        const nameMatch = permission.name.toLowerCase().includes(this.searchTerm.toLowerCase());
+                        console.log(`🔍 Permiso ${index + 1}: "${permission.name}" - Coincide: ${nameMatch}`);
+                    });
+                }
                 
                 // Si hay más páginas, cargar todas iterativamente
                 const totalPages = response.data.totalPages || 1;
@@ -367,6 +390,11 @@ class PermissionsController {
             this.totalPages = Math.ceil(this.totalPermissions / this.itemsPerPage);
             this.currentPage = 1;
             
+            console.log('📊 === RESULTADO FINAL ===');
+            console.log('📊 Total permisos filtrados:', this.totalPermissions);
+            console.log('📊 Páginas totales:', this.totalPages);
+            console.log('📊 Página actual:', this.currentPage);
+            
             this.showLoading(false);
             this.renderTable();
             this.updatePagination();
@@ -375,8 +403,40 @@ class PermissionsController {
             console.error('❌ Error recargando permisos con filtros desde API:', error);
             this.showLoading(false);
             
-            if (window.showToast) {
-                window.showToast(`Error al aplicar filtros: ${error.message}`, 'error');
+            // Manejo específico de errores de búsqueda
+            let errorMessage = 'Error al aplicar filtros';
+            
+            if (error.message && error.message.includes('400')) {
+                if (this.searchTerm && this.searchTerm.length < 2) {
+                    errorMessage = 'La búsqueda requiere al menos 2 caracteres';
+                } else {
+                    errorMessage = 'Parámetros de búsqueda inválidos';
+                }
+                console.error('❌ Error 400 - Bad Request:', {
+                    searchTerm: this.searchTerm,
+                    searchLength: this.searchTerm?.length,
+                    filters: this.activeFilters
+                });
+            } else {
+                errorMessage = error.message || errorMessage;
+            }
+            
+            // Mostrar mensaje de error temporal en lugar de toast persistente
+            const paginationInfo = document.getElementById('pagination-info');
+            if (paginationInfo) {
+                paginationInfo.textContent = errorMessage;
+                paginationInfo.style.color = '#e74c3c';
+                
+                // Restaurar mensaje normal después de 3 segundos
+                setTimeout(() => {
+                    paginationInfo.style.color = '';
+                    this.updateSearchUI();
+                }, 3000);
+            }
+            
+            // Solo mostrar toast para errores no relacionados con validación de búsqueda
+            if (!error.message?.includes('400') && window.showToast) {
+                window.showToast(errorMessage, 'error');
             }
         }
     }
@@ -446,10 +506,41 @@ class PermissionsController {
      * Ejecuta la búsqueda dinámica haciendo petición a la API
      */
     performDynamicSearch(searchValue) {
-        const trimmedSearch = searchValue.trim().toLowerCase();
+        const trimmedSearch = searchValue.trim();
+        
+        console.log(`🔍 === DEBUGGING BÚSQUEDA DE PERMISOS ===`);
+        console.log(`🔍 Término de búsqueda original: "${searchValue}"`);
+        console.log(`🔍 Término de búsqueda procesado: "${trimmedSearch}"`);
+        console.log(`🔍 Longitud del término: ${trimmedSearch.length}`);
+        console.log(`🔍 Filtros activos:`, this.activeFilters);
+        
+        // Validar término de búsqueda - mínimo 2 caracteres para evitar Error 400
+        if (trimmedSearch.length > 0 && trimmedSearch.length < 2) {
+            console.log(`⚠️ Término de búsqueda muy corto (${trimmedSearch.length} caracteres). Mínimo requerido: 2 caracteres`);
+            
+            // Mostrar mensaje temporal en la UI
+            const paginationInfo = document.getElementById('pagination-info');
+            if (paginationInfo) {
+                paginationInfo.textContent = 'Ingrese al menos 2 caracteres para buscar';
+                paginationInfo.style.color = '#f39c12';
+            }
+            
+            return; // No hacer la búsqueda
+        }
+        
+        // Resetear el color del texto de paginación
+        const paginationInfo = document.getElementById('pagination-info');
+        if (paginationInfo) {
+            paginationInfo.style.color = '';
+        }
+        
         this.searchTerm = trimmedSearch;
         
-        console.log(`🔍 Búsqueda dinámica con API: "${this.searchTerm}"`);
+        if (this.searchTerm === '') {
+            console.log(`🔍 Búsqueda vacía, cargando todos los permisos`);
+        } else {
+            console.log(`🔍 Realizando búsqueda con término válido: "${this.searchTerm}"`);
+        }
         
         // Recargar desde API con el nuevo término de búsqueda y filtros actuales
         this.reloadPermissionsFromAPI();
