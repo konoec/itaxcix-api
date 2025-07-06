@@ -70,14 +70,21 @@ class GetPendingDriversUseCaseHandler implements GetPendingDriversUseCase
                 continue;
             }
 
-            // Obtener vehículo activo del usuario
+            // Obtener vehículo activo del usuario con validación completa
             $plateValue = 'Sin vehículo asignado';
-            $vehicleUser = $this->vehicleUserRepository->findVehicleUserByUserId($userId);
 
-            if ($vehicleUser !== null &&
-                $vehicleUser->isActive() &&
-                $vehicleUser->getVehicle() !== null) {
-                $plateValue = $vehicleUser->getVehicle()->getLicensePlate();
+            try {
+                $vehicleUser = $this->vehicleUserRepository->findVehicleUserByUserId($userId);
+
+                if ($vehicleUser !== null &&
+                    $vehicleUser->isActive() &&
+                    $vehicleUser->getVehicle() !== null &&
+                    !empty($vehicleUser->getVehicle()->getLicensePlate())) {
+                    $plateValue = $vehicleUser->getVehicle()->getLicensePlate();
+                }
+            } catch (\Exception $e) {
+                // Si hay cualquier error, mantener el valor por defecto
+                $plateValue = 'Sin vehículo asignado';
             }
 
             $items[] = new PendingDriverResponseDTO(
