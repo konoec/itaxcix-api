@@ -55,7 +55,13 @@ class GetPendingDriversUseCaseHandler implements GetPendingDriversUseCase
             }
 
             $vehicleUser = $this->vehicleUserRepository->findVehicleUserByUserId($userId);
-            $plateValue = $vehicleUser?->getVehicle()?->getLicensePlate();
+            $plateValue = null;
+            if ($vehicleUser !== null) {
+                $vehicle = $vehicleUser->getVehicle();
+                if ($vehicle !== null) {
+                    $plateValue = $vehicle->getLicensePlate();
+                }
+            }
 
             return new PendingDriverResponseDTO(
                 driverId:      $userId,
