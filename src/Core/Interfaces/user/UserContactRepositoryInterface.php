@@ -13,8 +13,6 @@ interface UserContactRepositoryInterface
     public function findConfirmedContactByUserAndType(int $userId, int $contactTypeId): ?UserContactModel;
     public function deleteContact(int $contactId): void;
     public function findUserContactByUserId(int $userId): ?UserContactModel;
-    public function findUserContactByUserIdAndContactTypeId(int $userId, int $contactTypeId): ?UserContactModel;
-
     // Métodos necesarios para administración avanzada
     public function findUserContactById(int $contactId): ?UserContactModel;
     public function findAllUserContactByUserId(int $userId): array;

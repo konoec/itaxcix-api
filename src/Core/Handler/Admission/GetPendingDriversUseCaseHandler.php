@@ -53,11 +53,15 @@ class GetPendingDriversUseCaseHandler implements GetPendingDriversUseCase
             if (!$contact || !$contact->isConfirmed()) {
                 return null;
             }
+
+            $vehicleUser = $this->vehicleUserRepository->findVehicleUserByUserId($userId);
+            $plateValue = $vehicleUser?->getVehicle()->getLicensePlate();
+
             return new PendingDriverResponseDTO(
                 driverId:      $userId,
                 fullName:      $profile->getUser()->getPerson()->getName() . ' ' . $profile->getUser()->getPerson()->getLastName(),
                 documentValue: $profile->getUser()->getPerson()->getDocument(),
-                plateValue:    $this->vehicleUserRepository->findVehicleUserByUserId($userId)->getVehicle()->getLicensePlate(),
+                plateValue:    $plateValue,
                 contactValue:  $contact->getValue()
             );
         }, $profiles)));
