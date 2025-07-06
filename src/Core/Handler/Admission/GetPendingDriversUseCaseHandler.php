@@ -70,10 +70,13 @@ class GetPendingDriversUseCaseHandler implements GetPendingDriversUseCase
                 continue;
             }
 
-            // Manejar correctamente cuando no hay vehículo asociado
-            $plateValue = null;
+            // Obtener vehículo activo del usuario
+            $plateValue = 'Sin vehículo asignado';
             $vehicleUser = $this->vehicleUserRepository->findVehicleUserByUserId($userId);
-            if ($vehicleUser !== null && $vehicleUser->getVehicle() !== null) {
+
+            if ($vehicleUser !== null &&
+                $vehicleUser->isActive() &&
+                $vehicleUser->getVehicle() !== null) {
                 $plateValue = $vehicleUser->getVehicle()->getLicensePlate();
             }
 
@@ -81,7 +84,7 @@ class GetPendingDriversUseCaseHandler implements GetPendingDriversUseCase
                 driverId:      $userId,
                 fullName:      $person->getName() . ' ' . $person->getLastName(),
                 documentValue: $person->getDocument(),
-                plateValue:    $plateValue, // Será null si no hay vehículo
+                plateValue:    $plateValue,
                 contactValue:  $contact->getValue()
             );
         }
