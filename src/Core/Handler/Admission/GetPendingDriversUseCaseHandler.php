@@ -70,20 +70,18 @@ class GetPendingDriversUseCaseHandler implements GetPendingDriversUseCase
                 continue;
             }
 
+            // Manejar correctamente cuando no hay vehículo asociado
             $plateValue = null;
             $vehicleUser = $this->vehicleUserRepository->findVehicleUserByUserId($userId);
-            if ($vehicleUser !== null) {
-                $vehicle = $vehicleUser->getVehicle();
-                if ($vehicle !== null) {
-                    $plateValue = $vehicle->getLicensePlate();
-                }
+            if ($vehicleUser !== null && $vehicleUser->getVehicle() !== null) {
+                $plateValue = $vehicleUser->getVehicle()->getLicensePlate();
             }
 
             $items[] = new PendingDriverResponseDTO(
                 driverId:      $userId,
                 fullName:      $person->getName() . ' ' . $person->getLastName(),
                 documentValue: $person->getDocument(),
-                plateValue:    $plateValue,
+                plateValue:    $plateValue, // Será null si no hay vehículo
                 contactValue:  $contact->getValue()
             );
         }
