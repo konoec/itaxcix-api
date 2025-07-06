@@ -76,14 +76,24 @@ class GetPendingDriversUseCaseHandler implements GetPendingDriversUseCase
             try {
                 $vehicleUser = $this->vehicleUserRepository->findVehicleUserByUserId($userId);
 
+                // Validación robusta para evitar null pointer exceptions
                 if ($vehicleUser !== null &&
+                    method_exists($vehicleUser, 'isActive') &&
                     $vehicleUser->isActive() &&
+                    method_exists($vehicleUser, 'getVehicle') &&
                     $vehicleUser->getVehicle() !== null &&
+                    method_exists($vehicleUser->getVehicle(), 'getLicensePlate') &&
                     !empty($vehicleUser->getVehicle()->getLicensePlate())) {
                     $plateValue = $vehicleUser->getVehicle()->getLicensePlate();
                 }
             } catch (\Exception $e) {
-                // Si hay cualquier error, mantener el valor por defecto
+                // Log del error para debugging si es necesario
+                error_log("Error obteniendo vehículo para usuario {$userId}: " . $e->getMessage());
+                // Mantener el valor por defecto
+                $plateValue = 'Sin vehículo asignado';
+            } catch (\Error $e) {
+                // Capturar también errores fatales como null pointer
+                error_log("Error fatal obteniendo vehículo para usuario {$userId}: " . $e->getMessage());
                 $plateValue = 'Sin vehículo asignado';
             }
 
