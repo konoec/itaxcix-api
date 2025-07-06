@@ -53,36 +53,33 @@ class GetPendingDriversUseCaseHandler implements GetPendingDriversUseCase
 
             if (!$profile) {
                 $debugInfo[] = 'Profile es null';
-                return ['debug' => $debugInfo];
+                return ['debug' => $debugInfo]; // ESTO ESTÁ BIEN
             }
 
             $user = $profile->getUser();
             if (!$user) {
                 $debugInfo[] = 'User es null';
-                return ['debug' => $debugInfo];
+                return ['debug' => $debugInfo]; // ESTO ESTÁ BIEN
             }
 
             $userId = $user->getId();
             if (!$userId) {
                 $debugInfo[] = 'UserId es null';
-                return ['debug' => $debugInfo];
+                return ['debug' => $debugInfo]; // ESTO ESTÁ BIEN
             }
 
             $debugInfo[] = "UserId: $userId";
 
             $contact = $this->userContactRepository->findUserContactByUserId($userId);
             if (!$contact || !$contact->isConfirmed()) {
-                $debugInfo[] = 'Contact es null o no confirmado';
-                return ['debug' => $debugInfo];
+                return null; // CAMBIA ESTO - debe retornar null, no debug
             }
 
             $vehicleUser = $this->vehicleUserRepository->findVehicleUserByUserId($userId);
-            $debugInfo[] = 'VehicleUser: ' . ($vehicleUser ? 'existe' : 'es null');
 
             $plateValue = null;
             if ($vehicleUser !== null) {
                 $vehicle = $vehicleUser->getVehicle();
-                $debugInfo[] = 'Vehicle: ' . ($vehicle ? 'existe' : 'es null');
                 if ($vehicle !== null) {
                     $plateValue = $vehicle->getLicensePlate();
                 }
