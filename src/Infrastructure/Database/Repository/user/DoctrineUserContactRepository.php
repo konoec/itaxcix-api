@@ -3,7 +3,6 @@
 namespace itaxcix\Infrastructure\Database\Repository\user;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Exception\ORMException;
 use itaxcix\Core\Domain\user\UserContactModel;
 use itaxcix\Core\Interfaces\user\ContactTypeRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserContactRepositoryInterface;
@@ -68,6 +67,8 @@ class DoctrineUserContactRepository implements UserContactRepositoryInterface
             ->andWhere('uc.active = true')
             ->setParameter('typeId', $typeId)
             ->setParameter('userId', $userId)
+            ->orderBy('uc.id', 'DESC')
+            ->setMaxResults(1)
             ->getQuery();
 
         $entity = $query->getOneOrNullResult();
