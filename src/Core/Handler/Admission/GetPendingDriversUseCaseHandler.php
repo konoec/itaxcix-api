@@ -48,25 +48,49 @@ class GetPendingDriversUseCaseHandler implements GetPendingDriversUseCase
         $profiles = $this->driverProfileRepository->findDriversProfilesByStatusId($status->getId(), $offset, $perPage);
 
         $items = array_values(array_filter(array_map(function($profile) {
-            $userId = $profile->getUser()->getId();
+            // Verificar que $profile y $profile->getUser() no sean null
+            if (!$profile || !$profile->getUser()) {
+                error_log('Profile o User es null');
+                return null;
+            }
+
+            $user = $profile->getUser();
+            $userId = $user->getId();
+
+            // Verificar que userId no sea null
+            if (!$userId) {
+                error_log('UserId es null');
+                return null;
+            }
+
             $contact = $this->userContactRepository->findUserContactByUserId($userId);
             if (!$contact || !$contact->isConfirmed()) {
                 return null;
             }
 
             $vehicleUser = $this->vehicleUserRepository->findVehicleUserByUserId($userId);
+            error_log('VehicleUser: ' . ($vehicleUser ? 'existe' : 'es null') . ' para userId: ' . $userId);
+
             $plateValue = null;
             if ($vehicleUser !== null) {
                 $vehicle = $vehicleUser->getVehicle();
+                error_log('Vehicle: ' . ($vehicle ? 'existe' : 'es null'));
                 if ($vehicle !== null) {
                     $plateValue = $vehicle->getLicensePlate();
                 }
             }
 
+            // Verificar que Person no sea null
+            $person = $user->getPerson();
+            if (!$person) {
+                error_log('Person es null para userId: ' . $userId);
+                return null;
+            }
+
             return new PendingDriverResponseDTO(
                 driverId:      $userId,
-                fullName:      $profile->getUser()->getPerson()->getName() . ' ' . $profile->getUser()->getPerson()->getLastName(),
-                documentValue: $profile->getUser()->getPerson()->getDocument(),
+                fullName:      $person->getName() . ' ' . $person->getLastName(),
+                documentValue: $person->getDocument(),
                 plateValue:    $plateValue,
                 contactValue:  $contact->getValue()
             );
