@@ -48,43 +48,50 @@ class GetPendingDriversUseCaseHandler implements GetPendingDriversUseCase
         $profiles = $this->driverProfileRepository->findDriversProfilesByStatusId($status->getId(), $offset, $perPage);
 
         $items = array_values(array_filter(array_map(function($profile) {
-            // Verificar que $profile y $profile->getUser() no sean null
-            if (!$profile || !$profile->getUser()) {
-                error_log('Profile o User es null');
-                return null;
+            // Información de depuración que se incluirá en la respuesta
+            $debugInfo = [];
+
+            if (!$profile) {
+                $debugInfo[] = 'Profile es null';
+                return ['debug' => $debugInfo];
             }
 
             $user = $profile->getUser();
-            $userId = $user->getId();
-
-            // Verificar que userId no sea null
-            if (!$userId) {
-                error_log('UserId es null');
-                return null;
+            if (!$user) {
+                $debugInfo[] = 'User es null';
+                return ['debug' => $debugInfo];
             }
+
+            $userId = $user->getId();
+            if (!$userId) {
+                $debugInfo[] = 'UserId es null';
+                return ['debug' => $debugInfo];
+            }
+
+            $debugInfo[] = "UserId: $userId";
 
             $contact = $this->userContactRepository->findUserContactByUserId($userId);
             if (!$contact || !$contact->isConfirmed()) {
-                return null;
+                $debugInfo[] = 'Contact es null o no confirmado';
+                return ['debug' => $debugInfo];
             }
 
             $vehicleUser = $this->vehicleUserRepository->findVehicleUserByUserId($userId);
-            error_log('VehicleUser: ' . ($vehicleUser ? 'existe' : 'es null') . ' para userId: ' . $userId);
+            $debugInfo[] = 'VehicleUser: ' . ($vehicleUser ? 'existe' : 'es null');
 
             $plateValue = null;
             if ($vehicleUser !== null) {
                 $vehicle = $vehicleUser->getVehicle();
-                error_log('Vehicle: ' . ($vehicle ? 'existe' : 'es null'));
+                $debugInfo[] = 'Vehicle: ' . ($vehicle ? 'existe' : 'es null');
                 if ($vehicle !== null) {
                     $plateValue = $vehicle->getLicensePlate();
                 }
             }
 
-            // Verificar que Person no sea null
             $person = $user->getPerson();
             if (!$person) {
-                error_log('Person es null para userId: ' . $userId);
-                return null;
+                $debugInfo[] = 'Person es null';
+                return ['debug' => $debugInfo];
             }
 
             return new PendingDriverResponseDTO(
