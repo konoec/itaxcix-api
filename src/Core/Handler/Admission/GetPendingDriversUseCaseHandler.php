@@ -47,37 +47,31 @@ class GetPendingDriversUseCaseHandler implements GetPendingDriversUseCase
         $offset  = ($page - 1) * $perPage;
         $profiles = $this->driverProfileRepository->findDriversProfilesByStatusId($status->getId(), $offset, $perPage);
 
-        $items = array_values(array_filter(array_map(function($profile) {
-            // Información de depuración que se incluirá en la respuesta
-            $debugInfo = [];
-
-            if (!$profile) {
-                $debugInfo[] = 'Profile es null';
-                return ['debug' => $debugInfo]; // ESTO ESTÁ BIEN
+        $items = [];
+        foreach ($profiles as $profile) {
+            if (!$profile || !$profile->getUser()) {
+                continue;
             }
 
             $user = $profile->getUser();
-            if (!$user) {
-                $debugInfo[] = 'User es null';
-                return ['debug' => $debugInfo]; // ESTO ESTÁ BIEN
-            }
-
             $userId = $user->getId();
-            if (!$userId) {
-                $debugInfo[] = 'UserId es null';
-                return ['debug' => $debugInfo]; // ESTO ESTÁ BIEN
-            }
 
-            $debugInfo[] = "UserId: $userId";
+            if (!$userId) {
+                continue;
+            }
 
             $contact = $this->userContactRepository->findUserContactByUserId($userId);
             if (!$contact || !$contact->isConfirmed()) {
-                return null; // CAMBIA ESTO - debe retornar null, no debug
+                continue;
             }
 
-            $vehicleUser = $this->vehicleUserRepository->findVehicleUserByUserId($userId);
+            $person = $user->getPerson();
+            if (!$person) {
+                continue;
+            }
 
             $plateValue = null;
+            $vehicleUser = $this->vehicleUserRepository->findVehicleUserByUserId($userId);
             if ($vehicleUser !== null) {
                 $vehicle = $vehicleUser->getVehicle();
                 if ($vehicle !== null) {
@@ -85,20 +79,14 @@ class GetPendingDriversUseCaseHandler implements GetPendingDriversUseCase
                 }
             }
 
-            $person = $user->getPerson();
-            if (!$person) {
-                $debugInfo[] = 'Person es null';
-                return ['debug' => $debugInfo];
-            }
-
-            return new PendingDriverResponseDTO(
+            $items[] = new PendingDriverResponseDTO(
                 driverId:      $userId,
                 fullName:      $person->getName() . ' ' . $person->getLastName(),
                 documentValue: $person->getDocument(),
                 plateValue:    $plateValue,
                 contactValue:  $contact->getValue()
             );
-        }, $profiles)));
+        }
 
         $lastPage = (int) ceil($total / $perPage);
         $meta     = new PaginationMetaDTO(total: $total, perPage: $perPage, currentPage: $page, lastPage: $lastPage);
