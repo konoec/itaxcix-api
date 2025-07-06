@@ -78,7 +78,7 @@ class VerifyEmailChangeUseCaseHandler implements VerifyEmailChangeUseCase
         $this->userCodeRepository->saveUserCode($userCode);
 
         // Desactivar el contacto anterior si existe
-        $previousContact = $this->userContactRepository->findUserContactByUserIdAndContactTypeId(
+        $previousContact = $this->userContactRepository->findConfirmedContactByUserAndType(
             $user->getId(),
             $contactType->getId()
         );
