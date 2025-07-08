@@ -20,6 +20,9 @@ services:
     container_name: itaxcix-php
     volumes:
       - uploads_data:/var/www/html/uploads
+      - .:/var/www/html:delegated
+      - /var/www/html/vendor
+      - /var/www/html/node_modules
     environment:
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
@@ -50,7 +53,8 @@ services:
       context: .
       dockerfile: Dockerfile.websocket
     container_name: itaxcix-ws
-    volumes: []
+    volumes:
+      - ./websocket:/app:delegated
     environment:
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
