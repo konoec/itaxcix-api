@@ -222,17 +222,6 @@ class DoctrineCompanyRepository implements CompanyRepositoryInterface {
             $qb->andWhere('c.active = :active')
                ->setParameter('active', $filters['active']);
         }
-
-        // Filtros de fecha (asumiendo que la entidad tiene campos de fecha)
-        if (isset($filters['createdFrom'])) {
-            $qb->andWhere('DATE(c.createdAt) >= :createdFrom')
-               ->setParameter('createdFrom', $filters['createdFrom']);
-        }
-
-        if (isset($filters['createdTo'])) {
-            $qb->andWhere('DATE(c.createdAt) <= :createdTo')
-               ->setParameter('createdTo', $filters['createdTo']);
-        }
     }
 
     /**
@@ -248,11 +237,10 @@ class DoctrineCompanyRepository implements CompanyRepositoryInterface {
             'id' => 'c.id',
             'ruc' => 'c.ruc',
             'name' => 'c.name',
-            'active' => 'c.active',
-            'created_at' => 'c.createdAt'
+            'active' => 'c.active'
         ];
 
-        if (isset($fieldMapping[$sortBy])) {
+        if ($sortBy && isset($fieldMapping[$sortBy])) {
             $qb->orderBy($fieldMapping[$sortBy], $sortDirection);
 
             // Ordenamiento secundario para consistencia
@@ -332,4 +320,3 @@ class DoctrineCompanyRepository implements CompanyRepositoryInterface {
         return (int) $qb->getQuery()->getSingleScalarResult();
     }
 }
-

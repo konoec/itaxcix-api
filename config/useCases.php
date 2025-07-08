@@ -306,6 +306,7 @@ use itaxcix\Core\UseCases\VehicleClass\VehicleClassDeleteUseCase;
 use itaxcix\Core\UseCases\VehicleClass\VehicleClassListUseCase;
 use itaxcix\Core\UseCases\VehicleClass\VehicleClassUpdateUseCase;
 use itaxcix\Core\UseCases\VehicleReport\VehicleReportUseCase;
+use itaxcix\Shared\Validators\Admin\User\CreateAdminUserValidator;
 use itaxcix\Shared\Validators\useCases\AuditLog\AuditLogValidator;
 use itaxcix\Shared\Validators\useCases\Brand\BrandValidator;
 use itaxcix\Shared\Validators\useCases\Department\DepartmentValidator;
@@ -684,7 +685,7 @@ return array(
 
     UserCodeTypeValidator::class => autowire(UserCodeTypeValidator::class),
 
-    TravelReportUseCase::class => autowire(),
+    TravelReportUseCase::class => autowire(TravelReportUseCaseHandler::class),
     TravelReportValidator::class => autowire(TravelReportValidator::class),
 
     UserReportUseCase::class => autowire(),
@@ -701,4 +702,6 @@ return array(
 
     AuditLogUseCase::class => autowire(),
     AuditLogValidator::class => autowire(AuditLogValidator::class),
+
+    CreateAdminUserValidator::class => autowire(CreateAdminUserValidator::class),
 );

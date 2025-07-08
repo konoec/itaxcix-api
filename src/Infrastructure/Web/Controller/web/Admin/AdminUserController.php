@@ -18,6 +18,7 @@ use itaxcix\Shared\DTO\Admin\User\ChangeUserStatusRequestDTO;
 use itaxcix\Shared\DTO\Admin\User\ForceVerifyContactRequestDTO;
 use itaxcix\Shared\DTO\Admin\User\ResetUserPasswordRequestDTO;
 use itaxcix\Shared\DTO\Admin\User\CreateAdminUserRequestDTO;
+use itaxcix\Shared\Validators\Admin\User\CreateAdminUserValidator;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -35,6 +36,7 @@ class AdminUserController extends AbstractController
     private ResetUserPasswordUseCase $resetUserPasswordUseCase;
     private UpdateUserRolesUseCase $updateUserRolesUseCase;
     private CreateAdminUserUseCase $createAdminUserUseCase;
+    private CreateAdminUserValidator $createAdminUserValidator;
 
     public function __construct(
         GetUserWithRolesUseCase $getUserWithRolesUseCase,
@@ -44,7 +46,8 @@ class AdminUserController extends AbstractController
         ForceVerifyContactUseCase $forceVerifyContactUseCase,
         ResetUserPasswordUseCase $resetUserPasswordUseCase,
         UpdateUserRolesUseCase $updateUserRolesUseCase,
-        CreateAdminUserUseCase $createAdminUserUseCase
+        CreateAdminUserUseCase $createAdminUserUseCase,
+        CreateAdminUserValidator $createAdminUserValidator
     ) {
         $this->getUserWithRolesUseCase = $getUserWithRolesUseCase;
         $this->adminUserListUseCase = $adminUserListUseCase;
@@ -54,6 +57,7 @@ class AdminUserController extends AbstractController
         $this->resetUserPasswordUseCase = $resetUserPasswordUseCase;
         $this->updateUserRolesUseCase = $updateUserRolesUseCase;
         $this->createAdminUserUseCase = $createAdminUserUseCase;
+        $this->createAdminUserValidator = $createAdminUserValidator;
     }
 
     #[OA\Get(
@@ -541,8 +545,8 @@ class AdminUserController extends AbstractController
                             property: "user",
                             properties: [
                                 new OA\Property(property: "id", type: "integer", example: 1),
-                                new OA\Property(property: "firstName", type: "string", example: "JUAN", description: "Nombre obtenido automáticamente de la fake API"),
-                                new OA\Property(property: "lastName", type: "string", example: "PEREZ GONZALES", description: "Apellido obtenido automáticamente de la fake API"),
+                                new OA\Property(property: "firstName", description: "Nombre obtenido automáticamente de la fake API", type: "string", example: "JUAN"),
+                                new OA\Property(property: "lastName", description: "Apellido obtenido automáticamente de la fake API", type: "string", example: "PEREZ GONZALES"),
                                 new OA\Property(property: "document", type: "string", example: "12345678"),
                                 new OA\Property(property: "email", type: "string", example: "admin@itaxcix.com"),
                                 new OA\Property(property: "role", type: "string", example: "ADMINISTRADOR"),
@@ -572,13 +576,17 @@ class AdminUserController extends AbstractController
         try {
             $data = $this->getJsonBody($request);
 
-            $requestDTO = new CreateAdminUserRequestDTO(
-                document: $data['document'],
-                email: $data['email'],
-                password: $data['password'],
-                area: $data['area'],
-                position: $data['position']
-            );
+            // Validar los datos antes de crear el DTO
+            $validationErrors = $this->createAdminUserValidator->validate($data);
+            if (!empty($validationErrors)) {
+                return $this->badRequest([
+                    'message' => 'Errores de validación',
+                    'errors' => $validationErrors
+                ]);
+            }
+
+            // Crear el DTO usando el validador
+            $requestDTO = $this->createAdminUserValidator->createDTO($data);
 
             $response = $this->createAdminUserUseCase->execute($requestDTO);
             return $this->created($response);

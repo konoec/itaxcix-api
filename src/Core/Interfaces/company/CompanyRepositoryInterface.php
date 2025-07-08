@@ -4,6 +4,7 @@ namespace itaxcix\Core\Interfaces\company;
 
 use itaxcix\Core\Domain\company\CompanyModel;
 use itaxcix\Shared\DTO\useCases\Company\CompanyPaginationRequestDTO;
+use itaxcix\Shared\DTO\generic\PaginationResponseDTO;
 
 interface CompanyRepositoryInterface
 {
@@ -14,4 +15,5 @@ interface CompanyRepositoryInterface
     public function delete(int $id): bool;
     public function existsByRuc(string $ruc, ?int $excludeId = null): bool;
     public function count(CompanyPaginationRequestDTO $request): int;
+    public function findCompaniesPaginatedWithFilters(CompanyPaginationRequestDTO $dto): PaginationResponseDTO;
 }

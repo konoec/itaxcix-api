@@ -97,7 +97,18 @@ class CompanyController extends AbstractController
         $search = isset($queryParams['search']) && $queryParams['search'] !== '' ? trim((string)$queryParams['search']) : null;
         $ruc = isset($queryParams['ruc']) && $queryParams['ruc'] !== '' ? trim((string)$queryParams['ruc']) : null;
         $name = isset($queryParams['name']) && $queryParams['name'] !== '' ? trim((string)$queryParams['name']) : null;
-        $active = isset($queryParams['active']) ? filter_var($queryParams['active'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) : null;
+
+        // Mejorar el manejo del parámetro active
+        $active = null;
+        if (isset($queryParams['active']) && $queryParams['active'] !== '') {
+            $activeValue = strtolower(trim((string)$queryParams['active']));
+            if (in_array($activeValue, ['true', '1', 'yes', 'on'])) {
+                $active = true;
+            } elseif (in_array($activeValue, ['false', '0', 'no', 'off'])) {
+                $active = false;
+            }
+        }
+
         $sortBy = isset($queryParams['sortBy']) && $queryParams['sortBy'] !== '' ? (string)$queryParams['sortBy'] : null;
         $sortDirection = strtolower((string)($queryParams['sortDirection'] ?? 'asc'));
 

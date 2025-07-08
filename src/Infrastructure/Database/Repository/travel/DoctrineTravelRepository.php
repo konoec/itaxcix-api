@@ -15,6 +15,7 @@ use itaxcix\Infrastructure\Database\Entity\location\CoordinatesEntity;
 use itaxcix\Infrastructure\Database\Entity\travel\TravelEntity;
 use itaxcix\Infrastructure\Database\Entity\travel\TravelStatusEntity;
 use itaxcix\Infrastructure\Database\Entity\user\UserEntity;
+use itaxcix\Shared\DTO\useCases\TravelReport\TravelReportRequestDTO;
 
 class DoctrineTravelRepository implements TravelRepositoryInterface
 {
@@ -143,7 +144,7 @@ class DoctrineTravelRepository implements TravelRepositoryInterface
         return (int) $query->getSingleScalarResult();
     }
 
-    public function findReport(\itaxcix\Shared\DTO\useCases\TravelReport\TravelReportRequestDTO $dto): array
+    public function findReport(TravelReportRequestDTO $dto): array
     {
         $qb = $this->entityManager->createQueryBuilder()
             ->select('t, citizen, driver, origin, destination, status')
@@ -208,45 +209,63 @@ class DoctrineTravelRepository implements TravelRepositoryInterface
         return $result;
     }
 
-    public function countReport(\itaxcix\Shared\DTO\useCases\TravelReport\TravelReportRequestDTO $dto): int
+    private function applyFilters(QueryBuilder $qb, TravelReportRequestDTO $dto): void
     {
-        $qb = $this->entityManager->createQueryBuilder()
-            ->select('COUNT(t.id)')
-            ->from(TravelEntity::class, 't')
-            ->leftJoin('t.citizen', 'citizen')
-            ->leftJoin('t.driver', 'driver')
-            ->leftJoin('t.origin', 'origin')
-            ->leftJoin('t.destination', 'destination')
-            ->leftJoin('t.status', 'status');
-
+        // Filtro por fecha de inicio
         if ($dto->startDate) {
-            $qb->andWhere('t.startDate >= :startDate')
-                ->setParameter('startDate', $dto->startDate . ' 00:00:00');
+            $qb->andWhere('DATE(t.creationDate) >= :startDate')
+               ->setParameter('startDate', $dto->startDate);
         }
+
+        // Filtro por fecha de fin
         if ($dto->endDate) {
-            $qb->andWhere('t.endDate <= :endDate')
-                ->setParameter('endDate', $dto->endDate . ' 23:59:59');
+            $qb->andWhere('DATE(t.creationDate) <= :endDate')
+               ->setParameter('endDate', $dto->endDate);
         }
+
+        // Filtro por ID de ciudadano
         if ($dto->citizenId) {
-            $qb->andWhere('citizen.id = :citizenId')
-                ->setParameter('citizenId', $dto->citizenId);
+            $qb->andWhere('c.id = :citizenId')
+               ->setParameter('citizenId', $dto->citizenId);
         }
+
+        // Filtro por ID de conductor
         if ($dto->driverId) {
-            $qb->andWhere('driver.id = :driverId')
-                ->setParameter('driverId', $dto->driverId);
+            $qb->andWhere('d.id = :driverId')
+               ->setParameter('driverId', $dto->driverId);
         }
+
+        // Filtro por ID de estado
         if ($dto->statusId) {
-            $qb->andWhere('status.id = :statusId')
-                ->setParameter('statusId', $dto->statusId);
+            $qb->andWhere('ts.id = :statusId')
+               ->setParameter('statusId', $dto->statusId);
         }
+
+        // Filtro por origen (búsqueda parcial)
         if ($dto->origin) {
-            $qb->andWhere('origin.name LIKE :origin')
-                ->setParameter('origin', '%' . $dto->origin . '%');
+            $qb->andWhere('co.address LIKE :origin')
+               ->setParameter('origin', '%' . $dto->origin . '%');
         }
+
+        // Filtro por destino (búsqueda parcial)
         if ($dto->destination) {
-            $qb->andWhere('destination.name LIKE :destination')
-                ->setParameter('destination', '%' . $dto->destination . '%');
+            $qb->andWhere('cd.address LIKE :destination')
+               ->setParameter('destination', '%' . $dto->destination . '%');
         }
-        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    private function applyOrdering(QueryBuilder $qb, TravelReportRequestDTO $dto): void
+    {
+        $sortMapping = [
+            'creationDate' => 't.creationDate',
+            'startDate' => 't.startDate',
+            'endDate' => 't.endDate',
+            'citizenId' => 'c.id',
+            'driverId' => 'd.id',
+            'statusId' => 'ts.id'
+        ];
+
+        $sortField = $sortMapping[$dto->sortBy] ?? 't.creationDate';
+        $qb->orderBy($sortField, $dto->sortDirection);
     }
 }

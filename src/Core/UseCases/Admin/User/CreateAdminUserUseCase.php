@@ -68,49 +68,46 @@ class CreateAdminUserUseCase
 
     public function execute(CreateAdminUserRequestDTO $request): array
     {
-        // 1. VALIDACIONES PREVIAS (sin crear nada en DB)
-        $this->validateRequest($request);
-
-        // 2. Validar que el tipo de documento DNI existe
+        // 1. Validar que el tipo de documento DNI existe
         $documentType = $this->documentTypeRepository->findDocumentTypeByName('DNI');
         if (!$documentType) {
             throw new InvalidArgumentException("Tipo de documento DNI no encontrado en el sistema");
         }
 
-        // 3. Verificar que no existe usuario con ese documento
+        // 2. Verificar que no existe usuario con ese documento
         $existingUser = $this->userRepository->findUserByPersonDocument($request->document);
         if ($existingUser) {
             throw new InvalidArgumentException("Ya existe un usuario con el documento {$request->document}");
         }
 
-        // 4. Verificar que no existe contacto con ese email
+        // 3. Verificar que no existe contacto con ese email
         $existingContact = $this->userContactRepository->findAllUserContactByValue($request->email);
         if ($existingContact) {
             throw new InvalidArgumentException("Ya existe un usuario con el email {$request->email}");
         }
 
-        // 5. Validar que existe estado ACTIVO para usuarios
+        // 4. Validar que existe estado ACTIVO para usuarios
         $activeStatus = $this->userStatusRepository->findUserStatusByName('ACTIVO');
         if (!$activeStatus) {
             throw new InvalidArgumentException("Estado ACTIVO no encontrado en el sistema");
         }
 
-        // 6. Validar que existe tipo de contacto EMAIL
+        // 5. Validar que existe tipo de contacto EMAIL
         $emailContactType = $this->contactTypeRepository->findContactTypeByName('CORREO ELECTRÓNICO');
         if (!$emailContactType) {
             throw new InvalidArgumentException("Tipo de contacto CORREO ELECTRÓNICO no encontrado");
         }
 
-        // 7. Validar que existe rol ADMINISTRADOR para web
+        // 6. Validar que existe rol ADMINISTRADOR para web
         $adminRole = $this->roleRepository->findRoleByName('ADMINISTRADOR');
         if (!$adminRole || !$adminRole->isWeb() || !$adminRole->isActive()) {
             throw new InvalidArgumentException("Rol ADMINISTRADOR web no encontrado o no está activo");
         }
 
-        // 8. Obtener nombre y apellido desde fake API
+        // 7. Obtener nombre y apellido desde fake API
         $personData = $this->fakeReniecApi($request->document);
 
-        // 9. INICIAR CREACIÓN DE ENTIDADES (todo validado)
+        // 8. INICIAR CREACIÓN DE ENTIDADES (todo validado)
         // Crear directamente el modelo de dominio PersonModel
         $personModel = new \itaxcix\Core\Domain\person\PersonModel(
             id: null, // ID será asignado por la base de datos
@@ -182,62 +179,6 @@ class CreateAdminUserUseCase
                 'position' => $savedAdminProfileModel->getPosition()
             ]
         ];
-    }
-
-    private function validateRequest(CreateAdminUserRequestDTO $request): void
-    {
-        // Validar campos requeridos
-        if (empty(trim($request->document))) {
-            throw new InvalidArgumentException("El documento es requerido");
-        }
-
-        if (empty(trim($request->email))) {
-            throw new InvalidArgumentException("El email es requerido");
-        }
-
-        if (empty(trim($request->password))) {
-            throw new InvalidArgumentException("La contraseña es requerida");
-        }
-
-        if (empty(trim($request->area))) {
-            throw new InvalidArgumentException("El área es requerida");
-        }
-
-        if (empty(trim($request->position))) {
-            throw new InvalidArgumentException("El cargo es requerido");
-        }
-
-        // Validar formato de email
-        if (!filter_var($request->email, FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidArgumentException("El formato del email es inválido");
-        }
-
-        // Validar longitud de contraseña
-        if (strlen($request->password) < 8) {
-            throw new InvalidArgumentException("La contraseña debe tener al menos 8 caracteres");
-        }
-
-        // Validar que la contraseña tenga al menos una mayúscula, una minúscula y un número
-        if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/', $request->password)) {
-            throw new InvalidArgumentException("La contraseña debe contener al menos una mayúscula, una minúscula y un número");
-        }
-
-        // Validar longitud de campos
-        if (strlen($request->document) > 20) {
-            throw new InvalidArgumentException("El documento no puede superar los 20 caracteres");
-        }
-
-        if (strlen($request->email) > 100) {
-            throw new InvalidArgumentException("El email no puede superar los 100 caracteres");
-        }
-
-        if (strlen($request->area) > 100) {
-            throw new InvalidArgumentException("El área no puede superar los 100 caracteres");
-        }
-
-        if (strlen($request->position) > 100) {
-            throw new InvalidArgumentException("El cargo no puede superar los 100 caracteres");
-        }
     }
 
     private function fakeReniecApi(string $documentValue): array

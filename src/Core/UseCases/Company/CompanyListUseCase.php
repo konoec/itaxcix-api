@@ -16,8 +16,8 @@ class CompanyListUseCase
 
     public function execute(CompanyPaginationRequestDTO $request): array
     {
-        $companies = $this->repository->findAll($request);
-        $total = $this->repository->count($request);
+        // Usar el método que maneja filtros y paginación
+        $paginationResponse = $this->repository->findCompaniesPaginatedWithFilters($request);
 
         return [
             'items' => array_map(fn($company) => [
@@ -25,12 +25,18 @@ class CompanyListUseCase
                 'ruc' => $company->getRuc(),
                 'name' => $company->getName(),
                 'active' => $company->isActive()
-            ], $companies),
+            ], $paginationResponse->items),
             'pagination' => [
-                'page' => $request->getPage(),
-                'perPage' => $request->getPerPage(),
-                'total' => $total,
-                'totalPages' => ceil($total / $request->getPerPage())
+                'page' => $paginationResponse->meta->currentPage,
+                'perPage' => $paginationResponse->meta->perPage,
+                'total' => $paginationResponse->meta->total,
+                'totalPages' => $paginationResponse->meta->lastPage
+            ],
+            'search' => $paginationResponse->meta->search,
+            'filters' => $paginationResponse->meta->filters,
+            'sorting' => [
+                'sortBy' => $paginationResponse->meta->sortBy,
+                'sortDirection' => $paginationResponse->meta->sortDirection
             ]
         ];
     }

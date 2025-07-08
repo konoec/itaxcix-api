@@ -45,10 +45,11 @@ class DoctrineRolePermissionRepository implements RolePermissionRepositoryInterf
             ->andWhere('rp.active = :active')
             ->setParameter('id', $id)
             ->setParameter('active', true)
+            ->setMaxResults(1)
             ->getQuery();
 
-        $entity = $query->getOneOrNullResult();
-        return $entity ? $this->toDomain($entity) : null;
+        $results = $query->getResult();
+        return !empty($results) ? $this->toDomain($results[0]) : null;
     }
 
     public function findByRoleAndPermission(int $roleId, int $permissionId): ?RolePermissionModel
@@ -62,10 +63,12 @@ class DoctrineRolePermissionRepository implements RolePermissionRepositoryInterf
             ->setParameter('roleId', $roleId)
             ->setParameter('permissionId', $permissionId)
             ->setParameter('active', true)
+            ->orderBy('rp.id', 'DESC')
+            ->setMaxResults(1)
             ->getQuery();
 
-        $entity = $query->getOneOrNullResult();
-        return $entity ? $this->toDomain($entity) : null;
+        $results = $query->getResult();
+        return !empty($results) ? $this->toDomain($results[0]) : null;
     }
 
     public function findAllRolePermissions(): array

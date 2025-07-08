@@ -42,10 +42,12 @@ class DoctrineRoleRepository implements RoleRepositoryInterface
             ->andWhere('r.active = :active')
             ->setParameter('name', $name)
             ->setParameter('active', true)
+            ->orderBy('r.id', 'DESC')
+            ->setMaxResults(1)
             ->getQuery();
 
-        $entity = $query->getOneOrNullResult();
-        return $entity ? $this->toDomain($entity) : null;
+        $results = $query->getResult();
+        return !empty($results) ? $this->toDomain($results[0]) : null;
     }
 
     public function findRoleById(int $id): ?RoleModel
