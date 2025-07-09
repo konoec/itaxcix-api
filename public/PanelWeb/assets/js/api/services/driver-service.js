@@ -77,7 +77,11 @@ class ConductorService {
             console.log(`🔍 Solicitando conductores: page=${page}, perPage=${perPage}`);
             const url = `${this.apiUrl}/drivers/pending?page=${page}&perPage=${perPage}`;
             console.log(`📡 URL completa: ${url}`);
+            
             const token = sessionStorage.getItem('authToken');
+            console.log(`🔑 Token presente: ${token ? 'Sí' : 'No'}`);
+            console.log(`🔑 Token (primeros 20 chars): ${token ? token.substring(0, 20) + '...' : 'N/A'}`);
+            
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
@@ -86,6 +90,8 @@ class ConductorService {
                 }
             });
 
+            console.log(`📡 Status de respuesta HTTP: ${response.status}`);
+            
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error('Respuesta de error:', errorText);

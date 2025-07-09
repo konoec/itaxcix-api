@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Configuración básica del documento -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Configuración de caché para prevenir almacenamiento de datos sensibles -->
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../../assets/Recourse/Logo/1.png">
+    <link rel="shortcut icon" href="../../assets/Recourse/Logo/1.png">
+    
+    <title>Panel de Administración - Centro de Ayuda</title>
+    
+    <!-- Tabler CSS Framework -->
+    <link rel="stylesheet" href="../../assets/tabler/css/tabler.min.css">
+    <link rel="stylesheet" href="../../assets/tabler/css/tabler-vendors.min.css">
+    <link rel="stylesheet" href="../../assets/css/global-toast.css">
+    <link rel="stylesheet" href="../../assets/css/sidebar.css">
+    <link rel="stylesheet" href="../../assets/css/topbar.css">
+    <link rel="stylesheet" href="../../assets/css/profile.css">
+    <link rel="stylesheet" href="../../assets/css/confirmation-modal.css">
+    
+    <!-- Font Awesome para iconografía -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Configuración de la página -->
+    <script>
+        window.pageConfig = {
+            activeSection: 'configuracion',
+            pageTitle: {
+                icon: 'fas fa-question-circle',
+                text: 'Centro de Ayuda'
+            }
+        };
+    </script>
+</head>
+<body>
+    <!-- Contenedor principal del layout usando estructura Tabler -->
+    <div class="page">
+        <!-- Contenedor del sidebar - se carga dinámicamente -->
+        <div id="sidebar-container"></div>
+
+        <!-- Contenido principal usando estructura Tabler -->
+        <div class="page-wrapper">
+            <!-- Contenedor del topbar - se carga dinámicamente -->
+            <div id="topbar-container"></div>
+            
+            <!-- Contenido principal de la página -->
+            <div class="page-body">
+                <div class="container-xl">
+                    <!-- Configuración de Centro de Ayuda -->
+                    <div class="card" id="card-emergencia">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-question-circle me-2"></i>
+                                Centro de Ayuda - Configuración de Contacto
+                            </h3>
+                        </div>
+                        <form id="emergency-inline-form">
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label" for="emergencia">Número de emergencia:</label>
+                                    <input type="tel" class="form-control" id="emergencia" name="emergencia" 
+                                           placeholder="Ej: +51911111111" maxlength="15" required>
+                                    <div class="form-text">Número de contacto para emergencias críticas</div>
+                                    <div class="invalid-feedback" id="emergency-inline-message"></div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-end">
+                                <button type="button" class="btn btn-secondary me-2 btn-cancel" id="cancel-inline-emergency">Cancelar</button>
+                                <button type="submit" class="btn btn-primary btn-save">
+                                    <i class="fas fa-save me-1"></i>
+                                    Guardar Configuración
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor para modales dinámicos -->
+    <div id="modal-container"></div>
+
+    <!-- Modal para mostrar perfil del usuario -->
+    <div id="profile-modal" class="admin-profile-modal">
+        <div class="admin-profile-content">
+            <h2>
+                Mi Perfil
+                <span class="close-modal" id="close-profile-modal">&times;</span>
+            </h2>
+            
+            <!-- Contenido del modal -->
+            <div class="admin-profile-details">
+                <!-- Perfil del usuario -->
+                <div class="admin-profile-header">
+                    <div class="avatar-large">
+                        <img id="profile-modal-avatar" src="" alt="Foto de perfil">
+                        <div class="avatar-overlay" id="avatar-overlay">
+                            <button class="change-photo-btn" id="change-photo-btn" title="Cambiar foto">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
+                        <input type="file" id="photo-input" accept="image/*" style="display: none;">
+                    </div>
+                    
+                    <div class="admin-profile-header-info">
+                        <h3 id="profile-modal-name">Nombre del Usuario</h3>
+                    </div>
+                </div>
+                
+                <!-- Información detallada del usuario -->
+                <div class="admin-profile-info">
+                    <div class="info-item">
+                        <label>Nombre:</label>
+                        <span id="profile-modal-firstname">No disponible</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Apellido:</label>
+                        <span id="profile-modal-lastname">No disponible</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Tipo de Documento:</label>
+                        <span id="profile-modal-doctype">No disponible</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Documento:</label>
+                        <span id="profile-modal-document">No disponible</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Área:</label>
+                        <span id="profile-modal-area">No disponible</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Cargo:</label>
+                        <span id="profile-modal-position">No disponible</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Correo Electrónico:</label>
+                        <span id="profile-modal-email">No disponible</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Celular:</label>
+                        <span id="profile-modal-phone">No disponible</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sistema de notificaciones toast -->
+    <div id="toast" class="toast">
+        <div id="toast-message">Configuration saved successfully</div>
+    </div>
+
+    <!-- Toast notification for profile operations (mismo estilo que recuperación de contraseña) -->
+    <div id="recovery-toast" class="recovery-toast">
+        <div class="recovery-toast-content">
+            <i class="fas fa-check-circle"></i>
+            <span id="recovery-toast-message">Configuración guardada exitosamente</span>
+        </div>
+    </div>
+
+    <!-- Carga de scripts en orden específico para manejar dependencias -->
+    <!-- 1. Framework Tabler -->
+    <script src="../../assets/tabler/js/tabler.min.js"></script>
+    
+    <!-- 2. Inicializador global -->
+    <script src="../../assets/js/global-initializer.js"></script>
+    <script src="../../assets/js/auth/auth-checker.js"></script>
+    <script src="../../assets/js/auth/permissions.js"></script>
+    <script src="../../assets/js/auth/route-guard.js"></script>
+
+    <!-- 3. Servicios de API -->
+    <script src="../../assets/js/api/services/profile-service.js"></script>
+    <script src="../../assets/js/api/services/Configuration/user-service.js"></script>
+    <script src="../../assets/js/api/services/Configuration/help-center-service.js"></script>
+    
+    <!-- 4. UI y controladores -->
+    <script src="../../assets/js/ui/component-loader.js"></script>
+    <script src="../../assets/js/ui/global-toast.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Configuration/emergency-contact-controller.js"></script>
+    
+    <!-- 5. Inicializadores específicos -->
+    <script src="../../assets/js/ui/initializers/Configuration/help-center-initializer.js"></script>
+</body>
+</html>

@@ -7,7 +7,8 @@ class Conductor {
         this.documentValue = data.documentValue;
         this.plateValue = data.plateValue;
         this.contactValue = data.contactValue;
-        this.avatarUrl = data.avatarUrl;
+        // Manejar tanto avatarUrl como profilePictureUrl para compatibilidad
+        this.avatarUrl = data.avatarUrl || data.profilePictureUrl;
         
         // Datos adicionales del TUC (Tarjeta Única de Circulación)
         this.rucCompany = data.rucCompany;
@@ -16,6 +17,12 @@ class Conductor {
         this.tucModality = data.tucModality;
         this.tucType = data.tucType;
         this.tucStatus = data.tucStatus;
+        
+        // Campos adicionales para datos de prueba
+        this.firstName = data.firstName;
+        this.lastName = data.lastName;
+        this.registrationDate = data.registrationDate;
+        this.lastUpdateDate = data.lastUpdateDate;
     }
 
     // Método para obtener el nombre completo (ya viene completo de la API)

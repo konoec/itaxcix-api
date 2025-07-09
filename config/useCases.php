@@ -99,8 +99,13 @@ use itaxcix\Core\Handler\Travel\RespondToTravelRequestUseCaseHandler;
 use itaxcix\Core\Handler\Travel\StartAcceptedTravelUseCaseHandler;
 use itaxcix\Core\Handler\Rating\GetUserRatingsCommentsUseCaseHandler;
 use itaxcix\Core\Handler\TravelReport\TravelReportUseCaseHandler;
+use itaxcix\Core\Handler\TravelStatus\TravelStatusCreateUseCaseHandler;
+use itaxcix\Core\Handler\TravelStatus\TravelStatusDeleteUseCaseHandler;
+use itaxcix\Core\Handler\TravelStatus\TravelStatusListUseCaseHandler;
+use itaxcix\Core\Handler\TravelStatus\TravelStatusUpdateUseCaseHandler;
 use itaxcix\Core\Handler\TucModality\TucModalityCreateUseCaseHandler;
 use itaxcix\Core\Handler\TucModality\TucModalityDeleteUseCaseHandler;
+use itaxcix\Core\Handler\TucModality\TucModalityListUseCaseHandler;
 use itaxcix\Core\Handler\TucModality\TucModalityUpdateUseCaseHandler;
 use itaxcix\Core\Handler\TucStatus\TucStatusCreateUseCaseHandler;
 use itaxcix\Core\Handler\TucStatus\TucStatusDeleteUseCaseHandler;
@@ -484,22 +489,37 @@ return array(
     CompanyValidator::class => autowire(CompanyValidator::class),
 
     // Configuration Use Cases
-    ConfigurationListUseCase::class => autowire(ConfigurationListUseCaseHandler::class),
-    ConfigurationCreateUseCase::class => autowire(ConfigurationCreateUseCaseHandler::class),
-    ConfigurationUpdateUseCase::class => autowire(ConfigurationUpdateUseCaseHandler::class),
-    ConfigurationDeleteUseCase::class => autowire(ConfigurationDeleteUseCaseHandler::class),
+    ConfigurationListUseCase::class => autowire(ConfigurationListUseCase::class),
+    ConfigurationCreateUseCase::class => autowire(ConfigurationListUseCase::class),
+    ConfigurationUpdateUseCase::class => autowire(ConfigurationListUseCase::class),
+    ConfigurationDeleteUseCase::class => autowire(ConfigurationListUseCase::class),
+
+    ConfigurationListUseCaseHandler::class => autowire(ConfigurationListUseCaseHandler::class),
+    ConfigurationCreateUseCaseHandler::class => autowire(ConfigurationCreateUseCaseHandler::class),
+    ConfigurationUpdateUseCaseHandler::class => autowire(ConfigurationUpdateUseCaseHandler::class),
+    ConfigurationDeleteUseCaseHandler::class => autowire(ConfigurationDeleteUseCaseHandler::class),
 
     // ContactType Use Cases
-    ContactTypeListUseCase::class => autowire(ContactTypeListUseCaseHandler::class),
-    ContactTypeCreateUseCase::class => autowire(ContactTypeCreateUseCaseHandler::class),
-    ContactTypeUpdateUseCase::class => autowire(ContactTypeUpdateUseCaseHandler::class),
-    ContactTypeDeleteUseCase::class => autowire(ContactTypeDeleteUseCaseHandler::class),
+    ContactTypeListUseCase::class => autowire(ContactTypeListUseCase::class),
+    ContactTypeCreateUseCase::class => autowire(ContactTypeCreateUseCase::class),
+    ContactTypeUpdateUseCase::class => autowire(ContactTypeUpdateUseCase::class),
+    ContactTypeDeleteUseCase::class => autowire(ContactTypeDeleteUseCase::class),
+
+    ContactTypeCreateUseCaseHandler::class => autowire(ContactTypeCreateUseCaseHandler::class),
+    ContactTypeUpdateUseCaseHandler::class => autowire(ContactTypeUpdateUseCaseHandler::class),
+    ContactTypeDeleteUseCaseHandler::class => autowire(ContactTypeDeleteUseCaseHandler::class),
+    ContactTypeListUseCaseHandler::class => autowire(ContactTypeListUseCaseHandler::class),
 
     // DocumentType Use Cases
-    DocumentTypeListUseCase::class => autowire(DocumentTypeListUseCaseHandler::class),
-    DocumentTypeCreateUseCase::class => autowire(DocumentTypeCreateUseCaseHandler::class),
-    DocumentTypeUpdateUseCase::class => autowire(DocumentTypeUpdateUseCaseHandler::class),
-    DocumentTypeDeleteUseCase::class => autowire(DocumentTypeDeleteUseCaseHandler::class),
+    DocumentTypeListUseCase::class => autowire(DocumentTypeListUseCase::class),
+    DocumentTypeCreateUseCase::class => autowire(DocumentTypeCreateUseCase::class),
+    DocumentTypeUpdateUseCase::class => autowire(DocumentTypeUpdateUseCase::class),
+    DocumentTypeDeleteUseCase::class => autowire(DocumentTypeDeleteUseCase::class),
+
+    DocumentTypeCreateUseCaseHandler::class => autowire(DocumentTypeCreateUseCaseHandler::class),
+    DocumentTypeUpdateUseCaseHandler::class => autowire(DocumentTypeUpdateUseCaseHandler::class),
+    DocumentTypeListUseCaseHandler::class => autowire(DocumentTypeListUseCaseHandler::class),
+    DocumentTypeDeleteUseCaseHandler::class => autowire(DocumentTypeDeleteUseCaseHandler::class),
 
     DocumentTypeValidator::class => autowire(DocumentTypeValidator::class),
 
@@ -534,121 +554,196 @@ return array(
     CreateAdminUserUseCase::class => autowire(),
 
     // UserStatus Use Cases
-    UserStatusListUseCase::class => autowire(UserStatusListUseCaseHandler::class),
-    UserStatusCreateUseCase::class => autowire(UserStatusCreateUseCaseHandler::class),
-    UserStatusUpdateUseCase::class => autowire(UserStatusUpdateUseCaseHandler::class),
-    UserStatusDeleteUseCase::class => autowire(UserStatusDeleteUseCaseHandler::class),
+    UserStatusListUseCase::class => autowire(UserStatusListUseCase::class),
+    UserStatusCreateUseCase::class => autowire(UserStatusListUseCase::class),
+    UserStatusUpdateUseCase::class => autowire(UserStatusListUseCase::class),
+    UserStatusDeleteUseCase::class => autowire(UserStatusListUseCase::class),
+
+    UserStatusListUseCaseHandler::class => autowire(UserStatusListUseCaseHandler::class),
+    UserStatusCreateUseCaseHandler::class => autowire(UserStatusCreateUseCaseHandler::class),
+    UserStatusUpdateUseCaseHandler::class => autowire(UserStatusUpdateUseCaseHandler::class),
+    UserStatusDeleteUseCaseHandler::class => autowire(UserStatusDeleteUseCaseHandler::class),
 
     // DriverStatus Use Cases
-    DriverStatusListUseCase::class => autowire(DriverStatusListUseCaseHandler::class),
-    DriverStatusCreateUseCase::class => autowire(DriverStatusCreateUseCaseHandler::class),
-    DriverStatusUpdateUseCase::class => autowire(DriverStatusUpdateUseCaseHandler::class),
-    DriverStatusDeleteUseCase::class => autowire(DriverStatusDeleteUseCaseHandler::class),
+    DriverStatusListUseCase::class => autowire(DriverStatusListUseCase::class),
+    DriverStatusCreateUseCase::class => autowire(DriverStatusCreateUseCase::class),
+    DriverStatusUpdateUseCase::class => autowire(DriverStatusUpdateUseCase::class),
+    DriverStatusDeleteUseCase::class => autowire(DriverStatusDeleteUseCase::class),
+
+    DriverStatusListUseCaseHandler::class => autowire(DriverStatusListUseCaseHandler::class),
+    DriverStatusCreateUseCaseHandler::class => autowire(DriverStatusCreateUseCaseHandler::class),
+    DriverStatusUpdateUseCaseHandler::class => autowire(DriverStatusUpdateUseCaseHandler::class),
+    DriverStatusDeleteUseCaseHandler::class => autowire(DriverStatusDeleteUseCaseHandler::class),
 
     // Department Use Cases
-    DepartmentListUseCase::class => autowire(DepartmentListUseCaseHandler::class),
-    DepartmentCreateUseCase::class => autowire(DepartmentCreateUseCaseHandler::class),
-    DepartmentUpdateUseCase::class => autowire(DepartmentUpdateUseCaseHandler::class),
-    DepartmentDeleteUseCase::class => autowire(DepartmentDeleteUseCaseHandler::class),
+    DepartmentListUseCase::class => autowire(DepartmentListUseCase::class),
+    DepartmentCreateUseCase::class => autowire(DepartmentCreateUseCase::class),
+    DepartmentUpdateUseCase::class => autowire(DepartmentUpdateUseCase::class),
+    DepartmentDeleteUseCase::class => autowire(DepartmentDeleteUseCase::class),
+
+    DepartmentListUseCaseHandler::class => autowire(DepartmentListUseCaseHandler::class),
+    DepartmentCreateUseCaseHandler::class => autowire(DepartmentCreateUseCaseHandler::class),
+    DepartmentUpdateUseCaseHandler::class => autowire(DepartmentUpdateUseCaseHandler::class),
+    DepartmentDeleteUseCaseHandler::class => autowire(DepartmentDeleteUseCaseHandler::class),
 
     // Department Validator
     DepartmentValidator::class => autowire(DepartmentValidator::class),
 
     // Province Use Cases
-    ProvinceListUseCase::class => autowire(ProvinceListUseCaseHandler::class),
-    ProvinceCreateUseCase::class => autowire(ProvinceCreateUseCaseHandler::class),
-    ProvinceUpdateUseCase::class => autowire(ProvinceUpdateUseCaseHandler::class),
-    ProvinceDeleteUseCase::class => autowire(ProvinceDeleteUseCaseHandler::class),
+    ProvinceListUseCase::class => autowire(ProvinceListUseCase::class),
+    ProvinceCreateUseCase::class => autowire(ProvinceCreateUseCase::class),
+    ProvinceUpdateUseCase::class => autowire(ProvinceUpdateUseCase::class),
+    ProvinceDeleteUseCase::class => autowire(ProvinceDeleteUseCase::class),
+
+    ProvinceListUseCaseHandler::class => autowire(ProvinceListUseCaseHandler::class),
+    ProvinceCreateUseCaseHandler::class => autowire(ProvinceCreateUseCaseHandler::class),
+    ProvinceUpdateUseCaseHandler::class => autowire(ProvinceUpdateUseCaseHandler::class),
+    ProvinceDeleteUseCaseHandler::class => autowire(ProvinceDeleteUseCaseHandler::class),
 
     // Province Validator
     ProvinceValidator::class => autowire(ProvinceValidator::class),
 
     // District Use Cases
-    DistrictListUseCase::class => autowire(DistrictListUseCaseHandler::class),
-    DistrictCreateUseCase::class => autowire(DistrictCreateUseCaseHandler::class),
-    DistrictUpdateUseCase::class => autowire(DistrictUpdateUseCaseHandler::class),
-    DistrictDeleteUseCase::class => autowire(DistrictDeleteUseCaseHandler::class),
+    DistrictListUseCase::class => autowire(DistrictListUseCase::class),
+    DistrictCreateUseCase::class => autowire(DistrictCreateUseCase::class),
+    DistrictUpdateUseCase::class => autowire(DistrictUpdateUseCase::class),
+    DistrictDeleteUseCase::class => autowire(DistrictDeleteUseCase::class),
+
+    DistrictListUseCaseHandler::class => autowire(DistrictListUseCaseHandler::class),
+    DistrictCreateUseCaseHandler::class => autowire(DistrictCreateUseCaseHandler::class),
+    DistrictUpdateUseCaseHandler::class => autowire(DistrictUpdateUseCaseHandler::class),
+    DistrictDeleteUseCaseHandler::class => autowire(DistrictDeleteUseCaseHandler::class),
 
     // District Validator
     DistrictValidator::class => autowire(DistrictValidator::class),
 
     // Brand Use Cases
-    BrandListUseCase::class => autowire(BrandListUseCaseHandler::class),
-    BrandCreateUseCase::class => autowire(BrandCreateUseCaseHandler::class),
-    BrandUpdateUseCase::class => autowire(BrandUpdateUseCaseHandler::class),
-    BrandDeleteUseCase::class => autowire(BrandDeleteUseCaseHandler::class),
+    BrandListUseCase::class => autowire(BrandListUseCase::class),
+    BrandCreateUseCase::class => autowire(BrandCreateUseCase::class),
+    BrandUpdateUseCase::class => autowire(BrandUpdateUseCase::class),
+    BrandDeleteUseCase::class => autowire(BrandDeleteUseCase::class),
+
+    BrandListUseCaseHandler::class => autowire(BrandListUseCaseHandler::class),
+    BrandCreateUseCaseHandler::class => autowire(BrandCreateUseCaseHandler::class),
+    BrandUpdateUseCaseHandler::class => autowire(BrandUpdateUseCaseHandler::class),
+    BrandDeleteUseCaseHandler::class => autowire(BrandDeleteUseCaseHandler::class),
 
     // Brand Validator
     BrandValidator::class => autowire(BrandValidator::class),
 
     // Model Use Cases
-    ModelListUseCase::class => autowire(ModelListUseCaseHandler::class),
-    ModelCreateUseCase::class => autowire(ModelCreateUseCaseHandler::class),
-    ModelUpdateUseCase::class => autowire(ModelUpdateUseCaseHandler::class),
-    ModelDeleteUseCase::class => autowire(ModelDeleteUseCaseHandler::class),
+    ModelListUseCase::class => autowire(ModelListUseCase::class),
+    ModelCreateUseCase::class => autowire(ModelCreateUseCase::class),
+    ModelUpdateUseCase::class => autowire(ModelUpdateUseCase::class),
+    ModelDeleteUseCase::class => autowire(ModelDeleteUseCase::class),
+
+    ModelListUseCaseHandler::class => autowire(ModelListUseCaseHandler::class),
+    ModelCreateUseCaseHandler::class => autowire(ModelCreateUseCaseHandler::class),
+    ModelUpdateUseCaseHandler::class => autowire(ModelUpdateUseCaseHandler::class),
+    ModelDeleteUseCaseHandler::class => autowire(ModelDeleteUseCaseHandler::class),
 
     // Model Validator
     ModelValidator::class => autowire(ModelValidator::class),
 
     // Color Use Cases
-    ColorListUseCase::class => autowire(ColorListUseCaseHandler::class),
-    ColorCreateUseCase::class => autowire(ColorCreateUseCaseHandler::class),
-    ColorUpdateUseCase::class => autowire(ColorUpdateUseCaseHandler::class),
-    ColorDeleteUseCase::class => autowire(ColorDeleteUseCaseHandler::class),
+    ColorListUseCase::class => autowire(ColorListUseCase::class),
+    ColorCreateUseCase::class => autowire(ColorCreateUseCase::class),
+    ColorUpdateUseCase::class => autowire(ColorUpdateUseCase::class),
+    ColorDeleteUseCase::class => autowire(ColorDeleteUseCase::class),
+
+    ColorListUseCaseHandler::class => autowire(ColorListUseCaseHandler::class),
+    ColorCreateUseCaseHandler::class => autowire(ColorCreateUseCaseHandler::class),
+    ColorUpdateUseCaseHandler::class => autowire(ColorUpdateUseCaseHandler::class),
+    ColorDeleteUseCaseHandler::class => autowire(ColorDeleteUseCaseHandler::class),
 
     // Color Validator
     ColorValidator::class => autowire(ColorValidator::class),
 
     // FuelType Use Cases
-    FuelTypeListUseCase::class => autowire(FuelTypeListUseCaseHandler::class),
-    FuelTypeCreateUseCase::class => autowire(FuelTypeCreateUseCaseHandler::class),
-    FuelTypeUpdateUseCase::class => autowire(FuelTypeUpdateUseCaseHandler::class),
-    FuelTypeDeleteUseCase::class => autowire(FuelTypeDeleteUseCaseHandler::class),
+    FuelTypeListUseCase::class => autowire(FuelTypeListUseCase::class),
+    FuelTypeCreateUseCase::class => autowire(FuelTypeCreateUseCase::class),
+    FuelTypeUpdateUseCase::class => autowire(FuelTypeUpdateUseCase::class),
+    FuelTypeDeleteUseCase::class => autowire(FuelTypeDeleteUseCase::class),
+
+    FuelTypeListUseCaseHandler::class => autowire(FuelTypeListUseCaseHandler::class),
+    FuelTypeCreateUseCaseHandler::class => autowire(FuelTypeCreateUseCaseHandler::class),
+    FuelTypeUpdateUseCaseHandler::class => autowire(FuelTypeUpdateUseCaseHandler::class),
+    FuelTypeDeleteUseCaseHandler::class => autowire(FuelTypeDeleteUseCaseHandler::class),
 
     // FuelType Validator
     FuelTypeValidator::class => autowire(FuelTypeValidator::class),
 
     // Category Use Cases
-    CategoryListUseCase::class => autowire(CategoryListUseCaseHandler::class),
-    CategoryCreateUseCase::class => autowire(CategoryCreateUseCaseHandler::class),
-    CategoryUpdateUseCase::class => autowire(CategoryUpdateUseCaseHandler::class),
-    CategoryDeleteUseCase::class => autowire(CategoryDeleteUseCaseHandler::class),
+    CategoryListUseCase::class => autowire(CategoryListUseCase::class),
+    CategoryCreateUseCase::class => autowire(CategoryCreateUseCase::class),
+    CategoryUpdateUseCase::class => autowire(CategoryUpdateUseCase::class),
+    CategoryDeleteUseCase::class => autowire(CategoryDeleteUseCase::class),
+
+    CategoryListUseCaseHandler::class => autowire(CategoryListUseCaseHandler::class),
+    CategoryCreateUseCaseHandler::class => autowire(CategoryCreateUseCaseHandler::class),
+    CategoryUpdateUseCaseHandler::class => autowire(CategoryUpdateUseCaseHandler::class),
+    CategoryDeleteUseCaseHandler::class => autowire(CategoryDeleteUseCaseHandler::class),
 
     // Category Validator
     CategoryValidator::class => autowire(CategoryValidator::class),
 
-    VehicleClassListUseCase::class => autowire(VehicleClassListUseCaseHandler::class),
-    VehicleClassCreateUseCase::class => autowire(VehicleClassCreateUseCaseHandler::class),
-    VehicleClassUpdateUseCase::class => autowire(VehicleClassUpdateUseCaseHandler::class),
-    VehicleClassDeleteUseCase::class => autowire(VehicleClassDeleteUseCaseHandler::class),
+    VehicleClassListUseCase::class => autowire(VehicleClassListUseCase::class),
+    VehicleClassCreateUseCase::class => autowire(VehicleClassCreateUseCase::class),
+    VehicleClassUpdateUseCase::class => autowire(VehicleClassUpdateUseCase::class),
+    VehicleClassDeleteUseCase::class => autowire(VehicleClassDeleteUseCase::class),
+
+    VehicleClassListUseCaseHandler::class => autowire(VehicleClassListUseCaseHandler::class),
+    VehicleClassCreateUseCaseHandler::class => autowire(VehicleClassCreateUseCaseHandler::class),
+    VehicleClassUpdateUseCaseHandler::class => autowire(VehicleClassUpdateUseCaseHandler::class),
+    VehicleClassDeleteUseCaseHandler::class => autowire(VehicleClassDeleteUseCaseHandler::class),
 
     VehicleClassValidator::class => autowire(VehicleClassValidator::class),
 
-    ServiceTypeCreateUseCase::class => autowire(ServiceTypeCreateUseCaseHandler::class),
-    ServiceTypeListUseCase::class => autowire(ServiceTypeListUseCaseHandler::class),
-    ServiceTypeUpdateUseCase::class => autowire(ServiceTypeUpdateUseCaseHandler::class),
-    ServiceTypeDeleteUseCase::class => autowire(ServiceTypeDeleteUseCaseHandler::class),
+    ServiceTypeCreateUseCase::class => autowire(ServiceTypeCreateUseCase::class),
+    ServiceTypeListUseCase::class => autowire(ServiceTypeListUseCase::class),
+    ServiceTypeUpdateUseCase::class => autowire(ServiceTypeUpdateUseCase::class),
+    ServiceTypeDeleteUseCase::class => autowire(ServiceTypeDeleteUseCase::class),
+
+    ServiceTypeListUseCaseHandler::class => autowire(ServiceTypeListUseCaseHandler::class),
+    ServiceTypeCreateUseCaseHandler::class => autowire(ServiceTypeCreateUseCaseHandler::class),
+    ServiceTypeUpdateUseCaseHandler::class => autowire(ServiceTypeUpdateUseCaseHandler::class),
+    ServiceTypeDeleteUseCaseHandler::class => autowire(ServiceTypeDeleteUseCaseHandler::class),
 
     ServiceTypeValidator::class => autowire(ServiceTypeValidator::class),
 
-    IncidentTypeCreateUseCase::class => autowire(IncidentTypeCreateUseCaseHandler::class),
-    IncidentTypeListUseCase::class => autowire(IncidentTypeListUseCaseHandler::class),
-    IncidentTypeDeleteUseCase::class => autowire(IncidentTypeDeleteUseCaseHandler::class),
-    IncidentTypeUpdateUseCase::class => autowire(IncidentTypeUpdateUseCaseHandler::class),
+    IncidentTypeCreateUseCase::class => autowire(IncidentTypeCreateUseCase::class),
+    IncidentTypeListUseCase::class => autowire(IncidentTypeListUseCase::class),
+    IncidentTypeDeleteUseCase::class => autowire(IncidentTypeDeleteUseCase::class),
+    IncidentTypeUpdateUseCase::class => autowire(IncidentTypeUpdateUseCase::class),
+
+    IncidentTypeCreateUseCaseHandler::class => autowire(IncidentTypeCreateUseCaseHandler::class),
+    IncidentTypeListUseCaseHandler::class => autowire(IncidentTypeListUseCaseHandler::class),
+    IncidentTypeUpdateUseCaseHandler::class => autowire(IncidentTypeUpdateUseCaseHandler::class),
+    IncidentTypeDeleteUseCaseHandler::class => autowire(IncidentTypeDeleteUseCaseHandler::class),
 
     IncidentTypeValidator::class => autowire(IncidentTypeValidator::class),
 
-    InfractionSeverityCreateUseCase::class => autowire(InfractionSeverityCreateUseCaseHandler::class),
-    InfractionSeverityListUseCase::class => autowire(InfractionSeverityListUseCaseHandler::class),
-    InfractionSeverityUpdateUseCase::class => autowire(InfractionSeverityUpdateUseCaseHandler::class),
-    InfractionSeverityDeleteUseCase::class => autowire(InfractionSeverityDeleteUseCaseHandler::class),
+    InfractionSeverityCreateUseCase::class => autowire(InfractionSeverityCreateUseCase::class),
+    InfractionSeverityListUseCase::class => autowire(InfractionSeverityListUseCase::class),
+    InfractionSeverityUpdateUseCase::class => autowire(InfractionSeverityUpdateUseCase::class),
+    InfractionSeverityDeleteUseCase::class => autowire(InfractionSeverityDeleteUseCase::class),
+
+    InfractionSeverityCreateUseCaseHandler::class => autowire(InfractionSeverityCreateUseCaseHandler::class),
+    InfractionSeverityListUseCaseHandler::class => autowire(InfractionSeverityListUseCaseHandler::class),
+    InfractionSeverityUpdateUseCaseHandler::class => autowire(InfractionSeverityUpdateUseCaseHandler::class),
+    InfractionSeverityDeleteUseCaseHandler::class => autowire(InfractionSeverityDeleteUseCaseHandler::class),
 
     InfractionSeverityValidator::class => autowire(InfractionSeverityValidator::class),
 
-    InfractionStatusCreateUseCase::class => autowire(InfractionStatusCreateUseCaseHandler::class),
-    InfractionStatusUpdateUseCase::class => autowire(InfractionStatusUpdateUseCaseHandler::class),
-    InfractionStatusDeleteUseCase::class => autowire(InfractionStatusDeleteUseCaseHandler::class),
-    InfractionStatusListUseCase::class => autowire(InfractionStatusListUseCaseHandler::class),
+    InfractionStatusCreateUseCase::class => autowire(InfractionStatusCreateUseCase::class),
+    InfractionStatusUpdateUseCase::class => autowire(InfractionStatusUpdateUseCase::class),
+    InfractionStatusDeleteUseCase::class => autowire(InfractionStatusDeleteUseCase::class),
+    InfractionStatusListUseCase::class => autowire(InfractionStatusListUseCase::class),
+
+    InfractionStatusCreateUseCaseHandler::class => autowire(InfractionStatusCreateUseCaseHandler::class),
+    InfractionStatusUpdateUseCaseHandler::class => autowire(InfractionStatusUpdateUseCaseHandler::class),
+    InfractionStatusDeleteUseCaseHandler::class => autowire(InfractionStatusDeleteUseCaseHandler::class),
+    InfractionStatusListUseCaseHandler::class => autowire(InfractionStatusListUseCaseHandler::class),
 
     InfractionStatusValidator::class => autowire(InfractionStatusValidator::class),
 
@@ -657,31 +752,56 @@ return array(
     TravelStatusListUseCase::class => autowire(TravelStatusListUseCase::class),
     TravelStatusUpdateUseCase::class => autowire(TravelStatusUpdateUseCase::class),
 
+    TravelStatusCreateUseCaseHandler::class => autowire(TravelStatusCreateUseCaseHandler::class),
+    TravelStatusDeleteUseCaseHandler::class => autowire(TravelStatusDeleteUseCaseHandler::class),
+    TravelStatusUpdateUseCaseHandler::class => autowire(TravelStatusUpdateUseCaseHandler::class),
+    TravelStatusListUseCaseHandler::class => autowire(TravelStatusListUseCaseHandler::class),
+
     TravelStatusValidator::class => autowire(TravelStatusValidator::class),
 
-    TucModalityCreateUseCase::class => autowire(TucModalityCreateUseCaseHandler::class),
-    TucModalityDeleteUseCase::class => autowire(TucModalityDeleteUseCaseHandler::class),
-    TucModalityUpdateUseCase::class => autowire(TucModalityUpdateUseCaseHandler::class),
+    TucModalityCreateUseCase::class => autowire(TucModalityCreateUseCase::class),
+    TucModalityDeleteUseCase::class => autowire(TucModalityDeleteUseCase::class),
+    TucModalityUpdateUseCase::class => autowire(TucModalityUpdateUseCase::class),
     TucModalityListUseCase::class => autowire(TucModalityListUseCase::class),
+
+    TucModalityCreateUseCaseHandler::class => autowire(TucModalityCreateUseCaseHandler::class),
+    TucModalityDeleteUseCaseHandler::class => autowire(TucModalityDeleteUseCaseHandler::class),
+    TucModalityUpdateUseCaseHandler::class => autowire(TucModalityUpdateUseCaseHandler::class),
+    TucModalityListUseCaseHandler::class => autowire(TucModalityListUseCaseHandler::class),
 
     TucModalityValidator::class => autowire(TucModalityValidator::class),
 
-    TucStatusCreateUseCase::class => autowire(TucStatusCreateUseCaseHandler::class),
-    TucStatusDeleteUseCase::class => autowire(TucStatusDeleteUseCaseHandler::class),
-    TucStatusUpdateUseCase::class => autowire(TucStatusUpdateUseCaseHandler::class),
-    TucStatusListUseCase::class => autowire(TucStatusListUseCaseHandler::class),
+    TucStatusCreateUseCase::class => autowire(TucStatusCreateUseCase::class),
+    TucStatusDeleteUseCase::class => autowire(TucStatusDeleteUseCase::class),
+    TucStatusUpdateUseCase::class => autowire(TucStatusUpdateUseCase::class),
+    TucStatusListUseCase::class => autowire(TucStatusListUseCase::class),
 
-    ProcedureTypeCreateUseCase::class => autowire(ProcedureTypeCreateUseCaseHandler::class),
-    ProcedureTypeDeleteUseCase::class => autowire(ProcedureTypeDeleteUseCaseHandler::class),
-    ProcedureTypeUpdateUseCase::class => autowire(ProcedureTypeUpdateUseCaseHandler::class),
-    ProcedureTypeListUseCase::class => autowire(ProcedureTypeListUseCaseHandler::class),
+    TucStatusCreateUseCaseHandler::class => autowire(TucStatusCreateUseCaseHandler::class),
+    TucStatusDeleteUseCaseHandler::class => autowire(TucStatusDeleteUseCaseHandler::class),
+    TucStatusUpdateUseCaseHandler::class => autowire(TucStatusUpdateUseCaseHandler::class),
+    TucStatusListUseCaseHandler::class => autowire(TucStatusListUseCaseHandler::class),
+
+    ProcedureTypeCreateUseCase::class => autowire(ProcedureTypeCreateUseCase::class),
+    ProcedureTypeDeleteUseCase::class => autowire(ProcedureTypeDeleteUseCase::class),
+    ProcedureTypeUpdateUseCase::class => autowire(ProcedureTypeUpdateUseCase::class),
+    ProcedureTypeListUseCase::class => autowire(ProcedureTypeListUseCase::class),
+
+    ProcedureTypeCreateUseCaseHandler::class => autowire(ProcedureTypeCreateUseCaseHandler::class),
+    ProcedureTypeDeleteUseCaseHandler::class => autowire(ProcedureTypeDeleteUseCaseHandler::class),
+    ProcedureTypeUpdateUseCaseHandler::class => autowire(ProcedureTypeUpdateUseCaseHandler::class),
+    ProcedureTypeListUseCaseHandler::class => autowire(ProcedureTypeListUseCaseHandler::class),
 
     ProcedureTypeValidator::class => autowire(ProcedureTypeValidator::class),
 
-    UserCodeTypeCreateUseCase::class => autowire(UserCodeTypeCreateUseCaseHandler::class),
-    UserCodeTypeDeleteUseCase::class => autowire(UserCodeTypeDeleteUseCaseHandler::class),
-    UserCodeTypeUpdateUseCase::class => autowire(UserCodeTypeUpdateUseCaseHandler::class),
-    UserCodeTypeListUseCase::class => autowire(UserCodeTypeListUseCaseHandler::class),
+    UserCodeTypeCreateUseCase::class => autowire(UserCodeTypeCreateUseCase::class),
+    UserCodeTypeDeleteUseCase::class => autowire(UserCodeTypeDeleteUseCase::class),
+    UserCodeTypeUpdateUseCase::class => autowire(UserCodeTypeUpdateUseCase::class),
+    UserCodeTypeListUseCase::class => autowire(UserCodeTypeListUseCase::class),
+
+    UserCodeTypeCreateUseCaseHandler::class => autowire(UserCodeTypeCreateUseCaseHandler::class),
+    UserCodeTypeDeleteUseCaseHandler::class => autowire(UserCodeTypeDeleteUseCaseHandler::class),
+    UserCodeTypeUpdateUseCaseHandler::class => autowire(UserCodeTypeUpdateUseCaseHandler::class),
+    UserCodeTypeListUseCaseHandler::class => autowire(UserCodeTypeListUseCaseHandler::class),
 
     UserCodeTypeValidator::class => autowire(UserCodeTypeValidator::class),
 

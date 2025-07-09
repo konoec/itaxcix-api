@@ -7,12 +7,191 @@ class PermissionsService {    constructor() {
                 menuId: 'menu-admission',
                 title: 'Admisión de Conductores',
                 icon: 'fas fa-user-plus'
-            },            'TABLAS MAESTRAS': {
+            },           
+            'TABLAS MAESTRAS': {
                 permission: 'TABLAS MAESTRAS',
-                route: null, // Es un menú desplegable, no tiene página específica
+                route: '/pages/MasterTables/',
                 menuId: 'menu-tablas',
                 title: 'Tablas Maestras',
                 icon: 'fas fa-table'
+            },
+            'TABLAS MAESTRAS - EMPRESAS': {
+                permission: 'TABLAS MAESTRAS',
+                route: '/pages/MasterTables/Companies.html',
+                menuId: 'menu-tablas-empresas',
+                title: 'Empresas',
+                icon: 'fas fa-building'
+            },
+            'TABLAS MAESTRAS - CONFIGURACIÓN': {
+                permission: 'TABLAS MAESTRAS',
+                route: '/pages/MasterTables/Configuration.html',
+                menuId: 'menu-tablas-configuracion',
+                title: 'Configuración',
+                icon: 'fas fa-cogs'
+            },
+            'TABLAS MAESTRAS - DISTRITO': {
+                permission: 'TABLAS MAESTRAS',
+                route: '/pages/MasterTables/District.html',
+                menuId: 'menu-tablas-distrito',
+                title: 'Distrito',
+                icon: 'fas fa-map-marked-alt'
+            },
+            
+            // Nuevos módulos de Tablas Maestras - Ubicación Geográfica
+            'TABLAS MAESTRAS - DEPARTAMENTOS': {
+                permission: 'TABLAS MAESTRAS',
+                route: '/pages/MasterTables/Departaments.html',
+                menuId: 'menu-tablas-departamentos',
+                title: 'Departamentos',
+                icon: 'fas fa-map'
+            },
+            'TABLAS MAESTRAS - PROVINCIAS': {
+                permission: 'TABLAS MAESTRAS',
+                route: '/pages/MasterTables/Province.html',
+                menuId: 'menu-tablas-provincias',
+                title: 'Provincias',
+                icon: 'fas fa-map-marker-alt'
+            },
+            
+            // Nuevos módulos de Tablas Maestras - Usuarios y Conductores
+            'TABLAS MAESTRAS - ESTADO DE USUARIOS': {
+                permission: 'TABLAS MAESTRAS',
+                route: '/pages/MasterTables/UserStatus.html',
+                menuId: 'menu-tablas-user-status',
+                title: 'Estado de Usuarios',
+                icon: 'fas fa-user-circle'
+            },
+            'TABLAS MAESTRAS - TIPOS DE CÓDIGO USUARIO': {
+                permission: 'TABLAS MAESTRAS',
+                route: '/pages/MasterTables/UserCodeType.html',
+                menuId: 'menu-tablas-user-code-type',
+                title: 'Tipos de Código Usuario',
+                icon: 'fas fa-user-tag'
+            },
+            'TABLAS MAESTRAS - ESTADO DE CONDUCTORES': {
+                permission: 'TABLAS MAESTRAS',
+                route: '/pages/MasterTables/DriverStatus.html',
+                menuId: 'menu-tablas-driver-status',
+                title: 'Estado de Conductores',
+                icon: 'fas fa-user-check'
+            },
+            'TABLAS MAESTRAS - TIPOS DE CONTACTO': {
+                permission: 'TABLAS MAESTRAS',
+                route: '/pages/MasterTables/ContactTypes.html',
+                menuId: 'menu-tablas-contact-types',
+                title: 'Tipos de Contacto',
+                icon: 'fas fa-address-book'
+            },
+            'TABLAS MAESTRAS - TIPOS DE DOCUMENTOS': {
+                permission: 'TABLAS MAESTRAS',
+                route: '/pages/MasterTables/DocumentTypes.html',
+                menuId: 'menu-tablas-document-types',
+                title: 'Tipos de Documentos',
+                icon: 'fas fa-file-alt'
+            },
+            
+            // Nuevos módulos de Tablas Maestras - Vehículos
+            'TABLAS MAESTRAS - MARCAS': {
+                permission: 'TABLAS MAESTRAS',
+                route: '/pages/MasterTables/Brand.html',
+                menuId: 'menu-tablas-brands',
+                title: 'Marcas',
+                icon: 'fas fa-tags'
+            },
+            'TABLAS MAESTRAS - MODELOS DE VEHÍCULOS': {
+                permission: 'TABLAS MAESTRAS',
+                route: '/pages/MasterTables/VehicleModel.html',
+                menuId: 'menu-tablas-vehicle-model',
+                title: 'Modelos de Vehículos',
+                icon: 'fas fa-car'
+            },
+            'TABLAS MAESTRAS - CLASES DE VEHÍCULOS': {
+                permission: 'TABLAS MAESTRAS',
+                route: '/pages/MasterTables/VehicleClass.html',
+                menuId: 'menu-tablas-vehicle-class',
+                title: 'Clases de Vehículos',
+                icon: 'fas fa-car-side'
+            },
+            'TABLAS MAESTRAS - COLORES': {
+                permission: 'TABLAS MAESTRAS',
+                route: '/pages/MasterTables/Color.html',
+                menuId: 'menu-tablas-colors',
+                title: 'Colores',
+                icon: 'fas fa-palette'
+            },
+            'TABLAS MAESTRAS - TIPOS DE COMBUSTIBLE': {
+                permission: 'TABLAS MAESTRAS',
+                route: '/pages/MasterTables/FuelType.html',
+                menuId: 'menu-tablas-fuel-type',
+                title: 'Tipos de Combustible',
+                icon: 'fas fa-gas-pump'
+            },
+            'TABLAS MAESTRAS - CATEGORÍAS': {
+                permission: 'TABLAS MAESTRAS',
+                route: '/pages/MasterTables/Category.html',
+                menuId: 'menu-tablas-categories',
+                title: 'Categorías',
+                icon: 'fas fa-folder'
+            },
+            
+            // Nuevos módulos de Tablas Maestras - Servicios y Procedimientos
+            'TABLAS MAESTRAS - TIPOS DE SERVICIO': {
+                permission: 'TABLAS MAESTRAS',
+                route: '/pages/MasterTables/ServiceType.html',
+                menuId: 'menu-tablas-service-type',
+                title: 'Tipos de Servicio',
+                icon: 'fas fa-concierge-bell'
+            },
+            'TABLAS MAESTRAS - TIPOS DE PROCEDIMIENTOS': {
+                permission: 'TABLAS MAESTRAS',
+                route: '/pages/MasterTables/ProcedureTypes.html',
+                menuId: 'menu-tablas-procedure-types',
+                title: 'Tipos de Procedimientos',
+                icon: 'fas fa-clipboard-list'
+            },
+            'TABLAS MAESTRAS - ESTADO DE VIAJES': {
+                permission: 'TABLAS MAESTRAS',
+                route: '/pages/MasterTables/TravelStatus.html',
+                menuId: 'menu-tablas-travel-status',
+                title: 'Estado de Viajes',
+                icon: 'fas fa-route'
+            },
+            
+            // Nuevos módulos de Tablas Maestras - TUC e Infracciones
+            'TABLAS MAESTRAS - MODALIDADES TUC': {
+                permission: 'TABLAS MAESTRAS',
+                route: '/pages/MasterTables/TucModality.html',
+                menuId: 'menu-tablas-tuc-modality',
+                title: 'Modalidades TUC',
+                icon: 'fas fa-id-card'
+            },
+            'TABLAS MAESTRAS - ESTADO TUC': {
+                permission: 'TABLAS MAESTRAS',
+                route: '/pages/MasterTables/TucStatus.html',
+                menuId: 'menu-tablas-tuc-status',
+                title: 'Estado TUC',
+                icon: 'fas fa-id-badge'
+            },
+            'TABLAS MAESTRAS - TIPOS DE INCIDENTES': {
+                permission: 'TABLAS MAESTRAS',
+                route: '/pages/MasterTables/IncidentType.html',
+                menuId: 'menu-tablas-incident-type',
+                title: 'Tipos de Incidentes',
+                icon: 'fas fa-exclamation-triangle'
+            },
+            'TABLAS MAESTRAS - SEVERIDAD DE INFRACCIONES': {
+                permission: 'TABLAS MAESTRAS',
+                route: '/pages/MasterTables/InfractionSeverity.html',
+                menuId: 'menu-tablas-infraction-severity',
+                title: 'Severidad de Infracciones',
+                icon: 'fas fa-gavel'
+            },
+            'TABLAS MAESTRAS - ESTADO DE INFRACCIONES': {
+                permission: 'TABLAS MAESTRAS',
+                route: '/pages/MasterTables/InfractionStatus.html',
+                menuId: 'menu-tablas-infraction-status',
+                title: 'Estado de Infracciones',
+                icon: 'fas fa-clipboard-check'
             },
             'AUDITORIA': {
                 permission: 'AUDITORIA',
@@ -44,23 +223,30 @@ class PermissionsService {    constructor() {
             'CONFIGURACIÓN - PERMISOS': {
                 permission: 'CONFIGURACIÓN',
                 route: '/pages/Configuration/PermissionsManagement.html',
-                menuId: 'menu-configuracion',
+                menuId: 'menu-configuracion-permisos',
                 title: 'Permisos',
                 icon: 'fas fa-shield-alt'
             },
             'CONFIGURACIÓN - ROLES': {
                 permission: 'CONFIGURACIÓN',
                 route: '/pages/Configuration/RolesManagement.html',
-                menuId: 'menu-configuracion',
+                menuId: 'menu-configuracion-roles',
                 title: 'Roles',
                 icon: 'fas fa-user-tag'
             },
-            'CONFIGURACIÓN - EMERGENCIA': {
+            'CONFIGURACIÓN - CENTRO DE AYUDA': {
                 permission: 'CONFIGURACIÓN',
-                route: '/pages/Configuration/EmergencyConfiguration.html',
-                menuId: 'menu-configuracion',
-                title: 'Emergencia',
-                icon: 'fas fa-phone-alt'
+                route: '/pages/Configuration/HelpCenter.html',
+                menuId: 'menu-configuracion-ayuda',
+                title: 'Centro de Ayuda',
+                icon: 'fas fa-question-circle'
+            },
+            'CONFIGURACIÓN - USUARIOS': {
+                permission: 'CONFIGURACIÓN',
+                route: '/pages/Configuration/UsersManagement.html',
+                menuId: 'menu-configuracion-usuarios',
+                title: 'Usuarios',
+                icon: 'fas fa-users'
             }
         };        // Página por defecto (sin permisos requeridos)
         this.defaultRoute = '/pages/Inicio/Inicio.html';
@@ -151,15 +337,26 @@ class PermissionsService {    constructor() {
                     console.log(`🔒 Deshabilitando menú: ${moduleInfo.title}`);
                 }
             } else {
-                console.warn(`⚠️ Elemento del menú no encontrado: ${moduleInfo.menuId}`);
+                // Solo mostrar warning si hay elementos presentes en el DOM pero este específico no se encuentra
+                const sidebarExists = !!document.getElementById('sidebar');
+                if (sidebarExists) {
+                    console.warn(`⚠️ Elemento del menú no encontrado: ${moduleInfo.menuId}`);
+                } else {
+                    console.log(`⏳ Sidebar no cargado aún, omitiendo ${moduleInfo.menuId}`);
+                }
             }
         }
 
-        console.log(`📊 Menú configurado: ${enabledCount} habilitado(s), ${disabledCount} deshabilitado(s)`);        // Solo mostrar mensaje de error si NO HAY MÓDULOS HABILITADOS Y NO HAY PERMISOS
+        console.log(`📊 Menú configurado: ${enabledCount} habilitado(s), ${disabledCount} deshabilitado(s)`);
+        
+        // Solo mostrar mensaje de error si hay elementos en el DOM pero no se configuró ninguno
+        const sidebarExists = !!document.getElementById('sidebar');
         if (enabledCount === 0 && userPermissions.length === 0) {
             console.log('ℹ️ Usuario sin permisos específicos, permitiendo acceso a inicio por defecto');
-        } else if (enabledCount === 0 && userPermissions.length > 0) {
+        } else if (enabledCount === 0 && userPermissions.length > 0 && sidebarExists) {
             console.warn('⚠️ Usuario tiene permisos pero no hay elementos de menú correspondientes');
+        } else if (!sidebarExists) {
+            console.log('⏳ Configuración de menú pendiente - sidebar no cargado');
         }
     }
 
@@ -543,8 +740,8 @@ class PermissionsService {    constructor() {
         // Actualizar mensaje de progreso
         this.updateLoadingStep('Configurando menú de navegación...');
         
-        // Configurar elementos del menú según permisos (siempre)
-        this.configureMenuPermissions();
+        // Configurar elementos del menú con reintentos para asegurar que el DOM esté listo
+        this.configureMenuPermissionsWithRetry();
         
         // Actualizar mensaje de progreso
         this.updateLoadingStep('Validando ruta actual...');
@@ -683,6 +880,43 @@ class PermissionsService {    constructor() {
         console.log('📋 Módulos disponibles:', this.getAvailableModules().length);
         
         // Debug info completed
+    }/**
+     * Configura permisos del menú con reintentos para asegurar que el DOM esté listo
+     */
+    configureMenuPermissionsWithRetry(attempt = 1, maxAttempts = 5) {
+        console.log(`🔄 Intento ${attempt}/${maxAttempts} de configuración de menú...`);
+        
+        // Verificar si el sidebar está cargado
+        const sidebar = document.getElementById('sidebar');
+        if (!sidebar && attempt < maxAttempts) {
+            console.log(`⏳ Sidebar no encontrado, reintentando en ${attempt * 500}ms...`);
+            setTimeout(() => {
+                this.configureMenuPermissionsWithRetry(attempt + 1, maxAttempts);
+            }, attempt * 500);
+            return;
+        }
+        
+        if (!sidebar && attempt >= maxAttempts) {
+            console.warn('⚠️ Sidebar no se cargó después de varios intentos, continuando sin configuración de menú');
+            return;
+        }
+        
+        // Verificar que al menos algunos elementos del menú estén presentes
+        const menuItems = Object.values(this.modulePermissions).map(m => m.menuId);
+        const foundItems = menuItems.filter(id => document.getElementById(id));
+        
+        if (foundItems.length === 0 && attempt < maxAttempts) {
+            console.log(`⏳ Elementos del menú no encontrados (${foundItems.length}/${menuItems.length}), reintentando...`);
+            setTimeout(() => {
+                this.configureMenuPermissionsWithRetry(attempt + 1, maxAttempts);
+            }, attempt * 500);
+            return;
+        }
+        
+        console.log(`✅ DOM listo, elementos encontrados: ${foundItems.length}/${menuItems.length}`);
+        
+        // Configurar permisos del menú
+        this.configureMenuPermissions();
     }
 }
 

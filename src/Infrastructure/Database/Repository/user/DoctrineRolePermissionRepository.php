@@ -155,15 +155,33 @@ class DoctrineRolePermissionRepository implements RolePermissionRepositoryInterf
         RoleModel $role,
         PermissionModel $permission
     ): RolePermissionModel {
-        $entity = new RolePermissionEntity();
+        // Buscar si ya existe un registro para este rol-permiso
+        $existingEntity = $this->entityManager->createQueryBuilder()
+            ->select('rp')
+            ->from(RolePermissionEntity::class, 'rp')
+            ->where('rp.role = :roleId')
+            ->andWhere('rp.permission = :permissionId')
+            ->setParameter('roleId', $role->getId())
+            ->setParameter('permissionId', $permission->getId())
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
 
-        $entity->setRole(
-            $this->entityManager->getReference(RoleEntity::class, $role->getId())
-        );
-        $entity->setPermission(
-            $this->entityManager->getReference(PermissionEntity::class, $permission->getId())
-        );
-        $entity->setActive(true);
+        if ($existingEntity) {
+            // Si existe, simplemente lo activamos
+            $existingEntity->setActive(true);
+            $entity = $existingEntity;
+        } else {
+            // Si no existe, creamos uno nuevo
+            $entity = new RolePermissionEntity();
+            $entity->setRole(
+                $this->entityManager->getReference(RoleEntity::class, $role->getId())
+            );
+            $entity->setPermission(
+                $this->entityManager->getReference(PermissionEntity::class, $permission->getId())
+            );
+            $entity->setActive(true);
+        }
 
         $this->entityManager->persist($entity);
         $this->entityManager->flush();

@@ -378,32 +378,117 @@
 /* Distribución uniforme de columnas para alineación perfecta */
 .shadcn-users-table th:nth-child(1),
 .shadcn-users-table td:nth-child(1) {
-  width: 25%; /* Usuario - más ancho */
+  width: 22%; /* Usuario - reducido de 25% a 22% */
 }
 
 .shadcn-users-table th:nth-child(2),
 .shadcn-users-table td:nth-child(2) {
-  width: 12%; /* Documento - ancho fijo */
+  width: 13%; /* Documento - aumentado de 12% a 13% */
 }
 
 .shadcn-users-table th:nth-child(3),
 .shadcn-users-table td:nth-child(3) {
-  width: 20%; /* Correo - ancho medio */
+  width: 21%; /* Correo - ajustado de 20% a 21% */
 }
 
 .shadcn-users-table th:nth-child(4),
 .shadcn-users-table td:nth-child(4) {
-  width: 15%; /* Teléfono - ancho medio */
+  width: 16%; /* Teléfono - ajustado de 15% a 16% */
 }
 
 .shadcn-users-table th:nth-child(5),
 .shadcn-users-table td:nth-child(5) {
-  width: 10%; /* Estado - ancho fijo */
+  width: 10%; /* Estado - mantenido */
 }
 
 .shadcn-users-table th:nth-child(6),
 .shadcn-users-table td:nth-child(6) {
-  width: 18%; /* Acciones - ancho medio */
+  width: 18%; /* Acciones - mantenido */
+}
+
+/* FORZAR APLICACIÓN DEL ESPACIADO REDUCIDO - Override específico */
+.shadcn-users-container .shadcn-users-table th:nth-child(1),
+.shadcn-users-container .shadcn-users-table td:nth-child(1) {
+  width: 22% !important; /* Usuario - reducido */
+  max-width: 22% !important;
+}
+
+.shadcn-users-container .shadcn-users-table th:nth-child(2),
+.shadcn-users-container .shadcn-users-table td:nth-child(2) {
+  width: 13% !important; /* Documento - aumentado */
+  max-width: 13% !important;
+}
+
+.shadcn-users-container .shadcn-users-table th:nth-child(3),
+.shadcn-users-container .shadcn-users-table td:nth-child(3) {
+  width: 21% !important; /* Correo - ajustado */
+  max-width: 21% !important;
+}
+
+.shadcn-users-container .shadcn-users-table th:nth-child(4),
+.shadcn-users-container .shadcn-users-table td:nth-child(4) {
+  width: 16% !important; /* Teléfono - ajustado */
+  max-width: 16% !important;
+}
+
+.shadcn-users-container .shadcn-users-table th:nth-child(5),
+.shadcn-users-container .shadcn-users-table td:nth-child(5) {
+  width: 10% !important; /* Estado - mantenido */
+  max-width: 10% !important;
+}
+
+.shadcn-users-container .shadcn-users-table th:nth-child(6),
+.shadcn-users-container .shadcn-users-table td:nth-child(6) {
+  width: 18% !important; /* Acciones - mantenido */
+  max-width: 18% !important;
+}
+
+/* OVERRIDE CRÍTICO - FORZAR ESPACIADO REDUCIDO CON MÁXIMA ESPECIFICIDAD */
+.shadcn-users-container .shadcn-users-scroll .shadcn-users-table th:nth-child(1),
+.shadcn-users-container .shadcn-users-scroll .shadcn-users-table td:nth-child(1) {
+  width: 20% !important; /* Usuario - MÁS reducido */
+  max-width: 20% !important;
+  min-width: 20% !important;
+  padding-left: 0.25rem !important;
+  padding-right: 0.125rem !important; /* Reducir padding derecho */
+}
+
+.shadcn-users-container .shadcn-users-scroll .shadcn-users-table th:nth-child(2),
+.shadcn-users-container .shadcn-users-scroll .shadcn-users-table td:nth-child(2) {
+  width: 15% !important; /* Documento - MÁS aumentado */
+  max-width: 15% !important;
+  min-width: 15% !important;
+  padding-left: 0.125rem !important; /* Reducir padding izquierdo */
+  padding-right: 0.1875rem !important;
+}
+
+/* Ajustar otras columnas para compensar */
+.shadcn-users-container .shadcn-users-scroll .shadcn-users-table th:nth-child(3),
+.shadcn-users-container .shadcn-users-scroll .shadcn-users-table td:nth-child(3) {
+  width: 22% !important; /* Correo */
+  max-width: 22% !important;
+  min-width: 22% !important;
+}
+
+.shadcn-users-container .shadcn-users-scroll .shadcn-users-table th:nth-child(4),
+.shadcn-users-container .shadcn-users-scroll .shadcn-users-table td:nth-child(4) {
+  width: 16% !important; /* Teléfono */
+  max-width: 16% !important;
+  min-width: 16% !important;
+}
+
+.shadcn-users-container .shadcn-users-scroll .shadcn-users-table th:nth-child(5),
+.shadcn-users-container .shadcn-users-scroll .shadcn-users-table td:nth-child(5) {
+  width: 10% !important; /* Estado */
+  max-width: 10% !important;
+  min-width: 10% !important;
+}
+
+.shadcn-users-container .shadcn-users-scroll .shadcn-users-table th:nth-child(6),
+.shadcn-users-container .shadcn-users-scroll .shadcn-users-table td:nth-child(6) {
+  width: 17% !important; /* Acciones */
+  max-width: 17% !important;
+  min-width: 17% !important;
 }
 
 /* Badges con estilo original mejorado con ShadCN - Más compactos (idénticos a permisos y roles) */
@@ -694,4 +779,49 @@
     padding: 2px 0 !important;
     font-size: 10px !important;
   }
+}
+
+/* ===== REDUCIR DISTANCIA ENTRE COLUMNAS USUARIO Y DOCUMENTO CON MARGEN IZQUIERDO ===== */
+
+/* Columna Usuario - con mayor margen izquierdo para más espacio a los nombres */
+.shadcn-users-table th:nth-child(1),
+.shadcn-users-table td:nth-child(1) {
+    width: 18% !important;
+    min-width: 130px !important;
+    max-width: 150px !important;
+    padding-left: 24px !important;
+    padding-right: 2px !important;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+}
+
+/* Columna Documento - reducir padding izquierdo para acercar a Usuario */
+.shadcn-users-table th:nth-child(2),
+.shadcn-users-table td:nth-child(2) {
+    width: 15% !important;
+    min-width: 110px !important;
+    max-width: 130px !important;
+    padding-left: 2px !important;
+    padding-right: 8px !important;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+}
+
+/* Reducir padding general en todas las columnas para más compacidad */
+.shadcn-users-table th,
+.shadcn-users-table td {
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+}
+
+/* Asegurar que la primera columna mantenga su mayor margen izquierdo */
+.shadcn-users-table th:first-child,
+.shadcn-users-table td:first-child {
+    padding-left: 24px !important;
+}
+
+/* Asegurar que la segunda columna esté muy cerca de la primera */
+.shadcn-users-table th:nth-child(2),
+.shadcn-users-table td:nth-child(2) {
+    padding-left: 2px !important;
 }

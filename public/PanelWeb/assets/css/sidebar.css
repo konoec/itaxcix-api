@@ -1,643 +1,378 @@
-/* =============================================================================
-   GOOGLE FONTS IMPORT - POPPINS
-   Importación de fuente Poppins para todo el sistema
-   ============================================================================= */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+/* ===== SIDEBAR STYLES ===== */
 
-/* =============================================================================
-   GLOBAL TYPOGRAPHY CONFIGURATION
-   Configuración tipográfica global con Poppins para sidebar
-   ============================================================================= */
-* {
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-}
-
-/* Sidebar principal */
-.sidebar {
-    width: 220px;
-    background: linear-gradient(180deg, #22304a 0%, #16203a 100%);
-    backdrop-filter: blur(12px);
-    color: #ecf0f1;
-    display: flex;
-    flex-direction: column;
-    height: 100vh; /* Altura completa de la ventana */
-    position: fixed;
-    left: 0; /* Siempre visible en desktop */
-    top: 0;
-    z-index: 100;
-    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3), 0 8px 32px rgba(43, 57, 98, 0.2);
-    overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+/* Base styles para asegurar consistencia en todas las pantallas */
+.navbar-vertical {
+    width: 280px;
+    background-color: var(--tblr-dark, #1e293b);
     border-right: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.sidebar::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 100%;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
-    pointer-events: none;
-    z-index: 1;
-}
-
-/* Estado colapsado - comportamiento diferente en desktop vs móvil */
-.sidebar.collapsed {
-    left: -220px; /* Para desktop - solo se oculta parcialmente pero no se usa realmente */
-}
-
-/* Encabezado del sidebar */
-.sidebar-header {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-    height: 48px;
-    min-height: 0;
-    position: relative;
-    z-index: 2;
-}
-
-.sidebar-header::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 20px;
-    right: 20px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent 0%, rgba(124, 150, 204, 0.4) 50%, transparent 100%);
-}
-
-.sidebar-header h2 {
-    display: flex;
-    align-items: center;
-    margin: 0;
-    padding: 0;
-    background: none;
-    font-size: 1.1rem;
-    font-weight: 700;
-    letter-spacing: 0.2px;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 3;
-    font-family: 'Poppins', sans-serif;
-}
-
-.sidebar-header .sidebar-toggle {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 4;
-    display: block;
-}
-
-.sidebar-logo-img {
-    display: inline-block;
-    width: 85px;
-    height: 60px;
-    background-image: url("../../assets/Recourse/Logo/2.png");
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
-    transition: transform 0.3s ease;
-    justify-content: center;
-}
-
-.sidebar-logo-img:hover {
-    transform: scale(1.05);
-}
-
-/* Menú del sidebar */
-.sidebar-menu {
-    flex: 1;
-    padding: 10px 0;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
-    position: relative;
-    z-index: 2;
-}
-
-.sidebar-menu ul {
-    list-style: none;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05);
     padding: 0;
     margin: 0;
 }
 
-.sidebar-menu li {
-    margin-bottom: 3px;
-    position: relative;
+.navbar-vertical .container-fluid {
+    padding: 0;
+    margin: 0;
 }
 
-.sidebar-menu li a {
+.navbar-vertical .navbar-brand {
+    padding: 0 1.5rem 0.25rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    margin-top: 0;
+    text-align: center;
     display: flex;
-    align-items: center;
-    margin: 0 12px;
-    border-radius: 10px;
-    padding: 10px 14px;
-    color: rgba(255, 255, 255, 0.9);
-    text-decoration: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    font-weight: 500;
-    font-size: 0.85rem;
-    position: relative;
-    overflow: hidden;
-    font-family: 'Poppins', sans-serif;
-}
-
-.sidebar-menu li a::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    border-radius: 14px;
-}
-
-.sidebar-menu li a i {
-    margin-right: 10px;
-    width: 16px;
-    height: 16px;
-    display: flex;
-    align-items: center;
     justify-content: center;
-    font-size: 13px;
-    position: relative;
-    z-index: 1;
+    align-items: center;
+    min-height: 32px;
 }
 
-.sidebar-menu li a:hover {
-    background: rgba(255, 255, 255, 0.08);
-    transform: translateX(4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    color: #fff;
-}
-
-.sidebar-menu li a:hover::before {
-    opacity: 1;
-}
-
-.sidebar-menu li.active a {
-    background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
-    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3), 0 2px 8px rgba(74, 144, 226, 0.2);
-    color: #fff;
-    transform: translateX(4px);
-}
-
-.sidebar-menu li.active a::before {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
-    opacity: 1;
-}
-
-
-/* Mejoras visuales para submenus */
-.sidebar-menu .has-submenu.open .submenu {
-    animation: slideDown 0.3s ease-out;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Estilo para la flecha cuando el submenu está abierto */
-.sidebar-menu .has-submenu.open .submenu-arrow {
-    color: #3498db;
-}
-
-/* Estilos de scrollbar para webkit browsers (Chrome, Safari, Edge) */
-.sidebar-menu::-webkit-scrollbar {
-    width: 8px;
-}
-
-.sidebar-menu::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-    margin: 10px 0;
-}
-
-.sidebar-menu::-webkit-scrollbar-thumb {
-    background: linear-gradient(
-            180deg,
-            rgba(255, 255, 255, 0.15) 0%,
-            rgba(255, 255, 255, 0.25) 50%,
-            rgba(255, 255, 255, 0.15) 100%
-    );
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(5px);
-    transition: all 0.3s ease;
-}
-
-.sidebar-menu::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(
-            180deg,
-            rgba(255, 255, 255, 0.25) 0%,
-            rgba(255, 255, 255, 0.35) 50%,
-            rgba(255, 255, 255, 0.25) 100%
-    );
-    border-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
-}
-
-.sidebar-menu::-webkit-scrollbar-thumb:active {
-    background: linear-gradient(
-            180deg,
-            rgba(255, 255, 255, 0.3) 0%,
-            rgba(255, 255, 255, 0.4) 50%,
-            rgba(255, 255, 255, 0.3) 100%
-    );
-}
-
-/* Submenú */
-.sidebar-menu .submenu {
-    display: none;
-    padding-left: 3px;
-    margin-right: 14px;
+.navbar-vertical .navbar-brand img {
+    height: 28px;
     width: auto;
-    min-width: 150px;
-    margin-left: 18px;
-    background: rgba(65, 96, 146, 0.322);
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    overflow: visible;
 }
 
-.sidebar-menu .has-submenu.open > .submenu {
-    display: block;
-}
-
-/* Estilo base para submenús */
-.sidebar-menu .submenu li a {
-    padding: 5px 8px;
-    margin: 1px 2px;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    color: rgba(255, 255, 255, 0.9);
-    font-family: 'Poppins', sans-serif;
-    font-size: 0.8rem;
-}
-
-/* Hover para submenús normales */
-.sidebar-menu .submenu li a:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: #fff;
-    transform: translateX(0px);
-}
-
-/* Solo el submenú con clase active debe tener color celeste */
-.sidebar-menu .submenu li.active a {
-    background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%) !important;
-    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.25) !important;
-    color: #ffffff !important;
-    transform: translateX(2px) !important;
-}
-
-.sidebar-menu .submenu li.active a i {
-    color: #ffffff !important;
-}
-
-/* Evitar que el hover sobrescriba el estilo activo */
-.sidebar-menu .submenu li.active a:hover {
-    background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%) !important;
-    color: #ffffff !important;
-    transform: translateX(2px) !important;
-}
-
-.sidebar-menu .submenu li a i {
-    width: 12px;
-    height: 12px;
-    font-size: 11px;
-    margin-right: 6px;
-}
-
-/* Submenu styles */
-.sidebar-menu .has-submenu > a {
-    position: relative;
-}
-
-.submenu-arrow {
-    margin-left: auto;
-    font-size: 10px;
-    transition: transform 0.3s ease;
-}
-
-.submenu-arrow::before {
-    content: "▼";
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-}
-
-.has-submenu.open .submenu-arrow {
-    transform: rotate(180deg);
-}
-
-/* Pie del sidebar */
-.sidebar-footer {
-    padding: 12px;
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
-    position: relative;
-    z-index: 2;
-}
-
-.sidebar-footer::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 20px;
-    right: 20px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent 0%, rgba(124, 150, 204, 0.3) 50%, transparent 100%);
-}
-
-.logout-btn {
+.navbar-vertical .navbar-nav {
+    padding: 0.5rem 0;
     width: 100%;
+}
+
+.navbar-vertical .nav-item {
+    width: 100%;
+}
+
+.navbar-vertical .nav-link {
+    padding: 0.75rem 1.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    border-radius: 0;
+    transition: all 0.15s ease;
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 5px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 5px;
-    padding: 8px 12px;
-    color: #ffffff;
-    font-size: 0.8rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    width: 100%;
     text-decoration: none;
-    font-family: 'Poppins', sans-serif;
-}
-
-.logout-btn:hover {
-    background-color: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
-}
-
-.logout-btn:active {
-    background-color: rgba(255, 255, 255, 0.08);
-}
-
-/* Ajuste para el botón hamburguesa - oculto por defecto en desktop */
-.sidebar-toggle {
-    display: none; /* Oculto por defecto en desktop */
-    background: none;
     border: none;
-    color: #ffffff;
-    font-size: 1.3rem;
-    cursor: pointer;
-    padding: 8px;
-    transition: all 0.2s ease;
 }
 
-.sidebar-toggle:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
+.navbar-vertical .nav-link:hover,
+.navbar-vertical .nav-link.active {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Ajustes para pantallas muy pequeñas */
-@media (max-width: 576px) {
-    .sidebar {
-        width: 100%;
-        left: -100%; /* Usamos porcentaje para pantallas pequeñas */
-    }
+.navbar-vertical .nav-link-icon {
+    width: 1.5rem;
+    text-align: center;
+    margin-right: 0.75rem;
+    flex-shrink: 0;
+}
 
-    .sidebar.active {
+.navbar-vertical .nav-link-title {
+    flex-grow: 1;
+}
+
+/* Estilos para dropdowns del sidebar */
+.navbar-vertical .dropdown-menu {
+    background-color: rgba(0, 0, 0, 0.2);
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+}
+
+.navbar-vertical .dropdown-item {
+    color: rgba(255, 255, 255, 0.7);
+    padding: 0.5rem 1.5rem 0.5rem 3.25rem;
+    background: transparent;
+    border: none;
+    transition: all 0.15s ease;
+}
+
+.navbar-vertical .dropdown-item:hover,
+.navbar-vertical .dropdown-item:focus {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-vertical .dropdown-toggle::after {
+    margin-left: auto;
+}
+
+/* Footer del sidebar */
+.navbar-vertical .mt-auto {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem 1.5rem;
+}
+
+.navbar-vertical .btn-outline-light {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.navbar-vertical .btn-outline-light:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: #fff;
+}
+
+/* Desktop: Mantenemos todo tal como está funcionando */
+@media (min-width: 992px) {
+    .navbar-vertical {
+        position: fixed;
+        top: 0;
         left: 0;
-        width: 100%;
-    }
-
-    /* Optimizar menú principal para móviles */
-    .sidebar-menu li a {
-        margin: 6px 8px;
-        padding: 14px 16px;
-        font-size: 15px;
-        font-family: 'Poppins', sans-serif;
-    }
-
-    .sidebar-menu li a i {
-        font-size: 16px;
-        margin-right: 14px;
-    }
-
-    /* Mejorar submenús para móviles */
-    .sidebar-menu .submenu {
-        margin-left: 8px;
-        margin-right: 8px;
-        width: auto;
-        border-radius: 12px;
-        padding-left: 0;
-    }
-
-    .submenu li a {
-        padding: 12px 16px 12px 45px;
-        margin: 1px 6px;
-        font-size: 14px;
-        border-radius: 8px;
-        font-family: 'Poppins', sans-serif;
-    }    .submenu li a i {
-             width: 18px;
-             height: 18px;
-             font-size: 14px;
-             margin-right: 12px;
-         }
-
-    /* Botón de logout más grande para touch */
-    .logout-btn {
-        padding: 16px 20px;
-        font-size: 1rem;
-        font-family: 'Poppins', sans-serif;
-    }
-}
-
-/* Ajustes para móviles muy pequeños */
-@media (max-width: 480px) {
-    /* Hacer el sidebar más compacto */
-    .sidebar-header {
-        padding: 15px 16px;
-    }    .sidebar-header h2 {
-             font-size: 1.1rem;
-             font-weight: 600;
-             font-family: 'Poppins', sans-serif;
-         }
-
-    .sidebar-menu li a {
-        margin: 4px 6px;
-        padding: 12px 14px;
-        font-size: 14px;
-        border-radius: 10px;
-        font-family: 'Poppins', sans-serif;
-    }
-
-    .sidebar-menu li a i {
-        width: 25px;
-        height: 25px;
-        font-size: 15px;
-        margin-right: 12px;
-    }
-
-    /* Submenús ultra optimizados para móviles pequeños */
-    .sidebar-menu .submenu {
-        margin-left: 6px;
-        margin-right: 6px;
-        background: rgba(15, 25, 55, 0.5);
-        border-radius: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .submenu li a {
-        padding: 10px 12px 10px 40px;
-        margin: 1px 4px;
-        font-size: 13px;
-        border-radius: 6px;
-        font-family: 'Poppins', sans-serif;
-    }
-
-    .submenu li a:hover {
-        background: rgba(255, 255, 255, 0.12);
-    }
-
-    .submenu li a i {
-        width: 16px;
-        height: 16px;
-        font-size: 13px;
-        margin-right: 10px;
-    }
-
-    /* Flecha del submenú más pequeña */
-    .submenu-arrow {
-        font-size: 10px;
-    }
-
-    /* Pie del sidebar más compacto */
-    .sidebar-footer {
-        padding: 15px;
-    }
-
-    .logout-btn {
-        padding: 14px 16px;
-        font-size: 0.9rem;
-        border-radius: 10px;
-        font-family: 'Poppins', sans-serif;
-    }
-}
-
-/* Estado colapsado del sidebar */
-.sidebar.collapsed {
-    left: -220px; /* Ocultar completamente hacia la izquierda */
-}
-
-/* Cuando el sidebar está colapsado, el contenido principal debe ocupar todo el ancho */
-.sidebar.collapsed ~ .main-content {
-    margin-left: 0;
-    width: 100%;
-}
-
-/* Responsive - en pantallas pequeñas el sidebar comienza colapsado */
-@media (max-width: 768px) {
-    /* Mostrar el botón de cerrar (X) en móviles */
-    .sidebar-toggle {
-        display: block !important;
-    }
-
-    /* En móviles, el sidebar ocupa toda la pantalla y comienza oculto */
-    .sidebar {
-        width: 100vw !important; /* Ancho completo de la ventana */
-        left: -100vw !important; /* Oculto completamente hacia la izquierda */
-        z-index: 1000; /* Mayor z-index en móviles para estar sobre todo el contenido */
+        width: 280px;
+        height: 100vh;
+        z-index: 1000;
         transition: left 0.3s ease;
-        height: 100vh !important; /* Altura completa de la pantalla */
-        border-radius: 0 !important; /* Sin bordes redondeados en móvil */
+        padding: 0;
+        margin: 0;
     }
-
-    /* Cuando se abre en móvil - ocupa toda la pantalla */
-    .sidebar:not(.collapsed) {
-        left: 0 !important;
-        width: 100vw !important;
+    
+    .navbar-vertical .container-fluid {
+        padding: 0;
+        margin: 0;
     }
-
-    /* Estado específicamente colapsado en móvil */
-    .sidebar.collapsed {
-        left: -100vw !important; /* Completamente oculto */
+    
+    .page-wrapper {
+        margin-left: 280px;
+        transition: margin-left 0.3s ease;
     }
-
-    /* El contenido principal siempre ocupa todo el ancho en móviles */
-    .main-content {
-        margin-left: 0 !important;
-        width: 100vw !important;
+    
+    /* Sidebar oculto en desktop - completamente fuera de vista */
+    .navbar-vertical.hidden {
+        left: -280px;
     }
+    
+    /* Cuando el sidebar está oculto, el contenido ocupa todo el ancho */
+    .page-wrapper.sidebar-hidden {
+        margin-left: 0;
+    }
+}
 
-    /* Prevenir scroll horizontal */
-    body {
+/* Móvil: Sidebar responsivo mejorado - adaptativo según tamaño */
+@media (max-width: 991.98px) {
+    #sidebar.navbar-vertical {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        /* Ancho adaptativo: 50% de la pantalla con límites mínimo y máximo */
+        width: max(280px, min(50vw, 320px)) !important; 
+        height: 100vh;
+        z-index: 1050;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        /* Mantener color consistente */
+        background-color: var(--tblr-dark, #1e293b) !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+        overflow-y: auto;
         overflow-x: hidden;
+        /* Eliminar cualquier padding o margin que pueda crear espacio arriba */
+        padding: 0 !important;
+        margin: 0 !important;
     }
-
-    html {
-        overflow-x: hidden;
+    
+    /* Container fluid sin padding superior */
+    #sidebar .container-fluid {
+        padding: 0 !important;
+        margin: 0 !important;
     }
-}
-
-/* Desktop - el sidebar siempre está visible */
-@media (min-width: 769px) {
-    /* Ocultar el botón de cerrar (X) en desktop */
-    .sidebar-toggle {
-        display: none !important;
-    }
-
-    /* En desktop, el sidebar siempre está visible */
-    .sidebar {
+    
+    /* Header específico del sidebar - posicionado absolutamente arriba */
+    #sidebar .navbar-brand.navbar-brand-autodark {
+        position: absolute !important;
+        top: 0 !important;
         left: 0 !important;
+        right: 0 !important;
+        padding: 0.5rem 1.5rem 0.5rem 1.5rem !important;
+        margin: 0 !important;
+        text-align: center !important;
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        /* Mantener color consistente */
+        background-color: var(--tblr-dark, #1e293b) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff !important;
+        height: 48px !important; /* Altura fija */
+        z-index: 100 !important; /* Z-index alto para estar por encima del contenido */
     }
-
-    /* Prevenir que se colapse en desktop */
-    .sidebar.collapsed {
-        left: 0 !important;
+    
+    /* Centrar el logo completamente */
+    #sidebar .navbar-brand .d-flex {
+        justify-content: center !important;
+        align-items: center !important;
+        width: 100% !important;
+        height: 100% !important;
     }
-
-    /* El contenido principal siempre debe tener margen para el sidebar */
-    .main-content {
-        margin-left: 220px !important;
-        width: calc(100% - 220px) !important;
+    
+    /* Asegurar que el logo no sea afectado por el botón cerrar */
+    #sidebar .navbar-brand img {
+        display: block !important;
+        margin: 0 auto !important;
+        max-height: 28px !important;
+        width: auto !important;
     }
-}
-
-.permission-indicator {
-    display: inline-flex;
-    align-items: center;
-    margin-left: 6px;
-    margin-right: 0;
-    position: relative;
-    top: 1px;
-    /* Evita que el icono cause salto de línea */
-    white-space: nowrap;
-}
-.permission-indicator i {
-    margin: 0 0 0 8px !important; /* margen izquierdo para separar del texto */
-    padding: 0 !important;
-    font-size: 13px !important;
-    color: #dc3545 !important;
-    vertical-align: middle;
-    position: relative;
-    left: 0;
+    
+    #sidebar.navbar-vertical.show {
+        transform: translateX(0) !important;
+    }
+    
+    /* Asegurar que el contenido del sidebar mantenga colores consistentes */
+    .navbar-vertical .navbar-collapse {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        height: auto !important;
+        background-color: transparent !important;
+        margin-top: 48px !important; /* Espacio para el header fijo */
+        padding-top: 0.5rem !important;
+    }
+    
+    /* Mantener color de fondo consistente para navegación */
+    .navbar-vertical .navbar-nav {
+        display: block !important;
+        width: 100% !important;
+        background-color: transparent !important;
+        padding: 0.5rem 0;
+    }
+    
+    /* Mantener estilos consistentes para nav-items */
+    .navbar-vertical .nav-item {
+        display: block !important;
+        width: 100% !important;
+        background-color: transparent !important;
+    }
+    
+    .navbar-vertical .nav-link {
+        display: flex !important;
+        align-items: center !important;
+        width: 100% !important;
+        background-color: transparent !important;
+        color: rgba(255, 255, 255, 0.8) !important;
+    }
+    
+    .navbar-vertical .nav-link:hover,
+    .navbar-vertical .nav-link.active {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        color: #fff !important;
+    }
+    
+    /* Mantener estilos consistentes para dropdowns */
+    .navbar-vertical .dropdown-menu {
+        position: static;
+        float: none;
+        max-width: none;
+        margin: 0;
+        background-color: rgba(0, 0, 0, 0.2) !important;
+        border: none;
+        box-shadow: none;
+    }
+    
+    .navbar-vertical .dropdown-item {
+        background-color: transparent !important;
+        color: rgba(255, 255, 255, 0.7) !important;
+    }
+    
+    .navbar-vertical .dropdown-item:hover,
+    .navbar-vertical .dropdown-item:focus {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        color: #fff !important;
+    }
+    
+    /* Headers de dropdown con colores consistentes */
+    .navbar-vertical .dropdown-header {
+        color: rgba(255, 255, 255, 0.6) !important;
+        background-color: transparent !important;
+    }
+    
+    /* Solo cuando el dropdown está activo */
+    .navbar-vertical .dropdown.show .dropdown-menu {
+        display: block;
+        background-color: rgba(0, 0, 0, 0.2) !important;
+    }
+    
+    .page-wrapper {
+        margin-left: 0;
+    }
+    
+    /* Backdrop dinámico - solo para pantallas medianas y grandes */
+    .navbar-vertical.show::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: max(280px, min(50vw, 320px)); /* Comenzar donde termina el sidebar */
+        width: calc(100vw - max(280px, min(50vw, 320px))); /* Cubrir el resto */
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: -1;
+        pointer-events: none; /* NO permitir clicks - solo visual */
+    }
+    
+    /* En pantallas muy pequeñas, eliminar el backdrop */
+    @media (max-width: 480px) {
+        .navbar-vertical.show::before {
+            display: none;
+        }
+        
+        #sidebar.navbar-vertical {
+            /* En pantallas muy pequeñas, ocupar más espacio para mejor usabilidad */
+            width: min(90vw, 320px) !important;
+        }
+    }
+    
+    /* Botón cerrar del sidebar en móviles - diseño sutil de Tabler */
+    #sidebar-close {
+        position: absolute !important;
+        top: 50% !important;
+        right: 1rem !important;
+        transform: translateY(-50%) !important;
+        z-index: 101 !important; /* Por encima del header */
+        opacity: 0.6 !important;
+        background-color: transparent !important;
+        border: none !important;
+        padding: 0.125rem !important;
+        margin: 0 !important;
+        width: 1.5rem !important;
+        height: 1.5rem !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 0.25rem !important;
+        transition: all 0.15s ease !important;
+        font-size: 0.875rem !important;
+        color: rgba(255, 255, 255, 0.7) !important;
+    }
+    
+    #sidebar-close:hover {
+        opacity: 1 !important;
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        color: #fff !important;
+        transform: translateY(-50%) scale(1.05) !important;
+    }
+    
+    #sidebar-close:active {
+        transform: translateY(-50%) scale(0.95) !important;
+        background-color: rgba(255, 255, 255, 0.15) !important;
+    }
+    
+    /* Footer del sidebar con colores consistentes */
+    .navbar-vertical .mt-auto {
+        background-color: transparent !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1rem 1.5rem;
+    }
+    
+    .navbar-vertical .btn-outline-light {
+        border-color: rgba(255, 255, 255, 0.3) !important;
+        color: rgba(255, 255, 255, 0.8) !important;
+        background-color: transparent !important;
+    }
+    
+    .navbar-vertical .btn-outline-light:hover {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        border-color: rgba(255, 255, 255, 0.5) !important;
+        color: #fff !important;
+    }
 }

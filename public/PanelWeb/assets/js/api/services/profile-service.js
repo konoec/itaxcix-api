@@ -497,7 +497,7 @@ class ProfileService {
             const response = await fetch(`${this.baseUrl}/profile/change-email`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': token ? 'Bearer ' + token : '',
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
@@ -598,23 +598,73 @@ class ProfileService {
 
             const token = sessionStorage.getItem("authToken");
             if (!token) {
+                console.error('❌ No hay token de autenticación en sessionStorage');
                 return { success: false, message: 'No hay token de autenticación' };
             }
+
+            console.log('🔍 Token encontrado para verify-email:', {
+                exists: !!token,
+                length: token.length,
+                preview: token.substring(0, 30) + '...',
+                type: typeof token
+            });
 
             const requestBody = {
                 userId: parseInt(userId),
                 code: code.toString()
             };
 
+            const headers = {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            };
+
+            console.log('📤 Headers que se enviarán:', {
+                'Authorization': `Bearer ${token.substring(0, 30)}...`,
+                'Content-Type': headers['Content-Type'],
+                'Accept': headers['Accept'],
+                'X-Requested-With': headers['X-Requested-With']
+            });
+
+            console.log('📤 Request body:', requestBody);
+            console.log('📤 Request body stringified:', JSON.stringify(requestBody));
+            console.log('📤 URL completa:', `${this.baseUrl}/profile/verify-email`);
+            
+            // Validación adicional del token antes de enviar
+            if (!token.startsWith('eyJ')) {
+                console.warn('⚠️ El token no parece ser un JWT válido (no empieza con eyJ)');
+            }
+            
+            console.log('📤 Token completo que se enviará:', `Bearer ${token}`);
+
             const response = await fetch(`${this.baseUrl}/profile/verify-email`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': token ? 'Bearer ' + token : '',
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
                 },
                 body: JSON.stringify(requestBody)
+            });
+            
+            console.log('📥 Response completo recibido:', {
+                status: response.status,
+                statusText: response.statusText,
+                ok: response.ok,
+                url: response.url,
+                redirected: response.redirected,
+                type: response.type,
+                headers: {
+                    contentType: response.headers.get('content-type'),
+                    contentLength: response.headers.get('content-length'),
+                    server: response.headers.get('server'),
+                    date: response.headers.get('date'),
+                    wwwAuthenticate: response.headers.get('www-authenticate'),
+                    location: response.headers.get('location')
+                }
             });
 
             if (!response.ok) {
@@ -727,7 +777,7 @@ class ProfileService {
             const response = await fetch(`${this.baseUrl}/profile/change-phone`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': token ? 'Bearer ' + token : '',
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
@@ -839,7 +889,7 @@ class ProfileService {
             const response = await fetch(`${this.baseUrl}/profile/verify-phone`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': token ? 'Bearer ' + token : '',
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'

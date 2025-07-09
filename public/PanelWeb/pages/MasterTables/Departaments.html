@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Configuración básica del documento -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Configuración de caché para prevenir almacenamiento de datos sensibles -->
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../../assets/Recourse/Logo/1.png">
+    <link rel="shortcut icon" href="../../assets/Recourse/Logo/1.png">
+    
+    <title>Panel de Administración - Departamentos</title>
+    
+    <!-- Tabler CSS Framework -->
+    <link rel="stylesheet" href="../../assets/tabler/css/tabler.min.css">
+    <link rel="stylesheet" href="../../assets/tabler/css/tabler-vendors.min.css">
+    
+    <!-- Global toast styles -->
+    <link rel="stylesheet" href="../../assets/css/global-toast.css">
+    
+    <!-- Component specific styles -->
+    <link rel="stylesheet" href="../../assets/css/sidebar.css">
+    <link rel="stylesheet" href="../../assets/css/topbar.css">
+    <link rel="stylesheet" href="../../assets/css/profile.css">
+    
+    <!-- Departaments specific styles -->
+    <link rel="stylesheet" href="../../assets/css/mastertables/companies.css">
+    
+    <!-- Font Awesome para iconografía -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Configuración de la página -->
+    <script>
+        window.pageConfig = {
+            activeSection: 'tablas', // Sección activa en el sidebar
+            pageTitle: {
+                icon: 'fas fa-map',
+                text: 'Gestión de Departamentos'
+            }
+        };
+    </script>
+</head>
+<body>
+    <!-- Pantalla de carga para configuración de permisos -->
+    <div id="permissions-loading" class="permissions-loading-overlay">
+        <div class="loading-content">
+            <div class="loading-car">🚕</div>
+            <h2 class="loading-title">Cargando Panel</h2>
+            <p class="loading-message">
+                Estamos configurando tu sesión y verificando los permisos asignados...
+            </p>
+            <p class="loading-steps">
+                <span id="loading-step">Validando credenciales...</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Layout principal usando estructura Tabler -->
+    <div class="page">
+        <!-- Contenedor del sidebar - se carga dinámicamente -->
+        <div id="sidebar-container"></div>
+
+        <!-- Contenido principal usando estructura Tabler -->
+        <div class="page-wrapper">
+            <!-- Contenedor del topbar - se carga dinámicamente -->
+            <div id="topbar-container"></div>
+            
+            <!-- Page content area - Se implementará contenido específico aquí -->
+            <div class="page-body">
+                <div class="container-xl">
+                    <div class="text-center py-5">
+                        <h2 class="text-muted">Gestión de Departamentos</h2>
+                        <p class="text-muted">El contenido específico se implementará aquí</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor del modal - se carga dinámicamente -->
+    <div id="modal-container"></div>
+
+    <!-- Carga de scripts en orden específico para manejar dependencias -->
+    <!-- 1. Component Loader (debe ir primero) -->
+    <script src="../../assets/js/ui/component-loader.js"></script>
+    
+    <!-- 2. Utilidades y herramientas base -->
+    <script src="../../assets/js/global-initializer.js"></script>
+    <script src="../../assets/js/ui/global-toast.js"></script>
+    <script src="../../assets/js/auth/permissions.js"></script>
+    <script src="../../assets/js/auth/auth-checker.js"></script>
+    <script src="../../assets/js/auth/route-guard.js"></script>
+    
+    <script>
+        // Inicializa RouteGuard para proteger la página
+        window.routeGuard = new RouteGuard("../../index.html");
+    </script>
+    
+    <!-- 2. Servicios de API básicos -->
+    <script src="../../assets/js/api/services/profile-service.js"></script>
+
+    <!-- 3. Controladores de UI -->
+    <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
+
+    <!-- 4. Inicializador específico de la página -->
+    <script src="../../assets/js/ui/initializers/MasterTables/departaments-initializer.js"></script>
+
+    <!-- 5. Scripts de Tabler para funcionalidad completa -->
+    <script src="../../assets/tabler/js/tabler.min.js"></script>
+
+    <!-- Toast notification for profile operations -->
+    <div id="recovery-toast" class="recovery-toast">
+        <div class="recovery-toast-content">
+            <i class="fas fa-check-circle"></i>
+            <span id="recovery-toast-message">Operación completada correctamente</span>
+        </div>
+    </div>
+</body>
+</html>

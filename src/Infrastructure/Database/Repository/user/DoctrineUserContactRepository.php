@@ -191,17 +191,52 @@ class DoctrineUserContactRepository implements UserContactRepositoryInterface
 
     public function findAllUserContactByUserId(int $userId): array
     {
+        // Implementar lógica: contacto confirmado tiene prioridad,
+        // si no hay confirmado entonces el último no confirmado
         $query = $this->entityManager->createQueryBuilder()
             ->select('uc')
             ->from(UserContactEntity::class, 'uc')
             ->where('uc.user = :userId')
             ->andWhere('uc.active = true')
             ->setParameter('userId', $userId)
-            ->orderBy('uc.id', 'ASC')
+            ->orderBy('uc.confirmed', 'DESC')  // Confirmados primero
+            ->addOrderBy('uc.id', 'DESC')      // Más reciente segundo
             ->getQuery();
 
-        $entities = $query->getResult();
-        return array_map([$this, 'toDomain'], $entities);
+        $allContacts = $query->getResult();
+
+        // Agrupar por tipo de contacto
+        $contactsByType = [];
+        foreach ($allContacts as $contact) {
+            $typeId = $contact->getType()->getId();
+            if (!isset($contactsByType[$typeId])) {
+                $contactsByType[$typeId] = [];
+            }
+            $contactsByType[$typeId][] = $contact;
+        }
+
+        // Para cada tipo, aplicar la lógica de selección
+        $selectedContacts = [];
+        foreach ($contactsByType as $typeId => $contacts) {
+            // Buscar contacto confirmado
+            $confirmedContact = null;
+            foreach ($contacts as $contact) {
+                if ($contact->isConfirmed()) {
+                    $confirmedContact = $contact;
+                    break;
+                }
+            }
+
+            if ($confirmedContact) {
+                // Si hay contacto confirmado, usarlo
+                $selectedContacts[] = $confirmedContact;
+            } else {
+                // Si no hay confirmado, usar el más reciente (primero en la lista ordenada)
+                $selectedContacts[] = $contacts[0];
+            }
+        }
+
+        return array_map([$this, 'toDomain'], $selectedContacts);
     }
 
     public function updateContactConfirmation(int $contactId, bool $confirmed): bool

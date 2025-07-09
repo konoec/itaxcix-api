@@ -62,10 +62,10 @@ class VerifyContactService {
     /**
      * Verificar contacto de email específico
      * @param {number} userId - ID del usuario
-     * @param {number} emailContactId - ID del contacto de email
+     * @param {number} emailContactId - ID del contacto de email (por defecto 1)
      * @returns {Promise<Object>} Respuesta de la API
      */
-    async verifyEmailContact(userId, emailContactId) {
+    async verifyEmailContact(userId, emailContactId = 1) {
         console.log(`📧 Verificando contacto de email ${emailContactId} del usuario ${userId}`);
         return await this.verifyContact(userId, emailContactId);
     }
@@ -73,10 +73,10 @@ class VerifyContactService {
     /**
      * Verificar contacto de teléfono específico
      * @param {number} userId - ID del usuario
-     * @param {number} phoneContactId - ID del contacto de teléfono
+     * @param {number} phoneContactId - ID del contacto de teléfono (por defecto 2)
      * @returns {Promise<Object>} Respuesta de la API
      */
-    async verifyPhoneContact(userId, phoneContactId) {
+    async verifyPhoneContact(userId, phoneContactId = 2) {
         console.log(`📱 Verificando contacto de teléfono ${phoneContactId} del usuario ${userId}`);
         return await this.verifyContact(userId, phoneContactId);
     }

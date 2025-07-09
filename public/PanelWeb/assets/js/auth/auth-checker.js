@@ -98,8 +98,20 @@ function checkTokenExpiration() {
     // Si la sesión ha expirado, limpia y redirige
     if (now - sessionTime > sessionDuration) {
         console.log("Sesión expirada, redirigiendo al login...");
-        cleanSession();
-        window.location.href = "../../index.html";
+        
+        // Mostrar toast de sesión expirada
+        if (typeof window.showToast === 'function') {
+            window.showToast('Tu sesión ha expirado. Serás redirigido al login.', 'warning');
+        } else if (typeof window.GlobalToast !== 'undefined' && window.GlobalToast.show) {
+            window.GlobalToast.show('Tu sesión ha expirado. Serás redirigido al login.', 'warning');
+        }
+        
+        // Limpiar sesión después de un momento para que se vea el toast
+        setTimeout(() => {
+            cleanSession();
+            window.location.href = "../../index.html";
+        }, 2000);
+        
         return false;
     }
     // Si la sesión sigue activa, retorna true
@@ -116,8 +128,19 @@ function setupLogoutButton() {
     if (logoutBtn) {
         logoutBtn.addEventListener("click", function(e) {
             e.preventDefault(); // Previene el comportamiento por defecto
-            cleanSession(); // Usar función de limpieza específica
-            window.location.href = "../../index.html"; // Redirige al login
+            
+            // Mostrar toast de cierre de sesión
+            if (typeof window.showToast === 'function') {
+                window.showToast('Sesión cerrada correctamente.', 'success');
+            } else if (typeof window.GlobalToast !== 'undefined' && window.GlobalToast.show) {
+                window.GlobalToast.show('Sesión cerrada correctamente.', 'success');
+            }
+            
+            // Limpiar sesión después de un momento para que se vea el toast
+            setTimeout(() => {
+                cleanSession(); // Usar función de limpieza específica
+                window.location.href = "../../index.html"; // Redirige al login
+            }, 1500);
         });
     }
 }

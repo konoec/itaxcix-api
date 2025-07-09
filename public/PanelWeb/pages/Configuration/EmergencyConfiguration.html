@@ -18,6 +18,7 @@
     
     <!-- Hojas de estilo -->
     <link rel="stylesheet" href="../../assets/css/base.css">
+    <link rel="stylesheet" href="../../assets/css/global-toast.css">
     <link rel="stylesheet" href="../../assets/css/sidebar.css">
     <link rel="stylesheet" href="../../assets/css/topbar.css">
     <link rel="stylesheet" href="../../assets/css/profile.css">
@@ -81,10 +82,7 @@
                             <span class="submenu-arrow"></span>
                         </a>
                         <ul class="submenu">
-                            <li><a href="javascript:void(0)"><i class="fas fa-car"></i>Tabla Maestra 1</a></li>
-                            <li><a href="javascript:void(0)"><i class="fas fa-users"></i>Tabla Maestra 2</a></li>
-                            <li><a href="javascript:void(0)"><i class="fas fa-id-card"></i>Tabla Maestra 3</a></li>
-                            <li><a href="javascript:void(0)"><i class="fas fa-route"></i>Tabla Maestra 4</a></li>
+                            <li><a href="../MasterTables/Companies.html"><i class="fas fa-building"></i>Empresas</a></li>
                         </ul>
                     </li>
 
@@ -96,8 +94,8 @@
                             <span class="submenu-arrow"></span>
                         </a>
                         <ul class="submenu">
-                            <li><a href="../Audit/AuditRegistry.html"><i class="fas fa-history"></i>Registro de Auditoría</a></li>
-                            <li><a href="../Audit/AuditReports.html"><i class="fas fa-chart-bar"></i>Reportes de Auditoría</a></li>
+                            <li id="menu-auditoria-registro"><a href="../Audit/AuditRegistry.html"><i class="fas fa-history"></i>Registro de Auditoría</a></li>
+                            <li id="menu-auditoria-reportes"><a href="../Audit/AuditReports.html"><i class="fas fa-chart-bar"></i>Reportes de Auditoría</a></li>
                         </ul>
                     </li>
 
@@ -109,10 +107,10 @@
                             <span class="submenu-arrow"></span>
                         </a>
                         <ul class="submenu">
-                            <li class="active"><a href="../Configuration/EmergencyConfiguration.html"><i class="fas fa-phone-alt"></i>Emergencia</a></li>
-                            <li><a href="../Configuration/PermissionsManagement.html"><i class="fas fa-shield-alt"></i>Permisos</a></li>
-                            <li><a href="../Configuration/RolesManagement.html"><i class="fas fa-user-tag"></i>Roles</a></li>
-                            <li><a href="../Configuration/UsersManagement.html"><i class="fas fa-users"></i>Usuarios</a></li>
+                            <li id="menu-configuracion-emergencia" class="active"><a href="../Configuration/EmergencyConfiguration.html"><i class="fas fa-phone-alt"></i>Emergencia</a></li>
+                            <li id="menu-configuracion-permisos"><a href="../Configuration/PermissionsManagement.html"><i class="fas fa-shield-alt"></i>Permisos</a></li>
+                            <li id="menu-configuracion-roles"><a href="../Configuration/RolesManagement.html"><i class="fas fa-user-tag"></i>Roles</a></li>
+                            <li id="menu-configuracion-usuarios"><a href="../Configuration/UsersManagement.html"><i class="fas fa-users"></i>Usuarios</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -270,14 +268,14 @@
     
     <!-- 3. Controladores de UI -->
     <script src="../../assets/js/ui/global-toast.js"></script>
-    <script src="../../assets/js/ui/controllers/sidebar-controller.js"></script>
-    <script src="../../assets/js/ui/controllers/topbar-controller.js"></script>
-    <script src="../../assets/js/ui/controllers/profile-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
     
     <!-- Controlador específico de configuración de emergencia -->
-    <script src="../../assets/js/ui/controllers/Configuration/emergency-contact-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Configuration/emergency/emergency-contact-controller.js"></script>
     
     <!-- Inicializador dedicado de emergencia (modular) -->
-    <script src="../../assets/js/ui/initializers/emergency-initializer.js"></script>
+    <script src="../../assets/js/ui/initializers/Configuration/emergency-initializer.js"></script>
 </body>
 </html>

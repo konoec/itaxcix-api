@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,111 +6,46 @@
     <title>Administration Panel - Audit Reports</title>
     <link rel="icon" type="image/png" href="../../assets/Recourse/Logo/1.png">
     <link rel="shortcut icon" href="../../assets/Recourse/Logo/1.png">
-    <link rel="stylesheet" href="../../assets/css/base.css">
+    
+    <!-- Tabler CSS Framework -->
+    <link rel="stylesheet" href="../../assets/tabler/css/tabler.min.css">
+    <link rel="stylesheet" href="../../assets/tabler/css/tabler-vendors.min.css">
+    <link rel="stylesheet" href="../../assets/css/global-toast.css">
     <link rel="stylesheet" href="../../assets/css/sidebar.css">
     <link rel="stylesheet" href="../../assets/css/topbar.css">
     <link rel="stylesheet" href="../../assets/css/profile.css">
-    <link rel="stylesheet" href="../../assets/css/confirmation-modal.css">
     <link rel="stylesheet" href="../../assets/css/audit/audit-reports.css">
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Configuración de la página -->
+    <script>
+        window.pageConfig = {
+            activeSection: 'auditoria',
+            pageTitle: {
+                icon: 'fas fa-chart-bar',
+                text: 'Reportes de Auditoría'
+            }
+        };
+    </script>
     
 </head>
 <body>
-    <div class="layout">
-        <!-- Sidebar -->
-        <div class="sidebar" id="sidebar">
-            <!-- Encabezado del sidebar con título y botón de cierre -->
-            <div class="sidebar-header">
-                <h2 class="logoSidebar"><span class="sidebar-logo-img"></span></h2>
-                <button id="close-sidebar" class="sidebar-toggle">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <!-- Menú de navegación principal -->
-            <div class="sidebar-menu">
-                <ul>
-                    <!-- Inicio -->
-                    <li id="menu-inicio">
-                        <a href="../Inicio/Inicio.html" class="module-inicio">
-                            <i class="fas fa-home"></i>
-                            Inicio
-                        </a>
-                    </li>
-                    <!-- Módulo de Admisión de conductores -->
-                    <li id="menu-admission">
-                        <a class="module-admission" href="../Admission/AdmissionControl.html">
-                            <i class="fas fa-user-check"></i>
-                            Admisión de conductores
-                        </a>
-                    </li>
-                    <!-- Módulo de Tablas maestras -->
-                    <li class="has-submenu" id="menu-tablas">
-                        <a href="javascript:void(0)" class="module-tablas">
-                            <i class="fas fa-table"></i>
-                            Tablas maestras
-                            <span class="submenu-arrow"></span>
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="javascript:void(0)"><i class="fas fa-car"></i>Tabla Maestra 1</a></li>
-                            <li><a href="javascript:void(0)"><i class="fas fa-users"></i>Tabla Maestra 2</a></li>
-                            <li><a href="javascript:void(0)"><i class="fas fa-id-card"></i>Tabla Maestra 3</a></li>
-                            <li><a href="javascript:void(0)"><i class="fas fa-route"></i>Tabla Maestra 4</a></li>
-                        </ul>
-                    </li>
-                    <!-- Módulo de Auditoría -->
-                    <li class="has-submenu open" id="menu-auditoria">
-                        <a href="javascript:void(0)" class="module-auditoria">
-                            <i class="fas fa-search"></i>
-                            Auditoría
-                            <span class="submenu-arrow"></span>
-                        </a>
-                        <ul class="submenu">
-                            <li id="menu-auditoria-registro"><a href="../Audit/AuditRegistry.html"><i class="fas fa-history"></i>Registro de Auditoría</a></li>
-                            <li id="menu-auditoria-reportes" class="active"><a href="../Audit/AuditReports.html"><i class="fas fa-chart-bar"></i>Reportes de Auditoría</a></li>
-                        </ul>
-                    </li>
-                    <!-- Módulo de Configuración -->
-                    <li class="has-submenu" id="menu-configuracion">
-                        <a href="javascript:void(0)" class="module-config">
-                            <i class="fas fa-cog"></i>
-                            Configuración
-                            <span class="submenu-arrow"></span>
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="../Configuration/EmergencyConfiguration.html"><i class="fas fa-phone-alt"></i>Emergencia</a></li>
-                            <li><a href="../Configuration/PermissionsManagement.html"><i class="fas fa-shield-alt"></i>Permisos</a></li>
-                            <li><a href="../Configuration/RolesManagement.html"><i class="fas fa-user-tag"></i>Roles</a></li>
-                            <li><a href="../Configuration/UsersManagement.html"><i class="fas fa-users"></i>Usuarios</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-            <!-- Pie del sidebar con botón de cierre de sesión -->
-            <div class="sidebar-footer">
-                <button class="logout-btn">
-                    <i class="fas fa-power-off"></i>
-                    Cerrar sesión
-                </button>
-            </div>
-        </div>
-        <!-- Topbar -->
-        <div class="main-content">
-            <div class="top-bar">
-                <button id="open-sidebar" class="sidebar-toggle">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h3>REPORTES DE AUDITORÍA</h3>
-                <div class="profile-container" id="profile-container" style="cursor: pointer;" title="Ver mi perfil">
-                    <div class="profile-image" id="profile-image"></div>
-                    <div class="user-info">
-                        <span class="user-display" id="user-display">Admin</span>
-                        <span class="user-role">Administrador</span>
-                    </div>
-                </div>
-            </div>
-            <!-- Contenido principal de reportes -->
-            <div class="content">
-                <div class="incidents-main-container">
+    <!-- Contenedor principal del layout usando estructura Tabler -->
+    <div class="page">
+        <!-- Contenedor del sidebar - se carga dinámicamente -->
+        <div id="sidebar-container"></div>
+
+        <!-- Contenido principal usando estructura Tabler -->
+        <div class="page-wrapper">
+            <!-- Contenedor del topbar - se carga dinámicamente -->
+            <div id="topbar-container"></div>
+            
+            <!-- Contenido principal de la página -->
+            <div class="page-body">
+                <div class="container-xl">
+                    <!-- Contenido principal de reportes -->
+                    <div class="incidents-main-container">
                     <!-- Selector de tipo de reporte -->
                     <div class="report-type-selector">
                         <div class="filter-group">
@@ -810,83 +745,10 @@
             </div>
         </div>
     </div>
+    </div>
     
-    <!-- Pantalla de carga global reutilizable -->
-    <div id="permissions-loading" class="permissions-loading-overlay">
-        <div class="loading-content">
-            <div class="loading-car">🚕</div>
-            <h2 class="loading-title">Loading Audit Reports</h2>
-            <p class="loading-message">
-                We are setting up your session and checking audit report permissions...
-            </p>
-            <p class="loading-steps">
-                <span id="loading-step">Validating credentials...</span>
-            </p>
-        </div>
-    </div>
-
-    <!-- Modal de perfil de usuario -->
-    <div id="profile-modal" class="admin-profile-modal">
-        <div class="admin-profile-content">
-            <h2>
-                Mi Perfil
-                <span class="close-modal" id="close-profile-modal">&times;</span>
-            </h2>
-            <!-- Contenido del modal -->
-            <div class="admin-profile-details">
-                <!-- Perfil del usuario -->
-                <div class="admin-profile-header">
-                    <div class="avatar-large">
-                        <img id="profile-modal-avatar" src="" alt="Foto de perfil">
-                        <div class="avatar-overlay" id="avatar-overlay">
-                            <button class="change-photo-btn" id="change-photo-btn" title="Cambiar foto">
-                                <i class="fas fa-camera"></i>
-                            </button>
-                        </div>
-                        <input type="file" id="photo-input" accept="image/*" style="display: none;">
-                    </div>
-                    <div class="admin-profile-header-info">
-                        <h3 id="profile-modal-name">Nombre del Usuario</h3>
-                    </div>
-                </div>
-                <!-- Información detallada del usuario -->
-                <div class="admin-profile-info">
-                    <div class="info-item">
-                        <label>Nombre:</label>
-                        <span id="profile-modal-firstname">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Apellido:</label>
-                        <span id="profile-modal-lastname">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Tipo de Documento:</label>
-                        <span id="profile-modal-doctype">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Documento:</label>
-                        <span id="profile-modal-document">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Área:</label>
-                        <span id="profile-modal-area">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Cargo:</label>
-                        <span id="profile-modal-position">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Correo Electrónico:</label>
-                        <span id="profile-modal-email">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Celular:</label>
-                        <span id="profile-modal-phone">No disponible</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Contenedor para modales dinámicos -->
+    <div id="modal-container"></div>
 
     <!-- Sistema de notificaciones toast -->
     <div id="toast" class="toast">
@@ -901,25 +763,29 @@
         </div>
     </div>
     
+    <!-- Pantalla de carga global reutilizable -->
+    <div id="permissions-loading" class="permissions-loading-overlay">
+        <div class="loading-content">
+            <div class="loading-car">🚕</div>
+            <h2 class="loading-title">Loading Audit Reports</h2>
+            <p class="loading-message">
+                We are setting up your session and checking audit report permissions...
+            </p>
+            <p class="loading-steps">
+                <span id="loading-step">Validating credentials...</span>
+            </p>
+        </div>
+    </div>
+    
+    <!-- Scripts de Tabler -->
+    <script src="../../assets/tabler/js/tabler.min.js"></script>
+    
     <!-- Scripts básicos del sistema -->
-    <script src="../../assets/js/global-initializer.js"></script>
     <script src="../../assets/js/auth/auth-checker.js"></script>
     <script src="../../assets/js/auth/permissions.js"></script>
     <script src="../../assets/js/auth/route-guard.js"></script>
-    <script>
-        // Inicializa RouteGuard para proteger la página (igual que otros módulos)
-        window.routeGuard = new RouteGuard("../../index.html");
-        
-        // Diagnóstico temporal para verificar autenticación
-        console.log('=== AUTHENTICATION DIAGNOSTIC - AUDIT REPORTS ===');
-        console.log('Token present in sessionStorage:', sessionStorage.getItem('authToken') ? 'YES' : 'NO');
-        console.log('Token present in localStorage:', localStorage.getItem('authToken') ? 'YES' : 'NO');
-        console.log('User logged in:', sessionStorage.getItem('isLoggedIn'));
-        console.log('Module: Audit - Reports');
-        console.log('=== END DIAGNOSTIC ===');
-    </script>
     
-    <!-- Servicios básicos -->
+    <!-- Scripts de servicios -->
     <script src="../../assets/js/api/services/profile-service.js"></script>
     <script src="../../assets/js/api/services/Audit/incident-reports-service.js"></script>
     <script src="../../assets/js/api/services/Audit/vehicle-reports-service.js"></script>
@@ -928,16 +794,16 @@
     <script src="../../assets/js/api/services/Audit/rating-reports-service.js"></script>
     <script src="../../assets/js/api/services/Audit/user-reports-service.js"></script>
     
-    <!-- Modelos básicos -->
-    <script src="../../assets/js/api/models/user.js"></script>
-    
-    <!-- Controladores UI básicos -->
+    <!-- Scripts de UI -->
+    <script src="../../assets/js/ui/component-loader.js"></script>
     <script src="../../assets/js/ui/global-toast.js"></script>
-    <script src="../../assets/js/ui/controllers/sidebar-controller.js"></script>
-    <script src="../../assets/js/ui/controllers/topbar-controller.js"></script>
-    <script src="../../assets/js/ui/controllers/profile-controller.js"></script>
     
-    <!-- Controladores de reportes de auditoría (nuevos) -->
+    <!-- Scripts de controladores base (ANTES del MainController) -->
+    <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
+    
+    <!-- Controladores de reportes de auditoría -->
     <script src="../../assets/js/ui/controllers/Audit/base-reports-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Audit/incident-reports-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Audit/vehicle-reports-controller.js"></script>
@@ -947,50 +813,10 @@
     <script src="../../assets/js/ui/controllers/Audit/user-reports-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Audit/audit-reports-main-controller.js"></script>
     
-    <!-- Inicializador del módulo de reportes -->
-    <script src="../../assets/js/ui/initializers/audit-reports-initializer.js"></script>
-    
-    <!-- Script de prueba temporal -->
-    <script src="../../assets/js/test-global-system.js"></script>
-    
-    <!-- Script de diagnóstico adicional -->
-    <script>
-        // Diagnóstico adicional para detectar problemas
-        window.addEventListener('load', function() {
-            console.log('=== POST-LOAD DIAGNOSTIC ===');
-            console.log('Page fully loaded');
-            
-            setTimeout(function() {
-                console.log('=== FINAL CONTROLLER VERIFICATION ===');
-                console.log('- SidebarController global:', typeof window.SidebarController);
-                console.log('- sidebarController instance:', typeof window.sidebarController);
-                console.log('- TopbarController global:', typeof window.TopbarController);
-                console.log('- topbarController instance:', typeof window.topbarController);
-                console.log('- ProfileController global:', typeof window.ProfileController);
-                console.log('- profileController instance:', typeof window.profileController);
-                console.log('- AuditReportsMainController global:', typeof window.AuditReportsMainController);
-                console.log('- auditReportsMainController instance:', typeof window.auditReportsMainController);
-                console.log('- BaseReportsController global:', typeof window.BaseReportsController);
-                console.log('- IncidentReportsController global:', typeof window.IncidentReportsController);
-                console.log('- VehicleReportsController global:', typeof window.VehicleReportsController);
-                console.log('- InfractionReportsController global:', typeof window.InfractionReportsController);
-                console.log('- TravelReportsController global:', typeof window.TravelReportsController);
-                
-                // Verificar funcionalidad del sidebar
-                const sidebarElement = document.getElementById('sidebar');
-                const openButton = document.getElementById('open-sidebar');
-                const closeButton = document.getElementById('close-sidebar');
-                
-                console.log('- Sidebar element:', sidebarElement);
-                console.log('- Open button:', openButton);
-                console.log('- Close button:', closeButton);
-                
-                if (openButton) {
-                    console.log('- Open button found and available');
-                }
-                
-            }, 2000);
-        });
-    </script>
+    <!-- Inicializadores -->
+    <script src="../../assets/js/ui/initializers/Audit/audit-reports-initializer.js"></script>
+    <script src="../../assets/js/global-initializer.js"></script>
+
 </body>
 </html>
+

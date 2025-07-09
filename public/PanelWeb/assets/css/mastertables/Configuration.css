@@ -1,0 +1,674 @@
+/**
+ * Configuration Module Styles
+ * Estilos específicos para el módulo de configuración del sistema
+ * 
+ * @author Sistema
+ * @version 1.0.0
+ */
+
+/* Container principal */
+.configuration-container {
+    padding: 1rem;
+}
+
+/* Header de la página */
+.configuration-header {
+    margin-bottom: 1.5rem;
+}
+
+.configuration-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.configuration-title i {
+    color: var(--tblr-primary);
+}
+
+.configuration-subtitle {
+    color: var(--tblr-muted);
+    margin-bottom: 0;
+}
+
+/* Estilos específicos para el input de búsqueda */
+.input-icon .form-control {
+    padding-left: 2.5rem;
+}
+
+.input-icon .input-icon-addon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    color: var(--tblr-muted);
+}
+
+/* Espaciado entre búsqueda y botones */
+.card-header .col-md-6:first-child {
+    padding-right: 2.5rem;
+}
+
+.card-header .col-md-6:last-child {
+    padding-left: 2.5rem;
+}
+
+/* Espaciado adicional para la sección de búsqueda */
+.card-header .col-md-6:first-child .mb-2 {
+    margin-right: 1.5rem;
+}
+
+/* Botón de filtros activo */
+.btn.active {
+    background-color: var(--tblr-primary);
+    color: white;
+    border-color: var(--tblr-primary);
+}
+
+/* Sección de filtros */
+#filters-section {
+    transition: all 0.3s ease;
+}
+
+/* Contenedor de acciones */
+.card-header .d-flex {
+    position: relative;
+    z-index: 10;
+}
+
+/* Asegurar que el input no interfiera con el badge */
+.input-icon {
+    position: relative;
+    z-index: 1;
+}
+
+/* Header de la página */
+.configuration-header {
+    margin-bottom: 1.5rem;
+}
+
+.configuration-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.configuration-title i {
+    color: var(--tblr-primary);
+}
+
+.configuration-subtitle {
+    color: var(--tblr-muted);
+    margin-bottom: 0;
+}
+
+/* Toolbar de acciones */
+.configuration-toolbar {
+    background: var(--tblr-bg-surface);
+    border: 1px solid var(--tblr-border-color);
+    border-radius: var(--tblr-border-radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.configuration-toolbar .row {
+    align-items: center;
+}
+
+/* Búsqueda */
+.search-container {
+    position: relative;
+}
+
+.search-container .form-control {
+    padding-left: 2.5rem;
+    font-size: 0.875rem;
+    border-radius: var(--tblr-border-radius);
+}
+
+.search-container .search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--tblr-muted);
+    z-index: 5;
+}
+
+/* Filtros */
+.filters-container {
+    display: none;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--tblr-border-color);
+}
+
+.filters-container.show {
+    display: block;
+}
+
+.filter-group {
+    margin-bottom: 1rem;
+}
+
+.filter-group label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--tblr-text-muted);
+}
+
+.filter-group .form-label {
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--tblr-text-muted);
+}
+
+.filter-group .form-text {
+    font-size: 0.75rem;
+    color: var(--tblr-muted);
+    margin-top: 0.25rem;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    margin-top: 1rem;
+    border-top: 1px solid var(--tblr-border-color);
+    padding-top: 1rem;
+}
+
+.filter-actions .d-flex {
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* Tabla de configuraciones */
+.configurations-table-container {
+    background: var(--tblr-bg-surface);
+    border: 1px solid var(--tblr-border-color);
+    border-radius: var(--tblr-border-radius);
+    overflow: hidden;
+}
+
+.table-responsive {
+    border-radius: var(--tblr-border-radius);
+}
+
+.table th {
+    background: var(--tblr-bg-surface-secondary);
+    color: var(--tblr-text-muted);
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid var(--tblr-border-color);
+    padding: 0.75rem 1rem;
+}
+
+.table td {
+    padding: 0.75rem 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--tblr-border-color-translucent);
+}
+
+.table tbody tr:hover {
+    background: var(--tblr-bg-surface-secondary);
+}
+
+/* Headers ordenables */
+.sortable-header {
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+}
+
+.sortable-header:hover {
+    background: var(--tblr-bg-surface-tertiary);
+}
+
+.sortable-header i {
+    margin-left: 0.5rem;
+    font-size: 0.75rem;
+}
+
+/* Configuración key */
+.config-key {
+    font-family: var(--tblr-font-monospace);
+    font-size: 0.875rem;
+    color: var(--tblr-primary);
+    background: var(--tblr-primary-bg);
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--tblr-border-radius-sm);
+    border: 1px solid var(--tblr-primary-border);
+}
+
+/* Configuración value */
+.config-value {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.config-value.expanded {
+    white-space: normal;
+    max-width: none;
+}
+
+/* Badges de estado */
+.status-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--tblr-border-radius-pill);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.status-badge.active {
+    background: var(--tblr-success-bg);
+    color: var(--tblr-success);
+    border: 1px solid var(--tblr-success-border);
+}
+
+.status-badge.inactive {
+    background: var(--tblr-danger-bg);
+    color: var(--tblr-danger);
+    border: 1px solid var(--tblr-danger-border);
+}
+
+/* Badges de categoría */
+.category-badge {
+    background: var(--tblr-azure-bg);
+    color: var(--tblr-azure);
+    border: 1px solid var(--tblr-azure-border);
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--tblr-border-radius-pill);
+    font-weight: 500;
+}
+
+/* Botones de acción */
+.action-buttons {
+    display: flex;
+    gap: 0.25rem;
+    justify-content: flex-end;
+}
+
+.action-buttons .btn {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.875rem;
+    border-radius: var(--tblr-border-radius-sm);
+}
+
+.action-buttons .btn i {
+    width: 1rem;
+    text-align: center;
+}
+
+/* Paginación */
+.pagination-container {
+    background: var(--tblr-bg-surface);
+    border: 1px solid var(--tblr-border-color);
+    border-top: none;
+    border-radius: 0 0 var(--tblr-border-radius) var(--tblr-border-radius);
+    padding: 1rem;
+}
+
+.pagination-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.pagination-info .per-page-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pagination-info .per-page-selector select {
+    width: auto;
+    min-width: 80px;
+}
+
+/* Estado vacío */
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--tblr-muted);
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--tblr-border-color);
+}
+
+.empty-state h4 {
+    margin-bottom: 0.5rem;
+    color: var(--tblr-text-muted);
+}
+
+.empty-state p {
+    margin-bottom: 1.5rem;
+    color: var(--tblr-muted);
+}
+
+/* Estado de carga */
+.loading-state {
+    text-align: center;
+    padding: 3rem 2rem;
+}
+
+.loading-state .spinner-border {
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 1rem;
+}
+
+.loading-state p {
+    margin-bottom: 0;
+    color: var(--tblr-muted);
+}
+
+/* Modales */
+.modal-header {
+    background: var(--tblr-bg-surface-secondary);
+    border-bottom: 1px solid var(--tblr-border-color);
+}
+
+.modal-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.modal-title i {
+    color: var(--tblr-primary);
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    background: var(--tblr-bg-surface-secondary);
+    border-top: 1px solid var(--tblr-border-color);
+}
+
+/* Formularios */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--tblr-text-muted);
+}
+
+.form-group label.required::after {
+    content: " *";
+    color: var(--tblr-danger);
+}
+
+.form-control:focus {
+    border-color: var(--tblr-primary);
+    box-shadow: 0 0 0 0.2rem rgba(var(--tblr-primary-rgb), 0.25);
+}
+
+.form-text {
+    color: var(--tblr-muted);
+    font-size: 0.875rem;
+}
+
+.invalid-feedback {
+    display: block;
+    color: var(--tblr-danger);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Tooltips */
+.tooltip-inner {
+    max-width: 300px;
+    font-size: 0.875rem;
+}
+
+/* Botón de refresh con animación */
+.refresh-btn i.fa-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Animación para el spinner */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Mejoras en filtros */
+.filter-group .form-label {
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--tblr-text-muted);
+}
+
+.filter-group .form-text {
+    font-size: 0.75rem;
+    color: var(--tblr-muted);
+    margin-top: 0.25rem;
+}
+
+/* Separador en filtros */
+.filter-actions {
+    border-top: 1px solid var(--tblr-border-color);
+    padding-top: 1rem;
+    margin-top: 1rem;
+}
+
+/* Iconos en opciones de select */
+.form-select option {
+    padding: 0.5rem;
+}
+
+/* Toolbar mejorado */
+.configuration-toolbar {
+    background: var(--tblr-bg-surface);
+    border: 1px solid var(--tblr-border-color);
+    border-radius: var(--tblr-border-radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.configuration-toolbar .search-container {
+    position: relative;
+}
+
+.configuration-toolbar .search-container .form-control {
+    padding-left: 2.5rem;
+    font-size: 0.875rem;
+    border-radius: var(--tblr-border-radius);
+}
+
+.configuration-toolbar .search-container .search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--tblr-muted);
+    z-index: 5;
+}
+
+/* Botones de toolbar */
+.configuration-toolbar .btn-group .btn {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+}
+
+.configuration-toolbar .btn-group .btn i {
+    font-size: 0.875rem;
+}
+
+/* Animación para colapsar filtros */
+.collapse {
+    transition: all 0.3s ease;
+}
+
+.collapse.show {
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .configuration-toolbar {
+        padding: 1rem;
+    }
+    
+    .configuration-toolbar .row {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .configuration-toolbar .d-flex {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .configuration-toolbar .btn-group {
+        flex-direction: column;
+    }
+    
+    .filter-group .row {
+        flex-direction: column;
+    }
+    
+    .filter-actions .d-flex {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .configuration-container {
+        padding: 0.5rem;
+    }
+    
+    .configuration-toolbar {
+        padding: 0.5rem;
+    }
+    
+    .empty-state {
+        padding: 2rem 1rem;
+    }
+    
+    .loading-state {
+        padding: 2rem 1rem;
+    }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Utilidades específicas */
+.text-truncate-custom {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.user-select-none {
+    user-select: none;
+}
+
+/* Estados de hover */
+.hover-shadow:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s ease;
+}
+
+/* Colores personalizados */
+:root {
+    --config-primary: #0054a6;
+    --config-success: #2fb344;
+    --config-warning: #f59e0b;
+    --config-danger: #d63384;
+    --config-info: #0dcaf0;
+    --config-muted: #6c757d;
+}
+
+/* Estilos para el modal de creación */
+.modal-dialog {
+    max-width: 600px;
+}
+
+.form-check-input:checked {
+    background-color: var(--tblr-primary);
+    border-color: var(--tblr-primary);
+}
+
+.char-count {
+    font-size: 0.875rem;
+}
+
+.char-count.text-warning {
+    color: var(--tblr-warning) !important;
+}
+
+.char-count.text-danger {
+    color: var(--tblr-danger) !important;
+}
+
+/* Vista previa del modal */
+#configPreview {
+    border: 1px solid var(--tblr-border-color);
+    background-color: var(--tblr-bg-surface-secondary);
+}
+
+#configPreview .card-title {
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}

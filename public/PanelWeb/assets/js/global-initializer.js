@@ -360,4 +360,139 @@ window.forceUserStatusCheck = () => {
     return globalInitializer.forceUserCheck();
 };
 
+/**
+ * Manejo del Sidebar Responsive
+ * Solo para móviles - desktop mantiene su comportamiento actual
+ */
+function initializeSidebarResponsive() {
+    console.log('🔧 Inicializando sidebar responsive...');
+    
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarClose = document.getElementById('sidebar-close');
+    
+    console.log('📱 Elementos encontrados:', {
+        toggle: !!sidebarToggle,
+        sidebar: !!sidebar,
+        close: !!sidebarClose
+    });
+    
+    if (sidebarToggle && sidebar) {
+        // Evento click del botón hamburguesa
+        sidebarToggle.addEventListener('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            console.log('🍔 Click en hamburguesa, ancho ventana:', window.innerWidth);
+            
+            if (window.innerWidth < 992) {
+                // Móviles: Toggle con clase .show
+                const isOpen = sidebar.classList.contains('show');
+                console.log('📱 Estado actual sidebar móvil:', isOpen ? 'abierto' : 'cerrado');
+                
+                sidebar.classList.toggle('show');
+                
+                if (isOpen) {
+                    console.log('➡️ Cerrando sidebar móvil (toggle)');
+                } else {
+                    console.log('⬅️ Abriendo sidebar móvil (toggle)');
+                }
+            } else {
+                // Desktop: Toggle con clases .hidden y .sidebar-hidden
+                const isHidden = sidebar.classList.contains('hidden');
+                const pageWrapper = document.querySelector('.page-wrapper');
+                
+                console.log('🖥️ Estado actual sidebar desktop:', isHidden ? 'oculto' : 'visible');
+                
+                if (isHidden) {
+                    // Mostrar sidebar
+                    sidebar.classList.remove('hidden');
+                    if (pageWrapper) {
+                        pageWrapper.classList.remove('sidebar-hidden');
+                    }
+                    console.log('⬅️ Mostrando sidebar desktop');
+                } else {
+                    // Ocultar sidebar
+                    sidebar.classList.add('hidden');
+                    if (pageWrapper) {
+                        pageWrapper.classList.add('sidebar-hidden');
+                    }
+                    console.log('➡️ Ocultando sidebar desktop');
+                }
+            }
+        });
+        
+        // Evento click del botón X para cerrar
+        if (sidebarClose) {
+            sidebarClose.addEventListener('click', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                
+                console.log('❌ Click en botón cerrar');
+                sidebar.classList.remove('show');
+            });
+        }
+        
+        // Cerrar sidebar al hacer click fuera en móviles
+        document.addEventListener('click', function(event) {
+            if (window.innerWidth < 992 && 
+                sidebar.classList.contains('show') && 
+                !sidebar.contains(event.target) && 
+                !sidebarToggle.contains(event.target)) {
+                
+                console.log('🖱️ Click fuera, cerrando sidebar');
+                sidebar.classList.remove('show');
+            }
+        });
+        
+        // Manejar cambio de tamaño de ventana
+        window.addEventListener('resize', function() {
+            const pageWrapper = document.querySelector('.page-wrapper');
+            
+            if (window.innerWidth >= 992) {
+                // Cambio a desktop: limpiar clases de móvil
+                if (sidebar.classList.contains('show')) {
+                    sidebar.classList.remove('show');
+                    console.log('🖥️ Cambio a desktop, removiendo clase show móvil');
+                }
+            } else {
+                // Cambio a móvil: limpiar clases de desktop
+                if (sidebar.classList.contains('hidden')) {
+                    sidebar.classList.remove('hidden');
+                    console.log('📱 Cambio a móvil, removiendo clase hidden desktop');
+                }
+                if (pageWrapper && pageWrapper.classList.contains('sidebar-hidden')) {
+                    pageWrapper.classList.remove('sidebar-hidden');
+                    console.log('📱 Cambio a móvil, removiendo clase sidebar-hidden');
+                }
+            }
+        });
+        
+        console.log('✅ Sidebar responsive inicializado correctamente');
+    } else {
+        console.warn('⚠️ No se encontraron los elementos del sidebar');
+    }
+}
+
+// Inicializar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 DOM listo, inicializando sistemas...');
+    // La inicialización del sidebar ahora se maneja por SidebarController
+    // initializeSidebarResponsive(); // Deshabilitado para evitar conflictos
+});
+
+// También inicializar después de que se carguen los componentes (por si acaso)
+window.addEventListener('load', function() {
+    console.log('🔄 Window load, sistemas globales cargados');
+    // El sidebar ahora se maneja por SidebarController
+    // Solo reinicializar si no se encontraron los elementos antes
+    // const toggle = document.getElementById('sidebar-toggle');
+    // const sidebar = document.getElementById('sidebar');
+    
+    // if (!toggle || !sidebar) {
+    //     console.log('🔧 Elementos no encontrados antes, reintentando...');
+    //     setTimeout(initializeSidebarResponsive, 500);
+    // }
+});
+
 console.log('✅ Global Initializer cargado');

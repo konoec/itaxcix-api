@@ -10,24 +10,38 @@ class AdmissionControlController {
         // Referencias a elementos del DOM
         this.driversList = document.getElementById('drivers-list');
         this.loadingIndicator = document.getElementById('loading-indicator');
-        this.modal = document.getElementById('driver-modal');
-        this.closeModal = document.querySelector('.close-modal');
-        this.toast = document.getElementById('toast');
-        this.toastMessage = document.getElementById('toast-message');
+        
+        // Modal usando Tabler
+        this.modal = null; // Se inicializará después
+        this.modalElement = document.getElementById('driver-modal');
         this.modalName = document.getElementById('modal-name');
         this.modalDni = document.getElementById('modal-dni');
         this.modalPlaca = document.getElementById('modal-placa');
         this.modalContacto = document.getElementById('modal-contacto');
-        this.modalEstadoTuc = document.getElementById('modal-estado');        this.modalAvatar = document.getElementById('modal-avatar');
+        this.modalEstado = document.getElementById('modal-estado');
+        this.modalEstadoBadge = document.getElementById('modal-estado-badge');
+        this.modalAvatar = document.getElementById('modal-avatar');
+        this.modalRuc = document.getElementById('modal-ruc');
+        this.modalTucIssue = document.getElementById('modal-tuc-issue');
+        this.modalTucExpiration = document.getElementById('modal-tuc-expiration');
+        this.modalTucModality = document.getElementById('modal-tuc-modality');
+        this.modalTucType = document.getElementById('modal-tuc-type');
+        this.modalApproveBtn = document.getElementById('modal-approve-btn');
+        this.modalRejectBtn = document.getElementById('modal-reject-btn');
         
-        // Referencias para el sidebar
-        this.sidebar = document.getElementById('sidebar');
-        this.openSidebarBtn = document.getElementById('open-sidebar');
-        this.closeSidebarBtn = document.getElementById('close-sidebar');
-        this.mainContent = document.querySelector('.main-content');
+        // Toast de notificación
+        this.toast = document.getElementById('toast');
+        this.toastMessage = document.getElementById('toast-message');
+        
+        // Referencias para el sidebar - REMOVIDAS (ahora manejadas por SidebarController y TopBarController)
+        // this.sidebar = document.getElementById('sidebar');
+        // this.openSidebarBtn = document.getElementById('open-sidebar');
+        // this.closeSidebarBtn = document.getElementById('close-sidebar');
+        // this.mainContent = document.querySelector('.main-content');
         
         // Referencias para el modal de confirmación
         this.confirmationModal = document.getElementById('confirmation-modal');
+        this.confirmationModalInstance = null; // Se inicializará después
         this.confirmationTitle = document.getElementById('confirmation-title');
         this.confirmationMessage = document.getElementById('confirmation-message');
         this.confirmationIcon = document.getElementById('confirmation-icon');
@@ -39,35 +53,59 @@ class AdmissionControlController {
         this.currentPage = 0;
         this.perPage = 9;
         this.totalPages = 1;
-        // CORREGIDO: IDs de los botones de paginación
         this.prevPageBtn = document.getElementById('prev-page-btn');
         this.nextPageBtn = document.getElementById('next-page-btn');
         this.paginationInfo = document.getElementById('pagination-info');
-    }// Método principal que inicializa la aplicación - CORREGIDO
+        
+        // Variable para almacenar el conductor actual
+        this.currentDriver = null;
+    }    // Método principal que inicializa la aplicación - CORREGIDO
     // Es async porque realiza operaciones asíncronas (como cargar datos de la API)
     async init() {
         try {
+            console.log('🚗 Inicializando AdmissionControlController...');
+            
+            // Debug: verificar estado de autenticación
+            const isLoggedIn = sessionStorage.getItem("isLoggedIn");
+            const authToken = sessionStorage.getItem("authToken");
+            const userId = sessionStorage.getItem("userId");
+            
+            console.log(`🔐 Estado de autenticación:`, {
+                isLoggedIn: isLoggedIn,
+                hasToken: !!authToken,
+                tokenPreview: authToken ? authToken.substring(0, 20) + '...' : 'N/A',
+                userId: userId
+            });
+            
             this.showLoading(true);
-            // Obtener todos los conductores pendientes de la API (sin paginación)
-            const conductoresData = await this.conductorService.obtenerConductoresPendientes();
-            this.allDrivers = conductoresData.map(data => Conductor.fromApiData(data));
-            this.totalPages = Math.ceil(this.allDrivers.length / this.perPage);
-            this.currentPage = 0;
-            this.renderDriversPage();
-            this.initializeEvents();
-            this.showLoading(false);
+            
+            try {
+                // Obtener todos los conductores pendientes de la API (sin paginación)
+                const conductoresData = await this.conductorService.obtenerConductoresPendientes();
+                this.allDrivers = conductoresData.map(data => Conductor.fromApiData(data));
+                
+                this.totalPages = Math.ceil(this.allDrivers.length / this.perPage);
+                this.currentPage = 0;
+                this.renderDriversPage();
+                this.initializeEvents();
+                this.showLoading(false);
+            } catch (error) {
+                console.error('Error al cargar conductores desde API:', error);
+                this.showToast('Error al cargar los datos de conductores', 'error');
+                this.showLoading(false);
+                this.driversList.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="no-data">
+                            <i class="fas fa-exclamation-circle"></i>
+                            Error al cargar los datos. Intente nuevamente.
+                        </td>
+                    </tr>
+                `;
+            }
         } catch (error) {
-            console.error('Error al inicializar la aplicación:', error);
-            this.showToast('Error al cargar los datos de conductores');
+            console.error('Error general al inicializar la aplicación:', error);
+            this.showToast('Error crítico al inicializar la aplicación', 'error');
             this.showLoading(false);
-            this.driversList.innerHTML = `
-                <tr>
-                    <td colspan="5" class="no-data">
-                        <i class="fas fa-exclamation-circle"></i>
-                        Error al cargar los datos. Intente nuevamente.
-                    </td>
-                </tr>
-            `;
         }
     }
 
@@ -92,33 +130,38 @@ class AdmissionControlController {
         // Crear estructura HTML completamente nueva con celdas simples
         row.innerHTML = `
             <td>
-                <div class="driver-name">
-                    <div class="avatar">
+                <div class="d-flex align-items-center">
+                    <span class="avatar avatar-sm me-3" style="background-image: url('${conductor.getImagenUrl()}')">
                         <img src="${conductor.getImagenUrl()}" 
                              alt="Foto de perfil"
                              onerror="this.onerror=null; this.src='../../assets/Recourse/Imagenes/register_foto_defecto.png';">
+                    </span>
+                    <div>
+                        <div class="conductor-name">${conductor.getNombreCompleto()}</div>
                     </div>
-                    <span>${conductor.getNombreCompleto()}</span>
                 </div>
             </td>
             <td>
-                <span class="cell-content">${conductor.documentValue || 'N/A'}</span>
+                <span class="text-muted">${conductor.documentValue || 'N/A'}</span>
             </td>
             <td>
-                <span class="cell-content">${conductor.plateValue || 'N/A'}</span>
+                <span class="text-muted">${conductor.plateValue || 'N/A'}</span>
             </td>
             <td>
-                <span class="cell-content">${conductor.contactValue || 'N/A'}</span>
+                <span class="text-muted">${conductor.contactValue || 'N/A'}</span>
             </td>
             <td>
-                <div class="actions">
-                    <button class="btn btn-details" data-id="${conductor.driverId}" title="Ver detalles">
+                <span class="badge bg-azure-lt">${conductor.tucStatus || 'PENDIENTE'}</span>
+            </td>
+            <td>
+                <div class="btn-list">
+                    <button class="btn btn-outline-primary btn-sm btn-details" data-id="${conductor.driverId}" title="Ver detalles">
                         <i class="fas fa-eye"></i>
                     </button>
-                    <button class="btn btn-approve" data-id="${conductor.driverId}" title="Aprobar conductor">
+                    <button class="btn btn-outline-success btn-sm btn-approve" data-id="${conductor.driverId}" title="Aprobar conductor">
                         <i class="fas fa-check"></i>
                     </button>
-                    <button class="btn btn-reject" data-id="${conductor.driverId}" title="Rechazar conductor">
+                    <button class="btn btn-outline-danger btn-sm btn-reject" data-id="${conductor.driverId}" title="Rechazar conductor">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -160,54 +203,82 @@ class AdmissionControlController {
 
     // Método para inicializar eventos - LIMPIO
     initializeEvents() {
+        // Inicializar el modal de Tabler
+        if (this.modalElement) {
+            this.modal = new bootstrap.Modal(this.modalElement);
+        }
+        
+        // Inicializar el modal de confirmación
+        if (this.confirmationModal) {
+            this.confirmationModalInstance = new bootstrap.Modal(this.confirmationModal);
+        }
+
         // DELEGACIÓN DE EVENTOS para todos los botones de la tabla
         this.driversList.addEventListener('click', async (e) => {
             const button = e.target.closest('button');
             if (!button) return;
             
-            const driverId = parseInt(button.dataset.id);
+            const driverId = button.dataset.id; // Mantener como string
+            console.log('🔍 Acción en conductor con ID:', driverId);
+            
+            // Obtener el nombre del conductor desde la tabla
+            const row = button.closest('tr');
+            const nombreConductor = row ? row.querySelector('.conductor-name')?.textContent || 'el conductor' : 'el conductor';
             
             if (button.classList.contains('btn-details')) {
-                // BOTÓN DETALLES - SOLO MOSTRAR INFORMACIÓN
+                // BOTÓN DETALLES - OBTENER DESDE API
                 try {
-                    const conductorDetallado = await this.conductorService.obtenerConductorPendientePorId(driverId);
-                    if (conductorDetallado) {
-                        this.showDriverDetails(conductorDetallado);
+                    console.log('🔍 Obteniendo detalles del conductor desde API, ID:', driverId);
+                    
+                    // Obtener detalles directamente de la API
+                    const conductor = await this.conductorService.obtenerConductorPendientePorId(driverId);
+                    
+                    if (conductor && conductor.driverId) {
+                        console.log('👤 Detalles del conductor obtenidos:', conductor);
+                        this.showDriverDetails(conductor);
+                    } else {
+                        console.warn('❌ No se pudieron obtener los detalles del conductor');
+                        this.showToast('No se encontraron los detalles del conductor', 'error');
                     }
                 } catch (error) {
                     console.error('Error al obtener detalles:', error);
                     this.showToast('Error al cargar los detalles del conductor', 'error');
                 }
             } else if (button.classList.contains('btn-approve')) {
-                // BOTÓN APROBAR - SOLO DESDE LA TABLA
-                await this.aprobarConductor(driverId);
+                // BOTÓN APROBAR - CON NOMBRE DESDE LA TABLA
+                await this.aprobarConductor(driverId, nombreConductor);
             } else if (button.classList.contains('btn-reject')) {
-                // BOTÓN RECHAZAR - SOLO DESDE LA TABLA
-                await this.rechazarConductor(driverId);
+                // BOTÓN RECHAZAR - CON NOMBRE DESDE LA TABLA
+                await this.rechazarConductor(driverId, nombreConductor);
             }
         });
 
-        // CERRAR MODAL
-        if (this.closeModal) {
-            this.closeModal.addEventListener('click', () => {
-                this.modal.style.display = 'none';
+        // Eventos para los botones del modal
+        if (this.modalApproveBtn) {
+            this.modalApproveBtn.addEventListener('click', async () => {
+                if (this.currentDriver) {
+                    const nombreConductor = this.currentDriver.getNombreCompleto();
+                    await this.aprobarConductor(this.currentDriver.driverId, nombreConductor);
+                }
             });
         }
 
-        // CERRAR MODAL AL HACER CLIC FUERA
-        window.addEventListener('click', (event) => {
-            if (event.target === this.modal) {
-                this.modal.style.display = 'none';
-            }
-        });
+        if (this.modalRejectBtn) {
+            this.modalRejectBtn.addEventListener('click', async () => {
+                if (this.currentDriver) {
+                    const nombreConductor = this.currentDriver.getNombreCompleto();
+                    await this.rechazarConductor(this.currentDriver.driverId, nombreConductor);
+                }
+            });
+        }
 
-        // SIDEBAR TOGGLE
-        if (this.openSidebarBtn) {
-            this.openSidebarBtn.addEventListener('click', () => this.toggleSidebar());
-        }
-        if (this.closeSidebarBtn) {
-            this.closeSidebarBtn.addEventListener('click', () => this.toggleSidebar());
-        }
+        // SIDEBAR TOGGLE - REMOVIDO (ahora manejado por TopBarController)
+        // if (this.openSidebarBtn) {
+        //     this.openSidebarBtn.addEventListener('click', () => this.toggleSidebar());
+        // }
+        // if (this.closeSidebarBtn) {
+        //     this.closeSidebarBtn.addEventListener('click', () => this.toggleSidebar());
+        // }
 
         // Eventos de paginación
         if (this.prevPageBtn) {
@@ -226,46 +297,115 @@ class AdmissionControlController {
                 }
             });
         }
+
+        // Botón de actualizar datos
+        const refreshBtn = document.getElementById('refresh-drivers-btn');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', async () => {
+                console.log('🔄 Actualizando lista de conductores...');
+                this.showLoading(true);
+                
+                try {
+                    const conductoresData = await this.conductorService.obtenerConductoresPendientes();
+                    this.allDrivers = conductoresData.map(data => Conductor.fromApiData(data));
+                    
+                    this.totalPages = Math.ceil(this.allDrivers.length / this.perPage);
+                    this.currentPage = 0;
+                    this.renderDriversPage();
+                    this.showLoading(false);
+                    this.showToast('Lista de conductores actualizada', 'success');
+                } catch (error) {
+                    console.error('Error al actualizar conductores:', error);
+                    this.showToast('Error al actualizar la lista de conductores', 'error');
+                    this.showLoading(false);
+                }
+            });
+        }
     }
 
     // Método para mostrar los detalles de un conductor en el modal - SOLO INFORMACIÓN
     showDriverDetails(conductor) {
+        console.log('📋 Mostrando detalles del conductor:', conductor);
+        
         // Si recibe datos planos, convertir a clase
         if (!(conductor instanceof Conductor)) {
             conductor = Conductor.fromApiData(conductor);
         }
         
-        // Ya no necesitamos currentConductorId
-        // this.currentConductorId = conductor.driverId;
+        // Almacenar el conductor actual para las acciones del modal
+        this.currentDriver = conductor;
         
-        // Usar métodos de la clase
-        this.modalName.textContent = conductor.getNombreCompleto();
-        this.modalDni.textContent = conductor.documentValue || 'No disponible';
-        this.modalPlaca.textContent = conductor.plateValue || 'No disponible';
-        this.modalContacto.textContent = conductor.contactValue || 'No disponible';
-        this.modalEstadoTuc.textContent = conductor.tucStatus || 'PENDIENTE';
+        console.log('🔍 Elementos del modal encontrados:', {
+            modal: !!this.modal,
+            modalName: !!this.modalName,
+            modalDni: !!this.modalDni,
+            modalPlaca: !!this.modalPlaca,
+            modalContacto: !!this.modalContacto,
+            modalEstado: !!this.modalEstado,
+            modalAvatar: !!this.modalAvatar
+        });
         
-        // Nuevos campos con métodos de la clase
-        document.getElementById('modal-ruc').textContent = conductor.rucCompany || 'No disponible';
-        document.getElementById('modal-tuc-issue').textContent = conductor.getFechaEmisionFormateada();
-        document.getElementById('modal-tuc-expiration').textContent = conductor.getFechaVencimientoFormateada();
-        document.getElementById('modal-tuc-modality').textContent = conductor.tucModality || 'No disponible';
-        document.getElementById('modal-tuc-type').textContent = conductor.tucType || 'No disponible';
+        // Llenar los campos básicos
+        if (this.modalName) this.modalName.textContent = conductor.getNombreCompleto();
+        if (this.modalDni) this.modalDni.textContent = conductor.documentValue || 'No disponible';
+        if (this.modalPlaca) this.modalPlaca.textContent = conductor.plateValue || 'No disponible';
+        if (this.modalContacto) this.modalContacto.textContent = conductor.contactValue || 'No disponible';
+        if (this.modalEstado) this.modalEstado.textContent = conductor.tucStatus || 'PENDIENTE';
         
-        // Usar método para imagen
-        this.modalAvatar.src = conductor.getImagenUrl();
-        this.modalAvatar.onerror = () => {
-            this.modalAvatar.onerror = null;
-            this.modalAvatar.src = conductor.getImagenUrl();
-        };
+        // Llenar el badge de estado
+        if (this.modalEstadoBadge) {
+            this.modalEstadoBadge.textContent = conductor.tucStatus || 'PENDIENTE';
+            // Cambiar clase según el estado
+            this.modalEstadoBadge.className = 'badge';
+            switch (conductor.tucStatus) {
+                case 'APROBADO':
+                    this.modalEstadoBadge.classList.add('bg-success-lt');
+                    break;
+                case 'RECHAZADO':
+                    this.modalEstadoBadge.classList.add('bg-danger-lt');
+                    break;
+                case 'VENCIDO':
+                    this.modalEstadoBadge.classList.add('bg-warning-lt');
+                    break;
+                default:
+                    this.modalEstadoBadge.classList.add('bg-azure-lt');
+            }
+        }
         
-        this.modal.style.display = 'block';
+        // Llenar campos adicionales del TUC
+        if (this.modalRuc) this.modalRuc.textContent = conductor.rucCompany || 'No disponible';
+        if (this.modalTucIssue) this.modalTucIssue.textContent = conductor.getFechaEmisionFormateada();
+        if (this.modalTucExpiration) this.modalTucExpiration.textContent = conductor.getFechaVencimientoFormateada();
+        if (this.modalTucModality) this.modalTucModality.textContent = conductor.tucModality || 'No disponible';
+        if (this.modalTucType) this.modalTucType.textContent = conductor.tucType || 'No disponible';
+        
+        // Configurar la imagen del avatar
+        if (this.modalAvatar) {
+            const imageUrl = conductor.getImagenUrl();
+            this.modalAvatar.src = imageUrl;
+            this.modalAvatar.onerror = () => {
+                this.modalAvatar.onerror = null;
+                this.modalAvatar.src = '../../assets/Recourse/Imagenes/register_foto_defecto.png';
+            };
+            
+            // También actualizar el fondo del avatar
+            const avatarContainer = this.modalAvatar.closest('.avatar');
+            if (avatarContainer) {
+                avatarContainer.style.backgroundImage = `url('${imageUrl}')`;
+            }
+        }
+        
+        console.log('🎯 Abriendo modal de Tabler...');
+        if (this.modal) {
+            this.modal.show();
+            console.log('✅ Modal abierto exitosamente');
+        } else {
+            console.error('❌ No se encontró el modal de Tabler inicializado');
+        }
     }    // Método para aprobar conductor - CON CONFIRMACIÓN
-    async aprobarConductor(driverId) {
+    async aprobarConductor(driverId, nombreConductor = 'el conductor') {
         try {
-            // Obtener datos del conductor para mostrar en la confirmación
-            const conductor = await this.conductorService.obtenerConductorPendientePorId(driverId);
-            const nombreConductor = conductor ? conductor.fullName || 'el conductor' : 'el conductor';
+            console.log('✅ Aprobando conductor:', nombreConductor, 'ID:', driverId);
             
             const confirmed = await this.showConfirmation({
                 title: 'Aprobar Conductor',
@@ -284,7 +424,11 @@ class AdmissionControlController {
             
             if (response.success) {
                 this.showToast('Conductor aprobado con éxito', 'success');
-                this.modal.style.display = 'none';
+                
+                // Solo cerrar modal si está abierto
+                if (this.modal && this.modalElement.classList.contains('show')) {
+                    this.modal.hide();
+                }
                 
                 // Recargar la lista de conductores
                 await this.recargarConductores();
@@ -292,18 +436,16 @@ class AdmissionControlController {
                 this.showToast(response.message || 'Error al aprobar conductor', 'error');
             }
             
-            this.showLoading(false);
         } catch (error) {
             console.error('Error al aprobar conductor:', error);
             this.showToast('Error al aprobar conductor: ' + error.message, 'error');
+        } finally {
             this.showLoading(false);
         }
     }    // Método para rechazar conductor - CON CONFIRMACIÓN
-    async rechazarConductor(driverId) {
+    async rechazarConductor(driverId, nombreConductor = 'el conductor') {
         try {
-            // Obtener datos del conductor para mostrar en la confirmación
-            const conductor = await this.conductorService.obtenerConductorPendientePorId(driverId);
-            const nombreConductor = conductor ? conductor.fullName || 'el conductor' : 'el conductor';
+            console.log('❌ Rechazando conductor:', nombreConductor, 'ID:', driverId);
             
             const confirmed = await this.showConfirmation({
                 title: 'Rechazar Conductor',
@@ -322,7 +464,11 @@ class AdmissionControlController {
             
             if (response.success) {
                 this.showToast('Conductor rechazado con éxito', 'success');
-                this.modal.style.display = 'none';
+                
+                // Solo cerrar modal si está abierto
+                if (this.modal && this.modalElement.classList.contains('show')) {
+                    this.modal.hide();
+                }
                 
                 // Recargar la lista de conductores
                 await this.recargarConductores();
@@ -330,10 +476,10 @@ class AdmissionControlController {
                 this.showToast(response.message || 'Error al rechazar conductor', 'error');
             }
             
-            this.showLoading(false);
         } catch (error) {
             console.error('Error al rechazar conductor:', error);
             this.showToast('Error al rechazar conductor: ' + error.message, 'error');
+        } finally {
             this.showLoading(false);
         }
     }    // Método para recargar conductores - NUEVO
@@ -357,14 +503,15 @@ class AdmissionControlController {
         window.showRecoveryToast(message, type);
     }
 
-    // Método para alternar la visibilidad del sidebar
-    toggleSidebar() {
-        this.sidebar.classList.toggle('active');
-        if (window.innerWidth > 992) {        this.mainContent.classList.toggle('sidebar-active');
-        }
-    }
+    // Método para alternar la visibilidad del sidebar - REMOVIDO (ahora manejado por SidebarController)
+    // toggleSidebar() {
+    //     this.sidebar.classList.toggle('active');
+    //     if (window.innerWidth > 992) {
+    //         this.mainContent.classList.toggle('sidebar-active');
+    //     }
+    // }
 
-    // Método para mostrar modal de confirmación personalizado
+    // Método para mostrar modal de confirmación usando Tabler
     showConfirmation(options = {}) {
         return new Promise((resolve) => {
             // Configuración por defecto
@@ -375,22 +522,30 @@ class AdmissionControlController {
                 iconClass: 'warning',
                 confirmText: 'Confirmar',
                 cancelText: 'Cancelar',
-                confirmClass: 'danger',
+                confirmClass: 'primary',
                 ...options
             };
             
             // Configurar el modal
-            this.confirmationTitle.textContent = config.title;
+            this.confirmationTitle.innerHTML = `<i id="confirmation-icon" class="${config.icon} me-2 text-${config.iconClass}"></i>${config.title}`;
             this.confirmationMessage.textContent = config.message;
-            this.confirmationIcon.className = `${config.icon}`;
-            this.confirmationIcon.parentElement.className = `confirmation-icon ${config.iconClass}`;
+            
+            // Configurar el icono grande del cuerpo
+            const confirmationIconLarge = document.getElementById('confirmation-icon-large');
+            if (confirmationIconLarge) {
+                confirmationIconLarge.className = `${config.icon} text-${config.iconClass}`;
+                const avatarContainer = confirmationIconLarge.closest('.avatar');
+                if (avatarContainer) {
+                    avatarContainer.className = `avatar avatar-lg bg-${config.iconClass}-lt`;
+                }
+            }
             
             // Configurar botones
-            this.confirmationConfirm.innerHTML = `<i class="fas fa-check"></i> ${config.confirmText}`;
-            this.confirmationCancel.innerHTML = `<i class="fas fa-times"></i> ${config.cancelText}`;
+            this.confirmationConfirm.innerHTML = `<i class="fas fa-check me-2"></i>${config.confirmText}`;
+            this.confirmationCancel.innerHTML = `<i class="fas fa-times me-2"></i>${config.cancelText}`;
             
             // Aplicar clase al botón de confirmar
-            this.confirmationConfirm.className = `btn-confirmation btn-confirm ${config.confirmClass}`;
+            this.confirmationConfirm.className = `btn btn-${config.confirmClass}`;
             
             // Limpiar event listeners anteriores
             const newCancelBtn = this.confirmationCancel.cloneNode(true);
@@ -404,12 +559,12 @@ class AdmissionControlController {
             
             // Event listeners
             const handleCancel = () => {
-                this.confirmationModal.style.display = 'none';
+                this.confirmationModalInstance.hide();
                 resolve(false);
             };
             
             const handleConfirm = () => {
-                this.confirmationModal.style.display = 'none';
+                this.confirmationModalInstance.hide();
                 resolve(true);
             };
             
@@ -418,12 +573,12 @@ class AdmissionControlController {
             this.confirmationConfirm.addEventListener('click', handleConfirm);
             
             // Mostrar el modal
-            this.confirmationModal.style.display = 'block';
+            this.confirmationModalInstance.show();
             
             // Enfocar el botón de cancelar por defecto
             setTimeout(() => {
                 this.confirmationCancel.focus();
-            }, 100);
+            }, 300);
         });
     }
 }

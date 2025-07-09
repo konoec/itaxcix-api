@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <!-- Configuración básica del documento -->
@@ -14,302 +14,265 @@
     <link rel="icon" type="image/png" href="../../assets/Recourse/Logo/1.png">
     <link rel="shortcut icon" href="../../assets/Recourse/Logo/1.png">
     
-    <title>Panel de Administración - Aprobación de Conductores</title>    <!-- Hojas de estilo -->
-    <link rel="stylesheet" href="../../assets/css/base.css">
+    <title>Panel de Administración - Aprobación de Conductores</title>
+    
+    <!-- Tabler CSS Framework -->
+    <link rel="stylesheet" href="../../assets/tabler/css/tabler.min.css">
+    <link rel="stylesheet" href="../../assets/tabler/css/tabler-vendors.min.css">
+    
+    <!-- Hojas de estilo -->
+    <link rel="stylesheet" href="../../assets/css/global-toast.css">
     <link rel="stylesheet" href="../../assets/css/sidebar.css">
     <link rel="stylesheet" href="../../assets/css/topbar.css">
     <link rel="stylesheet" href="../../assets/css/profile.css">
     <link rel="stylesheet" href="../../assets/css/admission-control.css">
-    <link rel="stylesheet" href="../../assets/css/confirmation-modal.css">
+    
     <!-- Font Awesome para iconografía -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Configuración de la página -->
+    <script>
+        window.pageConfig = {
+            activeSection: 'admission', // Sección activa en el sidebar
+            pageTitle: {
+                icon: 'fas fa-user-check',
+                text: 'Admisión de conductores'
+            }
+        };
+    </script>
 </head>
 <body>
-    <!-- Pantalla de carga para configuración de permisos -->
-    <div id="permissions-loading" class="permissions-loading-overlay">
-        <div class="loading-content">
-            <div class="loading-car">🚕</div>
-            <h2 class="loading-title">Configurando Permisos</h2>
-            <p class="loading-message">
-                Estamos configurando tu sesión y verificando los permisos asignados...
-            </p>
-            <p class="loading-steps">
-                <span id="loading-step">Validando credenciales...</span>
-            </p>
-        </div>
-    </div>
+    <!-- Contenedor principal del layout usando estructura Tabler -->
+    <div class="page">
+        <!-- Contenedor del sidebar - se carga dinámicamente -->
+        <div id="sidebar-container"></div>
 
-    <!-- Contenedor principal del layout -->
-    <div class="layout">
-        <!-- Barra lateral de navegación -->
-        <div class="sidebar" id="sidebar">
-            <!-- Encabezado del sidebar con título y botón de cierre -->
-          <div class="sidebar-header">
-                <h2 class="logoSidebar"><span class="sidebar-logo-img"></span></h2>
-                <button id="close-sidebar" class="sidebar-toggle">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>            <!-- Menú de navegación principal -->
-            <div class="sidebar-menu">
-                <ul>                    <!-- Inicio -->
-                    <li id="menu-inicio">
-                        <a href="../Inicio/Inicio.html" class="module-inicio">
-                            <i class="fas fa-home"></i>
-                            Inicio
-                        </a>
-                    </li>                    <!-- Módulo de Admisión de conductores -->
-                    <li class="active" id="menu-admission">
-                        <a class="module-admission" href="../Admission/AdmissionControl.html">
-                            <i class="fas fa-user-check"></i>
-                            Admisión de conductores
-                        </a>
-                    </li>
-
-                    <!-- Módulo de Tablas maestras -->
-                    <li class="has-submenu" id="menu-tablas">
-                        <a href="javascript:void(0)" class="module-tablas">
-                            <i class="fas fa-table"></i>
-                            Tablas maestras
-                            <span class="submenu-arrow"></span>
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="javascript:void(0)"><i class="fas fa-car"></i>Tabla Maestra 1</a></li>
-                            <li><a href="javascript:void(0)"><i class="fas fa-users"></i>Tabla Maestra 2</a></li>
-                            <li><a href="javascript:void(0)"><i class="fas fa-id-card"></i>Tabla Maestra 3</a></li>
-                            <li><a href="javascript:void(0)"><i class="fas fa-route"></i>Tabla Maestra 4</a></li>
-                        </ul>
-                    </li>
-
-                    <!-- Módulo de Auditoría -->
-                    <li class="has-submenu" id="menu-auditoria">
-                        <a href="javascript:void(0)" class="module-auditoria">
-                            <i class="fas fa-search"></i>
-                            Auditoría
-                            <span class="submenu-arrow"></span>
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="../Audit/AuditRegistry.html"><i class="fas fa-history"></i>Registro de Auditoría</a></li>
-                            <li><a href="../Audit/AuditReports.html"><i class="fas fa-chart-bar"></i>Reportes de Auditoría</a></li>
-                        </ul>
-                    </li>
-
-                    <!-- Módulo de Configuración -->
-                    <li class="has-submenu" id="menu-configuracion">
-                        <a href="javascript:void(0)" class="module-config">
-                            <i class="fas fa-cog"></i>
-                            Configuración
-                            <span class="submenu-arrow"></span>
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="../Configuration/EmergencyConfiguration.html"><i class="fas fa-phone-alt"></i>Emergencia</a></li>
-                            <li><a href="../Configuration/PermissionsManagement.html"><i class="fas fa-shield-alt"></i>Permisos</a></li>
-                            <li><a href="../Configuration/RolesManagement.html"><i class="fas fa-user-tag"></i>Roles</a></li>
-                            <li><a href="../Configuration/UsersManagement.html"><i class="fas fa-users"></i>Usuarios</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Pie del sidebar con botón de cierre de sesión -->
-            <div class="sidebar-footer">
-                <button class="logout-btn">
-                    <i class="fas fa-power-off"></i>
-                    Cerrar sesión
-                </button>
-            </div>
-        </div>
-
-        <!-- Contenido principal de la página -->
-        <div class="main-content">
-            <!-- Barra superior con controles y información de usuario -->
-            <div class="top-bar">
-                <button id="open-sidebar" class="sidebar-toggle">
-                    <i class="fas fa-bars"></i>                </button>                 <h3>CONTROL ADMISION</h3>
-                <div class="profile-container" id="profile-container" style="cursor: pointer;" title="Ver mi perfil">
-                    <div class="profile-image" id="profile-image"></div>
-                    <div class="user-info">
-                        <span class="user-display" id="user-display">Admin</span>
-                        <span class="user-role">Administrador</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Contenedor principal de la tabla de conductores -->
-            <div class="content">                <div class="panel">
-                    <!-- Contenedor responsive de la tabla -->
-                    <div class="table-container">
-                        <!-- Tabla de conductores -->
-                        <table class="drivers-table">
-                            <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>DNI</th>
-                                    <th>Placa</th>
-                                    <th>Contacto</th>
-                                    <th>Acciones</th> <!-- Cambiar de vacío a "Acciones" -->
-                                </tr>
-                            </thead>
-                            <!-- Indicador de carga posicionado debajo del header -->
-                            <tbody id="loading-row" class="loading-row">
-                                <tr>
-                                    <td colspan="5">
-                                        <div id="loading-indicator" class="loading-indicator">
-                                            <div class="spinner"></div>
-                                            <p>Cargando conductores...</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                            <tbody id="drivers-list">
-                                <!-- Datos dinámicos cargados por JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <!-- Controles de paginación -->
-                    <div class="pagination-container">
-                        <div class="pagination-info">
-                            <span id="pagination-info" class="pagination-info">Página 1 de 1</span>
-                        </div>
-                        <div class="pagination-controls">
-                            <button id="prev-page-btn" class="pagination-btn" disabled>
-                                <i class="fas fa-chevron-left"></i> Anterior
-                            </button>
-                            <button id="next-page-btn" class="pagination-btn" disabled>
-                                Siguiente <i class="fas fa-chevron-right"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>    <!-- Modal para mostrar detalles del conductor -->
-    <div id="driver-modal" class="modal">
-        <div class="modal-content">
-            <h2>
-                Detalles del Conductor
-                <span class="close-modal">&times;</span>
-            </h2>
+        <!-- Contenido principal usando estructura Tabler -->
+        <div class="page-wrapper">
+            <!-- Contenedor del topbar - se carga dinámicamente -->
+            <div id="topbar-container"></div>
             
-            <!-- Contenido del modal -->
-            <div class="driver-details">
-                <!-- Perfil del conductor -->
-                <div class="driver-profile">
-                    <div class="avatar-large">
-                        <img id="modal-avatar" src="" alt="Foto de perfil">
-                    </div>
-                    <div class="driver-profile-info">
-                        <h3 id="modal-name">Nombre del Conductor</h3>
-                    </div>
-                </div>
-                
-                <!-- Información detallada del conductor -->
-                <div class="driver-info">
-                    <div class="info-item">
-                        <label>DNI:</label>
-                        <span id="modal-dni">12345678</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Placa:</label>
-                        <span id="modal-placa">ABC123</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Contacto:</label>
-                        <span id="modal-contacto">987654321</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Estado TUC:</label>
-                        <span id="modal-estado">Pendiente</span>
-                    </div>
-                    
-                    <!-- Nuevos campos agregados -->
-                    <div class="info-item">
-                        <label>RUC Empresa:</label>
-                        <span id="modal-ruc">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Fecha Emisión TUC:</label>
-                        <span id="modal-tuc-issue">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Fecha Vencimiento TUC:</label>
-                        <span id="modal-tuc-expiration">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Modalidad TUC:</label>
-                        <span id="modal-tuc-modality">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Tipo TUC:</label>
-                        <span id="modal-tuc-type">No disponible</span>
+            <!-- Contenido principal de la página -->
+            <div class="page-body">
+                <div class="container-xl">
+                    <!-- Contenedor de la tabla de conductores -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-users me-2"></i>
+                                Lista de Conductores
+                            </h3>
+                            <div class="card-actions">
+                                <button class="btn btn-outline-cyan btn-sm" id="refresh-drivers-btn" title="Actualizar datos">
+                                    <i class="fas fa-sync-alt me-2"></i>
+                                    Actualizar
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Loading State -->
+                        <div id="loading-indicator" class="loading-indicator text-center py-4" style="display: none;">
+                            <div class="spinner-border text-primary me-2" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                            <span>Cargando conductores...</span>
+                        </div>
+                        
+                        <!-- Tabla responsive de conductores -->
+                        <div class="table-responsive">
+                            <table class="table table-vcenter">
+                                <thead>
+                                    <tr>
+                                        <th>Conductor</th>
+                                        <th>DNI</th>
+                                        <th>Placa</th>
+                                        <th>Contacto</th>
+                                        <th>Estado</th>
+                                        <th class="w-1">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="drivers-list">
+                                    <!-- Datos dinámicos cargados por JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Paginación con estructura Tabler -->
+                        <div class="card-footer d-flex align-items-center">
+                            <p class="m-0 text-muted">
+                                <span id="pagination-info">Página 1 de 1</span>
+                            </p>
+                            <ul class="pagination m-0 ms-auto">
+                                <li class="page-item">
+                                    <button class="page-link" id="prev-page-btn" disabled>
+                                        <i class="fas fa-chevron-left"></i>
+                                        Anterior
+                                    </button>
+                                </li>
+                                <li class="page-item">
+                                    <button class="page-link" id="next-page-btn" disabled>
+                                        Siguiente
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>    
-      <!-- Modal para mostrar perfil del usuario -->
-    <div id="profile-modal" class="admin-profile-modal">
-        <div class="admin-profile-content">
-            <h2>
-                Mi Perfil
-                <span class="close-modal" id="close-profile-modal">&times;</span>
-            </h2>
-              <!-- Contenido del modal -->
-            <div class="admin-profile-details">                <!-- Perfil del usuario -->
-                <div class="admin-profile-header">
-                    <div class="avatar-large">
-                        <img id="profile-modal-avatar" src="" alt="Foto de perfil">
-                        <div class="avatar-overlay" id="avatar-overlay">
-                            <button class="change-photo-btn" id="change-photo-btn" title="Cambiar foto">
-                                <i class="fas fa-camera"></i>
-                            </button>
+    <!-- Contenedor para modal de perfil - se carga dinámicamente -->
+    <div id="modal-container"></div>
+    
+    <!-- Modal de detalles del conductor usando Tabler -->
+    <div class="modal modal-blur fade" id="driver-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <!-- Header del modal -->
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user-circle me-2 text-azure"></i>
+                        Detalles del Conductor
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <!-- Cuerpo del modal -->
+                <div class="modal-body">
+                    <!-- Perfil del conductor -->
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <span class="avatar avatar-xl" style="background-image: url('../../assets/Recourse/Imagenes/register_foto_defecto.png')">
+                                        <img id="modal-avatar" src="../../assets/Recourse/Imagenes/register_foto_defecto.png" alt="Avatar del conductor" class="rounded">
+                                    </span>
+                                </div>
+                                <div class="col">
+                                    <h3 class="mb-1" id="modal-name">Nombre del Conductor</h3>
+                                    <div class="text-muted">
+                                        <span class="badge bg-azure-lt" id="modal-estado-badge">PENDIENTE</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <input type="file" id="photo-input" accept="image/*" style="display: none;">
-                    </div>                    <div class="admin-profile-header-info">
-                        <h3 id="profile-modal-name">Nombre del Usuario</h3>
+                    </div>
+                    
+                    <!-- Información principal -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h4 class="card-title">
+                                <i class="fas fa-id-card me-2 text-blue"></i>
+                                Información Personal
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Documento de Identidad</label>
+                                        <div class="fw-bold" id="modal-dni">12345678</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Número de Contacto</label>
+                                        <div class="fw-bold" id="modal-contacto">987654321</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Información del vehículo -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h4 class="card-title">
+                                <i class="fas fa-car me-2 text-green"></i>
+                                Información del Vehículo
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Placa del Vehículo</label>
+                                        <div class="fw-bold" id="modal-placa">ABC-123</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">RUC de la Empresa</label>
+                                        <div class="fw-bold" id="modal-ruc">No disponible</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Información del TUC -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">
+                                <i class="fas fa-id-badge me-2 text-orange"></i>
+                                Tarjeta Única de Circulación (TUC)
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Estado del TUC</label>
+                                        <div class="fw-bold" id="modal-estado">Pendiente</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Modalidad</label>
+                                        <div class="fw-bold" id="modal-tuc-modality">No disponible</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Tipo de TUC</label>
+                                        <div class="fw-bold" id="modal-tuc-type">No disponible</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Fecha de Emisión</label>
+                                        <div class="fw-bold" id="modal-tuc-issue">No disponible</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Fecha de Vencimiento</label>
+                                        <div class="fw-bold" id="modal-tuc-expiration">No disponible</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Información detallada del usuario -->
-                <div class="admin-profile-info">
-                    <div class="info-item">
-                        <label>Nombre:</label>
-                        <span id="profile-modal-firstname">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Apellido:</label>
-                        <span id="profile-modal-lastname">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Tipo de Documento:</label>
-                        <span id="profile-modal-doctype">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Documento:</label>
-                        <span id="profile-modal-document">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Área:</label>
-                        <span id="profile-modal-area">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Cargo:</label>
-                        <span id="profile-modal-position">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Correo Electrónico:</label>
-                        <span id="profile-modal-email">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Celular:</label>
-                        <span id="profile-modal-phone">No disponible</span>
-                    </div>
+                <!-- Footer del modal con acciones -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>
+                        Cerrar
+                    </button>
+                    <button type="button" class="btn btn-danger" id="modal-reject-btn">
+                        <i class="fas fa-times-circle me-2"></i>
+                        Rechazar
+                    </button>
+                    <button type="button" class="btn btn-success" id="modal-approve-btn">
+                        <i class="fas fa-check-circle me-2"></i>
+                        Aprobar
+                    </button>
                 </div>
-
-                <!-- Botones de acción del modal -->
             </div>
         </div>
-    </div>
     </div>    <!-- Sistema de notificaciones toast -->
     <div id="toast" class="toast">
         <div id="toast-message">Conductor aprobado exitosamente</div>
@@ -323,31 +286,51 @@
         </div>
     </div>
 
-    <!-- Modal de confirmación personalizado -->
-    <div id="confirmation-modal" class="confirmation-modal">
-        <div class="confirmation-content">
-            <div class="confirmation-header">
-                <h3 id="confirmation-title">Confirmar Acción</h3>
-            </div>
-            <div class="confirmation-body">
-                <div class="confirmation-icon">
-                    <i id="confirmation-icon" class="fas fa-question-circle"></i>
+    <!-- Modal de confirmación usando Tabler -->
+    <div class="modal modal-blur fade" id="confirmation-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <!-- Header del modal -->
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmation-title">
+                        <i id="confirmation-icon" class="fas fa-question-circle me-2 text-warning"></i>
+                        Confirmar Acción
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <p id="confirmation-message">¿Está seguro de que desea realizar esta acción?</p>
-            </div>
-            <div class="confirmation-footer">
-                <button id="confirmation-cancel" class="btn-confirmation btn-cancel">
-                    <i class="fas fa-times"></i>
-                    Cancelar
-                </button>
-                <button id="confirmation-confirm" class="btn-confirmation btn-confirm">
-                    <i class="fas fa-check"></i>
-                    Confirmar
-                </button>
+                
+                <!-- Cuerpo del modal -->
+                <div class="modal-body">
+                    <div class="text-center">
+                        <div class="mb-3">
+                            <span class="avatar avatar-lg bg-warning-lt">
+                                <i id="confirmation-icon-large" class="fas fa-question-circle text-warning"></i>
+                            </span>
+                        </div>
+                        <p id="confirmation-message" class="text-muted">
+                            ¿Está seguro de que desea realizar esta acción?
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Footer del modal -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="confirmation-cancel" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" id="confirmation-confirm">
+                        <i class="fas fa-check me-2"></i>
+                        Confirmar
+                    </button>
+                </div>
             </div>
         </div>
     </div>    <!-- Carga de scripts en orden específico para manejar dependencias -->
-    <!-- 1. Utilidades y herramientas base -->
+    <!-- 1. Tabler JS (Bootstrap) -->
+    <script src="../../assets/tabler/js/tabler.min.js"></script>
+    
+    <!-- 2. Utilidades y herramientas base -->
     <script src="../../assets/js/global-initializer.js"></script>
     <script src="../../assets/js/auth/auth-checker.js"></script>
     <script src="../../assets/js/auth/permissions.js"></script>
@@ -358,28 +341,21 @@
         window.routeGuard = new RouteGuard("../../index.html");
     </script>
 
-    <!-- 2. Modelos de datos -->
+    <!-- 3. Modelos de datos -->
     <script src="../../assets/js/api/models/driver.js"></script>
       
-    <!-- 3. Servicios de API -->
+    <!-- 4. Servicios de API -->
     <script src="../../assets/js/api/services/driver-service.js"></script>
     <script src="../../assets/js/api/services/profile-service.js"></script>
     <script src="../../assets/js/api/services/Configuration/user-service.js"></script>
-    <!-- 4. Controladores de UI -->
+    <!-- 5. Controladores de UI -->
+    <script src="../../assets/js/ui/component-loader.js"></script>
     <script src="../../assets/js/ui/global-toast.js"></script>
-    <script src="../../assets/js/ui/controllers/sidebar-controller.js"></script>
-    <script src="../../assets/js/ui/controllers/topbar-controller.js"></script>
-    <script src="../../assets/js/ui/controllers/profile-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
     <script src="../../assets/js/ui/controllers/admission-control-controller.js"></script>
     
     <script src="../../assets/js/ui/initializers/admission-control-initializer.js"></script>
-    
-    <!-- Toast notification for password recovery -->
-    <div id="recovery-toast" class="recovery-toast">
-        <div class="recovery-toast-content">
-            <i class="fas fa-check-circle"></i>
-            <span id="recovery-toast-message">Foto de perfil actualizada correctamente</span>
-        </div>
-    </div>
 </body>
 </html>

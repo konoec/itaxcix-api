@@ -1,0 +1,236 @@
+<!-- Barra lateral de navegación usando Tabler -->
+<aside class="navbar navbar-vertical navbar-expand-lg navbar-dark" data-bs-theme="dark" id="sidebar">
+    <div class="container-fluid">
+        <!-- Logo/Brand con botón cerrar integrado -->
+        <h1 class="navbar-brand navbar-brand-autodark">
+            <!-- Botón cerrar para móviles -->
+            <button type="button" class="btn-close btn-close-white d-lg-none" id="sidebar-close" aria-label="Cerrar sidebar"></button>
+            
+            <div class="d-flex align-items-center justify-content-center">
+                <img src="../../assets/Recourse/Logo/2.png" alt="Logo" style="height: 28px; width: auto;">
+            </div>
+        </h1>
+        
+        <!-- Navigation menu -->
+        <div class="collapse navbar-collapse" id="sidebar-menu" data-bs-parent="#sidebar">
+            <ul class="navbar-nav pt-lg-3">
+                <!-- Inicio -->
+                <li class="nav-item" id="menu-inicio">
+                    <a class="nav-link module-inicio" href="../Inicio/Inicio.html">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="fas fa-home"></i>
+                        </span>
+                        <span class="nav-link-title">Inicio</span>
+                    </a>
+                </li>
+
+                <!-- Módulo de Admisión de conductores -->
+                <li class="nav-item" id="menu-admission">
+                    <a class="nav-link module-admission" href="../Admission/AdmissionControl.html">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="fas fa-user-check"></i>
+                        </span>
+                        <span class="nav-link-title">Admisión de conductores</span>
+                    </a>
+                </li>
+
+                <!-- Módulo de Tablas maestras -->
+                <li class="nav-item dropdown" id="menu-tablas">
+                    <a class="nav-link dropdown-toggle module-tablas" href="#navbar-tablas" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="fas fa-table"></i>
+                        </span>
+                        <span class="nav-link-title">Tablas maestras</span>
+                    </a>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-menu-columns">
+                            <!-- Columna 1: Configuración y Ubicación -->
+                            <div class="dropdown-menu-column">
+                                <h6 class="dropdown-header">Configuración General</h6>
+                                <a class="dropdown-item" href="../MasterTables/Configuration.html" id="menu-tablas-configuracion">
+                                    <i class="fas fa-cogs me-2"></i>
+                                    Configuración
+                                </a>
+                                <a class="dropdown-item" href="../MasterTables/Companies.html" id="menu-tablas-empresas">
+                                    <i class="fas fa-building me-2"></i>
+                                    Empresas
+                                </a>
+                                
+                                <h6 class="dropdown-header mt-2">Ubicación Geográfica</h6>
+                                <a class="dropdown-item" href="../MasterTables/Departaments.html" id="menu-tablas-departamentos">
+                                    <i class="fas fa-map me-2"></i>
+                                    Departamentos
+                                </a>
+                                <a class="dropdown-item" href="../MasterTables/Province.html" id="menu-tablas-provincias">
+                                    <i class="fas fa-map-marker-alt me-2"></i>
+                                    Provincias
+                                </a>
+                                <a class="dropdown-item" href="../MasterTables/District.html" id="menu-tablas-distrito">
+                                    <i class="fas fa-map-marked-alt me-2"></i>
+                                    Distritos
+                                </a>
+                            </div>
+                            
+                            <!-- Columna 2: Usuarios y Conductores -->
+                            <div class="dropdown-menu-column">
+                                <h6 class="dropdown-header">Usuarios y Conductores</h6>
+                                <a class="dropdown-item" href="../MasterTables/UserStatus.html" id="menu-tablas-user-status">
+                                    <i class="fas fa-user-circle me-2"></i>
+                                    Estado de Usuarios
+                                </a>
+                                <a class="dropdown-item" href="../MasterTables/UserCodeType.html" id="menu-tablas-user-code-type">
+                                    <i class="fas fa-user-tag me-2"></i>
+                                    Tipos de Código Usuario
+                                </a>
+                                <a class="dropdown-item" href="../MasterTables/DriverStatus.html" id="menu-tablas-driver-status">
+                                    <i class="fas fa-user-check me-2"></i>
+                                    Estado de Conductores
+                                </a>
+                                <a class="dropdown-item" href="../MasterTables/ContactTypes.html" id="menu-tablas-contact-types">
+                                    <i class="fas fa-address-book me-2"></i>
+                                    Tipos de Contacto
+                                </a>
+                                <a class="dropdown-item" href="../MasterTables/DocumentTypes.html" id="menu-tablas-document-types">
+                                    <i class="fas fa-file-alt me-2"></i>
+                                    Tipos de Documentos
+                                </a>
+                            </div>
+                            
+                            <!-- Columna 3: Vehículos -->
+                            <div class="dropdown-menu-column">
+                                <h6 class="dropdown-header">Vehículos</h6>
+                                <a class="dropdown-item" href="../MasterTables/Brand.html" id="menu-tablas-brands">
+                                    <i class="fas fa-tags me-2"></i>
+                                    Marcas
+                                </a>
+                                <a class="dropdown-item" href="../MasterTables/VehicleModel.html" id="menu-tablas-vehicle-model">
+                                    <i class="fas fa-car me-2"></i>
+                                    Modelos de Vehículos
+                                </a>
+                                <a class="dropdown-item" href="../MasterTables/VehicleClass.html" id="menu-tablas-vehicle-class">
+                                    <i class="fas fa-car-side me-2"></i>
+                                    Clases de Vehículos
+                                </a>
+                                <a class="dropdown-item" href="../MasterTables/Color.html" id="menu-tablas-colors">
+                                    <i class="fas fa-palette me-2"></i>
+                                    Colores
+                                </a>
+                                <a class="dropdown-item" href="../MasterTables/FuelType.html" id="menu-tablas-fuel-type">
+                                    <i class="fas fa-gas-pump me-2"></i>
+                                    Tipos de Combustible
+                                </a>
+                                <a class="dropdown-item" href="../MasterTables/Category.html" id="menu-tablas-categories">
+                                    <i class="fas fa-folder me-2"></i>
+                                    Categorías
+                                </a>
+                            </div>
+                            
+                            <!-- Columna 4: Servicios y Procedimientos -->
+                            <div class="dropdown-menu-column">
+                                <h6 class="dropdown-header">Servicios y Procedimientos</h6>
+                                <a class="dropdown-item" href="../MasterTables/ServiceType.html" id="menu-tablas-service-type">
+                                    <i class="fas fa-concierge-bell me-2"></i>
+                                    Tipos de Servicio
+                                </a>
+                                <a class="dropdown-item" href="../MasterTables/ProcedureTypes.html" id="menu-tablas-procedure-types">
+                                    <i class="fas fa-clipboard-list me-2"></i>
+                                    Tipos de Procedimientos
+                                </a>
+                                <a class="dropdown-item" href="../MasterTables/TravelStatus.html" id="menu-tablas-travel-status">
+                                    <i class="fas fa-route me-2"></i>
+                                    Estado de Viajes
+                                </a>
+                                
+                                <h6 class="dropdown-header mt-2">TUC e Infracciones</h6>
+                                <a class="dropdown-item" href="../MasterTables/TucModality.html" id="menu-tablas-tuc-modality">
+                                    <i class="fas fa-id-card me-2"></i>
+                                    Modalidades TUC
+                                </a>
+                                <a class="dropdown-item" href="../MasterTables/TucStatus.html" id="menu-tablas-tuc-status">
+                                    <i class="fas fa-id-badge me-2"></i>
+                                    Estado TUC
+                                </a>
+                                <a class="dropdown-item" href="../MasterTables/IncidentType.html" id="menu-tablas-incident-type">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Tipos de Incidentes
+                                </a>
+                                <a class="dropdown-item" href="../MasterTables/InfractionSeverity.html" id="menu-tablas-infraction-severity">
+                                    <i class="fas fa-gavel me-2"></i>
+                                    Severidad de Infracciones
+                                </a>
+                                <a class="dropdown-item" href="../MasterTables/InfractionStatus.html" id="menu-tablas-infraction-status">
+                                    <i class="fas fa-clipboard-check me-2"></i>
+                                    Estado de Infracciones
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <!-- Módulo de Auditoría -->
+                <li class="nav-item dropdown" id="menu-auditoria">
+                    <a class="nav-link dropdown-toggle module-auditoria" href="#navbar-auditoria" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <span class="nav-link-title">Auditoría</span>
+                    </a>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-menu-columns">
+                            <div class="dropdown-menu-column">
+                                <a class="dropdown-item" href="../Audit/AuditRegistry.html" id="menu-auditoria-registro">
+                                    <i class="fas fa-history me-2"></i>
+                                    Registro de Auditoría
+                                </a>
+                                <a class="dropdown-item" href="../Audit/AuditReports.html" id="menu-auditoria-reportes">
+                                    <i class="fas fa-chart-bar me-2"></i>
+                                    Reportes de Auditoría
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <!-- Módulo de Configuración -->
+                <li class="nav-item dropdown" id="menu-configuracion">
+                    <a class="nav-link dropdown-toggle module-config" href="#navbar-configuracion" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="fas fa-cog"></i>
+                        </span>
+                        <span class="nav-link-title">Configuración</span>
+                    </a>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-menu-columns">
+                            <div class="dropdown-menu-column">
+                                <a class="dropdown-item" href="../Configuration/HelpCenter.html" id="menu-configuracion-ayuda">
+                                    <i class="fas fa-question-circle me-2"></i>
+                                    Centro de Ayuda
+                                </a>
+                                <a class="dropdown-item" href="../Configuration/PermissionsManagement.html" id="menu-configuracion-permisos">
+                                    <i class="fas fa-shield-alt me-2"></i>
+                                    Permisos
+                                </a>
+                                <a class="dropdown-item" href="../Configuration/RolesManagement.html" id="menu-configuracion-roles">
+                                    <i class="fas fa-user-tag me-2"></i>
+                                    Roles
+                                </a>
+                                <a class="dropdown-item" href="../Configuration/UsersManagement.html" id="menu-configuracion-usuarios">
+                                    <i class="fas fa-users me-2"></i>
+                                    Usuarios
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            
+            <!-- Footer del sidebar -->
+            <div class="mt-auto pt-3 border-top">
+                <a class="btn btn-outline-light w-100" href="#" id="logout-btn">
+                    <i class="fas fa-power-off me-2"></i>
+                    Cerrar sesión
+                </a>
+            </div>
+        </div>
+    </div>
+</aside>

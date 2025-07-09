@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <!-- Configuración básica del documento -->
@@ -9,6 +9,7 @@
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Last-Modified" content="Mon, 06 Jan 2025 14:00:00 GMT">
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="../../assets/Recourse/Logo/1.png">
@@ -16,237 +17,155 @@
     
     <title>Panel de Administración - Gestión de Permisos</title>
     
+    <!-- Tabler CSS Framework -->
+    <link rel="stylesheet" href="../../assets/tabler/css/tabler.min.css">
+    <link rel="stylesheet" href="../../assets/tabler/css/tabler-vendors.min.css">
+    
     <!-- Hojas de estilo -->
-    <link rel="stylesheet" href="../../assets/css/base.css">
+    <link rel="stylesheet" href="../../assets/css/global-toast.css">
     <link rel="stylesheet" href="../../assets/css/sidebar.css">
     <link rel="stylesheet" href="../../assets/css/topbar.css">
     <link rel="stylesheet" href="../../assets/css/profile.css">
     <link rel="stylesheet" href="../../assets/css/confirmation-modal.css">
-    <link rel="stylesheet" href="../../assets/css/configuration/Configuration.css">
-    <link rel="stylesheet" href="../../assets/css/configuration/permissions-shadcn.css">
+
     
     <!-- Font Awesome para iconografía -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Configuración de la página -->
+    <script>
+        window.pageConfig = {
+            activeSection: 'configuracion', // Sección activa en el sidebar
+            pageTitle: {
+                icon: 'fas fa-shield-alt',
+                text: 'Gestión de Permisos'
+            }
+        };
+    </script>
 </head>
 <body>
-    <!-- Pantalla de carga para configuración de permisos -->
-    <div id="permissions-loading" class="permissions-loading-overlay">
-        <div class="loading-content">
-            <div class="loading-car">🚕</div>
-            <h2 class="loading-title">Configurando Permisos</h2>
-            <p class="loading-message">
-                Estamos configurando tu sesión y verificando los permisos asignados...
-            </p>
-            <p class="loading-steps">
-                <span id="loading-step">Validando credenciales...</span>
-            </p>
-        </div>
-    </div>
+    <!-- Contenedor principal del layout usando estructura Tabler -->
+    <div class="page">
+        <!-- Contenedor del sidebar - se carga dinámicamente -->
+        <div id="sidebar-container"></div>
 
-    <!-- Contenedor principal del layout -->
-    <div class="layout">
-        <!-- Barra lateral de navegación -->
-        <div class="sidebar" id="sidebar">
-            <!-- Encabezado del sidebar con título y botón de cierre -->
-            <div class="sidebar-header">
-                <h2 class="logoSidebar"><span class="sidebar-logo-img"></span></h2>
-                <button id="close-sidebar" class="sidebar-toggle">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
+        <!-- Contenido principal usando estructura Tabler -->
+        <div class="page-wrapper">
+            <!-- Contenedor del topbar - se carga dinámicamente -->
+            <div id="topbar-container"></div>
             
-            <!-- Menú de navegación principal -->
-            <div class="sidebar-menu">
-                <ul>
-                    <!-- Inicio -->
-                    <li id="menu-inicio">
-                        <a href="../Inicio/Inicio.html" class="module-inicio">
-                            <i class="fas fa-home"></i>
-                            Inicio
-                        </a>
-                    </li>
-                    
-                    <!-- Módulo de Admisión de conductores -->
-                    <li id="menu-admission">
-                        <a class="module-admission" href="../Admission/AdmissionControl.html">
-                            <i class="fas fa-user-check"></i>
-                            Admisión de conductores
-                        </a>
-                    </li>
-
-                    <!-- Módulo de Tablas maestras -->
-                    <li class="has-submenu" id="menu-tablas">
-                        <a href="javascript:void(0)" class="module-tablas">
-                            <i class="fas fa-table"></i>
-                            Tablas maestras
-                            <span class="submenu-arrow"></span>
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="javascript:void(0)"><i class="fas fa-car"></i>Tabla Maestra 1</a></li>
-                            <li><a href="javascript:void(0)"><i class="fas fa-users"></i>Tabla Maestra 2</a></li>
-                            <li><a href="javascript:void(0)"><i class="fas fa-id-card"></i>Tabla Maestra 3</a></li>
-                            <li><a href="javascript:void(0)"><i class="fas fa-route"></i>Tabla Maestra 4</a></li>
-                        </ul>
-                    </li>
-
-                    <!-- Módulo de Auditoría -->
-                    <li class="has-submenu" id="menu-auditoria">
-                        <a href="javascript:void(0)" class="module-auditoria">
-                            <i class="fas fa-search"></i>
-                            Auditoría
-                            <span class="submenu-arrow"></span>
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="../Audit/AuditRegistry.html"><i class="fas fa-history"></i>Registro de Auditoría</a></li>
-                            <li><a href="../Audit/AuditReports.html"><i class="fas fa-chart-bar"></i>Reportes de Auditoría</a></li>
-                        </ul>
-                    </li>
-
-                    <!-- Módulo de Configuración -->
-                    <li class="has-submenu open" id="menu-configuracion">
-                        <a href="javascript:void(0)" class="module-config">
-                            <i class="fas fa-cog"></i>
-                            Configuración
-                            <span class="submenu-arrow"></span>
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="../Configuration/EmergencyConfiguration.html"><i class="fas fa-phone-alt"></i>Emergencia</a></li>
-                            <li class="active"><a href="../Configuration/PermissionsManagement.html"><i class="fas fa-shield-alt"></i>Permisos</a></li>
-                            <li><a href="../Configuration/RolesManagement.html"><i class="fas fa-user-tag"></i>Roles</a></li>
-                            <li><a href="../Configuration/UsersManagement.html"><i class="fas fa-users"></i>Usuarios</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Pie del sidebar con botón de cierre de sesión -->
-            <div class="sidebar-footer">
-                <button class="logout-btn">
-                    <i class="fas fa-power-off"></i>
-                    Cerrar sesión
-                </button>
-            </div>
-        </div>
-
-        <!-- Contenido principal de la página -->
-        <div class="main-content">
-            <!-- Topbar con información de usuario -->
-            <div class="top-bar">
-                <button id="open-sidebar" class="sidebar-toggle">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h3>GESTIÓN DE PERMISOS</h3>
-                <div class="profile-container" id="profile-container" style="cursor: pointer;" title="Ver mi perfil">
-                    <div class="profile-image" id="profile-image"></div>
-                    <div class="user-info">
-                        <span class="user-display" id="user-display">Admin</span>
-                        <span class="user-role">Administrador</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Contenido de gestión de permisos -->
-            <div class="content">
-                <div class="permissions-panel">
-                    <!-- Header con búsqueda y botón de crear permiso con ShadCN -->
-                    <div class="shadcn-table-container">
-                        <div class="shadcn-table-header">
-                            <div class="shadcn-header-content">
-                                <div class="shadcn-header-left">
-                                    <div class="shadcn-search-container">
-                                        <input type="text" id="search-permissions" placeholder="Buscar permisos..." class="shadcn-search-input">
-                                        <i class="fas fa-search shadcn-search-icon"></i>
-                                        <button id="clear-search" class="shadcn-clear-search" style="display: none;">
-                                            <i class="fas fa-times"></i>
-                                        </button>
+            <!-- Contenido principal de la página -->
+            <div class="page-body">
+                <div class="container-xl">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-shield-alt me-2"></i>
+                                Lista de Permisos
+                            </h3>
+                            <div class="card-actions">
+                                <button class="btn btn-primary" id="create-permission-btn">
+                                    <i class="fas fa-plus me-2"></i>
+                                    Crear Permiso
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Filtros y controles en una sección separada para mejor responsividad -->
+                        <div class="card-body">
+                            <div class="row g-2 mb-3">
+                                <div class="col-12 col-md-6 col-lg-4">
+                                    <div class="input-group">
+                                        <input type="text" id="search-permissions" class="form-control" placeholder="Buscar permisos...">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-search"></i>
+                                        </span>
                                     </div>
-                                    
-                                    <!-- Filtros de estado y tipo con ShadCN -->
-                                    <div class="shadcn-filters-container">
-                                        <div class="shadcn-filter-group">
-                                            <label class="shadcn-filter-label">Estado:</label>
-                                            <div class="shadcn-filter-checkboxes">
-                                                <label class="shadcn-filter-checkbox">
-                                                    <input type="checkbox" id="filter-active" value="active">
-                                                    <span class="checkbox-label">Activo</span>
-                                                </label>
-                                                <label class="shadcn-filter-checkbox">
-                                                    <input type="checkbox" id="filter-inactive" value="inactive">
-                                                    <span class="checkbox-label">Inactivo</span>
+                                </div>
+                                <div class="col-12 col-md-6 col-lg-3">
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" id="filter-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fas fa-filter me-2"></i>
+                                            Filtros
+                                        </button>
+                                        <div class="dropdown-menu" style="min-width: 200px;">
+                                            <h6 class="dropdown-header">Estado</h6>
+                                            <div class="dropdown-item">
+                                                <label class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="filter-active">
+                                                    <span class="form-check-label">Activos</span>
                                                 </label>
                                             </div>
-                                        </div>
-                                        
-                                        <div class="shadcn-filter-group">
-                                            <label class="shadcn-filter-label">Tipo:</label>
-                                            <div class="shadcn-filter-checkboxes">
-                                                <label class="shadcn-filter-checkbox">
-                                                    <input type="checkbox" id="filter-web" value="web">
-                                                    <span class="checkbox-label">Web</span>
+                                            <div class="dropdown-item">
+                                                <label class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="filter-inactive">
+                                                    <span class="form-check-label">Inactivos</span>
                                                 </label>
-                                                <label class="shadcn-filter-checkbox">
-                                                    <input type="checkbox" id="filter-app" value="app">
-                                                    <span class="checkbox-label">App</span>
+                                            </div>
+                                            <div class="dropdown-divider"></div>
+                                            <h6 class="dropdown-header">Ámbito</h6>
+                                            <div class="dropdown-item">
+                                                <label class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="filter-web">
+                                                    <span class="form-check-label">Web</span>
+                                                </label>
+                                            </div>
+                                            <div class="dropdown-item">
+                                                <label class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="filter-app">
+                                                    <span class="form-check-label">App</span>
                                                 </label>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="shadcn-header-right">
-                                    <button class="shadcn-refresh-btn" id="refresh-permissions-btn" title="Refrescar lista de permisos">
-                                        <i class="fas fa-sync-alt"></i>
-                                        Refrescar
-                                    </button>
-                                    <button class="shadcn-create-btn" id="create-permission-btn">
-                                        <i class="fas fa-plus"></i>
-                                        Crear permiso
-                                    </button>
+                                <div class="col-12 col-md-12 col-lg-5">
+                                    <div class="d-flex gap-2 justify-content-end">
+                                        <button class="btn btn-outline-secondary" id="refresh-permissions-btn" title="Actualizar datos">
+                                            <i class="fas fa-sync-alt me-2"></i>
+                                            <span class="d-none d-sm-inline">Actualizar</span>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Contenedor de scroll horizontal para la tabla -->
-                        <div class="shadcn-table-scroll">
-                            <!-- Tabla ShadCN completamente rediseñada -->
-                            <table class="shadcn-table">
+                        
+                        <!-- Tabla responsive de permisos -->
+                        <div class="table-responsive">
+                            <table class="table table-vcenter">
                                 <thead>
                                     <tr>
                                         <th>Nombre</th>
                                         <th>Estado</th>
                                         <th>Ámbito</th>
-                                        <th>Acciones</th>
+                                        <th class="w-1">Acciones</th>
                                     </tr>
                                 </thead>
-                                <!-- Indicador de carga -->
-                                <tbody id="permissions-loading-row" class="loading-row">
-                                    <tr>
-                                        <td colspan="4">
-                                            <div class="shadcn-loading-state">
-                                                <div class="shadcn-loading-spinner"></div>
-                                                <p>Cargando permisos...</p>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
                                 <tbody id="permissions-list">
                                     <!-- Datos dinámicos cargados por JavaScript -->
                                 </tbody>
                             </table>
                         </div>
-
-                        <!-- Controles de paginación con ShadCN -->
-                        <div class="shadcn-pagination">
-                            <div class="shadcn-pagination-info">
-                                <span id="pagination-info">Mostrando 1-10 de 25 permisos</span>
-                            </div>
-                            <div class="shadcn-pagination-controls">
-                                <button class="shadcn-pagination-btn" id="prev-page" disabled>
-                                    <i class="fas fa-chevron-left"></i>
-                                </button>
-                                <button class="shadcn-pagination-btn" id="next-page">
-                                    <i class="fas fa-chevron-right"></i>
-                                </button>
-                            </div>
+                        
+                        <!-- Paginación con estructura Tabler -->
+                        <div class="card-footer d-flex align-items-center">
+                            <p class="m-0 text-muted">
+                                <span id="pagination-info">Cargando...</span>
+                            </p>
+                            <ul class="pagination m-0 ms-auto">
+                                <li class="page-item">
+                                    <button class="page-link" id="prev-page-btn" disabled>
+                                        <i class="fas fa-chevron-left"></i>
+                                        Anterior
+                                    </button>
+                                </li>
+                                <li class="page-item">
+                                    <button class="page-link" id="next-page-btn" disabled>
+                                        Siguiente
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -254,124 +173,67 @@
         </div>
     </div>
 
-    <!-- Modal para mostrar perfil del usuario -->
-    <div id="profile-modal" class="admin-profile-modal">
-        <div class="admin-profile-content">
-            <h2>
-                Mi Perfil
-                <span class="close-modal" id="close-profile-modal">&times;</span>
-            </h2>
-            
-            <!-- Contenido del modal -->
-            <div class="admin-profile-details">
-                <!-- Perfil del usuario -->
-                <div class="admin-profile-header">
-                    <div class="avatar-large">
-                        <img id="profile-modal-avatar" src="" alt="Foto de perfil">
-                        <div class="avatar-overlay" id="avatar-overlay">
-                            <button class="change-photo-btn" id="change-photo-btn" title="Cambiar foto">
-                                <i class="fas fa-camera"></i>
-                            </button>
-                        </div>
-                        <input type="file" id="photo-input" accept="image/*" style="display: none;">
-                    </div>
-                    
-                    <div class="admin-profile-header-info">
-                        <h3 id="profile-modal-name">Nombre del Usuario</h3>
-                    </div>
-                </div>
-                
-                <!-- Información detallada del usuario -->
-                <div class="admin-profile-info">
-                    <div class="info-item">
-                        <label>Nombre:</label>
-                        <span id="profile-modal-firstname">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Apellido:</label>
-                        <span id="profile-modal-lastname">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Tipo de Documento:</label>
-                        <span id="profile-modal-doctype">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Documento:</label>
-                        <span id="profile-modal-document">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Área:</label>
-                        <span id="profile-modal-area">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Cargo:</label>
-                        <span id="profile-modal-position">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Correo Electrónico:</label>
-                        <span id="profile-modal-email">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Celular:</label>
-                        <span id="profile-modal-phone">No disponible</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Contenedor para modal de perfil - se carga dinámicamente -->
+    <div id="modal-container"></div>
 
-    <!-- Modal para crear/editar permiso -->
-    <div id="permission-modal" class="modal">
-        <div class="modal-content">
-            <h2>
-                <span id="modal-title">Crear Permiso</span>
-                <span class="close-modal" id="close-permission-modal">&times;</span>
-            </h2>
-            
-            <!-- Formulario del permiso -->
-            <form id="permission-form" class="permission-form">
-                <div class="form-group">
-                    <label for="permission-name">Nombre del Permiso:</label>
-                    <input type="text" id="permission-name" name="name" placeholder="Ingrese el nombre del permiso" required>
+    <!-- Modal para crear/editar permiso usando Tabler -->
+    <div class="modal modal-blur fade" id="permission-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        <span id="modal-title">Crear Permiso</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="permission-active">Estado:</label>
-                        <select id="permission-active" name="active" required>
-                            <option value="">Seleccionar estado</option>
-                            <option value="true">Activo</option>
-                            <option value="false">Inactivo</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="permission-web">Ámbito:</label>
-                        <select id="permission-web" name="web" required>
-                            <option value="">Seleccionar ámbito</option>
-                            <option value="true">Web</option>
-                            <option value="false">App</option>
-                        </select>
-                    </div>
+                <div class="modal-body">
+                    <form id="permission-form">
+                        <div class="mb-3">
+                            <label class="form-label" for="permission-name">Nombre del Permiso</label>
+                            <input type="text" class="form-control" id="permission-name" name="name" placeholder="Ingrese el nombre del permiso" required>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label" for="permission-active">Estado</label>
+                                    <select class="form-select" id="permission-active" name="active" required>
+                                        <option value="">Seleccionar estado</option>
+                                        <option value="true">Activo</option>
+                                        <option value="false">Inactivo</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label" for="permission-web">Ámbito</label>
+                                    <select class="form-select" id="permission-web" name="web" required>
+                                        <option value="">Seleccionar ámbito</option>
+                                        <option value="true">Web</option>
+                                        <option value="false">App</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
                 
-                <div class="form-actions">
-                    <button type="button" class="btn-cancel" id="cancel-permission">Cancelar</button>
-                    <button type="submit" class="btn-save">
-                        <i class="fas fa-save"></i>
+                <div class="modal-footer">
+                    <button type="button" class="btn me-auto" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="save-permission-btn">
+                        <i class="fas fa-save me-2"></i>
                         Guardar
                     </button>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 
-    <!-- Modales para gestión de permisos - Serán implementados desde cero -->
-    <!-- Modal crear/editar permiso será agregado aquí -->
-
     <!-- Sistema de notificaciones toast -->
     <div id="toast" class="toast">
-        <div id="toast-message">Configuration saved successfully</div>
+        <div id="toast-message">Configuración guardada exitosamente</div>
     </div>
 
     <!-- Toast notification for profile operations (mismo estilo que recuperación de contraseña) -->
@@ -383,7 +245,10 @@
     </div>
 
     <!-- Carga de scripts en orden específico para manejar dependencias -->
-    <!-- 1. Utilidades y herramientas base -->
+    <!-- 1. Tabler JS (Bootstrap) -->
+    <script src="../../assets/tabler/js/tabler.min.js"></script>
+    
+    <!-- 2. Utilidades y herramientas base -->
     <script src="../../assets/js/global-initializer.js"></script>
     <script src="../../assets/js/auth/auth-checker.js"></script>
     <script src="../../assets/js/auth/permissions.js"></script>
@@ -394,27 +259,28 @@
         window.routeGuard = new RouteGuard("../../index.html");
     </script>
 
-    <!-- 2. Servicios de API -->
+    <!-- 3. Modelos de datos -->
+    <script src="../../assets/js/api/models/user.js"></script>
+    <script src="../../assets/js/api/models/permission.js"></script>
+    <script src="../../assets/js/api/models/role.js"></script>
+    
+    <!-- 4. Servicios de API -->
     <script src="../../assets/js/api/services/profile-service.js"></script>
     <script src="../../assets/js/api/services/Configuration/user-service.js"></script>
     <script src="../../assets/js/api/services/Configuration/permission-service.js"></script>
     
-    <!-- 2.1. Modelos de datos -->
-    <script src="../../assets/js/api/models/user.js"></script>
-    <script src="../../assets/js/api/models/permission.js"></script>
-    <script src="../../assets/js/api/models/role.js"></script>
-    <script src="../../assets/js/api/models/configuration.js"></script>
-    
-    <!-- 3. Controladores de UI -->
+    <!-- 5. Controladores de UI -->
+    <script src="../../assets/js/ui/component-loader.js"></script>
     <script src="../../assets/js/ui/global-toast.js"></script>
-    <script src="../../assets/js/ui/controllers/sidebar-controller.js"></script>
-    <script src="../../assets/js/ui/controllers/topbar-controller.js"></script>
-    <script src="../../assets/js/ui/controllers/profile-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
     
     <!-- Controladores específicos de configuración -->
-    <script src="../../assets/js/ui/controllers/Configuration/permissions-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Configuration/permissions/permissions-controller.js?v=20250106002"></script>
     
     <!-- Inicializador dedicado para permisos -->
-    <script src="../../assets/js/ui/initializers/permissions-initializer.js"></script>
+    <script src="../../assets/js/ui/initializers/Configuration/permissions-initializer.js?v=20250106002"></script>
 </body>
 </html>
+

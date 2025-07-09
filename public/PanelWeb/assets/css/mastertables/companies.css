@@ -1,0 +1,138 @@
+/* ===== COMPANIES PAGE STYLES - PURE TABLER ===== */
+/* Solo estilos esenciales para el layout del body y componentes específicos */
+
+/* Control del tamaño del body y layout */
+html, body {
+    height: 100%;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+.page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-wrapper {
+    flex: 1;
+    min-height: 0;
+}
+
+/* Estilos para elementos sin definir que causan el problema del body largo */
+.permissions-loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10000;
+    display: none; /* Oculto por defecto */
+}
+
+/* Estilos específicos para el modal de crear empresa */
+#create-company-modal .modal-content {
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+#create-company-modal .modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#create-company-modal .form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Estilos para elementos específicos de la página */
+
+/* ===== SPARKLINE CHARTS STYLES ===== */
+.sparkline-container {
+    height: 40px;
+    width: 100%;
+    overflow: visible;
+}
+
+.chart-sm {
+    height: 40px;
+    position: relative;
+}
+
+.chart-sm svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+/* Sparkline animations */
+.sparkline-line {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: drawLine 1.5s ease-in-out forwards;
+}
+
+.sparkline-point {
+    opacity: 0;
+    animation: fadeInPoint 0.3s ease-in-out forwards;
+}
+
+.sparkline-area {
+    opacity: 0;
+    animation: fadeInArea 1s ease-in-out 0.5s forwards;
+}
+
+.sparkline-bar {
+    transform: scaleY(0);
+    transform-origin: bottom;
+    animation: growBar 0.8s ease-in-out forwards;
+}
+
+@keyframes drawLine {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes fadeInPoint {
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInArea {
+    to {
+        opacity: 0.1;
+    }
+}
+
+@keyframes growBar {
+    to {
+        transform: scaleY(1);
+    }
+}
+
+/* Hover effects for sparklines */
+.sparkline-container:hover .sparkline-line {
+    stroke-width: 3;
+    transition: stroke-width 0.2s ease;
+}
+
+.sparkline-container:hover .sparkline-point {
+    r: 3;
+    transition: r 0.2s ease;
+}
+
+/* Responsive sparklines */
+@media (max-width: 768px) {
+    .chart-sm {
+        height: 30px;
+    }
+    
+    .sparkline-container {
+        height: 30px;
+    }
+}
+
+

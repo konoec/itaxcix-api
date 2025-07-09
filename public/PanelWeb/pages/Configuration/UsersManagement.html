@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -6,804 +6,167 @@
     <title>Panel de Administración - Gestión de Usuarios</title>
     <link rel="icon" type="image/png" href="../../assets/Recourse/Logo/1.png">
     <link rel="shortcut icon" href="../../assets/Recourse/Logo/1.png">
-    <link rel="stylesheet" href="../../assets/css/base.css">
+    
+    <!-- Tabler CSS Framework -->
+    <link rel="stylesheet" href="../../assets/tabler/css/tabler.min.css">
+    <link rel="stylesheet" href="../../assets/tabler/css/tabler-vendors.min.css">
+    <link rel="stylesheet" href="../../assets/css/global-toast.css">
     <link rel="stylesheet" href="../../assets/css/sidebar.css">
     <link rel="stylesheet" href="../../assets/css/topbar.css">
     <link rel="stylesheet" href="../../assets/css/profile.css">
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="../../assets/css/configuration/Configuration.css">
-    <link rel="stylesheet" href="../../assets/css/configuration/users-management.css">
-    <link rel="stylesheet" href="../../assets/css/configuration/role-details-modal.css">
-    <link rel="stylesheet" href="../../assets/css/configuration/user-edit-modal.css">
-    <link rel="stylesheet" href="../../assets/css/configuration/user-details-modal.css">
-    <link rel="stylesheet" href="../../assets/css/configuration/users-shadcn.css">
+    
+    <!-- Configuración de la página -->
+    <script>
+        window.pageConfig = {
+            activeSection: 'configuracion',
+            pageTitle: {
+                icon: 'fas fa-users',
+                text: 'Gestión de Usuarios'
+            }
+        };
+    </script>
     
 </head>
 <body>
-    <div class="layout">
-        <!-- Sidebar -->
-        <div class="sidebar" id="sidebar">
-            <!-- Encabezado del sidebar con título y botón de cierre -->
-            <div class="sidebar-header">
-                <h2 class="logoSidebar"><span class="sidebar-logo-img"></span></h2>
-                <button id="close-sidebar" class="sidebar-toggle">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <!-- Menú de navegación principal -->
-            <div class="sidebar-menu">
-                <ul>
-                    <!-- Inicio -->
-                    <li id="menu-inicio">
-                        <a href="../Inicio/Inicio.html" class="module-inicio">
-                            <i class="fas fa-home"></i>
-                            Inicio
-                        </a>
-                    </li>
-                    <!-- Módulo de Admisión de conductores -->
-                    <li id="menu-admission">
-                        <a class="module-admission" href="../Admission/AdmissionControl.html">
-                            <i class="fas fa-user-check"></i>
-                            Admisión de conductores
-                        </a>
-                    </li>
-                    <!-- Módulo de Tablas maestras -->
-                    <li class="has-submenu" id="menu-tablas">
-                        <a href="javascript:void(0)" class="module-tablas">
-                            <i class="fas fa-table"></i>
-                            Tablas maestras
-                            <span class="submenu-arrow"></span>
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="javascript:void(0)"><i class="fas fa-car"></i>Tabla Maestra 1</a></li>
-                            <li><a href="javascript:void(0)"><i class="fas fa-users"></i>Tabla Maestra 2</a></li>
-                            <li><a href="javascript:void(0)"><i class="fas fa-id-card"></i>Tabla Maestra 3</a></li>
-                            <li><a href="javascript:void(0)"><i class="fas fa-route"></i>Tabla Maestra 4</a></li>
-                        </ul>
-                    </li>
-                    <!-- Módulo de Auditoría -->
-                    <li class="has-submenu" id="menu-auditoria">
-                        <a href="javascript:void(0)" class="module-auditoria">
-                            <i class="fas fa-search"></i>
-                            Auditoría
-                            <span class="submenu-arrow"></span>
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="../Audit/AuditRegistry.html"><i class="fas fa-history"></i>Registro de Auditoría</a></li>
-                            <li><a href="../Audit/AuditReports.html"><i class="fas fa-chart-bar"></i>Reportes de Auditoría</a></li>
-                        </ul>
-                    </li>
-                    <!-- Módulo de Configuración -->
-                    <li class="has-submenu open" id="menu-configuracion">
-                        <a href="javascript:void(0)" class="module-config">
-                            <i class="fas fa-cog"></i>
-                            Configuración
-                            <span class="submenu-arrow"></span>
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="../Configuration/EmergencyConfiguration.html"><i class="fas fa-phone-alt"></i>Emergencia</a></li>
-                            <li><a href="../Configuration/PermissionsManagement.html"><i class="fas fa-shield-alt"></i>Permisos</a></li>
-                            <li><a href="../Configuration/RolesManagement.html"><i class="fas fa-user-tag"></i>Roles</a></li>
-                            <li class="active"><a href="../Configuration/UsersManagement.html"><i class="fas fa-users"></i>Usuarios</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-            <!-- Pie del sidebar con botón de cierre de sesión -->
-            <div class="sidebar-footer">
-                <button class="logout-btn">
-                    <i class="fas fa-power-off"></i>
-                    Cerrar sesión
-                </button>
-            </div>
-        </div>
-        <!-- Topbar -->
-        <div class="main-content">
-            <div class="top-bar">
-                <button id="open-sidebar" class="sidebar-toggle">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h3>GESTIÓN DE USUARIOS</h3>
-                <div class="profile-container" id="profile-container" style="cursor: pointer;" title="Ver mi perfil">
-                    <div class="profile-image" id="profile-image"></div>
-                    <div class="user-info">
-                        <span class="user-display" id="user-display">Admin</span>
-                        <span class="user-role">Administrador</span>
+    <!-- Contenedor principal del layout usando estructura Tabler -->
+    <div class="page">
+        <!-- Contenedor del sidebar - se carga dinámicamente -->
+        <div id="sidebar-container"></div>
+
+        <!-- Contenido principal usando estructura Tabler -->
+        <div class="page-wrapper">
+            <!-- Contenedor del topbar - se carga dinámicamente -->
+            <div id="topbar-container"></div>
+            
+            <!-- Contenido principal de la página -->
+            <div class="page-body">
+                <div class="container-xl">
+                    <!-- Header del módulo -->
+                    <div class="row g-2 align-items-center mb-3">
+                        <div class="col">
                     </div>
-                </div>
-            </div>
-            <!-- Contenido principal de usuarios -->
-            <div class="content">
-                <!-- Contenedor principal con estilo ShadCN -->
-                <div class="shadcn-users-container">
-                    <!-- Header con búsqueda y filtros -->
-                    <div class="shadcn-users-header">
-                        <div class="shadcn-users-header-content">
-                            <div class="shadcn-users-header-left">
-                                <!-- Búsqueda unificada -->
-                                <div class="shadcn-users-search-container">
-                                    <input type="text" id="search-users" placeholder="Buscar por nombre, documento o email..." class="shadcn-users-search-input">
-                                    <i class="fas fa-search shadcn-users-search-icon"></i>
-                                    <button id="clear-search" class="shadcn-users-clear-search" style="display: none;">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                                
-                                <!-- Filtros específicos de usuarios -->
-                                <div class="shadcn-users-filters-container">
-                                    <div class="shadcn-users-filter-group">
-                                        <label class="shadcn-users-filter-label">Tipo:</label>
-                                        <div class="shadcn-users-filter-checkboxes">
-                                            <label class="shadcn-users-filter-checkbox">
-                                                <input type="checkbox" id="filter-citizen" value="citizen">
-                                                <span class="checkbox-label">Ciudadano</span>
-                                            </label>
-                                            <label class="shadcn-users-filter-checkbox">
-                                                <input type="checkbox" id="filter-driver" value="driver">
-                                                <span class="checkbox-label">Conductor</span>
-                                            </label>
-                                            <label class="shadcn-users-filter-checkbox">
-                                                <input type="checkbox" id="filter-admin" value="admin">
-                                                <span class="checkbox-label">Administrador</span>
-                                            </label>
-                                        </div>
+
+                    <!-- Filtros y controles -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-12 col-md-6 col-lg-3">
+                            <div class="input-group">
+                                <input type="text" id="search-users" class="form-control" placeholder="Buscar por nombre, apellido o documento...">
+                                <span class="input-group-text">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-2">
+                            <select class="form-select" id="filter-user-type">
+                                <option value="">Todos los tipos</option>
+                                <option value="admin">Administrador</option>
+                                <option value="citizen">Ciudadano</option>
+                                <option value="driver">Conductor</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-2">
+                            <select class="form-select" id="filter-driver-status">
+                                <option value="">Estado conductor</option>
+                                <option value="PENDIENTE">Pendiente</option>
+                                <option value="APROBADO">Aprobado</option>
+                                <option value="RECHAZADO">Rechazado</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-1">
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-filter me-1"></i>
+                                    <span class="d-none d-lg-inline">Más</span>
+                                </button>
+                                <div class="dropdown-menu" style="min-width: 200px;">
+                                    <h6 class="dropdown-header">Filtros adicionales</h6>
+                                    <div class="dropdown-item">
+                                        <label class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="filter-has-vehicle">
+                                            <span class="form-check-label">Con vehículo</span>
+                                        </label>
                                     </div>
-                                    
-                                    <div class="shadcn-users-filter-group">
-                                        <label class="shadcn-users-filter-label">Estado:</label>
-                                        <div class="shadcn-users-filter-checkboxes">
-                                            <label class="shadcn-users-filter-checkbox">
-                                                <input type="checkbox" id="filter-pending" value="PENDIENTE">
-                                                <span class="checkbox-label">Pendiente</span>
-                                            </label>
-                                            <label class="shadcn-users-filter-checkbox">
-                                                <input type="checkbox" id="filter-approved" value="APROBADO">
-                                                <span class="checkbox-label">Aprobado</span>
-                                            </label>
-                                            <label class="shadcn-users-filter-checkbox">
-                                                <input type="checkbox" id="filter-rejected" value="RECHAZADO">
-                                                <span class="checkbox-label">Rechazado</span>
-                                            </label>
-                                        </div>
+                                    <div class="dropdown-item">
+                                        <label class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="filter-contact-verified">
+                                            <span class="form-check-label">Contactos verificados</span>
+                                        </label>
                                     </div>
                                 </div>
                             </div>
-                            <div class="shadcn-users-header-right">
-                                <button class="shadcn-users-refresh-btn" id="refresh-users-btn" title="Refrescar lista de usuarios">
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-1">
+                            <button class="btn btn-outline-secondary w-100" id="clear-filters">
+                                <i class="fas fa-times me-2"></i>
+                                <span class="d-none d-sm-inline">Limpiar</span>
+                            </button>
+                        </div>
+                        <div class="col-auto d-print-none">
+                            <div class="btn-list">
+                                <button class="btn btn-outline-secondary" id="refresh-users-btn" title="Refrescar usuarios">
                                     <i class="fas fa-sync-alt"></i>
-                                    Refrescar
                                 </button>
-                                <button class="shadcn-users-create-btn" id="create-user-btn">
+                                <button class="btn btn-primary" id="create-user-btn" title="Crear Usuario">
                                     <i class="fas fa-plus"></i>
-                                    Crear usuario
                                 </button>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Contenedor responsive de la tabla -->
-                    <div class="shadcn-users-scroll">
-                        <table class="shadcn-users-table">
-                            <thead>
-                                <tr>
-                                    <th>Usuario</th>
-                                    <th>Documento</th>
-                                    <th>Correo</th>
-                                    <th>Teléfono</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <!-- Loading indicator -->
-                            <tbody id="users-loading-row" style="display: none;">
-                                <tr>
-                                    <td colspan="6" class="shadcn-users-loading-state">
-                                        <i class="fas fa-spinner fa-spin"></i>
-                                        <span>Cargando usuarios...</span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                            <!-- Contenido de usuarios -->
-                            <tbody id="users-list">
-                                <tr>
-                                    <td>
-                                        <div class="user-info">
-                                            <div class="user-details">
-                                                <h6>Administrador Principal</h6>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>00000000</td>
-                                    <td>
-                                        <div class="contact-info">
-                                            <div class="contact-item">
-                                                itaxcix@gmail.com
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="contact-item">
-                                            +51944107761
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="shadcn-users-badge status-active">Activo</span>
-                                    </td>
-                                    <td>
-                                        <div class="shadcn-users-action-buttons">
-                                            <button class="shadcn-users-action-btn edit" title="Editar usuario">
-                                                <i class="fas fa-edit"></i>
-                                                Editar
-                                            </button>
-                                            <button class="shadcn-users-action-btn view" title="Ver usuario">
-                                                <i class="fas fa-eye"></i>
-                                                Ver
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="user-info">
-                                            <div class="user-details">
-                                                <h6>Jesus Perez Sanchez</h6>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>71879697</td>
-                                    <td>
-                                        <div class="contact-info">
-                                            <div class="contact-item">
-                                                rodolfova260802@gmail.com
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="contact-item text-muted">
-                                            Sin teléfono
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="shadcn-users-badge status-active">Activo</span>
-                                    </td>
-                                    <td>
-                                        <div class="shadcn-users-action-buttons">
-                                            <button class="shadcn-users-action-btn edit" title="Editar usuario">
-                                                <i class="fas fa-edit"></i>
-                                                Editar
-                                            </button>
-                                            <button class="shadcn-users-action-btn view" title="Ver usuario">
-                                                <i class="fas fa-eye"></i>
-                                                Ver
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="user-info">
-                                            <div class="user-details">
-                                                <h6>Sofia Lopez Ramirez</h6>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>22222222</td>
-                                    <td>
-                                        <div class="contact-info">
-                                            <div class="contact-item">
-                                                rodolfovri260802@gmail.com
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="contact-item text-muted">
-                                            Sin teléfono
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="shadcn-users-badge status-active">Activo</span>
-                                    </td>
-                                    <td>
-                                        <div class="shadcn-users-action-buttons">
-                                            <button class="shadcn-users-action-btn edit" title="Editar usuario">
-                                                <i class="fas fa-edit"></i>
-                                                Editar
-                                            </button>
-                                            <button class="shadcn-users-action-btn view" title="Ver usuario">
-                                                <i class="fas fa-eye"></i>
-                                                Ver
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <!-- Controles de paginación -->
-                    <div class="shadcn-users-pagination">
-                        <div class="shadcn-users-pagination-info">
-                            <span id="pagination-info">Mostrando 1-3 de 3 usuarios</span>
-                        </div>
-                        <div class="shadcn-users-pagination-controls">
-                            <button class="shadcn-users-pagination-btn" id="prev-page" disabled>
-                                <i class="fas fa-chevron-left"></i>
-                            </button>
-                            <button class="shadcn-users-pagination-btn" id="next-page" disabled>
-                                <i class="fas fa-chevron-right"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Pantalla de carga global reutilizable -->
-    <div id="permissions-loading" class="permissions-loading-overlay">
-        <div class="loading-content">
-            <div class="loading-car">🚕</div>
-            <h2 class="loading-title">Configurando Usuarios</h2>
-            <p class="loading-message">
-                Estamos configurando tu sesión y verificando los usuarios asignados...
-            </p>
-            <p class="loading-steps">
-                <span id="loading-step">Validando credenciales...</span>
-            </p>
-        </div>
-    </div>
-    <!-- Modal de perfil de usuario (copiado de Permisos) -->
-    <div id="profile-modal" class="admin-profile-modal">
-        <div class="admin-profile-content">
-            <h2>
-                Mi Perfil
-                <span class="close-modal" id="close-profile-modal">&times;</span>
-            </h2>
-            <!-- Contenido del modal -->
-            <div class="admin-profile-details">
-                <!-- Perfil del usuario -->
-                <div class="admin-profile-header">
-                    <div class="avatar-large">
-                        <img id="profile-modal-avatar" src="" alt="Foto de perfil">
-                        <div class="avatar-overlay" id="avatar-overlay">
-                            <button class="change-photo-btn" id="change-photo-btn" title="Cambiar foto">
-                                <i class="fas fa-camera"></i>
-                            </button>
-                        </div>
-                        <input type="file" id="photo-input" accept="image/*" style="display: none;">
-                    </div>
-                    <div class="admin-profile-header-info">
-                        <h3 id="profile-modal-name">Nombre del Usuario</h3>
-                    </div>
-                </div>
-                <!-- Información detallada del usuario -->
-                <div class="admin-profile-info">
-                    <div class="info-item">
-                        <label>Nombre:</label>
-                        <span id="profile-modal-firstname">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Apellido:</label>
-                        <span id="profile-modal-lastname">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Tipo de Documento:</label>
-                        <span id="profile-modal-doctype">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Documento:</label>
-                        <span id="profile-modal-document">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Área:</label>
-                        <span id="profile-modal-area">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Cargo:</label>
-                        <span id="profile-modal-position">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Correo Electrónico:</label>
-                        <span id="profile-modal-email">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Celular:</label>
-                        <span id="profile-modal-phone">No disponible</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Modal para crear/editar usuario -->
-    <div id="user-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modal-title">Crear Usuario</h2>
-                <span class="close-modal" id="close-user-modal">&times;</span>
-            </div>
-            
-            <!-- Formulario del usuario -->
-            <form id="user-form" class="permission-form">
-                <div class="form-group">
-                    <label for="user-document">DOCUMENTO</label>
-                    <input type="text" id="user-document" name="document" placeholder="" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="user-email">CORREO</label>
-                    <input type="email" id="user-email" name="email" placeholder="" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="user-password">CONTRASEÑA</label>
-                    <input type="password" id="user-password" name="password" placeholder="" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="user-area">AREA</label>
-                    <input type="text" id="user-area" name="area" placeholder="">
-                </div>
-                
-                <div class="form-group">
-                    <label for="user-position">POSICION</label>
-                    <input type="text" id="user-position" name="position" placeholder="">
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="btn-cancel" id="cancel-user">Cancelar</button>
-                    <button type="submit" class="btn-save">
-                        <i class="fas fa-save"></i>
-                        Guardar
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Modal para crear/editar usuario -->
-    <div id="create-user-modal" class="modal">
-        <div class="modal-content scrollable-modal">
-            <h2>
-                <span id="create-modal-title">Crear Usuario</span>
-                <span class="close-modal" id="close-create-user-modal">&times;</span>
-            </h2>
-            <!-- Formulario del usuario -->
-            <form id="create-user-form" class="permission-form">
-                <div class="form-group">
-                    <label for="create-user-document">DOCUMENTO:</label>
-                    <input type="text" id="create-user-document" name="document" placeholder="Ingrese el documento" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="create-user-email">CORREO:</label>
-                    <input type="email" id="create-user-email" name="email" placeholder="Ingrese el correo electrónico" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="create-user-password">CONTRASEÑA:</label>
-                    <div class="password-input-wrapper">
-                        <input type="password" id="create-user-password" name="password" placeholder="Ingrese la contraseña" required>
-                        <button type="button" class="password-toggle-btn" id="toggle-create-password-visibility">
-                            <i class="fas fa-eye" id="create-password-toggle-icon"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="create-user-area">ÁREA:</label>
-                    <input type="text" id="create-user-area" name="area" placeholder="Ingrese el área">
-                </div>
-                
-                <div class="form-group">
-                    <label for="create-user-position">POSICIÓN:</label>
-                    <input type="text" id="create-user-position" name="position" placeholder="Ingrese la posición">
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="btn-cancel" id="cancel-create-user">Cancelar</button>
-                    <button type="submit" class="btn-save">
-                        <i class="fas fa-save"></i>
-                        Guardar
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Modal de edición del usuario - Asignación de roles -->
-    <div id="user-edit-modal" class="modal role-details-modal">
-        <div class="modal-content wide-modal">
-            <div class="modal-header">
-                <div class="modal-header-top">
-                    <div class="modal-title">
-                        <span id="user-edit-title">RICARDO VILLEGAS CHAVEZ</span>
-                    </div>
-                    <span class="close-modal" id="close-user-edit-modal">&times;</span>
-                </div>
-                <div class="modal-header-bottom">
-                    <div class="search-container-modal">
-                        <input type="text" id="search-roles-modal" placeholder="Buscar rol" class="search-input-modal">
-                        <i class="fas fa-search search-icon-modal"></i>
-                    </div>
-                    <div class="filter-container-modal">
-                        <label class="filter-checkbox">
-                            <input type="checkbox" id="filter-assigned-roles">
-                            <span class="checkmark"></span>
-                            <span class="filter-label">Asignados</span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="modal-body">
-                <!-- Sección de asignación de roles -->
-                <div class="permissions-assignment-container">
-                    <div class="assignment-header">
-                        <div class="assignment-title">
-                            <h3>ROLES</h3>
-                        </div>
-                        <div class="assignment-type">
-                            <h3>TIPO</h3>
-                        </div>
-                        <div class="assignment-action">
-                            <h3>ASIGNAR</h3>
-                        </div>
-                    </div>
-                    
-                    <div class="permissions-list-container">
-                        <div id="roles-assignment-loading" class="loading-indicator" style="display: none;">
-                            <div class="spinner"></div>
-                            <p>Cargando roles...</p>
-                        </div>
-                        
-                        <div id="roles-assignment-list" class="permissions-assignment-list">
-                            <!-- Aquí se cargarán dinámicamente los roles -->
-                        </div>
-                        
-                        <div id="no-roles-message" style="display: none; text-align: center; padding: 40px; color: #6c757d;">
-                            No se encontraron roles
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Nueva sección para información adicional del usuario -->
-                <div class="user-edit-info-container">
-                    <div class="user-contact-verification">
-                        <div class="verification-item">
-                            <label>Correo Electrónico:</label>
-                            <div class="verification-content">
-                                <span id="user-email-value">Cargando...</span>
-                                <button class="verification-btn" id="verify-email">
-                                    <i class="fas fa-check-circle"></i>
-                                    Verificar
-                                </button>
+
+                    <!-- Tabla de usuarios -->
+                    <div class="card">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-vcenter card-table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Usuario</th>
+                                            <th class="d-none d-md-table-cell">Documento</th>
+                                            <th class="d-none d-lg-table-cell">Email</th>
+                                            <th class="d-none d-lg-table-cell">Teléfono</th>
+                                            <th>Estado</th>
+                                            <th class="w-1">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="users-list">
+                                        <!-- Loading indicator -->
+                                        <tr id="loading-row">
+                                            <td colspan="6" class="text-center py-5">
+                                                <div class="spinner-border text-primary" role="status">
+                                                    <span class="visually-hidden">Cargando...</span>
+                                                </div>
+                                                <div class="mt-2 text-muted">Cargando usuarios...</div>
+                                            </td>
+                                        </tr>
+                                        <!-- El contenido se carga dinámicamente -->
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                         
-                        <div class="verification-item">
-                            <label>Teléfono:</label>
-                            <div class="verification-content">
-                                <span id="user-phone-value">Cargando...</span>
-                                <button class="verification-btn" id="verify-phone">
-                                    <i class="fas fa-check-circle"></i>
-                                    Verificar
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="verification-item">
-                            <label>Actualizar contraseña:</label>
-                            <div class="verification-content">
-                                <div class="password-input-wrapper">
-                                    <input type="password" id="user-new-password" placeholder="Nueva contraseña">
-                                    <button type="button" class="password-toggle-btn" id="toggle-password-visibility">
-                                        <i class="fas fa-eye" id="password-toggle-icon"></i>
-                                    </button>
-                                </div>
-                                <button class="verification-btn" id="update-password">
-                                    <i class="fas fa-key"></i>
-                                    Actualizar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="modal-footer">
-                <button type="button" class="btn-cancel" id="cancel-user-edit">Cancelar</button>
-                <button type="button" class="btn-save" id="save-user-roles">
-                    <i class="fas fa-save"></i>
-                    Guardar
-                </button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal de detalles completos del usuario - Estructura mejorada -->
-    <div id="user-full-details-modal" class="user-details-modal">
-        <div class="user-details-modal-overlay">
-            <div class="user-details-modal-content">
-                <!-- Header del modal -->
-                <div class="user-details-modal-header">
-                    <div class="user-details-header-content">
-                        <div class="user-details-title">
-                            <h2 id="user-full-details-title">Detalles del Usuario</h2>
-                            <span class="user-details-subtitle" id="user-details-subtitle">Información completa</span>
-                        </div>
-                        <button class="user-details-close-btn" id="close-user-full-details-modal">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Body del modal -->
-                <div class="user-details-modal-body">
-                    <!-- Loading indicator -->
-                    <div id="user-details-loading" class="user-details-loading" style="display: none;">
-                        <div class="user-details-spinner"></div>
-                        <p>Cargando detalles del usuario...</p>
-                    </div>
-                    
-                    <!-- Error message -->
-                    <div id="user-details-error" class="user-details-error" style="display: none;">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <span id="user-details-error-text">Error al cargar los detalles del usuario</span>
-                    </div>
-                    
-                    <!-- Contenido principal -->
-                    <div class="user-details-content">
-                        <!-- Información básica -->
-                        <div id="user-basic-info" class="user-details-section">
-                            <div class="section-header">
-                                <h3><i class="fas fa-user"></i> Información Básica</h3>
-                            </div>
-                            <div class="section-content">
-                                <div class="info-grid">
-                                    <div class="info-card">
-                                        <label>Nombre Completo</label>
-                                        <span id="detail-user-fullname">-</span>
-                                    </div>
-                                    <div class="info-card">
-                                        <label>Documento</label>
-                                        <span id="detail-user-document">-</span>
-                                    </div>
-                                    <div class="info-card">
-                                        <label>Tipo Documento</label>
-                                        <span id="detail-user-doctype">-</span>
-                                    </div>
-                                    <div class="info-card">
-                                        <label>Estado Usuario</label>
-                                        <span id="detail-user-status">-</span>
-                                    </div>
-                                    <div class="info-card">
-                                        <label>Fecha Validación</label>
-                                        <span id="detail-user-validation">-</span>
-                                    </div>
-                                    <div class="info-card">
-                                        <label>Estado Persona</label>
-                                        <span id="detail-person-active">-</span>
-                                    </div>
+                        <!-- Paginación -->
+                        <div class="card-footer d-flex align-items-center">
+                            <div class="d-flex align-items-center">
+                                <p class="m-0 text-muted me-3">
+                                    Mostrando <span id="showing-start">0</span> a <span id="showing-end">0</span> de <span id="total-users">0</span> usuarios
+                                </p>
+                                <div class="d-flex align-items-center">
+                                    <label class="form-label mb-0 me-2 text-muted">Mostrar:</label>
+                                    <select class="form-select form-select-sm" id="items-per-page" style="width: auto;">
+                                        <option value="5">5</option>
+                                        <option value="10" selected>10</option>
+                                        <option value="15">15</option>
+                                        <option value="20">20</option>
+                                    </select>
+                                    <span class="ms-2 text-muted">por página</span>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <!-- Información de contactos -->
-                        <div id="contacts-info-section" class="user-details-section" style="display: none;">
-                            <div class="section-header">
-                                <h3><i class="fas fa-address-book"></i> Contactos</h3>
-                            </div>
-                            <div class="section-content">
-                                <div class="contacts-profile-grid" id="contacts-profile-grid">
-                                    <!-- Contactos se cargarán aquí dinámicamente como tarjetas -->
-                                </div>
-                                <div id="no-contacts-message" class="empty-message" style="display: none;">
-                                    <i class="fas fa-info-circle"></i>
-                                    <span>No se encontraron contactos para este usuario</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Información de roles -->
-                        <div id="roles-info-section" class="user-details-section" style="display: none;">
-                            <div class="section-header">
-                                <h3><i class="fas fa-user-tag"></i> Roles Asignados</h3>
-                            </div>
-                            <div class="section-content">
-                                <div class="roles-profile-grid" id="roles-profile-grid">
-                                    <!-- Roles se cargarán aquí dinámicamente como tarjetas -->
-                                </div>
-                                <div id="no-roles-message-details" class="empty-message" style="display: none;">
-                                    <i class="fas fa-info-circle"></i>
-                                    <span>No se encontraron roles para este usuario</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Perfiles de usuario -->
-                        <div id="profiles-info-section" class="user-details-section" style="display: none;">
-                            <div class="section-header">
-                                <h3><i class="fas fa-id-card"></i> Perfiles de Usuario</h3>
-                            </div>
-                            <div class="section-content">
-                                <div class="profiles-grid">
-                                    <!-- Perfil Ciudadano -->
-                                    <div id="citizen-profile" class="profile-card" style="display: none;">
-                                        <div class="profile-header">
-                                            <i class="fas fa-user-circle"></i>
-                                            <h4>Perfil Ciudadano</h4>
-                                        </div>
-                                        <div class="profile-info">
-                                            <div class="profile-item">
-                                                <label>Rating Promedio:</label>
-                                                <span id="citizen-rating">-</span>
-                                            </div>
-                                            <div class="profile-item">
-                                                <label>Cantidad de Ratings:</label>
-                                                <span id="citizen-rating-count">-</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Perfil Conductor -->
-                                    <div id="driver-profile" class="profile-card" style="display: none;">
-                                        <div class="profile-header">
-                                            <i class="fas fa-car"></i>
-                                            <h4>Perfil Conductor</h4>
-                                        </div>
-                                        <div class="profile-info">
-                                            <div class="profile-item">
-                                                <label>Estado:</label>
-                                                <span id="driver-status">-</span>
-                                            </div>
-                                            <div class="profile-item">
-                                                <label>Rating Promedio:</label>
-                                                <span id="driver-rating">-</span>
-                                            </div>
-                                            <div class="profile-item">
-                                                <label>Cantidad de Ratings:</label>
-                                                <span id="driver-rating-count">-</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Información del vehículo -->
-                        <div id="vehicle-info-section" class="user-details-section" style="display: none;">
-                            <div class="section-header">
-                                <h3><i class="fas fa-car"></i> Información del Vehículo</h3>
-                            </div>
-                            <div class="section-content">
-                                <div class="vehicle-grid">
-                                    <div class="vehicle-card">
-                                        <div class="vehicle-main-info">
-                                            <div class="vehicle-plate">
-                                                <label>Placa:</label>
-                                                <span id="detail-vehicle-plate" class="plate-number">-</span>
-                                            </div>
-                                        </div>
-                                        <div class="vehicle-details">
-                                            <div class="vehicle-info-item">
-                                                <label>Marca:</label>
-                                                <span id="detail-vehicle-brand">-</span>
-                                            </div>
-                                            <div class="vehicle-info-item">
-                                                <label>Modelo:</label>
-                                                <span id="detail-vehicle-model">-</span>
-                                            </div>
-                                            <div class="vehicle-info-item">
-                                                <label>Año:</label>
-                                                <span id="detail-vehicle-year">-</span>
-                                            </div>
-                                            <div class="vehicle-info-item">
-                                                <label>Color:</label>
-                                                <span id="detail-vehicle-color">-</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <ul class="pagination m-0 ms-auto" id="pagination-container">
+                                <!-- La paginación se genera dinámicamente -->
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -811,224 +174,457 @@
         </div>
     </div>
 
-    <!-- Sistema de notificaciones toast -->
-    <div id="toast" class="toast">
-        <div id="toast-message">Usuario guardado correctamente</div>
-    </div>
+    <!-- Contenedor para modales dinámicos -->
+    <div id="modal-container"></div>
 
-    <!-- Toast notification for user operations -->
+    <!-- Toast notification -->
     <div id="recovery-toast" class="recovery-toast">
         <div class="recovery-toast-content">
             <i class="fas fa-check-circle"></i>
-            <span id="recovery-toast-message">Configuración guardada exitosamente</span>
+            <span id="recovery-toast-message">Operación completada exitosamente</span>
         </div>
     </div>
-    <!-- Scripts -->
-    <script src="../../assets/js/global-initializer.js"></script>
+
+    <!-- Modal de detalles de usuario -->
+    <div class="modal modal-blur fade" id="user-details-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document" style="max-width: 800px;">
+            <div class="modal-content" style="max-height: 85vh;">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user me-2"></i>
+                        Detalles del Usuario
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0" style="max-height: calc(85vh - 80px); overflow-y: auto; overflow-x: hidden;" id="user-details-content">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de creación de usuario administrador -->
+    <div class="modal modal-blur fade" id="user-create-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 600px;">
+            <div class="modal-content">
+                <div class="modal-header py-2">
+                    <h5 class="modal-title d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"></path>
+                            <path d="M16 19h6"></path>
+                            <path d="M19 16v6"></path>
+                            <path d="M6 21v-2a4 4 0 0 1 4 -4h4"></path>
+                        </svg>
+                        Crear Usuario Administrador
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="user-create-form" novalidate>
+                    <div class="modal-body py-3">
+                        <div class="row g-2">
+                            <!-- Documento y Email -->
+                            <div class="col-12 col-sm-6">
+                                <div class="mb-2">
+                                    <label class="form-label required text-muted small">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M3 4m0 3a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v10a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3z"></path>
+                                            <path d="M9 10m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
+                                            <path d="M15 8l2 0"></path>
+                                            <path d="M15 12l2 0"></path>
+                                            <path d="M7 16l10 0"></path>
+                                        </svg>
+                                        DNI
+                                    </label>
+                                    <input type="text" class="form-control form-control-sm" id="user-document" name="document" 
+                                           required maxlength="8" pattern="[0-9]{8}" placeholder="12345678"
+                                           autocomplete="off">
+                                    <div class="invalid-feedback">
+                                        8 dígitos requeridos
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 col-sm-6">
+                                <div class="mb-2">
+                                    <label class="form-label required text-muted small">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z"></path>
+                                            <path d="M3 7l9 6l9 -6"></path>
+                                        </svg>
+                                        Email
+                                    </label>
+                                    <input type="email" class="form-control form-control-sm" id="user-email" name="email" 
+                                           required placeholder="admin@itaxcix.com"
+                                           autocomplete="email">
+                                    <div class="invalid-feedback">
+                                        Email válido requerido
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Contraseña -->
+                            <div class="col-12">
+                                <div class="mb-2">
+                                    <label class="form-label required text-muted small">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6z"></path>
+                                            <path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0"></path>
+                                            <path d="M8 11v-4a4 4 0 1 1 8 0v4"></path>
+                                        </svg>
+                                        Contraseña
+                                    </label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="password" class="form-control" id="user-password" name="password" 
+                                               required minlength="6" placeholder="Incluya mayúscula, número y símbolo"
+                                               autocomplete="new-password">
+                                        <button class="btn btn-outline-secondary" type="button" id="toggle-password" 
+                                                title="Mostrar/Ocultar">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                <path d="M10 12a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
+                                                <path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div class="invalid-feedback">
+                                        La contraseña debe tener mínimo 6 caracteres, incluyendo: mayúscula, número y carácter especial (@$!%*?&)
+                                    </div>
+                                    <small class="form-hint">Debe incluir: mayúscula, número y carácter especial (@$!%*?&)</small>
+                                </div>
+                            </div>
+                            
+                            <!-- Área y Posición -->
+                            <div class="col-12 col-sm-6">
+                                <div class="mb-2">
+                                    <label class="form-label required text-muted small">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M3 21l18 0"></path>
+                                            <path d="M5 21v-14l8 -4v18"></path>
+                                            <path d="M19 21v-10l-6 -4"></path>
+                                            <path d="M9 9l0 .01"></path>
+                                            <path d="M9 12l0 .01"></path>
+                                            <path d="M9 15l0 .01"></path>
+                                            <path d="M9 18l0 .01"></path>
+                                        </svg>
+                                        Área
+                                    </label>
+                                    <input type="text" class="form-control form-control-sm" id="user-area" name="area" 
+                                           required placeholder="Sistemas"
+                                           autocomplete="organization">
+                                    <div class="invalid-feedback">
+                                        Área requerida
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 col-sm-6">
+                                <div class="mb-2">
+                                    <label class="form-label required text-muted small">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"></path>
+                                            <path d="M6 21v-2a4 4 0 0 1 4 -4h.5"></path>
+                                            <path d="M17.8 20.817l-2.172 1.138a.392 .392 0 0 1 -.568 -.41l.415 -2.411l-1.757 -1.707a.389 .389 0 0 1 .217 -.665l2.428 -.352l1.086 -2.193a.392 .392 0 0 1 .702 0l1.086 2.193l2.428 .352a.39 .39 0 0 1 .217 .665l-1.757 1.707l.414 2.41a.39 .39 0 0 1 -.567 .411l-2.172 -1.138z"></path>
+                                        </svg>
+                                        Posición
+                                    </label>
+                                    <input type="text" class="form-control form-control-sm" id="user-position" name="position" 
+                                           required placeholder="Administrador General"
+                                           autocomplete="organization-title">
+                                    <div class="invalid-feedback">
+                                        Posición requerida
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer py-2">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M18 6l-12 12"></path>
+                                <path d="M6 6l12 12"></path>
+                            </svg>
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary btn-sm" id="save-user-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-16a2 2 0 0 1 2 -2"></path>
+                                <path d="M12 14m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
+                                <path d="M14 4l0 4l-6 0l0 -4"></path>
+                            </svg>
+                            <span class="btn-text">Crear Usuario</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación -->
+    <div class="modal modal-blur fade" id="confirm-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body text-center py-4">
+                    <i class="fas fa-exclamation-triangle text-warning fa-3x mb-3"></i>
+                    <h3 id="confirm-title">¿Confirmar acción?</h3>
+                    <p class="text-muted" id="confirm-message">Esta acción no se puede deshacer.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirm-action-btn">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de asignación de roles -->
+    <div class="modal modal-blur fade" id="assign-roles-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user-tag me-2"></i>
+                        Asignar Roles
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Información del usuario -->
+                    <div class="mb-3">
+                        <div class="card">
+                            <div class="card-body py-2">
+                                <div class="d-flex align-items-center">
+                                    <span class="avatar avatar-sm me-2">
+                                        <i class="fas fa-user"></i>
+                                    </span>
+                                    <div>
+                                        <h4 class="mb-0" id="assign-roles-user-name">Usuario</h4>
+                                        <small class="text-muted" id="assign-roles-user-info">Información del usuario</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenido principal en dos columnas -->
+                    <div class="row g-3">
+                        <!-- Columna izquierda: Roles -->
+                        <div class="col-md-8">
+                            <!-- Buscador de roles -->
+                            <div class="mb-3">
+                                <div class="input-group input-group-sm">
+                                    <input type="text" class="form-control" id="search-roles-modal" placeholder="Buscar roles...">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Lista de roles -->
+                            <div class="card">
+                                <div class="card-header py-2">
+                                    <h3 class="card-title">Roles disponibles</h3>
+                                    <div class="card-actions">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="filter-assigned-roles">
+                                            <label class="form-check-label" for="filter-assigned-roles">
+                                                Solo asignados
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body p-0">
+                                    <!-- Loading state -->
+                                    <div id="roles-loading" class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Cargando roles...</span>
+                                        </div>
+                                        <div class="mt-2 text-muted">Cargando roles disponibles...</div>
+                                    </div>
+                                    
+                                    <!-- Roles list -->
+                                    <div class="table-responsive" id="roles-table-container" style="display: none; max-height: 300px; overflow-y: auto;">
+                                        <table class="table table-vcenter card-table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th class="w-1">
+                                                        <input class="form-check-input" type="checkbox" id="select-all-checkbox">
+                                                    </th>
+                                                    <th>Rol</th>
+                                                    <th>Tipo</th>
+                                                    <th>Estado</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="roles-list">
+                                                <!-- Roles se cargan dinámicamente -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    
+                                    <!-- Empty state -->
+                                    <div id="roles-empty" class="text-center py-3" style="display: none;">
+                                        <i class="fas fa-search text-muted fa-2x mb-2"></i>
+                                        <h4 class="text-muted">No se encontraron roles</h4>
+                                        <p class="text-muted mb-0">No hay roles que coincidan con la búsqueda</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Columna derecha: Acciones administrativas -->
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header py-2">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-cog me-2"></i>
+                                        Acciones
+                                    </h3>
+                                </div>
+                                <div class="card-body">
+                                    <!-- Correo Electrónico -->
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted small mb-1">Correo Electrónico</label>
+                                        <div class="input-group input-group-sm mb-2">
+                                            <input type="text" class="form-control" id="user-email-display" 
+                                                   placeholder="Cargando..." readonly style="background-color: #f8f9fa;">
+                                        </div>
+                                        <button type="button" class="btn btn-success btn-sm w-100" id="verify-email-btn">
+                                            <i class="fas fa-check me-1"></i>
+                                            Verificar Email
+                                        </button>
+                                    </div>
+
+                                    <!-- Teléfono -->
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted small mb-1">Teléfono</label>
+                                        <div class="input-group input-group-sm mb-2">
+                                            <input type="text" class="form-control" id="user-phone-display" 
+                                                   placeholder="Cargando..." readonly style="background-color: #f8f9fa;">
+                                        </div>
+                                        <button type="button" class="btn btn-success btn-sm w-100" id="verify-phone-btn">
+                                            <i class="fas fa-check me-1"></i>
+                                            Verificar Teléfono
+                                        </button>
+                                    </div>
+
+                                    <!-- Actualizar contraseña -->
+                                    <div>
+                                        <label class="form-label text-muted small mb-1">Actualizar Contraseña</label>
+                                        <div class="input-group input-group-sm mb-2">
+                                            <input type="password" class="form-control" id="new-password-input" 
+                                                   placeholder="Nueva contraseña">
+                                            <button class="btn btn-outline-secondary" type="button" id="toggle-new-password" 
+                                                    title="Mostrar/Ocultar contraseña">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                        <button type="button" class="btn btn-warning btn-sm w-100" id="reset-password-btn">
+                                            <i class="fas fa-key me-1"></i>
+                                            Actualizar Contraseña
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer py-2">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary btn-sm" id="save-roles-btn">
+                        <i class="fas fa-save me-1"></i>
+                        Guardar Cambios
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla de carga de permisos -->
+    <div id="permissions-loading" class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="background: rgba(255, 255, 255, 0.9); z-index: 9999; display: none !important;">
+        <div class="text-center">
+            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <h3 class="h4 mb-1">Configurando Usuarios</h3>
+            <p class="text-muted mb-1">Estamos configurando tu sesión y verificando la gestión de usuarios...</p>
+            <p class="text-muted small" id="loading-step">Validando credenciales...</p>
+        </div>
+    </div>
+
+    <!-- Scripts de Tabler -->
+    <script src="../../assets/tabler/js/tabler.min.js"></script>
+    
+    <!-- Scripts de autenticación y permisos -->
     <script src="../../assets/js/auth/auth-checker.js"></script>
     <script src="../../assets/js/auth/permissions.js"></script>
     <script src="../../assets/js/auth/route-guard.js"></script>
-    <script>
-        // Inicializa RouteGuard para proteger la página
-        window.routeGuard = new RouteGuard("../../index.html");
-        
-        // Diagnóstico temporal para verificar autenticación
-        console.log('=== DIAGNÓSTICO DE AUTENTICACIÓN ===');
-        console.log('Token presente en sessionStorage:', sessionStorage.getItem('authToken') ? 'SÍ' : 'NO');
-        console.log('Token presente en localStorage:', localStorage.getItem('authToken') ? 'SÍ' : 'NO');
-        console.log('Usuario logueado:', sessionStorage.getItem('isLoggedIn'));
-        console.log('URL de prueba:', 'https://149.130.161.148/api/v1/users');
-        console.log('=== FIN DIAGNÓSTICO ===');
-    </script>
-    <script src="../../assets/js/api/services/profile-service.js"></script>
+    
+    <!-- Scripts de servicios -->
     <script src="../../assets/js/api/services/Configuration/user-service.js"></script>
+    <script src="../../assets/js/api/services/Configuration/user-create-service.js"></script>
     <script src="../../assets/js/api/services/Configuration/role-service.js"></script>
     <script src="../../assets/js/api/services/Configuration/assign-role-service.js"></script>
-    <script src="../../assets/js/api/services/Configuration/reset-password-service.js"></script>
     <script src="../../assets/js/api/services/Configuration/verify-contact-service.js"></script>
+    <script src="../../assets/js/api/services/Configuration/reset-password-service.js"></script>
+    <script src="../../assets/js/api/services/profile-service.js"></script>
     
-    <!-- Modelos -->
-    <script src="../../assets/js/api/models/user.js"></script>
-    <script src="../../assets/js/api/models/role.js"></script>
-    <script src="../../assets/js/api/models/configuration.js"></script>
+    <!-- Scripts de UI -->
+    <script src="../../assets/js/ui/component-loader.js"></script>
     <script src="../../assets/js/ui/global-toast.js"></script>
-    <script src="../../assets/js/ui/controllers/sidebar-controller.js"></script>
-    <script src="../../assets/js/ui/controllers/topbar-controller.js"></script>
-    <script src="../../assets/js/ui/controllers/profile-controller.js"></script>
-    <script src="../../assets/js/ui/controllers/Configuration/user-details-controller.js"></script>
-    <script src="../../assets/js/ui/controllers/Configuration/users-controller.js"></script>
-    <script src="../../assets/js/ui/initializers/users-initializer.js"></script>
     
-    <!-- Script de prueba temporal -->
-    <script src="../../assets/js/test-global-system.js"></script>
+    <!-- Scripts de controladores base (ANTES del MainController) -->
+    <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
     
+    <!-- Controlador principal (DESPUÉS de los controladores base) -->
+    <script src="../../assets/js/ui/controllers/Configuration/users/main-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Configuration/users/users-list-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Configuration/users/user-details-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Configuration/users/user-create-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Configuration/users/assign-roles-controller.js"></script>
+    
+    <!-- Inicializadores -->
+    <script src="../../assets/js/ui/initializers/Configuration/users-initializer.js"></script>
+    <script src="../../assets/js/global-initializer.js"></script>
+
+    <!-- Script para manejo del formulario de usuario -->
     <script>
-        // Aseguramos que el controlador UserDetailsController esté disponible globalmente
         document.addEventListener('DOMContentLoaded', function() {
-            // Verificar que los servicios estén disponibles
-            console.log('🔍 Verificando servicios disponibles:');
-            console.log('- UserService:', typeof window.UserService !== 'undefined' ? '✅ Disponible' : '❌ No disponible');
-            console.log('- AssignRoleService:', typeof window.AssignRoleService !== 'undefined' ? '✅ Disponible' : '❌ No disponible');
-            console.log('- ResetPasswordService:', typeof window.ResetPasswordService !== 'undefined' ? '✅ Disponible' : '❌ No disponible');
-            console.log('- UserDetailsController:', typeof window.UserDetailsController !== 'undefined' ? '✅ Disponible' : '❌ No disponible');
-            console.log('- usersController:', typeof window.usersController !== 'undefined' ? '✅ Disponible' : '❌ No disponible');
+            // Mostrar/ocultar campos según el tipo de usuario
+            const userTypeSelect = document.getElementById('user-type');
+            const driverStatusSection = document.getElementById('driver-status-section');
             
-            // Verificar después de un delay para dar tiempo a la inicialización
-            setTimeout(() => {
-                console.log('🔍 Verificación después de 3 segundos:');
-                console.log('- usersController:', typeof window.usersController !== 'undefined' ? '✅ Disponible' : '❌ No disponible');
-                if (window.usersController) {
-                    console.log('- viewUserFullDetails method:', typeof window.usersController.viewUserFullDetails === 'function' ? '✅ Disponible' : '❌ No disponible');
-                }
-                
-                // Prueba directa de elementos del DOM
-                console.log('🔍 Verificando elementos del modal de vehículo:');
-                const vehicleSection = document.getElementById('vehicle-info-section');
-                const plateElement = document.getElementById('detail-vehicle-plate');
-                const brandElement = document.getElementById('detail-vehicle-brand');
-                
-                console.log('- Vehicle section:', !!vehicleSection);
-                console.log('- Plate element:', !!plateElement);
-                console.log('- Brand element:', !!brandElement);
-                
-                if (plateElement) {
-                    console.log('- Plate element value:', plateElement.textContent);
-                }
-                
-                // Función de prueba temporal para test del modal
-                window.testVehicleModal = function() {
-                    console.log('🧪 Ejecutando prueba del modal de vehículo...');
+            if (userTypeSelect && driverStatusSection) {
+                userTypeSelect.addEventListener('change', function() {
+                    const selectedType = this.value;
                     
-                    const testData = {
-                        userId: 999,
-                        person: {
-                            name: "TEST",
-                            lastName: "USER",
-                            document: "12345678",
-                            documentType: { name: "DNI" },
-                            validationDate: null,
-                            active: true
-                        },
-                        userStatus: { name: "ACTIVO" },
-                        vehicle: {
-                            id: 123,
-                            plate: "TEST-123",
-                            brand: { name: "TOYOTA" },
-                            model: { name: "COROLLA" },
-                            year: 2020,
-                            color: { id: 1, active: true }
-                        }
-                    };
-                    
-                    if (window.usersController && window.usersController.populateUserDetailsModal) {
-                        // Abrir modal primero
-                        const modal = document.getElementById('user-full-details-modal');
-                        if (modal) {
-                            modal.style.display = 'flex';
-                            // Ocultar loading
-                            const loading = document.getElementById('user-details-loading');
-                            if (loading) loading.style.display = 'none';
-                            
-                            // Poblar con datos de prueba
-                            window.usersController.populateUserDetailsModal(testData, 999);
-                            console.log('✅ Modal poblado con datos de prueba');
-                        }
+                    if (selectedType === 'driver') {
+                        driverStatusSection.style.display = 'block';
+                        driverStatusSection.querySelector('select').required = true;
                     } else {
-                        console.error('❌ usersController no disponible para prueba');
-                    }
-                };
-                
-                console.log('🧪 Función de prueba creada: window.testVehicleModal()');
-            }, 3000);
-            
-            if (typeof window.ResetPasswordService !== 'undefined') {
-                console.log('- ResetPasswordService.resetUserPassword:', typeof window.ResetPasswordService.resetUserPassword === 'function' ? '✅ Disponible' : '❌ No disponible');
-            }
-            
-            // Exponer UserDetailsController globalmente si existe
-            if (typeof UserDetailsController !== 'undefined') {
-                window.UserDetailsController = UserDetailsController;
-            }
-            
-            // El sistema global GlobalUserMonitor se encarga del monitoreo de estado
-            // No es necesario inicializar monitoreo específico aquí
-            
-            // Añadir eventos para cerrar el modal de edición
-            const userEditModal = document.getElementById('user-edit-modal');
-            const closeUserEditBtn = document.getElementById('close-user-edit-modal');
-            const cancelUserEdit = document.getElementById('cancel-user-edit');
-            
-            // Cerrar el modal con el botón X
-            if (closeUserEditBtn) {
-                closeUserEditBtn.addEventListener('click', function() {
-                    userEditModal.style.display = 'none';
-                });
-            }
-            
-            // Cerrar el modal con el botón Cancelar
-            if (cancelUserEdit) {
-                cancelUserEdit.addEventListener('click', function() {
-                    userEditModal.style.display = 'none';
-                });
-            }
-            
-            // Cerrar el modal haciendo clic fuera de él
-            window.addEventListener('click', function(event) {
-                if (event.target === userEditModal) {
-                    userEditModal.style.display = 'none';
-                }
-            });
-            
-            // Event listeners para el modal de detalles completos
-            const userFullDetailsModal = document.getElementById('user-full-details-modal');
-            const closeUserFullDetailsModal = document.getElementById('close-user-full-details-modal');
-            const closeUserFullDetails = document.getElementById('close-user-full-details');
-            
-            // Función para cerrar el modal
-            function closeUserDetailsModal() {
-                if (userFullDetailsModal) {
-                    userFullDetailsModal.classList.remove('show');
-                }
-            }
-            
-            // Cerrar el modal con el botón X
-            if (closeUserFullDetailsModal) {
-                closeUserFullDetailsModal.addEventListener('click', closeUserDetailsModal);
-            }
-            
-            // Cerrar el modal con el botón Cerrar
-            if (closeUserFullDetails) {
-                closeUserFullDetails.addEventListener('click', closeUserDetailsModal);
-            }
-            
-            // Cerrar el modal haciendo clic en el overlay
-            if (userFullDetailsModal) {
-                userFullDetailsModal.addEventListener('click', function(event) {
-                    if (event.target === userFullDetailsModal || event.target.classList.contains('user-details-modal-overlay')) {
-                        closeUserDetailsModal();
-                    }
-                });
-            }
-            
-            // Toggle de visibilidad de contraseña en modal de crear usuario
-            const toggleCreatePasswordBtn = document.getElementById('toggle-create-password-visibility');
-            const createPasswordInput = document.getElementById('create-user-password');
-            const createPasswordIcon = document.getElementById('create-password-toggle-icon');
-            
-            if (toggleCreatePasswordBtn && createPasswordInput && createPasswordIcon) {
-                toggleCreatePasswordBtn.addEventListener('click', function() {
-                    if (createPasswordInput.type === 'password') {
-                        createPasswordInput.type = 'text';
-                        createPasswordIcon.classList.remove('fa-eye');
-                        createPasswordIcon.classList.add('fa-eye-slash');
-                    } else {
-                        createPasswordInput.type = 'password';
-                        createPasswordIcon.classList.remove('fa-eye-slash');
-                        createPasswordIcon.classList.add('fa-eye');
+                        driverStatusSection.style.display = 'none';
+                        driverStatusSection.querySelector('select').required = false;
+                        driverStatusSection.querySelector('select').value = '';
                     }
                 });
             }
         });
     </script>
+
 </body>
 </html>

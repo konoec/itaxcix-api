@@ -1,4 +1,4 @@
-<!DOCTYPE html    <link rel="stylesheet" href="../../assets/css/audit/audit-registry.css?v=2.3">
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -6,261 +6,233 @@
     <title>Panel de Administración - Registro de Auditoría</title>
     <link rel="icon" type="image/png" href="../../assets/Recourse/Logo/1.png">
     <link rel="shortcut icon" href="../../assets/Recourse/Logo/1.png">
-    <link rel="stylesheet" href="../../assets/css/base.css">
+    
+    <!-- Tabler CSS Framework -->
+    <link rel="stylesheet" href="../../assets/tabler/css/tabler.min.css">
+    <link rel="stylesheet" href="../../assets/tabler/css/tabler-vendors.min.css">
+    <link rel="stylesheet" href="../../assets/css/global-toast.css">
     <link rel="stylesheet" href="../../assets/css/sidebar.css">
     <link rel="stylesheet" href="../../assets/css/topbar.css">
     <link rel="stylesheet" href="../../assets/css/profile.css">
-    <link rel="stylesheet" href="../../assets/css/confirmation-modal.css">
+    
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="../../assets/css/audit/audit-registry.css?v=2.1">
+    
+    <!-- CSS específico del módulo -->
+    <link rel="stylesheet" href="../../assets/css/audit/audit-registry.css?v=2.3">
+    
+    <!-- Configuración de la página -->
+    <script>
+        window.pageConfig = {
+            activeSection: 'auditoria',
+            pageTitle: {
+                icon: 'fas fa-history',
+                text: 'Registro de Auditoría'
+            }
+        };
+    </script>
     
 </head>
 <body>
-    <div class="layout">
-        <!-- Sidebar -->
-        <div class="sidebar" id="sidebar">
-            <!-- Encabezado del sidebar con título y botón de cierre -->
-            <div class="sidebar-header">
-                <h2 class="logoSidebar"><span class="sidebar-logo-img"></span></h2>
-                <button id="close-sidebar" class="sidebar-toggle">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <!-- Menú de navegación principal -->
-            <div class="sidebar-menu">
-                <ul>
-                    <!-- Inicio -->
-                    <li id="menu-inicio">
-                        <a href="../Inicio/Inicio.html" class="module-inicio">
-                            <i class="fas fa-home"></i>
-                            Inicio
-                        </a>
-                    </li>
-                    <!-- Módulo de Admisión de conductores -->
-                    <li id="menu-admission">
-                        <a class="module-admission" href="../Admission/AdmissionControl.html">
-                            <i class="fas fa-user-check"></i>
-                            Admisión de conductores
-                        </a>
-                    </li>
-                    <!-- Módulo de Tablas maestras -->
-                    <li class="has-submenu" id="menu-tablas">
-                        <a href="javascript:void(0)" class="module-tablas">
-                            <i class="fas fa-table"></i>
-                            Tablas maestras
-                            <span class="submenu-arrow"></span>
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="javascript:void(0)"><i class="fas fa-car"></i>Tabla Maestra 1</a></li>
-                            <li><a href="javascript:void(0)"><i class="fas fa-users"></i>Tabla Maestra 2</a></li>
-                            <li><a href="javascript:void(0)"><i class="fas fa-id-card"></i>Tabla Maestra 3</a></li>
-                            <li><a href="javascript:void(0)"><i class="fas fa-route"></i>Tabla Maestra 4</a></li>
-                        </ul>
-                    </li>
-                    <!-- Módulo de Auditoría -->
-                    <li class="has-submenu open" id="menu-auditoria">
-                        <a href="javascript:void(0)" class="module-auditoria">
-                            <i class="fas fa-search"></i>
-                            Auditoría
-                            <span class="submenu-arrow"></span>
-                        </a>
-                        <ul class="submenu">
-                            <li id="menu-auditoria-registro" class="active"><a href="../Audit/AuditRegistry.html"><i class="fas fa-history"></i>Registro de Auditoría</a></li>
-                            <li id="menu-auditoria-reportes"><a href="../Audit/AuditReports.html"><i class="fas fa-chart-bar"></i>Reportes de Auditoría</a></li>
-                        </ul>
-                    </li>
-                    <!-- Módulo de Configuración -->
-                    <li class="has-submenu" id="menu-configuracion">
-                        <a href="javascript:void(0)" class="module-config">
-                            <i class="fas fa-cog"></i>
-                            Configuración
-                            <span class="submenu-arrow"></span>
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="../Configuration/EmergencyConfiguration.html"><i class="fas fa-phone-alt"></i>Emergencia</a></li>
-                            <li><a href="../Configuration/PermissionsManagement.html"><i class="fas fa-shield-alt"></i>Permisos</a></li>
-                            <li><a href="../Configuration/RolesManagement.html"><i class="fas fa-user-tag"></i>Roles</a></li>
-                            <li><a href="../Configuration/UsersManagement.html"><i class="fas fa-users"></i>Usuarios</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-            <!-- Pie del sidebar con botón de cierre de sesión -->
-            <div class="sidebar-footer">
-                <button class="logout-btn">
-                    <i class="fas fa-power-off"></i>
-                    Cerrar sesión
-                </button>
-            </div>
-        </div>
-        <!-- Topbar -->
-        <div class="main-content">
-            <div class="top-bar">
-                <button id="open-sidebar" class="sidebar-toggle">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h3>REGISTRO DE AUDITORÍA</h3>
-                <div class="profile-container" id="profile-container" style="cursor: pointer;" title="Ver mi perfil">
-                    <div class="profile-image" id="profile-image"></div>
-                    <div class="user-info">
-                        <span class="user-display" id="user-display">Admin</span>
-                        <span class="user-role">Administrador</span>
-                    </div>
-                </div>
-            </div>
-            <!-- Contenido principal de auditoría -->
-            <div class="content">
-                <div class="audit-container">
+    <!-- Contenedor principal del layout usando estructura Tabler -->
+    <div class="page">
+        <!-- Contenedor del sidebar - se carga dinámicamente -->
+        <div id="sidebar-container"></div>
+
+        <!-- Contenido principal usando estructura Tabler -->
+        <div class="page-wrapper">
+            <!-- Contenedor del topbar - se carga dinámicamente -->
+            <div id="topbar-container"></div>
+            
+            <!-- Contenido principal de la página -->
+            <div class="page-body">
+                <div class="container-xl">
                     <!-- Filtros de búsqueda -->
-                    <div class="audit-filters">
-                        <div class="filters-grid">
-                            <!-- Tabla afectada -->
-                            <div class="filter-group">
-                                <label class="filter-label">Tabla</label>
-                                <input type="text" class="filter-input" id="filter-table" placeholder="Nombre de tabla...">
-                            </div>
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-filter me-2"></i>
+                                Filtros de búsqueda
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-2">
+                                <!-- Tabla afectada -->
+                                <div class="col-12 col-md-6 col-lg-3">
+                                    <label class="form-label">Tabla</label>
+                                    <input type="text" class="form-control" id="filter-table" placeholder="Nombre de tabla...">
+                                </div>
 
-                            <!-- Operación -->
-                            <div class="filter-group">
-                                <label class="filter-label">Operación</label>
-                                <select class="filter-select" id="filter-operation">
-                                    <option value="">Todas las operaciones</option>
-                                    <option value="INSERT">INSERT</option>
-                                    <option value="UPDATE">UPDATE</option>
-                                    <option value="DELETE">DELETE</option>
-                                </select>
-                            </div>
+                                <!-- Operación -->
+                                <div class="col-12 col-md-6 col-lg-3">
+                                    <label class="form-label">Operación</label>
+                                    <select class="form-select" id="filter-operation">
+                                        <option value="">Todas las operaciones</option>
+                                        <option value="INSERT">INSERT</option>
+                                        <option value="UPDATE">UPDATE</option>
+                                        <option value="DELETE">DELETE</option>
+                                    </select>
+                                </div>
 
-                            <!-- Usuario del sistema -->
-                            <div class="filter-group">
-                                <label class="filter-label">Usuario</label>
-                                <input type="text" class="filter-input" id="filter-user" placeholder="Buscar usuario...">
-                            </div>
+                                <!-- Usuario del sistema -->
+                                <div class="col-12 col-md-6 col-lg-3">
+                                    <label class="form-label">Usuario</label>
+                                    <input type="text" class="form-control" id="filter-user" placeholder="Buscar usuario...">
+                                </div>
 
-                            <!-- Fecha desde -->
-                            <div class="filter-group">
-                                <label class="filter-label">Fecha desde</label>
-                                <input type="date" class="filter-input" id="filter-date-from">
-                            </div>
+                                <!-- Fecha desde -->
+                                <div class="col-12 col-md-6 col-lg-3">
+                                    <label class="form-label">Fecha desde</label>
+                                    <input type="date" class="form-control" id="filter-date-from">
+                                </div>
 
-                            <!-- Fecha hasta -->
-                            <div class="filter-group">
-                                <label class="filter-label">Fecha hasta</label>
-                                <input type="date" class="filter-input" id="filter-date-to">
-                            </div>
+                                <!-- Fecha hasta -->
+                                <div class="col-12 col-md-6 col-lg-3">
+                                    <label class="form-label">Fecha hasta</label>
+                                    <input type="date" class="form-control" id="filter-date-to">
+                                </div>
 
-                            <!-- Botones de filtro -->
-                            <div class="filter-actions">
-                                <button class="btn btn-outline btn-sm" id="clear-filters-btn" title="Limpiar filtros">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                                <button class="btn btn-primary btn-sm" id="apply-filters-btn" title="Buscar">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                                <button class="btn btn-refresh btn-sm" id="refresh-audit-btn" title="Actualizar datos">
-                                    <i class="fas fa-sync-alt"></i>
-                                </button>
-                                <button class="btn btn-download btn-sm" id="download-audit-btn" title="Descargar">
-                                    <i class="fas fa-download"></i>
-                                </button>
+                                <!-- Botones de filtro -->
+                                <div class="col-12 col-md-6 col-lg-3 d-flex align-items-end">
+                                    <div class="btn-group w-100" role="group">
+                                        <button class="btn btn-outline-secondary" id="clear-filters-btn" title="Limpiar filtros">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                        <button class="btn btn-primary" id="apply-filters-btn" title="Buscar">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                        <button class="btn btn-outline-secondary" id="refresh-audit-btn" title="Actualizar datos">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                        <button class="btn btn-success" id="download-audit-btn" title="Descargar">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Tabla de auditoría -->
-                    <div class="audit-table-container">
+                    <div class="card">
                         <!-- Encabezado de tabla con controles -->
-                        <div class="table-header">
-                            <div class="table-info">
-                                <span class="results-count" id="results-count">Mostrando 0 de 0 registros</span>
-                            </div>
-                            <div class="table-controls">
-                                <!-- Ordenamiento -->
-                                <div class="sort-controls">
-                                    <label class="sort-label">Ordenar por:</label>
-                                    <select class="sort-select" id="sort-by">
-                                        <option value="date">Fecha</option>
-                                        <option value="affectedTable">Tabla</option>
-                                        <option value="operation">Operación</option>
-                                        <option value="systemUser">Usuario</option>
-                                    </select>
-                                    <button class="sort-direction-btn" id="sort-direction" data-direction="DESC">
-                                        <i class="fas fa-sort-down"></i>
-                                    </button>
+                        <div class="card-header">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <h3 class="card-title">Registros de Auditoría</h3>
+                                    <p class="card-subtitle" id="results-count">Mostrando 0 de 0 registros</p>
                                 </div>
-                                
-                                <!-- Registros por página -->
-                                <div class="per-page-controls">
-                                    <label class="per-page-label">Mostrar:</label>
-                                    <select class="per-page-select" id="per-page">
-                                        <option value="10">10</option>
-                                        <option value="15">15</option>
-                                        <option value="20" selected>20</option>
-                                        <option value="25">25</option>
-                                    </select>
+                                <div class="d-flex align-items-center gap-2">
+                                    <!-- Ordenamiento -->
+                                    <div class="d-flex align-items-center">
+                                        <label class="form-label mb-0 me-2">Ordenar por:</label>
+                                        <select class="form-select form-select-sm" id="sort-by" style="width: auto;">
+                                            <option value="date">Fecha</option>
+                                            <option value="affectedTable">Tabla</option>
+                                            <option value="operation">Operación</option>
+                                            <option value="systemUser">Usuario</option>
+                                        </select>
+                                        <button class="btn btn-sm btn-outline-secondary ms-1" id="sort-direction" data-direction="DESC">
+                                            <i class="fas fa-sort-down"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Registros por página -->
+                                    <div class="d-flex align-items-center">
+                                        <label class="form-label mb-0 me-2">Mostrar:</label>
+                                        <select class="form-select form-select-sm" id="per-page" style="width: auto;">
+                                            <option value="10">10</option>
+                                            <option value="15">15</option>
+                                            <option value="20" selected>20</option>
+                                            <option value="25">25</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Tabla -->
-                        <div class="table-wrapper">
-                            <table class="audit-table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Fecha</th>
-                                        <th>Tabla</th>
-                                        <th>Operación</th>
-                                        <th>Usuario</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="audit-table-body">
-                                    <!-- Los datos se cargarán dinámicamente -->
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Estado de carga -->
-                        <div class="table-loading" id="table-loading" style="display: none;">
-                            <div class="loading-spinner"></div>
-                            <span>Cargando registros de auditoría...</span>
-                        </div>
-
-                        <!-- Estado vacío -->
-                        <div class="table-empty" id="table-empty" style="display: none;">
-                            <div class="empty-icon">
-                                <i class="fas fa-search"></i>
+                        <div class="card-body p-0">
+                            <!-- Tabla -->
+                            <div class="table-responsive">
+                                <table class="table table-vcenter card-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Fecha</th>
+                                            <th>Tabla</th>
+                                            <th>Operación</th>
+                                            <th>Usuario</th>
+                                            <th class="w-1">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="audit-table-body">
+                                        <!-- Los datos se cargarán dinámicamente -->
+                                    </tbody>
+                                </table>
                             </div>
-                            <h3>No se encontraron registros</h3>
-                            <p>No hay registros de auditoría que coincidan con los filtros aplicados.</p>
-                            <button class="btn btn-outline" id="clear-filters-empty">
-                                Limpiar filtros
-                            </button>
+
+                            <!-- Estado de carga -->
+                            <div class="text-center py-4" id="table-loading" style="display: none;">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                                <div class="mt-2 text-muted">Cargando registros de auditoría...</div>
+                            </div>
+
+                            <!-- Estado vacío -->
+                            <div class="text-center py-4" id="table-empty" style="display: none;">
+                                <div class="empty">
+                                    <div class="empty-img">
+                                        <i class="fas fa-search fa-3x text-muted"></i>
+                                    </div>
+                                    <p class="empty-title">No se encontraron registros</p>
+                                    <p class="empty-subtitle text-muted">
+                                        No hay registros de auditoría que coincidan con los filtros aplicados.
+                                    </p>
+                                    <div class="empty-action">
+                                        <button class="btn btn-outline-primary" id="clear-filters-empty">
+                                            <i class="fas fa-times me-2"></i>
+                                            Limpiar filtros
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Paginación -->
-                        <div class="pagination-container" id="pagination-container">
-                            <div class="pagination-info">
-                                <span id="pagination-info-text">Página 1 de 1</span>
-                            </div>
-                            <div class="pagination-controls">
-                                <button class="pagination-btn" id="first-page-btn" disabled>
-                                    <i class="fas fa-angle-double-left"></i>
-                                </button>
-                                <button class="pagination-btn" id="prev-page-btn" disabled>
-                                    <i class="fas fa-angle-left"></i>
-                                </button>
-                                <div class="pagination-pages" id="pagination-pages">
+                        <div class="card-footer d-flex align-items-center" id="pagination-container">
+                            <p class="m-0 text-muted" id="pagination-info-text">
+                                Página 1 de 1
+                            </p>
+                            <ul class="pagination m-0 ms-auto">
+                                <li class="page-item disabled" id="first-page-btn">
+                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
+                                        <i class="fas fa-angle-double-left"></i>
+                                        <span class="sr-only">Primero</span>
+                                    </a>
+                                </li>
+                                <li class="page-item disabled" id="prev-page-btn">
+                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
+                                        <i class="fas fa-angle-left"></i>
+                                        <span class="sr-only">Anterior</span>
+                                    </a>
+                                </li>
+                                <div class="d-flex" id="pagination-pages">
                                     <!-- Se generarán dinámicamente -->
                                 </div>
-                                <button class="pagination-btn" id="next-page-btn" disabled>
-                                    <i class="fas fa-angle-right"></i>
-                                </button>
-                                <button class="pagination-btn" id="last-page-btn" disabled>
-                                    <i class="fas fa-angle-double-right"></i>
-                                </button>
-                            </div>
+                                <li class="page-item disabled" id="next-page-btn">
+                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
+                                        <i class="fas fa-angle-right"></i>
+                                        <span class="sr-only">Siguiente</span>
+                                    </a>
+                                </li>
+                                <li class="page-item disabled" id="last-page-btn">
+                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
+                                        <i class="fas fa-angle-double-right"></i>
+                                        <span class="sr-only">Último</span>
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -268,156 +240,101 @@
         </div>
     </div>
     
-    <!-- Pantalla de carga global reutilizable -->
-    <div id="permissions-loading" class="permissions-loading-overlay">
-        <div class="loading-content">
-            <div class="loading-car">🚕</div>
-            <h2 class="loading-title">Configurando Auditoría</h2>
-            <p class="loading-message">
-                Estamos configurando tu sesión y verificando los permisos de auditoría...
-            </p>
-            <p class="loading-steps">
-                <span id="loading-step">Validando credenciales...</span>
-            </p>
+    <!-- Pantalla de carga de permisos -->
+    <div id="permissions-loading" class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="background: rgba(255, 255, 255, 0.9); z-index: 9999; display: none !important;">
+        <div class="text-center">
+            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <h3 class="h4 mb-1">Configurando Auditoría</h3>
+            <p class="text-muted mb-1">Estamos configurando tu sesión y verificando los permisos de auditoría...</p>
+            <p class="text-muted small" id="loading-step">Validando credenciales...</p>
         </div>
     </div>
     
     <!-- Modal de detalles de auditoría -->
-    <div id="audit-details-modal" class="audit-modal">
-        <div class="audit-modal-content">
-            <div class="audit-modal-header">
-                <h2>Detalles del Registro de Auditoría</h2>
-                <button class="audit-modal-close" id="close-audit-details">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="audit-modal-body">
-                <!-- Información general -->
-                <div class="audit-details-section">
-                    <h3>Información General</h3>
-                    <div class="audit-details-grid">
-                        <div class="audit-detail-item">
-                            <label>ID:</label>
-                            <span id="detail-id">-</span>
+    <div class="modal modal-blur fade" id="audit-details-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-eye me-2"></i>
+                        Detalles del Registro de Auditoría
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Información general -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted text-uppercase fw-bold">Información General</h6>
                         </div>
-                        <div class="audit-detail-item">
-                            <label>Fecha y Hora:</label>
-                            <span id="detail-date">-</span>
+                        <div class="col-md-6">
+                            <label class="form-label">ID:</label>
+                            <div class="form-control-plaintext" id="detail-id">-</div>
                         </div>
-                        <div class="audit-detail-item">
-                            <label>Tabla Afectada:</label>
-                            <span id="detail-table" class="table-badge">-</span>
+                        <div class="col-md-6">
+                            <label class="form-label">Fecha y Hora:</label>
+                            <div class="form-control-plaintext" id="detail-date">-</div>
                         </div>
-                        <div class="audit-detail-item">
-                            <label>Operación:</label>
-                            <span id="detail-operation" class="operation-badge">-</span>
+                        <div class="col-md-6">
+                            <label class="form-label">Tabla Afectada:</label>
+                            <div class="form-control-plaintext">
+                                <span id="detail-table" class="badge bg-secondary">-</span>
+                            </div>
                         </div>
-                        <div class="audit-detail-item">
-                            <label>Usuario del Sistema:</label>
-                            <span id="detail-user">-</span>
+                        <div class="col-md-6">
+                            <label class="form-label">Operación:</label>
+                            <div class="form-control-plaintext">
+                                <span id="detail-operation" class="badge">-</span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Usuario del Sistema:</label>
+                            <div class="form-control-plaintext" id="detail-user">-</div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Datos anteriores -->
-                <div class="audit-details-section" id="previous-data-section">
-                    <h3>Datos Anteriores</h3>
-                    <div class="audit-data-container">
-                        <pre id="previous-data-content">-</pre>
-                    </div>
-                </div>
-
-                <!-- Datos nuevos -->
-                <div class="audit-details-section" id="new-data-section">
-                    <h3>Datos Nuevos</h3>
-                    <div class="audit-data-container">
-                        <pre id="new-data-content">-</pre>
-                    </div>
-                </div>
-
-                <!-- Cambios detectados -->
-                <div class="audit-details-section" id="changes-section">
-                    <h3>Cambios Detectados</h3>
-                    <div class="changes-container" id="changes-container">
-                        <!-- Se generarán dinámicamente -->
-                    </div>
-                </div>
-            </div>
-            <div class="audit-modal-footer">
-                <button class="btn btn-primary" id="close-detail-btn">
-                    Cerrar
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de perfil de usuario -->
-    <div id="profile-modal" class="admin-profile-modal">
-        <div class="admin-profile-content">
-            <h2>
-                Mi Perfil
-                <span class="close-modal" id="close-profile-modal">&times;</span>
-            </h2>
-            <!-- Contenido del modal -->
-            <div class="admin-profile-details">
-                <!-- Perfil del usuario -->
-                <div class="admin-profile-header">
-                    <div class="avatar-large">
-                        <img id="profile-modal-avatar" src="" alt="Foto de perfil">
-                        <div class="avatar-overlay" id="avatar-overlay">
-                            <button class="change-photo-btn" id="change-photo-btn" title="Cambiar foto">
-                                <i class="fas fa-camera"></i>
-                            </button>
+                    <!-- Datos anteriores -->
+                    <div class="mb-4" id="previous-data-section">
+                        <h6 class="text-muted text-uppercase fw-bold">Datos Anteriores</h6>
+                        <div class="card">
+                            <div class="card-body">
+                                <pre class="mb-0" id="previous-data-content">-</pre>
+                            </div>
                         </div>
-                        <input type="file" id="photo-input" accept="image/*" style="display: none;">
                     </div>
-                    <div class="admin-profile-header-info">
-                        <h3 id="profile-modal-name">Nombre del Usuario</h3>
+
+                    <!-- Datos nuevos -->
+                    <div class="mb-4" id="new-data-section">
+                        <h6 class="text-muted text-uppercase fw-bold">Datos Nuevos</h6>
+                        <div class="card">
+                            <div class="card-body">
+                                <pre class="mb-0" id="new-data-content">-</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cambios detectados -->
+                    <div id="changes-section">
+                        <h6 class="text-muted text-uppercase fw-bold">Cambios Detectados</h6>
+                        <div id="changes-container">
+                            <!-- Se generarán dinámicamente -->
+                        </div>
                     </div>
                 </div>
-                <!-- Información detallada del usuario -->
-                <div class="admin-profile-info">
-                    <div class="info-item">
-                        <label>Nombre:</label>
-                        <span id="profile-modal-firstname">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Apellido:</label>
-                        <span id="profile-modal-lastname">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Tipo de Documento:</label>
-                        <span id="profile-modal-doctype">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Documento:</label>
-                        <span id="profile-modal-document">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Área:</label>
-                        <span id="profile-modal-area">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Cargo:</label>
-                        <span id="profile-modal-position">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Correo Electrónico:</label>
-                        <span id="profile-modal-email">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Celular:</label>
-                        <span id="profile-modal-phone">No disponible</span>
-                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>
+                        Cerrar
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Sistema de notificaciones toast -->
-    <div id="toast" class="toast">
-        <div id="toast-message">Operación realizada correctamente</div>
-    </div>
+    <!-- Contenedor para modales dinámicos -->
+    <div id="modal-container"></div>
 
     <!-- Toast notification for audit operations -->
     <div id="recovery-toast" class="recovery-toast">
@@ -427,80 +344,33 @@
         </div>
     </div>
     
-    <!-- Scripts básicos del sistema -->
+    <!-- Scripts de Tabler -->
+    <script src="../../assets/tabler/js/tabler.min.js"></script>
+    
+    <!-- Inicializador global -->
     <script src="../../assets/js/global-initializer.js"></script>
     <script src="../../assets/js/auth/auth-checker.js"></script>
     <script src="../../assets/js/auth/permissions.js"></script>
     <script src="../../assets/js/auth/route-guard.js"></script>
-    <script>
-        // Inicializa RouteGuard para proteger la página
-        window.routeGuard = new RouteGuard("../../index.html");
-        
-        // Diagnóstico temporal para verificar autenticación
-        console.log('=== DIAGNÓSTICO DE AUTENTICACIÓN - AUDITORÍA ===');
-        console.log('Token presente en sessionStorage:', sessionStorage.getItem('authToken') ? 'SÍ' : 'NO');
-        console.log('Token presente en localStorage:', localStorage.getItem('authToken') ? 'SÍ' : 'NO');
-        console.log('Usuario logueado:', sessionStorage.getItem('isLoggedIn'));
-        console.log('Módulo: Auditoría - Registro');
-        console.log('=== FIN DIAGNÓSTICO ===');
-    </script>
     
-    <!-- Autenticación y protección de rutas -->
-    <script src="../../assets/js/auth/auth-checker.js"></script>
-    <script src="../../assets/js/auth/permissions.js"></script>
-    <script src="../../assets/js/auth/route-guard.js"></script>
-    
-    <!-- Servicios básicos -->
+    <!-- Scripts de servicios -->
     <script src="../../assets/js/api/services/profile-service.js"></script>
     <script src="../../assets/js/api/services/Audit/audit-service.js"></script>
     
-    <!-- Modelos básicos -->
-    <script src="../../assets/js/api/models/user.js"></script>
-    
-    <!-- Controladores UI básicos -->
+    <!-- Scripts de UI -->
+    <script src="../../assets/js/ui/component-loader.js"></script>
     <script src="../../assets/js/ui/global-toast.js"></script>
-    <script src="../../assets/js/ui/controllers/sidebar-controller.js"></script>
-    <script src="../../assets/js/ui/controllers/topbar-controller.js"></script>
-    <script src="../../assets/js/ui/controllers/profile-controller.js"></script>
-    <script src="../../assets/js/ui/controllers/audit-registry-controller.js"></script>
     
-    <!-- Inicializador básico del módulo de auditoría -->
-    <script src="../../assets/js/ui/initializers/audit-registry-initializer.js"></script>
+    <!-- Scripts de controladores base -->
+    <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
     
-    <!-- Script de prueba temporal -->
-    <script src="../../assets/js/test-global-system.js"></script>
+    <!-- Controlador específico de auditoría -->
+    <script src="../../assets/js/ui/controllers/Audit/audit-registry-controller.js"></script>
     
-    <!-- Script de diagnóstico adicional -->
-    <script>
-        // Diagnóstico adicional para detectar problemas
-        window.addEventListener('load', function() {
-            console.log('=== DIAGNÓSTICO POST-CARGA ===');
-            console.log('Página totalmente cargada');
-            
-            setTimeout(function() {
-                console.log('=== VERIFICACIÓN FINAL DE CONTROLADORES ===');
-                console.log('- SidebarController global:', typeof window.SidebarController);
-                console.log('- sidebarController instancia:', typeof window.sidebarController);
-                console.log('- TopbarController global:', typeof window.TopbarController);
-                console.log('- topbarController instancia:', typeof window.topbarController);
-                console.log('- ProfileController global:', typeof window.ProfileController);
-                console.log('- profileController instancia:', typeof window.profileController);
-                
-                // Verificar funcionalidad del sidebar
-                const sidebarElement = document.getElementById('sidebar');
-                const openButton = document.getElementById('open-sidebar');
-                const closeButton = document.getElementById('close-sidebar');
-                
-                console.log('- Sidebar element:', sidebarElement);
-                console.log('- Open button:', openButton);
-                console.log('- Close button:', closeButton);
-                
-                if (openButton) {
-                    console.log('- Open button found and available');
-                }
-                
-            }, 2000);
-        });
-    </script>
+    <!-- Inicializadores específicos -->
+    <script src="../../assets/js/ui/initializers/Audit/audit-registry-initializer.js"></script>
 </body>
 </html>
+

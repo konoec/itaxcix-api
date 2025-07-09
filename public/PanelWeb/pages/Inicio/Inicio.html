@@ -16,267 +16,179 @@
     
     <title>Panel de Administración - Inicio</title>
     
+    <!-- Tabler CSS Framework -->
+    <link rel="stylesheet" href="../../assets/tabler/css/tabler.min.css">
+    <link rel="stylesheet" href="../../assets/tabler/css/tabler-vendors.min.css">
+    
     <!-- Hojas de estilo -->
-    <link rel="stylesheet" href="../../assets/css/base.css">
+    <link rel="stylesheet" href="../../assets/css/global-toast.css">
     <link rel="stylesheet" href="../../assets/css/sidebar.css">
     <link rel="stylesheet" href="../../assets/css/topbar.css">
     <link rel="stylesheet" href="../../assets/css/profile.css">
-    <link rel="stylesheet" href="../../assets/css/confirmation-modal.css">
-    <link rel="stylesheet" href="../../assets/css/inicio.css">
-    <link rel="stylesheet" href="../../assets/css/dashboard.css">
     
     <!-- Font Awesome para iconografía -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Configuración de la página -->
+    <script>
+        window.pageConfig = {
+            activeSection: 'inicio', // Sección activa en el sidebar
+            pageTitle: {
+                icon: 'fas fa-home',
+                text: 'Inicio'
+            }
+        };
+    </script>
 </head>
 <body>
-    <!-- Pantalla de carga para configuración de permisos -->
-    <div id="permissions-loading" class="permissions-loading-overlay">
-        <div class="loading-content">
-            <div class="loading-car">🚕</div>
-            <h2 class="loading-title">Cargando Panel</h2>
-            <p class="loading-message">
-                Estamos configurando tu sesión y verificando los permisos asignados...
-            </p>
-            <p class="loading-steps">
-                <span id="loading-step">Validando credenciales...</span>
-            </p>
-        </div>
-    </div>
-
     <!-- Contenedor principal del layout -->
-    <div class="layout">
-        <!-- Barra lateral de navegación -->
-        <div class="sidebar" id="sidebar">
-            <!-- Encabezado del sidebar con título y botón de cierre -->
-            <div class="sidebar-header">
-                <h2 class="logoSidebar"><span class="sidebar-logo-img"></span></h2>
-                <button id="close-sidebar" class="sidebar-toggle">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
+    <div class="page">
+        <!-- Contenedor del sidebar - se carga dinámicamente -->
+        <div id="sidebar-container"></div>
+
+        <!-- Contenido principal usando estructura Tabler -->
+        <div class="page-wrapper">
+            <!-- Contenedor del topbar - se carga dinámicamente -->
+            <div id="topbar-container"></div>
             
-            <!-- Menú de navegación principal -->
-            <div class="sidebar-menu">
-                <ul>
-                    <!-- Inicio -->
-                    <li class="active" id="menu-inicio">
-                        <a href="../Inicio/Inicio.html" class="module-inicio">
-                            <i class="fas fa-home"></i>
-                            Inicio
-                        </a>
-                    </li>                    <!-- Módulo de Admisión de conductores -->
-                    <li id="menu-admission">
-                        <a class="module-admission" href="../Admission/AdmissionControl.html">
-                            <i class="fas fa-user-check"></i>
-                            Admisión de conductores
-                        </a>
-                    </li>
-
-                    <!-- Módulo de Tablas maestras -->
-                    <li class="has-submenu" id="menu-tablas">
-                        <a href="javascript:void(0)" class="module-tablas">
-                            <i class="fas fa-table"></i>
-                            Tablas maestras
-                            <span class="submenu-arrow"></span>
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="../Master-tables/MasterTable1.html"><i class="fas fa-car"></i>Tabla Maestra 1</a></li>
-                            <li><a href="javascript:void(0)"><i class="fas fa-users"></i>Tabla Maestra 2</a></li>
-                            <li><a href="javascript:void(0)"><i class="fas fa-id-card"></i>Tabla Maestra 3</a></li>
-                            <li><a href="javascript:void(0)"><i class="fas fa-route"></i>Tabla Maestra 4</a></li>
-                        </ul>
-                    </li>
-
-                    <!-- Módulo de Auditoría -->
-                    <li class="has-submenu" id="menu-auditoria">
-                        <a href="javascript:void(0)" class="module-auditoria">
-                            <i class="fas fa-search"></i>
-                            Auditoría
-                            <span class="submenu-arrow"></span>
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="../Audit/AuditRegistry.html"><i class="fas fa-history"></i>Registro de Auditoría</a></li>
-                            <li><a href="../Audit/AuditReports.html"><i class="fas fa-chart-bar"></i>Reportes de Auditoría</a></li>
-                        </ul>
-                    </li>
-
-                    <!-- Módulo de Configuración -->
-                    <li class="has-submenu" id="menu-configuracion">
-                        <a href="javascript:void(0)" class="module-config">
-                            <i class="fas fa-cog"></i>
-                            Configuración
-                            <span class="submenu-arrow"></span>
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="../Configuration/EmergencyConfiguration.html"><i class="fas fa-phone-alt"></i>Emergencia</a></li>
-                            <li><a href="../Configuration/PermissionsManagement.html"><i class="fas fa-shield-alt"></i>Permisos</a></li>
-                            <li><a href="../Configuration/RolesManagement.html"><i class="fas fa-user-tag"></i>Roles</a></li>
-                            <li><a href="../Configuration/UsersManagement.html"><i class="fas fa-users"></i>Usuarios</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Pie del sidebar con botón de cierre de sesión -->
-            <div class="sidebar-footer">
-                <button class="logout-btn">
-                    <i class="fas fa-power-off"></i>
-                    Cerrar sesión
-                </button>
-            </div>
-        </div>
-
-        <!-- Contenido principal de la página -->
-       <div class="main-content">
-            <!-- Barra superior con controles y información de usuario -->
-            <div class="top-bar">
-                <button id="open-sidebar" class="sidebar-toggle">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h3>PANEL DE ADMINISTRACIÓN</h3>
-                <div class="profile-container" id="profile-container" style="cursor: pointer;" title="Ver mi perfil">
-                    <div class="profile-image" id="profile-image"></div>
-                    <div class="user-info">
-                        <span class="user-display" id="user-display">Admin</span>
-                        <span class="user-role">Administrador</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Contenido del dashboard -->
-            <div class="content">
-                <!-- Dashboard principal -->
-                <div class="dashboard-container">
-                    <!-- Loading del dashboard -->
-                    <div id="dashboard-loading" class="dashboard-loading">
-                        <div class="dashboard-loading-spinner"></div>
-                        <h3>Cargando estadísticas...</h3>
-                        <p>Obteniendo datos del sistema</p>
+            <div class="page-header d-print-none">
+                <div class="container-xl">
+                    <!-- Loading State del dashboard -->
+                    <div id="dashboard-loading" class="text-center py-5">
+                        <div class="d-flex justify-content-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <h3 class="mt-3">Cargando estadísticas...</h3>
+                            <p class="text-muted">Obteniendo datos del sistema</p>
+                        </div>
                     </div>
 
                     <!-- Error del dashboard -->
-                    <div id="dashboard-error" class="dashboard-error" style="display: none;">
-                        <div class="dashboard-error-icon">
-                            <i class="fas fa-exclamation-triangle"></i>
+                    <div id="dashboard-error" class="alert alert-danger text-center" style="display: none;">
+                        <div class="text-danger mb-3">
+                            <i class="fas fa-exclamation-triangle fa-3x"></i>
                         </div>
-                        <div class="dashboard-error-title">Error al cargar el dashboard</div>
-                        <div class="dashboard-error-message" id="dashboard-error-message">
+                        <h4 class="alert-title">Error al cargar el dashboard</h4>
+                        <div class="text-muted mb-3" id="dashboard-error-message">
                             No se pudieron obtener las estadísticas del sistema
                         </div>
-                        <button class="dashboard-error-retry" id="dashboard-error-retry">
-                            <i class="fas fa-redo"></i> Reintentar
+                        <button class="btn btn-outline-danger" id="dashboard-error-retry">
+                            <i class="fas fa-redo me-2"></i> Reintentar
                         </button>
                     </div>
 
-                    <!-- Contenido del dashboard -->
+                    <!-- Page Header con estructura Tabler -->
                     <div id="dashboard-content" style="display: none;">
-                        <!-- Header del dashboard -->
-                        <div class="dashboard-header">
-                            <h1 class="dashboard-title">Dashboard del Sistema</h1>
-                            <p class="dashboard-subtitle">Estadísticas y métricas generales del panel de administración</p>
-                            <button class="dashboard-refresh" id="dashboard-refresh-btn">
-                                <i class="fas fa-sync-alt"></i>
-                                Actualizar
-                            </button>
-                        </div>
-
-                        <!-- Grid de estadísticas principales -->
-                        <div class="dashboard-stats-grid" id="dashboard-stats-grid">
-                            <!-- Las estadísticas se cargarán dinámicamente -->
-                        </div>
-
-                        <!-- Grid de métricas secundarias -->
-                        <div class="dashboard-metrics-grid">
-                            <!-- Métrica de acceso web -->
-                            <div class="dashboard-metric-card" id="web-access-metrics">
-                                <!-- Se carga dinámicamente -->
+                        <div class="row g-2 align-items-center">
+                            <div class="col">
+                                <h2 class="page-title">Dashboard del Sistema</h2>
                             </div>
-
-                            <!-- Métrica de distribución de roles -->
-                            <div class="dashboard-metric-card" id="role-distribution">
-                                <!-- Se carga dinámicamente -->
+                            <!-- Page title actions -->
+                            <div class="col-auto ms-auto d-print-none">
+                                <div class="btn-list">
+                                    <button class="btn btn-outline-cyan" id="dashboard-refresh-btn" title="Actualizar datos">
+                                        <i class="fas fa-sync-alt me-2"></i>
+                                        Actualizar
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div> 
-
-<!-- Modal para mostrar perfil del usuario -->
-    <div id="profile-modal" class="admin-profile-modal">
-        <div class="admin-profile-content">
-            <h2>
-                Mi Perfil
-                <span class="close-modal" id="close-profile-modal">&times;</span>
-            </h2>
             
-            <!-- Contenido del modal -->
-            <div class="admin-profile-details">
-                <!-- Perfil del usuario -->
-                <div class="admin-profile-header">
-                    <div class="avatar-large">
-                        <img id="profile-modal-avatar" src="" alt="Foto de perfil">
-                        <div class="avatar-overlay" id="avatar-overlay">
-                            <button class="change-photo-btn" id="change-photo-btn" title="Cambiar foto">
-                                <i class="fas fa-camera"></i>
-                            </button>
-                        </div>
-                        <input type="file" id="photo-input" accept="image/*" style="display: none;">
+            <!-- Contenido del dashboard -->
+            <div class="page-body">
+                <div class="container-xl">
+                    <!-- Grid de estadísticas principales con estructura Tabler -->
+                    <div class="row row-deck row-cards mb-4" id="dashboard-stats-grid">
+                        <!-- Las estadísticas se cargarán dinámicamente aquí -->
+                        <!-- El controller generará cards usando clases Tabler -->
                     </div>
-                    
-                    <div class="admin-profile-header-info">
-                        <h3 id="profile-modal-name">Nombre del Usuario</h3>
-                    </div>
-                </div>
-                
-                <!-- Información detallada del usuario -->
-                <div class="admin-profile-info">
-                    <div class="info-item">
-                        <label>Nombre:</label>
-                        <span id="profile-modal-firstname">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Apellido:</label>
-                        <span id="profile-modal-lastname">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Tipo de Documento:</label>
-                        <span id="profile-modal-doctype">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Documento:</label>
-                        <span id="profile-modal-document">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Área:</label>
-                        <span id="profile-modal-area">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Cargo:</label>
-                        <span id="profile-modal-position">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Correo Electrónico:</label>
-                        <span id="profile-modal-email">No disponible</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Celular:</label>
-                        <span id="profile-modal-phone">No disponible</span>
-                    </div>
-                </div>
 
-                <!-- Botones de acción del modal -->
+                    <!-- Grid de métricas secundarias con estructura Tabler -->
+                    <div class="row row-deck row-cards">
+                        <!-- Métrica de acceso web -->
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="2" y1="12" x2="22" y2="12"></line>
+                                            <path d="M12 2a15.3 15.3 0 0 1 4 10a15.3 15.3 0 0 1 -4 10a15.3 15.3 0 0 1 -4 -10a15.3 15.3 0 0 1 4 -10z"></path>
+                                        </svg>
+                                        Acceso Web
+                                    </h3>
+                                    <div class="card-actions">
+                                        <a href="#" class="btn-action">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M3 12a9 9 0 1 0 9 -9a9.75 9.75 0 0 0 -6.74 2.74l-4.26 4.26"></path>
+                                                <path d="M12 3v9l4 -4"></path>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="card-body" id="web-access-metrics">
+                                    <!-- Se carga dinámicamente por el controller -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Métrica de distribución de roles -->
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="4" width="6" height="4" rx="1"></rect>
+                                            <rect x="15" y="4" width="6" height="4" rx="1"></rect>
+                                            <rect x="9" y="10" width="6" height="4" rx="1"></rect>
+                                            <rect x="3" y="16" width="6" height="4" rx="1"></rect>
+                                            <rect x="15" y="16" width="6" height="4" rx="1"></rect>
+                                        </svg>
+                                        Distribución del Sistema
+                                    </h3>
+                                    <div class="card-actions">
+                                        <a href="#" class="btn-action">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M3 12a9 9 0 1 0 9 -9a9.75 9.75 0 0 0 -6.74 2.74l-4.26 4.26"></path>
+                                                <path d="M12 3v9l4 -4"></path>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="card-body" id="role-distribution">
+                                    <!-- Se carga dinámicamente por el controller -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>    <!-- Sistema de notificaciones toast -->
+    </div>
+
+    <!-- Contenedor del modal - se carga dinámicamente -->
+    <div id="modal-container"></div>
+
+    <!-- Sistema de notificaciones toast -->
     <div id="toast" class="toast">
         <div id="toast-message">Página cargada correctamente</div>
     </div>
 
-    <!-- Carga de scripts en orden específico para manejar dependencias -->
-    <!-- 1. Utilidades y herramientas base -->
+   <!-- Carga de scripts en orden específico para manejar dependencias -->
+    <!-- 1. Component Loader (debe ir primero) -->
+    <script src="../../assets/js/ui/component-loader.js"></script>
+    
+    <!-- 2. Utilidades y herramientas base -->
     <script src="../../assets/js/global-initializer.js"></script>
+    <script src="../../assets/js/ui/global-toast.js"></script>
     <script src="../../assets/js/auth/permissions.js"></script>
     <script src="../../assets/js/auth/auth-checker.js"></script>
     <script src="../../assets/js/auth/route-guard.js"></script>
@@ -291,14 +203,33 @@
     <script src="../../assets/js/api/services/dashboard-service.js"></script>
 
     <!-- 3. Controladores de UI -->
-    <script src="../../assets/js/ui/global-toast.js"></script>
-    <script src="../../assets/js/ui/controllers/sidebar-controller.js"></script>
-    <script src="../../assets/js/ui/controllers/topbar-controller.js"></script>
-    <script src="../../assets/js/ui/controllers/profile-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
     <script src="../../assets/js/ui/controllers/dashboard-controller.js"></script>
 
     <!-- 4. Inicializador específico de la página -->
     <script src="../../assets/js/ui/initializers/inicio-initializer.js"></script>
+
+    <!-- 5. Scripts de Tabler para funcionalidad completa -->
+    <script src="../../assets/tabler/js/tabler.min.js"></script>
+
+    <!-- Verificación de sistema de toast -->
+    <script>
+        // Verificar que el sistema de toast esté disponible
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔍 Verificando sistema de toast...');
+            console.log('📢 window.showRecoveryToast disponible:', typeof window.showRecoveryToast);
+            console.log('🎯 Elemento recovery-toast encontrado:', !!document.getElementById('recovery-toast'));
+            
+            // Test del toast al cargar la página
+            if (typeof window.showRecoveryToast === 'function') {
+                setTimeout(() => {
+                    window.showRecoveryToast('Sistema de toast cargado correctamente', 'success');
+                }, 2000);
+            }
+        });
+    </script>
 
     <!-- Toast notification for profile operations -->
     <div id="recovery-toast" class="recovery-toast">

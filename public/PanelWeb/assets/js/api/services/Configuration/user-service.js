@@ -484,6 +484,12 @@ class UserService {
                 throw new Error('La contraseña debe tener al menos 6 caracteres');
             }
             
+            // Validar complejidad de contraseña
+            const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/;
+            if (!passwordRegex.test(userData.password)) {
+                throw new Error('La contraseña debe contener al menos: 1 mayúscula, 1 número y 1 carácter especial (@$!%*?&)');
+            }
+            
             // Preparar datos para envío según la nueva API
             const requestData = {
                 document: userData.document.trim(),
@@ -526,10 +532,24 @@ class UserService {
             const responseData = await response.json();
             console.log('✅ Usuario creado exitosamente:', responseData);
             
+            // Extraer información del usuario creado para logs detallados
+            if (responseData.data && responseData.data.user) {
+                console.log('👤 Usuario creado - Detalles:', {
+                    id: responseData.data.user.id,
+                    nombre: `${responseData.data.user.firstName} ${responseData.data.user.lastName}`,
+                    documento: responseData.data.user.document,
+                    email: responseData.data.user.email,
+                    rol: responseData.data.user.role,
+                    area: responseData.data.user.area,
+                    posicion: responseData.data.user.position
+                });
+            }
+            
             return {
                 success: true,
-                message: responseData.message || 'Usuario creado exitosamente',
-                data: responseData.data
+                message: responseData.data?.message || responseData.message || 'Usuario creado exitosamente',
+                data: responseData.data,
+                user: responseData.data?.user // Incluir datos específicos del usuario
             };
             
         } catch (error) {

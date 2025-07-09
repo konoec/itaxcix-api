@@ -19,15 +19,172 @@ class DoctrineUserRoleRepository implements UserRoleRepositoryInterface
     private EntityManagerInterface $entityManager;
     private RoleRepositoryInterface $roleRepository;
     private UserRepositoryInterface $userRepository;
+
     public function __construct(EntityManagerInterface $entityManager, RoleRepositoryInterface $roleRepository, UserRepositoryInterface $userRepository) {
         $this->entityManager = $entityManager;
         $this->roleRepository = $roleRepository;
         $this->userRepository = $userRepository;
     }
 
-    /**
-     * @throws ORMException
-     */
+    public function findActiveRolesByUserId(int $userId): array
+    {
+        // Usar DISTINCT para evitar duplicados y ordenar por ID descendente para obtener los más recientes
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('ur')
+            ->from(UserRoleEntity::class, 'ur')
+            ->join('ur.role', 'r')
+            ->where('ur.user = :userId')
+            ->andWhere('ur.active = true')
+            ->andWhere('r.active = true') // Asegurar que el rol también esté activo
+            ->setParameter('userId', $userId)
+            ->groupBy('r.id') // Agrupar por rol para evitar duplicados
+            ->orderBy('ur.id', 'DESC') // Obtener el más reciente en caso de duplicados
+            ->getQuery();
+
+        $entities = $query->getResult();
+        return array_map([$this, 'toDomain'], $entities);
+    }
+
+    public function findByUserAndRole(UserModel $user, RoleModel $role): ?UserRoleModel
+    {
+        // Buscar solo el más reciente para evitar el error de múltiples resultados
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('ur')
+            ->from(UserRoleEntity::class, 'ur')
+            ->where('ur.user = :userId')
+            ->andWhere('ur.role = :roleId')
+            ->andWhere('ur.active = true')
+            ->setParameter('userId', $user->getId())
+            ->setParameter('roleId', $role->getId())
+            ->orderBy('ur.id', 'DESC') // Obtener el más reciente
+            ->setMaxResults(1) // Limitar a 1 resultado
+            ->getQuery();
+
+        $entity = $query->getOneOrNullResult();
+        return $entity ? $this->toDomain($entity) : null;
+    }
+
+    public function assignRoleToUser(UserModel $user, RoleModel $role): UserRoleModel
+    {
+        try {
+            // Buscar si ya existe un registro para este usuario-rol
+            $existingEntity = $this->entityManager->createQueryBuilder()
+                ->select('ur')
+                ->from(UserRoleEntity::class, 'ur')
+                ->where('ur.user = :userId')
+                ->andWhere('ur.role = :roleId')
+                ->setParameter('userId', $user->getId())
+                ->setParameter('roleId', $role->getId())
+                ->setMaxResults(1)
+                ->getQuery()
+                ->getOneOrNullResult();
+
+            if ($existingEntity) {
+                // Si existe, simplemente lo activamos
+                $existingEntity->setActive(true);
+                $entity = $existingEntity;
+            } else {
+                // Si no existe, creamos uno nuevo
+                $entity = new UserRoleEntity();
+                $entity->setActive(true);
+
+                $userEntity = $this->entityManager->getReference(UserEntity::class, $user->getId());
+                $entity->setUser($userEntity);
+
+                $roleEntity = $this->entityManager->getReference(RoleEntity::class, $role->getId());
+                $entity->setRole($roleEntity);
+            }
+
+            $this->entityManager->persist($entity);
+            $this->entityManager->flush();
+
+            return $this->toDomain($entity);
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Error assigning role to user: ' . $e->getMessage());
+        }
+    }
+
+    public function updateUserRoles(int $userId, array $roleIds): bool
+    {
+        try {
+            $this->entityManager->beginTransaction();
+
+            // Desactivar todos los roles actuales del usuario
+            $this->entityManager->createQueryBuilder()
+                ->update(UserRoleEntity::class, 'ur')
+                ->set('ur.active', 'false')
+                ->where('ur.user = :userId')
+                ->setParameter('userId', $userId)
+                ->getQuery()
+                ->execute();
+
+            // Asignar los nuevos roles
+            foreach ($roleIds as $roleId) {
+                // Crear nueva asignación para cada rol
+                $entity = new UserRoleEntity();
+                $entity->setActive(true);
+
+                $userEntity = $this->entityManager->getReference(UserEntity::class, $userId);
+                $entity->setUser($userEntity);
+
+                $roleEntity = $this->entityManager->getReference(RoleEntity::class, $roleId);
+                $entity->setRole($roleEntity);
+
+                $this->entityManager->persist($entity);
+            }
+
+            $this->entityManager->flush();
+            $this->entityManager->commit();
+
+            return true;
+        } catch (\Exception $e) {
+            $this->entityManager->rollback();
+            throw new \RuntimeException('Error updating user roles: ' . $e->getMessage());
+        }
+    }
+
+    public function cleanDuplicateUserRoles(int $userId): bool
+    {
+        try {
+            // Obtener todos los roles duplicados para el usuario
+            $duplicates = $this->entityManager->createQueryBuilder()
+                ->select('ur.id, ur.role as roleId, COUNT(ur.id) as cnt')
+                ->from(UserRoleEntity::class, 'ur')
+                ->where('ur.user = :userId')
+                ->andWhere('ur.active = true')
+                ->setParameter('userId', $userId)
+                ->groupBy('ur.role')
+                ->having('COUNT(ur.id) > 1')
+                ->getQuery()
+                ->getResult();
+
+            foreach ($duplicates as $duplicate) {
+                // Mantener solo el más reciente para cada rol
+                $this->entityManager->createQueryBuilder()
+                    ->update(UserRoleEntity::class, 'ur')
+                    ->set('ur.active', 'false')
+                    ->where('ur.user = :userId')
+                    ->andWhere('ur.role = :roleId')
+                    ->andWhere('ur.id NOT IN (
+                        SELECT MAX(ur2.id) 
+                        FROM ' . UserRoleEntity::class . ' ur2 
+                        WHERE ur2.user = :userId 
+                        AND ur2.role = :roleId 
+                        AND ur2.active = true
+                    )')
+                    ->setParameter('userId', $userId)
+                    ->setParameter('roleId', $duplicate['roleId'])
+                    ->getQuery()
+                    ->execute();
+            }
+
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    // Métodos existentes sin cambios
     public function saveUserRole(UserRoleModel $userRole): UserRoleModel
     {
         try {
@@ -42,7 +199,6 @@ class DoctrineUserRoleRepository implements UserRoleRepositoryInterface
 
             $entity->setActive($userRole->isActive());
 
-            // Establecer las relaciones
             $userEntity = $this->entityManager->getReference(UserEntity::class, $userRole->getUser()->getId());
             $entity->setUser($userEntity);
 
@@ -66,17 +222,7 @@ class DoctrineUserRoleRepository implements UserRoleRepositoryInterface
 
     public function findUserRolesByUserId(int $userId): array
     {
-        $query = $this->entityManager->createQueryBuilder()
-            ->select('ur')
-            ->from(UserRoleEntity::class, 'ur')
-            ->where('ur.user = :userId')
-            ->andWhere('ur.active = true')
-            ->setParameter('userId', $userId)
-            ->orderBy('ur.id', 'ASC')
-            ->getQuery();
-
-        $entities = $query->getResult();
-        return array_map([$this, 'toDomain'], $entities);
+        return $this->findActiveRolesByUserId($userId);
     }
 
     public function findRolesByUserId(int $userId, bool $web): ?array
@@ -86,25 +232,17 @@ class DoctrineUserRoleRepository implements UserRoleRepositoryInterface
             ->from(UserRoleEntity::class, 'ur')
             ->join('ur.role', 'r')
             ->where('ur.user = :userId')
-            ->andWhere('ur.active = :active')
+            ->andWhere('ur.active = true')
+            ->andWhere('r.active = true')
             ->andWhere('r.web = :web')
             ->setParameter('userId', $userId)
-            ->setParameter('active', true)
             ->setParameter('web', $web)
+            ->groupBy('r.id')
+            ->orderBy('ur.id', 'DESC')
             ->getQuery();
 
         $result = $query->getResult();
-
-        if (empty($result)) {
-            return null;
-        }
-
-        return array_map([$this, 'toDomain'], $result);
-    }
-
-    public function findActiveRolesByUserId(int $userId): array
-    {
-        return $this->findUserRolesByUserId($userId);
+        return empty($result) ? null : array_map([$this, 'toDomain'], $result);
     }
 
     public function findAllUserRoles(): array
@@ -118,56 +256,6 @@ class DoctrineUserRoleRepository implements UserRoleRepositoryInterface
 
         $entities = $query->getResult();
         return array_map([$this, 'toDomain'], $entities);
-    }
-
-    public function findByUserAndRole(UserModel $user, RoleModel $role): ?UserRoleModel
-    {
-        $query = $this->entityManager->createQueryBuilder()
-            ->select('ur')
-            ->from(UserRoleEntity::class, 'ur')
-            ->where('ur.user = :userId')
-            ->andWhere('ur.role = :roleId')
-            ->andWhere('ur.active = true')
-            ->setParameter('userId', $user->getId())
-            ->setParameter('roleId', $role->getId())
-            ->getQuery();
-
-        $entity = $query->getOneOrNullResult();
-        return $entity ? $this->toDomain($entity) : null;
-    }
-
-    public function assignRoleToUser(UserModel $user, RoleModel $role): UserRoleModel
-    {
-        try {
-            // Verificar si ya existe esta asignación
-            $existing = $this->findByUserAndRole($user, $role);
-
-            if ($existing) {
-                // Si existe y está activo, retornarlo
-                if ($existing->isActive()) {
-                    return $existing;
-                }
-
-                // Si existe pero está inactivo, crear uno nuevo (el anterior se mantiene como historial)
-            }
-
-            // Crear nueva asignación
-            $entity = new UserRoleEntity();
-            $entity->setActive(true);
-
-            $userEntity = $this->entityManager->getReference(UserEntity::class, $user->getId());
-            $entity->setUser($userEntity);
-
-            $roleEntity = $this->entityManager->getReference(RoleEntity::class, $role->getId());
-            $entity->setRole($roleEntity);
-
-            $this->entityManager->persist($entity);
-            $this->entityManager->flush();
-
-            return $this->toDomain($entity);
-        } catch (\Exception $e) {
-            throw new \RuntimeException('Error assigning role to user: ' . $e->getMessage());
-        }
     }
 
     public function deleteUserRole(UserRoleModel $userRole): bool
@@ -205,7 +293,7 @@ class DoctrineUserRoleRepository implements UserRoleRepositoryInterface
     public function hasActiveUsersByRoleId(int $roleId): bool
     {
         $count = $this->entityManager->createQueryBuilder()
-            ->select('COUNT(ur.id)')
+            ->select('COUNT(DISTINCT ur.user)')
             ->from(UserRoleEntity::class, 'ur')
             ->where('ur.role = :roleId')
             ->andWhere('ur.active = true')
@@ -216,43 +304,38 @@ class DoctrineUserRoleRepository implements UserRoleRepositoryInterface
         return $count > 0;
     }
 
-    public function toDomain(object $entity): UserRoleModel
-    {
-        if (!$entity instanceof UserRoleEntity) {
-            throw new \InvalidArgumentException('Entity must be instance of UserRoleEntity');
-        }
-
-        return new UserRoleModel(
-            id: $entity->getId(),
-            role: $this->roleRepository->toDomain($entity->getRole()),
-            user: $this->userRepository->toDomain($entity->getUser()),
-            active: $entity->isActive()
-        );
-    }
-
-    // Métodos auxiliares para compatibilidad con casos de uso existentes
-    public function assignRoleToUserById(int $userId, int $roleId): bool
+    public function removeRoleFromUser(int $userId, int $roleId): bool
     {
         try {
-            // Verificar si ya existe esta asignación
-            $existing = $this->entityManager->createQueryBuilder()
-                ->select('ur')
-                ->from(UserRoleEntity::class, 'ur')
+            $this->entityManager->createQueryBuilder()
+                ->update(UserRoleEntity::class, 'ur')
+                ->set('ur.active', 'false')
                 ->where('ur.user = :userId')
                 ->andWhere('ur.role = :roleId')
                 ->setParameter('userId', $userId)
                 ->setParameter('roleId', $roleId)
                 ->getQuery()
-                ->getOneOrNullResult();
+                ->execute();
 
-            if ($existing) {
-                // Si existe pero está inactivo, activarlo
-                if (!$existing->isActive()) {
-                    $existing->setActive(true);
-                    $this->entityManager->flush();
-                }
-                return true;
-            }
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    public function assignRoleToUserById(int $userId, int $roleId): bool
+    {
+        try {
+            // Desactivar asignaciones previas del mismo rol
+            $this->entityManager->createQueryBuilder()
+                ->update(UserRoleEntity::class, 'ur')
+                ->set('ur.active', 'false')
+                ->where('ur.user = :userId')
+                ->andWhere('ur.role = :roleId')
+                ->setParameter('userId', $userId)
+                ->setParameter('roleId', $roleId)
+                ->getQuery()
+                ->execute();
 
             // Crear nueva asignación
             $entity = new UserRoleEntity();
@@ -273,55 +356,6 @@ class DoctrineUserRoleRepository implements UserRoleRepositoryInterface
         }
     }
 
-    public function removeRoleFromUser(int $userId, int $roleId): bool
-    {
-        try {
-            $entity = $this->entityManager->createQueryBuilder()
-                ->select('ur')
-                ->from(UserRoleEntity::class, 'ur')
-                ->where('ur.user = :userId')
-                ->andWhere('ur.role = :roleId')
-                ->andWhere('ur.active = true')
-                ->setParameter('userId', $userId)
-                ->setParameter('roleId', $roleId)
-                ->getQuery()
-                ->getOneOrNullResult();
-
-            if ($entity) {
-                $entity->setActive(false);
-                $this->entityManager->flush();
-                return true;
-            }
-
-            return false;
-        } catch (\Exception $e) {
-            return false;
-        }
-    }
-
-    public function updateUserRoles(int $userId, array $roleIds): bool
-    {
-        try {
-            // Desactivar todos los roles actuales del usuario
-            $this->entityManager->createQueryBuilder()
-                ->update(UserRoleEntity::class, 'ur')
-                ->set('ur.active', 'false')
-                ->where('ur.user = :userId')
-                ->setParameter('userId', $userId)
-                ->getQuery()
-                ->execute();
-
-            // Asignar los nuevos roles
-            foreach ($roleIds as $roleId) {
-                $this->assignRoleToUserById($userId, $roleId);
-            }
-
-            return true;
-        } catch (\Exception $e) {
-            return false;
-        }
-    }
-
     public function findAllUserRoleByUserId(int $userId): array
     {
         $query = $this->entityManager->createQueryBuilder()
@@ -329,10 +363,24 @@ class DoctrineUserRoleRepository implements UserRoleRepositoryInterface
             ->from(UserRoleEntity::class, 'ur')
             ->where('ur.user = :userId')
             ->setParameter('userId', $userId)
-            ->orderBy('ur.id', 'ASC')
+            ->orderBy('ur.id', 'DESC')
             ->getQuery();
 
         $entities = $query->getResult();
         return array_map([$this, 'toDomain'], $entities);
+    }
+
+    public function toDomain(object $entity): UserRoleModel
+    {
+        if (!$entity instanceof UserRoleEntity) {
+            throw new \InvalidArgumentException('Entity must be instance of UserRoleEntity');
+        }
+
+        return new UserRoleModel(
+            id: $entity->getId(),
+            role: $this->roleRepository->toDomain($entity->getRole()),
+            user: $this->userRepository->toDomain($entity->getUser()),
+            active: $entity->isActive()
+        );
     }
 }

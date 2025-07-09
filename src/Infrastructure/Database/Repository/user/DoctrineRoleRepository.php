@@ -39,9 +39,7 @@ class DoctrineRoleRepository implements RoleRepositoryInterface
             ->select('r')
             ->from(RoleEntity::class, 'r')
             ->where('r.name = :name')
-            ->andWhere('r.active = :active')
             ->setParameter('name', $name)
-            ->setParameter('active', true)
             ->orderBy('r.id', 'DESC')
             ->setMaxResults(1)
             ->getQuery();

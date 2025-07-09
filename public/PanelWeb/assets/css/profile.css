@@ -1,1182 +1,452 @@
-/* Estilos para el perfil del usuario */
+/* ===== PROFILE MODAL STYLES ===== */
 
-/* =============================================================================
-   POPPINS FONT APPLICATION FOR PROFILE MODULE
-   Aplicación de fuente Poppins para el módulo de perfil
-   ============================================================================= */
-* {
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-}
-
-/* Contenedor del perfil */
-.profile-container {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 8px;
-    border-radius: 80px;
-    min-width: 500px; /* Garantizar espacio mínimo */
-    cursor: pointer !important;
-    transition: all 0.2s ease;
-}
-
-.profile-container:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.15) !important;
-    transform: translateY(-1px) !important;
-}
-
-.profile-container:active {
-    transform: translateY(0) !important;
-}
-
-/* Imagen de perfil */
-.profile-image {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    background-color: #6366f1;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-/* Estados de la imagen */
-.profile-image.profile-loading {
-    background-color: #e5e7eb;
-    border-color: #d1d5db;
-}
-
-.profile-image.profile-loading::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.4),
-        transparent
-    );
-    animation: shimmer 1.5s infinite;
-}
-
-.profile-image.profile-loaded {
-    border-color: #10b981;
-    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
-}
-
-/* Animación de loading */
-@keyframes shimmer {
-    0% {
-        left: -100%;
-    }
-    100% {
-        left: 100%;
-    }
-}
-
-/* Imagen dentro del contenedor */
-.profile-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-}
-
-/* Información del usuario */
-.user-info {
-    display: flex;
-    min-width: 0; /* Para permitir text-overflow */
-}
-.user-info span {
-    display: block;
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.7);
-    line-height: 1.2;
-   color:rgb(255, 255, 255)
-}
-
-.user-display {
-    font-weight: 600;
-    color: white;
-    font-size: 14px;
-    line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 180px; /* Aumentar el ancho máximo */
-    margin-left: -4px; /* Mover ligeramente a la izquierda */
-}
-
-.user-role {
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.7);
-    line-height: 1.2;
-}
-
-/* Variantes de tamaño */
-.profile-container.small .profile-image {
-    width: 36px;
-    height: 36px;
-}
-
-.profile-container.small .user-display {
-    font-size: 13px;
-    max-width: 150px; /* Más espacio para variante small */
-    margin-left: -2px;
-}
-
-.profile-container.large .profile-image {
-    width: 56px;
-    height: 56px;
-}
-
-.profile-container.large .user-display {
-    font-size: 16px;
-    max-width: 200px; /* Más espacio para variante large */
-}
-
-/* Estados de error */
-.profile-image.error {
-    background-color: #ef4444;
-    border-color: #dc2626;
-}
-
-.profile-image.error::after {
-    content: '!';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-weight: bold;
-    font-size: 18px;
-}
-
-/* Dropdown del perfil (opcional para futuras funcionalidades) */
-.profile-dropdown {
-    position: relative;
-}
-
-.profile-dropdown-menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    min-width: 200px;
-    padding: 8px 0;
-    z-index: 1000;
-    display: none;
-}
-
-.profile-dropdown.active .profile-dropdown-menu {
-    display: block;
-}
-
-.profile-dropdown-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    color: #374151;
-    text-decoration: none;
-    transition: background-color 0.2s ease;
-}
-
-.profile-dropdown-item:hover {
-    background-color: #f3f4f6;
-}
-
-/* ========================================
-   ESTILOS ESPECÍFICOS PARA MODAL DE PERFIL DEL ADMINISTRADOR
-   ======================================== */
-
-/* Modal principal del administrador */
+/* Modal del perfil de administrador */
 .admin-profile-modal {
-    display: none;
     position: fixed;
-    z-index: 1000;
+    z-index: 10000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    animation: fadeIn 0.3s ease-out;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: none; /* Oculto por defecto */
 }
 
-/* Contenido del modal del administrador */
 .admin-profile-content {
-    background: rgba(255, 255, 255, 0.95);
-    margin: 0;
-    padding: 0;
-    border-radius: 16px;
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 12px;
     width: 90%;
-    max-width: 420px;
-    max-height: 85vh;
-    overflow: hidden;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "????", Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Header del modal */
-.admin-profile-content h2 {
-    background: rgba(43, 57, 98, 0.9);
-    backdrop-filter: blur(20px);
-    color: #ffffff;
-    margin: 0;
-    padding: 16px 60px 16px 24px;
-    font-size: 1em;
-    font-weight: 600;
-    text-align: center;
-    position: relative;
-    border-radius: 16px 16px 0 0;
-    letter-spacing: 0.025em;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "????", Arial, sans-serif;
-    min-height: 56px;
-}
-
-.close-modal {
-    color: #ecf0f1;
-    position: absolute;
-    right: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 18px;
-    font-weight: 400;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    z-index: 10;
-    text-shadow: none;
-}
-
-.close-modal:hover {
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-50%) scale(1.1);
-    border-color: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
-}
-
-/* Contenedor de detalles del administrador */
-.admin-profile-details {
-    flex: 1;
+    max-width: 500px;
+    max-height: 80vh;
     overflow-y: auto;
-    padding: 24px 24px 20px;
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
     position: relative;
+    top: 40%;
+    transform: translateY(-50%);
 }
 
-/* Scrollbar para el contenedor de detalles */
-.admin-profile-details::-webkit-scrollbar {
-    width: 4px;
-}
-
-.admin-profile-details::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.admin-profile-details::-webkit-scrollbar-thumb {
-    background: rgba(43, 57, 98, 0.3);
-    border-radius: 2px;
-}
-
-.admin-profile-details::-webkit-scrollbar-thumb:hover {
-    background: rgba(43, 57, 98, 0.5);
-}
-
-/* Header del perfil del administrador */
 .admin-profile-header {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 16px;
-    margin-bottom: 28px;
-    padding-bottom: 20px;
-    position: relative;
-    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
 }
 
-.admin-profile-header::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 2px;
-    background: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(43, 57, 98, 0.6) 50%,
-        transparent 100%
-    );
-    border-radius: 1px;
+.admin-profile-info {
+    display: grid;
+    gap: 15px;
 }
 
-/* Avatar centrado y más prominente */
 .avatar-large {
     width: 80px;
     height: 80px;
-    position: relative;
-    flex-shrink: 0;
-    border-radius: 50%;
-    overflow: hidden;
-    background: linear-gradient(135deg, #2b3962 0%, #1e2a4a 100%);
-    border: 3px solid rgba(255, 255, 255, 0.8);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-    margin: 0 auto;
-}
-
-.avatar-large:hover {
-    transform: scale(1.05);
-}
-
-/* Información del header del perfil */
-.admin-profile-header-info {
-    flex: 1;
-    text-align: center;
-}
-
-.admin-profile-header h3 {
-    color: #1f2a49;
-    font-size: 1.3em;
-    font-weight: 700;
-    margin: 6px 0 3px;
-    letter-spacing: 0.02em;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-/* Rol o subtítulo */
-.admin-profile-header .user-role {
-    color: rgba(43, 57, 98, 0.7);
-    font-size: 0.9em;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-top: 0;
-}
-
-/* Información detallada del administrador */
-.admin-profile-info {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    max-width: 100%;
-}
-
-.admin-profile-info .info-item {
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid rgba(43, 57, 98, 0.08);
-    border-radius: 12px;
-    padding: 14px 18px;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 2px 8px rgba(43, 57, 98, 0.04);
-    position: relative;
-    overflow: hidden;
-}
-
-.admin-profile-info .info-item::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.admin-profile-info .info-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(43, 57, 98, 0.12);
-    border-color: rgba(43, 57, 98, 0.15);
-    background: rgba(255, 255, 255, 0.95);
-}
-
-.admin-profile-info .info-item:hover::before {
-    opacity: 1;
-}
-
-.admin-profile-info .info-item label {
-    display: block;
-    color: rgba(43, 57, 98, 0.7);
-    font-size: 0.72em;
-    font-weight: 600;
-    margin-bottom: 6px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-}
-
-.admin-profile-info .info-item span {
-    display: block;
-    color: #1f2a49;
-    font-size: 0.95em;
-    font-weight: 500;
-    line-height: 1.4;
-    word-break: break-word;
-}
-
-/* ========================================
-   ESTILOS PARA CAMBIO DE CORREO ELECTRÓNICO
-   ======================================== */
-
-/* Contenedor expandible para cambio de correo */
-.email-change-container {
-    margin-top: 12px;
-    padding: 16px;
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid rgba(43, 57, 98, 0.15);
-    border-radius: 10px;
-    transition: all 0.3s ease;
-    animation: slideDown 0.3s ease-out;
-    display: block;
-    overflow: hidden;
-}
-
-.email-change-container.hidden {
-    display: none;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-        max-height: 0;
-        padding-top: 0;
-        padding-bottom: 0;
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-        max-height: 600px;
-        padding-top: 20px;
-        padding-bottom: 20px;
-    }
-}
-
-/* Info item expandido */
-.info-item.expanded {
-    background: rgba(43, 57, 98, 0.02);
-    border-color: rgba(43, 57, 98, 0.15);
-}
-
-/* Correo clickeable */
-.email-clickable {
-    cursor: pointer;
-    transition: all 0.2s ease;
-    padding: 4px 8px;
-    border-radius: 6px;
-    position: relative;
-}
-
-.email-clickable:hover {
-    background: rgba(43, 57, 98, 0.1);
-    color: #2b3962;
-}
-
-.email-clickable::after {
-    content: "✏️";
-    margin-left: 8px;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    font-size: 0.8em;
-}
-
-.email-clickable:hover::after {
-    opacity: 1;
-}
-
-/* Formularios de cambio de correo */
-.email-change-form,
-.email-verify-form {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.form-group label {
-    font-size: 0.9em;
-    font-weight: 600;
-    color: #2b3962;
-    margin: 0;
-}
-
-.form-input {
-    padding: 10px 14px;
-    border: 2px solid rgba(43, 57, 98, 0.15);
-    border-radius: 6px;
-    font-size: 0.9em;
-    transition: all 0.2s ease;
-    background: rgba(255, 255, 255, 0.9);
-    color: #2b3962;
-    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "????", Arial, sans-serif;
-}
-
-.form-input:focus {
-    outline: none;
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-    background: rgba(255, 255, 255, 1);
-}
-
-.form-input::placeholder {
-    color: rgba(43, 57, 98, 0.5);
-}
-
-/* Acciones del formulario */
-.form-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 6px;
-}
-
-.btn-primary,
-.btn-secondary {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 6px;
-    font-size: 0.85em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "????", Arial, sans-serif;
-    min-width: 100px;
+    margin-right: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.btn-primary {
-    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-    color: white;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+.close-modal {
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #aaa;
 }
 
-.btn-primary:hover:not(:disabled) {
-    background: linear-gradient(135deg, #5b5cf6 0%, #4338ca 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+.close-modal:hover {
+    color: #000;
 }
 
-.btn-primary:active:not(:disabled) {
-    transform: translateY(0);
-}
-
-.btn-primary:disabled {
-    background: #9ca3af;
-    cursor: not-allowed;
-    box-shadow: none;
-    transform: none;
-}
-
-.btn-secondary {
-    background: rgba(43, 57, 98, 0.1);
-    color: #2b3962;
-    border: 1px solid rgba(43, 57, 98, 0.2);
-}
-
-.btn-secondary:hover:not(:disabled) {
-    background: rgba(43, 57, 98, 0.15);
-    border-color: rgba(43, 57, 98, 0.3);
-    transform: translateY(-1px);
-}
-
-.btn-secondary:active:not(:disabled) {
-    transform: translateY(0);
-}
-
-.btn-secondary:disabled {
-    background: #f3f4f6;
-    color: #9ca3af;
-    cursor: not-allowed;
-    transform: none;
-}
-
-/* Mensajes de estado */
-.email-status-message,
-.verify-status-message {
-    padding: 12px 16px;
-    border-radius: 8px;
-    font-size: 0.9em;
-    font-weight: 500;
-    margin-top: 8px;
-    text-align: center;
-    animation: fadeIn 0.3s ease-out;
-}
-
-.email-status-message.success,
-.verify-status-message.success {
-    background: rgba(16, 185, 129, 0.1);
-    color: #059669;
-    border: 1px solid rgba(16, 185, 129, 0.2);
-}
-
-.email-status-message.error,
-.verify-status-message.error {
-    background: rgba(239, 68, 68, 0.1);
-    color: #dc2626;
-    border: 1px solid rgba(239, 68, 68, 0.2);
-}
-
-.email-status-message.loading,
-.verify-status-message.loading {
-    background: rgba(59, 130, 246, 0.1);
-    color: #2563eb;
-    border: 1px solid rgba(59, 130, 246, 0.2);
+/* Avatar upload container - más nativo a Tabler */
+.avatar-upload-container {
     position: relative;
-}
-
-.email-status-message.loading::before,
-.verify-status-message.loading::before {
-    content: '';
     display: inline-block;
-    width: 12px;
-    height: 12px;
-    border: 2px solid #2563eb;
-    border-top: 2px solid transparent;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-right: 8px;
+    margin: 0 0 1rem 0;
 }
 
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-/* Información de verificación */
-.verify-info {
-    background: rgba(59, 130, 246, 0.05);
-    border: 1px solid rgba(59, 130, 246, 0.15);
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 8px;
-}
-
-.verify-info p {
-    margin: 0 0 8px 0;
-    font-size: 0.9em;
-    color: #2b3962;
-    line-height: 1.4;
-}
-
-.verify-info p:last-child {
-    margin-bottom: 0;
-    font-weight: 600;
-}
-
-/* Animaciones mejoradas para toast */
-.toast.success {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    border: 1px solid rgba(16, 185, 129, 0.3);
-}
-
-/* Responsive para cambio de correo */
-@media (max-width: 480px) {
-    .email-change-container {
-        padding: 16px;
-        margin-top: 12px;
-    }
-    
-    .form-actions {
-        flex-direction: column;
-        gap: 8px;
-    }
-    
-    .btn-primary,
-    .btn-secondary {
-        width: 100%;
-        padding: 12px 16px;
-    }
-    
-    .form-input {
-        padding: 12px 14px;
-    }
-}
-
-/* ========================================
-   FIN ESTILOS CAMBIO DE CORREO
-   ======================================== */
-
-/* ========================================
-   ESTILOS PARA CAMBIO DE TELÉFONO
-   ======================================== */
-
-/* Contenedor expandible para cambio de teléfono */
-.phone-change-container {
-    margin-top: 12px;
-    padding: 16px;
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid rgba(43, 57, 98, 0.15);
-    border-radius: 10px;
-    transition: all 0.3s ease;
-    animation: slideDown 0.3s ease-out;
+.avatar-upload-container .avatar,
+.avatar-upload-container img.avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 4px solid #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
     display: block;
-    overflow: hidden;
+    margin: 0 1rem 0 0;
 }
 
-.phone-change-container.hidden {
-    display: none;
-}
 
-/* Teléfono clickeable */
-.phone-clickable {
-    cursor: pointer;
+
+/* Botón de upload estilo Tabler */
+.avatar-upload-btn {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    padding: 0.375rem 0.5rem;
+    font-size: 0.75rem;
+    border-radius: 0.375rem;
+    opacity: 0;
+    transform: translateY(4px);
     transition: all 0.2s ease;
-    padding: 4px 8px;
-    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
+}
+
+.avatar-upload-container:hover .avatar-upload-btn {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.avatar-upload-btn .icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 0.25rem;
+}
+
+/* Estados de carga usando clases Tabler */
+.profile-loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.avatar-loading {
+    opacity: 0.6;
     position: relative;
 }
 
-.phone-clickable:hover {
-    background: rgba(43, 57, 98, 0.1);
-    color: #2b3962;
-}
-
-.phone-clickable::after {
-    content: "📱";
-    margin-left: 8px;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    font-size: 0.8em;
-}
-
-.phone-clickable:hover::after {
-    opacity: 1;
-}
-
-/* Formularios de cambio de teléfono */
-.phone-change-form,
-.phone-verify-form {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-/* Mensajes de estado para teléfono */
-.phone-status-message,
-.verify-phone-status-message {
-    padding: 12px 16px;
-    border-radius: 8px;
-    font-size: 0.9em;
-    font-weight: 500;
-    text-align: center;
-    margin-top: 8px;
-    transition: all 0.2s ease;
-}
-
-.phone-status-message.success,
-.verify-phone-status-message.success {
-    background: rgba(34, 197, 94, 0.1);
-    color: #15803d;
-    border: 1px solid rgba(34, 197, 94, 0.2);
-}
-
-.phone-status-message.error,
-.verify-phone-status-message.error {
-    background: rgba(239, 68, 68, 0.1);
-    color: #dc2626;
-    border: 1px solid rgba(239, 68, 68, 0.2);
-}
-
-.phone-status-message.loading,
-.verify-phone-status-message.loading {
-    background: rgba(59, 130, 246, 0.1);
-    color: #2563eb;
-    border: 1px solid rgba(59, 130, 246, 0.2);
-}
-
-/* Responsive para cambio de teléfono */
-@media (max-width: 480px) {
-    .phone-change-container {
-        padding: 16px;
-        margin-top: 12px;
-    }
-}
-
-/* ========================================
-   FIN ESTILOS CAMBIO DE TELÉFONO
-   ======================================== */
-
-/* ========================================
-   FIN ESTILOS MODAL DE PERFIL
-   ======================================== */
-
-/* ========================================
-   ESTILOS PARA CAMBIO DE FOTO DE PERFIL
-   ======================================== */
-
-/* Overlay del avatar para mostrar botón de cambio */
-.avatar-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    backdrop-filter: blur(4px);
-}
-
-.avatar-large:hover .avatar-overlay {
-    opacity: 1;
-}
-
-/* Botón de cambiar foto */
-.change-photo-btn {
-    background: rgba(255, 255, 255, 0.9);
-    border: 2px solid rgba(255, 255, 255, 0.8);
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-    color: #2b3962;
-    font-size: 14px;
-}
-
-.change-photo-btn:hover {
-    background: rgba(255, 255, 255, 1);
-    border-color: rgba(255, 255, 255, 1);
-    transform: scale(1.1);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-    color: #1e2a4a;
-}
-
-.change-photo-btn:active {
-    transform: scale(0.95);
-}
-
-.change-photo-btn i {
-    font-size: 12px;
-}
-
-/* Estados de carga para el avatar */
-.avatar-large.avatar-loading {
-    position: relative;
-    overflow: hidden;
-}
-
-.avatar-large.avatar-loading::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    border-radius: 50%;
-    z-index: 10;
-}
-
-.avatar-large.avatar-loading::after {
+.avatar-loading::after {
     content: '';
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
     width: 24px;
     height: 24px;
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    border-top: 3px solid #ffffff;
+    margin: -12px 0 0 -12px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid #fff;
     border-radius: 50%;
     animation: spin 1s linear infinite;
-    z-index: 11;
 }
 
-/* Botón de cambiar foto en estado de carga */
-.change-photo-btn.loading {
-    background: rgba(255, 255, 255, 0.5);
-    cursor: not-allowed;
-    pointer-events: none;
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-.change-photo-btn.loading i {
-    opacity: 0.5;
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .avatar-upload-container .avatar,
+    .avatar-upload-container img.avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 10px;
+    }
+    
+    .avatar-upload-btn {
+        bottom: 4px;
+        right: 4px;
+        padding: 0.25rem 0.375rem;
+        font-size: 0.6875rem;
+    }
+    
+    .avatar-upload-btn .icon {
+        width: 14px;
+        height: 14px;
+    }
 }
 
-/* Input de archivo oculto */
-#photo-input {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    position: absolute !important;
-    left: -9999px !important;
+/* Profile loaded state */
+.profile-loaded {
+    border-color: var(--tblr-success);
 }
 
-/* Toast temporal para notificaciones */
-.temporary-toast {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 16px 24px;
-    border-radius: 12px;
-    color: white;
+/* Elementos clickeables para email y teléfono */
+.email-clickable,
+.phone-clickable {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0.25rem 0.375rem;
+    border-radius: 0.25rem;
+    display: inline-block;
+}
+
+.email-clickable:hover,
+.phone-clickable:hover {
+    background-color: var(--tblr-primary-lt);
+    color: var(--tblr-primary);
+    text-decoration: underline;
+}
+
+/* Mejoras para el diseño general del modal */
+.admin-profile-header-centered {
+    text-align: left;
+    margin-bottom: 2rem;
+}
+
+.admin-profile-header-info h3 {
+    color: var(--tblr-body-color);
     font-weight: 600;
-    font-size: 14px;
-    z-index: 10000;
-    transform: translateX(100%);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    max-width: 350px;
-    word-wrap: break-word;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "????", Arial, sans-serif;
+    margin-top: 0.5rem;
 }
 
-.temporary-toast.success {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    border-color: rgba(16, 185, 129, 0.3);
-}
-
-.temporary-toast.error {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-    border-color: rgba(239, 68, 68, 0.3);
-}
-
-.temporary-toast.warning {
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-    border-color: rgba(245, 158, 11, 0.3);
-}
-
-.temporary-toast.info {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    border-color: rgba(59, 130, 246, 0.3);
-}
-
-/* Animación de entrada para toast */
-.temporary-toast.show {
-    transform: translateX(0) !important;
-}
-
-/* Estados de la imagen de perfil principal */
-.profile-image.profile-loading::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.4),
-        transparent
-    );
-    animation: shimmer 1.5s infinite;
+/* Estilos para info-item expanded - Diseño Tabler */
+.info-item.expanded {
+    background: var(--tblr-bg-surface);
+    border: 1px solid var(--tblr-border-color-active);
+    border-left: 3px solid var(--tblr-primary);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
     z-index: 1;
 }
 
-/* Mejorar la visibilidad del overlay en dispositivos móviles */
-@media (max-width: 768px) {
-    .avatar-overlay {
-        opacity: 0.8;
-        background: rgba(0, 0, 0, 0.7);
-    }
-    
-    .change-photo-btn {
-        width: 36px;
-        height: 36px;
-        font-size: 14px;
-    }
-    
-    .change-photo-btn i {
-        font-size: 12px;
-    }
-    
-    .temporary-toast {
-        top: 10px;
-        right: 10px;
-        left: 10px;
-        max-width: none;
-        transform: translateY(-100%);
-    }
-    
-    .temporary-toast.show {
-        transform: translateY(0) !important;
-    }
+.info-item.expanded:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
 }
 
-/* Estados hover mejorados para el avatar */
-.avatar-large {
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+.info-item.expanded label {
+    color: var(--tblr-primary);
+    font-weight: 600;
 }
 
-.avatar-large:hover {
-    transform: scale(1.02);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+.info-item.expanded span {
+    color: var(--tblr-body-color);
 }
 
-/* Indicador visual de que la imagen es clickeable */
-.avatar-large::before {
+/* Animación suave para la expansión */
+.info-item {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.info-item:not(.expanded):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Estilos para formularios dentro de info-item expanded */
+.info-item.expanded .form-group {
+    margin-bottom: 0.75rem;
+}
+
+.info-item.expanded .form-label {
+    color: var(--tblr-body-color);
+    font-weight: 500;
+    margin-bottom: 0.375rem;
+    font-size: 0.875rem;
+}
+
+.info-item.expanded .form-control {
+    background-color: var(--tblr-bg-forms);
+    border: 1px solid var(--tblr-border-color);
+    border-radius: var(--tblr-border-radius);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.4285714286;
+    color: var(--tblr-body-color);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.info-item.expanded .form-control:focus {
+    background-color: var(--tblr-bg-forms);
+    border-color: var(--tblr-primary);
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(var(--tblr-primary-rgb), 0.25);
+}
+
+.info-item.expanded .form-control:disabled,
+.info-item.expanded .form-control[readonly] {
+    background-color: var(--tblr-bg-surface-secondary);
+    opacity: 1;
+}
+
+/* Botones dentro de info-item expanded */
+.info-item.expanded .btn {
+    padding: 0.375rem 0.75rem;
+    margin-bottom: 0;
+    font-size: 0.875rem;
+    line-height: 1.4285714286;
+    border-radius: var(--tblr-border-radius);
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.info-item.expanded .btn-primary {
+    color: #fff;
+    background-color: var(--tblr-primary);
+    border-color: var(--tblr-primary);
+}
+
+.info-item.expanded .btn-primary:hover {
+    color: #fff;
+    background-color: var(--tblr-primary-darken);
+    border-color: var(--tblr-primary-darken);
+}
+
+.info-item.expanded .btn-outline-secondary {
+    color: var(--tblr-secondary);
+    border-color: var(--tblr-border-color);
+    background-color: transparent;
+}
+
+.info-item.expanded .btn-outline-secondary:hover {
+    color: var(--tblr-body-color);
+    background-color: var(--tblr-bg-surface-secondary);
+    border-color: var(--tblr-border-color);
+}
+
+.info-item.expanded .btn-ghost {
+    color: var(--tblr-body-color);
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.info-item.expanded .btn-ghost:hover {
+    color: var(--tblr-primary);
+    background-color: var(--tblr-primary-lt);
+}
+
+/* Grupo de botones */
+.info-item.expanded .btn-group {
+    gap: 0.375rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 0.75rem;
+}
+
+.info-item.expanded .btn-group .btn {
+    margin-right: 0;
+}
+
+/* Input groups */
+.info-item.expanded .input-group {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    width: 100%;
+}
+
+.info-item.expanded .input-group .form-control {
+    position: relative;
+    flex: 1 1 auto;
+    width: 1%;
+    min-width: 0;
+}
+
+.info-item.expanded .input-group-text {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.4285714286;
+    color: var(--tblr-body-color);
+    text-align: center;
+    white-space: nowrap;
+    background-color: var(--tblr-bg-surface-secondary);
+    border: 1px solid var(--tblr-border-color);
+    border-radius: var(--tblr-border-radius);
+}
+
+/* Iconos en botones */
+.info-item.expanded .btn .icon {
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.25rem;
+}
+
+.info-item.expanded .btn .icon:only-child {
+    margin-right: 0;
+}
+
+/* Estados de validación */
+.info-item.expanded .is-valid {
+    border-color: var(--tblr-success);
+}
+
+.info-item.expanded .is-invalid {
+    border-color: var(--tblr-danger);
+}
+
+.info-item.expanded .invalid-feedback {
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    color: var(--tblr-danger);
+}
+
+/* Mensajes de estado para formularios de cambio de email/teléfono */
+.email-status-message,
+.verify-status-message,
+.phone-status-message,
+.phone-verify-status-message {
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    border-radius: var(--tblr-border-radius);
+    font-size: 0.875rem;
+    line-height: 1.4285714286;
+    border: 1px solid transparent;
+    display: none;
+}
+
+/* Estados de éxito */
+.email-status-message.success,
+.verify-status-message.success,
+.phone-status-message.success,
+.phone-verify-status-message.success {
+    color: var(--tblr-success);
+    background-color: var(--tblr-success-lt);
+    border-color: var(--tblr-success-darken);
+}
+
+/* Estados de error */
+.email-status-message.error,
+.verify-status-message.error,
+.phone-status-message.error,
+.phone-verify-status-message.error {
+    color: var(--tblr-danger);
+    background-color: var(--tblr-danger-lt);
+    border-color: var(--tblr-danger-darken);
+}
+
+/* Estados de carga */
+.email-status-message.loading,
+.verify-status-message.loading,
+.phone-status-message.loading,
+.phone-verify-status-message.loading {
+    color: var(--tblr-primary);
+    background-color: var(--tblr-primary-lt);
+    border-color: var(--tblr-primary-darken);
+    position: relative;
+}
+
+/* Indicador de carga */
+.email-status-message.loading::before,
+.verify-status-message.loading::before,
+.phone-status-message.loading::before,
+.phone-verify-status-message.loading::before {
     content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.5rem;
     border: 2px solid transparent;
+    border-top: 2px solid currentColor;
     border-radius: 50%;
-    transition: border-color 0.3s ease;
-    pointer-events: none;
+    animation: spin 1s linear infinite;
+    vertical-align: text-bottom;
 }
 
-.avatar-large:hover::before {
-    border-color: rgba(99, 102, 241, 0.3);
+/* Estados de información */
+.email-status-message.info,
+.verify-status-message.info,
+.phone-status-message.info,
+.phone-verify-status-message.info {
+    color: var(--tblr-info);
+    background-color: var(--tblr-info-lt);
+    border-color: var(--tblr-info-darken);
 }
-
-/* ========================================
-   FIN ESTILOS CAMBIO DE FOTO DE PERFIL
-   ======================================== */
-
-/* ========================================
-   NOTIFICACIÓN TOAST - ESTILO RECUPERACIÓN DE CONTRASEÑA
-   ======================================== */
-
-/* Toast de notificación para perfil (mismo estilo que recuperación) */
-.recovery-toast {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 10000;
-  opacity: 0;
-  transform: translateX(100%);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  pointer-events: none;
-}
-
-.recovery-toast.show {
-  opacity: 1;
-  transform: translateX(0);
-  pointer-events: auto;
-}
-
-.recovery-toast-content {
-  background: linear-gradient(135deg, #1fb583, #059669);
-  color: white;
-  padding: 16px 20px;
-  border-radius: 8px;
-  box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 320px;
-  max-width: 400px;
-  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "????", Arial, sans-serif;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.recovery-toast-content.error {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  box-shadow: 0 8px 32px rgba(239, 68, 68, 0.3);
-}
-
-.recovery-toast-content i {
-  font-size: 20px;
-  color: rgba(255, 255, 255, 0.9);
-  flex-shrink: 0;
-}
-
-.recovery-toast-content span {
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.4;
-  letter-spacing: 0.025em;
-}
-
-/* Animación de entrada y salida */
-@keyframes recoveryToastSlideIn {
-  from {
-    opacity: 0;
-    transform: translateX(100%) scale(0.8);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-  }
-}
-
-@keyframes recoveryToastSlideOut {
-  from {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: translateX(100%) scale(0.8);
-  }
-}
-
-/* Responsive para el toast */
-@media (max-width: 480px) {
-  .recovery-toast {
-    bottom: 20px;
-    right: 15px;
-    left: 15px;
-    transform: translateY(100%);
-  }
-  
-  .recovery-toast.show {
-    transform: translateY(0);
-  }
-}
-
-/* ========================================
-   FIN TOAST RECUPERACIÓN DE CONTRASEÑA
-   ======================================== */

@@ -1,0 +1,158 @@
+/* ===== GLOBAL TOAST SYSTEM - ESTILO ELEGANTE UNIFICADO ===== */
+
+/* Toast de notificación elegante para toda la aplicación */
+.recovery-toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 10000;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: none;
+}
+
+.recovery-toast.show {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+.recovery-toast-content {
+    background: linear-gradient(135deg, #1fb583, #059669);
+    color: white;
+    padding: 16px 20px;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 320px;
+    max-width: 400px;
+    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Estados de toast */
+.recovery-toast-content.error {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    box-shadow: 0 8px 32px rgba(239, 68, 68, 0.3);
+}
+
+.recovery-toast-content.warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    box-shadow: 0 8px 32px rgba(245, 158, 11, 0.3);
+}
+
+.recovery-toast-content.deactivated {
+    background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+    box-shadow: 0 8px 32px rgba(56, 189, 248, 0.3);
+}
+
+.recovery-toast-content.info {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3);
+}
+
+/* Elementos del toast */
+.recovery-toast-content i {
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.9);
+    flex-shrink: 0;
+}
+
+.recovery-toast-content span {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 0.025em;
+}
+
+/* Animación para entrada */
+@keyframes toastSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%) scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+/* Animación para salida */
+@keyframes toastSlideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%) scale(0.8);
+    }
+}
+
+/* Responsive para móviles */
+@media (max-width: 480px) {
+    .recovery-toast {
+        bottom: 20px;
+        right: 15px;
+        left: 15px;
+        transform: translateY(100%);
+    }
+    
+    .recovery-toast.show {
+        transform: translateY(0);
+    }
+    
+    .recovery-toast-content {
+        min-width: auto;
+        max-width: none;
+        padding: 14px 16px;
+    }
+    
+    .recovery-toast-content i {
+        font-size: 18px;
+    }
+    
+    .recovery-toast-content span {
+        font-size: 13px;
+    }
+}
+
+/* Estados adicionales para diferentes tipos de notificación */
+.recovery-toast-content.success {
+    background: linear-gradient(135deg, #1fb583, #059669);
+    box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+}
+
+/* Efecto de pulsación suave */
+.recovery-toast-content {
+    animation: toastPulse 0.6s ease-out;
+}
+
+@keyframes toastPulse {
+    0% {
+        transform: scale(0.95);
+    }
+    50% {
+        transform: scale(1.02);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Hover effect para interactividad */
+.recovery-toast-content:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+}
+
+/* Tema oscuro */
+@media (prefers-color-scheme: dark) {
+    .recovery-toast-content {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+}
