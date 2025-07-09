@@ -243,12 +243,19 @@ class DoctrineUserRoleRepository implements UserRoleRepositoryInterface
             ->andWhere('r.web = :web')
             ->setParameter('userId', $userId)
             ->setParameter('web', $web)
-            ->groupBy('r.id')
             ->orderBy('ur.id', 'DESC')
             ->getQuery();
 
-        $result = $query->getResult();
-        return empty($result) ? null : array_map([$this, 'toDomain'], $result);
+        $entities = $query->getResult();
+        // Filtrar duplicados por rol (solo el más reciente por cada rol)
+        $uniqueRoles = [];
+        foreach ($entities as $entity) {
+            $roleId = $entity->getRole()->getId();
+            if (!isset($uniqueRoles[$roleId])) {
+                $uniqueRoles[$roleId] = $entity;
+            }
+        }
+        return empty($uniqueRoles) ? null : array_map([$this, 'toDomain'], array_values($uniqueRoles));
     }
 
     public function findAllUserRoles(): array
