@@ -28,21 +28,27 @@ class DoctrineUserRoleRepository implements UserRoleRepositoryInterface
 
     public function findActiveRolesByUserId(int $userId): array
     {
-        // Usar DISTINCT para evitar duplicados y ordenar por ID descendente para obtener los más recientes
         $query = $this->entityManager->createQueryBuilder()
             ->select('ur')
             ->from(UserRoleEntity::class, 'ur')
             ->join('ur.role', 'r')
             ->where('ur.user = :userId')
             ->andWhere('ur.active = true')
-            ->andWhere('r.active = true') // Asegurar que el rol también esté activo
+            ->andWhere('r.active = true')
             ->setParameter('userId', $userId)
-            ->groupBy('r.id') // Agrupar por rol para evitar duplicados
-            ->orderBy('ur.id', 'DESC') // Obtener el más reciente en caso de duplicados
+            ->orderBy('ur.id', 'DESC')
             ->getQuery();
 
         $entities = $query->getResult();
-        return array_map([$this, 'toDomain'], $entities);
+        // Filtrar duplicados por rol (solo el más reciente por cada rol)
+        $uniqueRoles = [];
+        foreach ($entities as $entity) {
+            $roleId = $entity->getRole()->getId();
+            if (!isset($uniqueRoles[$roleId])) {
+                $uniqueRoles[$roleId] = $entity;
+            }
+        }
+        return array_map([$this, 'toDomain'], array_values($uniqueRoles));
     }
 
     public function findByUserAndRole(UserModel $user, RoleModel $role): ?UserRoleModel
