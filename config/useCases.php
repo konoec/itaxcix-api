@@ -793,10 +793,10 @@ return array(
 
     ProcedureTypeValidator::class => autowire(ProcedureTypeValidator::class),
 
-    UserCodeTypeCreateUseCase::class => autowire(UserCodeTypeCreateUseCase::class),
-    UserCodeTypeDeleteUseCase::class => autowire(UserCodeTypeDeleteUseCase::class),
-    UserCodeTypeUpdateUseCase::class => autowire(UserCodeTypeUpdateUseCase::class),
-    UserCodeTypeListUseCase::class => autowire(UserCodeTypeListUseCase::class),
+    UserCodeTypeCreateUseCase::class => autowire(),
+    UserCodeTypeDeleteUseCase::class => autowire(),
+    UserCodeTypeUpdateUseCase::class => autowire(),
+    UserCodeTypeListUseCase::class => autowire(),
 
     UserCodeTypeValidator::class => autowire(UserCodeTypeValidator::class),
 
