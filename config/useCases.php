@@ -296,8 +296,6 @@ use itaxcix\Core\UseCases\UserStatus\UserStatusCreateUseCase;
 use itaxcix\Core\UseCases\UserStatus\UserStatusDeleteUseCase;
 use itaxcix\Core\UseCases\UserStatus\UserStatusListUseCase;
 use itaxcix\Core\UseCases\UserStatus\UserStatusUpdateUseCase;
-use itaxcix\Core\UseCases\Vehicle\AssociateUserVehicleUseCase;
-use itaxcix\Core\UseCases\Vehicle\DisassociateUserVehicleUseCase;
 use itaxcix\Core\Handler\Department\DepartmentCreateUseCaseHandler;
 use itaxcix\Core\Handler\Department\DepartmentDeleteUseCaseHandler;
 use itaxcix\Core\Handler\Department\DepartmentListUseCaseHandler;
@@ -306,6 +304,8 @@ use itaxcix\Core\UseCases\Department\DepartmentCreateUseCase;
 use itaxcix\Core\UseCases\Department\DepartmentDeleteUseCase;
 use itaxcix\Core\UseCases\Department\DepartmentListUseCase;
 use itaxcix\Core\UseCases\Department\DepartmentUpdateUseCase;
+use itaxcix\Core\UseCases\Vehicle\AssociateUserVehicleUseCase;
+use itaxcix\Core\UseCases\Vehicle\DisassociateUserVehicleUseCase;
 use itaxcix\Core\UseCases\VehicleClass\VehicleClassCreateUseCase;
 use itaxcix\Core\UseCases\VehicleClass\VehicleClassDeleteUseCase;
 use itaxcix\Core\UseCases\VehicleClass\VehicleClassListUseCase;
@@ -555,9 +555,9 @@ return array(
 
     // UserStatus Use Cases
     UserStatusListUseCase::class => autowire(UserStatusListUseCase::class),
-    UserStatusCreateUseCase::class => autowire(UserStatusListUseCase::class),
-    UserStatusUpdateUseCase::class => autowire(UserStatusListUseCase::class),
-    UserStatusDeleteUseCase::class => autowire(UserStatusListUseCase::class),
+    UserStatusCreateUseCase::class => autowire(UserStatusCreateUseCase::class),
+    UserStatusUpdateUseCase::class => autowire(UserStatusUpdateUseCase::class),
+    UserStatusDeleteUseCase::class => autowire(UserStatusDeleteUseCase::class),
 
     UserStatusListUseCaseHandler::class => autowire(UserStatusListUseCaseHandler::class),
     UserStatusCreateUseCaseHandler::class => autowire(UserStatusCreateUseCaseHandler::class),
