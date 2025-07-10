@@ -3,8 +3,9 @@
 namespace itaxcix\Core\Domain\location;
 
 use itaxcix\Infrastructure\Database\Entity\location\DepartmentEntity;
+use JsonSerializable;
 
-class DepartmentModel {
+class DepartmentModel implements JsonSerializable {
     private ?int $id;
     private ?string $name = null;
     private ?string $ubigeo = null;
@@ -54,10 +55,21 @@ class DepartmentModel {
     public function toEntity(): DepartmentEntity
     {
         $departmentEntity = new DepartmentEntity();
-        $departmentEntity->setId($this->id);
+        if ($this->id !== null) {
+            $departmentEntity->setId($this->id);
+        }
         $departmentEntity->setName($this->name);
         $departmentEntity->setUbigeo($this->ubigeo);
 
         return $departmentEntity;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'ubigeo' => $this->ubigeo
+        ];
     }
 }
