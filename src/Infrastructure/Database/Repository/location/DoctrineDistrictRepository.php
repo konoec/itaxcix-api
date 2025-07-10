@@ -123,8 +123,38 @@ class DoctrineDistrictRepository implements DistrictRepositoryInterface
         $qb->orderBy("d.$sortBy", $sortDirection);
 
         // Contar total antes de paginar
-        $countQb = clone $qb;
-        $countQb->select('COUNT(DISTINCT d.id)');
+        $countQb = $this->entityManager->createQueryBuilder()
+            ->select('COUNT(DISTINCT d.id)')
+            ->from(DistrictEntity::class, 'd')
+            ->leftJoin('d.province', 'p');
+
+        // Aplicar los mismos filtros para el conteo
+        if ($search) {
+            $countQb->andWhere(
+                $countQb->expr()->orX(
+                    $countQb->expr()->like('LOWER(d.name)', ':search'),
+                    $countQb->expr()->like('LOWER(d.ubigeo)', ':search'),
+                    $countQb->expr()->like('LOWER(p.name)', ':search')
+                )
+            )
+            ->setParameter('search', '%' . strtolower($search) . '%');
+        }
+
+        if ($name) {
+            $countQb->andWhere('LOWER(d.name) LIKE :name')
+                   ->setParameter('name', '%' . strtolower($name) . '%');
+        }
+
+        if ($provinceId) {
+            $countQb->andWhere('d.province = :provinceId')
+                   ->setParameter('provinceId', $provinceId);
+        }
+
+        if ($ubigeo) {
+            $countQb->andWhere('LOWER(d.ubigeo) LIKE :ubigeo')
+                   ->setParameter('ubigeo', '%' . strtolower($ubigeo) . '%');
+        }
+
         $total = (int) $countQb->getQuery()->getSingleScalarResult();
 
         // Aplicar paginación
@@ -252,3 +282,4 @@ class DoctrineDistrictRepository implements DistrictRepositoryInterface
             ->getSingleScalarResult();
     }
 }
+
