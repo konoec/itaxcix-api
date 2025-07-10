@@ -7,6 +7,10 @@ use itaxcix\Core\Handler\UserCodeType\UserCodeTypeListUseCaseHandler;
 use itaxcix\Core\Handler\UserCodeType\UserCodeTypeCreateUseCaseHandler;
 use itaxcix\Core\Handler\UserCodeType\UserCodeTypeUpdateUseCaseHandler;
 use itaxcix\Core\Handler\UserCodeType\UserCodeTypeDeleteUseCaseHandler;
+use itaxcix\Core\UseCases\UserCodeType\UserCodeTypeCreateUseCase;
+use itaxcix\Core\UseCases\UserCodeType\UserCodeTypeDeleteUseCase;
+use itaxcix\Core\UseCases\UserCodeType\UserCodeTypeListUseCase;
+use itaxcix\Core\UseCases\UserCodeType\UserCodeTypeUpdateUseCase;
 use itaxcix\Infrastructure\Web\Controller\generic\AbstractController;
 use itaxcix\Shared\DTO\useCases\UserCodeType\UserCodeTypePaginationRequestDTO;
 use itaxcix\Shared\DTO\useCases\UserCodeType\UserCodeTypeRequestDTO;
@@ -17,17 +21,17 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class UserCodeTypeController extends AbstractController
 {
-    private UserCodeTypeListUseCaseHandler $listHandler;
-    private UserCodeTypeCreateUseCaseHandler $createHandler;
-    private UserCodeTypeUpdateUseCaseHandler $updateHandler;
-    private UserCodeTypeDeleteUseCaseHandler $deleteHandler;
+    private UserCodeTypeListUseCase $listHandler;
+    private UserCodeTypeCreateUseCase $createHandler;
+    private UserCodeTypeUpdateUseCase $updateHandler;
+    private UserCodeTypeDeleteUseCase $deleteHandler;
     private UserCodeTypeValidator $validator;
 
     public function __construct(
-        UserCodeTypeListUseCaseHandler $listHandler,
-        UserCodeTypeCreateUseCaseHandler $createHandler,
-        UserCodeTypeUpdateUseCaseHandler $updateHandler,
-        UserCodeTypeDeleteUseCaseHandler $deleteHandler,
+        UserCodeTypeListUseCase $listHandler,
+        UserCodeTypeCreateUseCase $createHandler,
+        UserCodeTypeUpdateUseCase $updateHandler,
+        UserCodeTypeDeleteUseCase $deleteHandler,
         UserCodeTypeValidator $validator
     ) {
         $this->listHandler = $listHandler;
@@ -99,7 +103,7 @@ class UserCodeTypeController extends AbstractController
             $queryParams = $request->getQueryParams();
             $paginationRequest = UserCodeTypePaginationRequestDTO::fromArray($queryParams);
 
-            $result = $this->listHandler->handle($paginationRequest);
+            $result = $this->listHandler->execute($paginationRequest);
 
             return $this->ok($result);
         } catch (\Exception $e) {
@@ -157,7 +161,7 @@ class UserCodeTypeController extends AbstractController
             }
 
             $requestDTO = UserCodeTypeRequestDTO::fromArray($data);
-            $result = $this->createHandler->handle($requestDTO);
+            $result = $this->createHandler->execute($requestDTO);
 
             return $this->ok($result->toArray());
         } catch (InvalidArgumentException $e) {
@@ -224,7 +228,7 @@ class UserCodeTypeController extends AbstractController
             }
 
             $requestDTO = UserCodeTypeRequestDTO::fromArray($data);
-            $result = $this->updateHandler->handle($id, $requestDTO);
+            $result = $this->updateHandler->execute($id, $requestDTO);
 
             return $this->ok($result->toArray());
         } catch (InvalidArgumentException $e) {
@@ -264,7 +268,7 @@ class UserCodeTypeController extends AbstractController
                 return $this->validationError($validationErrors);
             }
 
-            $result = $this->deleteHandler->handle($id);
+            $result = $this->deleteHandler->execute($id);
 
             if (!$result) {
                 return $this->error('No se pudo eliminar el tipo de código de usuario', 400);
