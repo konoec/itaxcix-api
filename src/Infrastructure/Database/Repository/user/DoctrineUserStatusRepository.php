@@ -123,8 +123,26 @@ class DoctrineUserStatusRepository implements UserStatusRepositoryInterface
 
     public function count(UserStatusPaginationRequestDTO $request): int
     {
-        $qb = $this->createQueryBuilder($request);
-        $qb->select('COUNT(us.id)');
+        // Crear un QueryBuilder separado para el conteo (sin ORDER BY)
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('COUNT(us.id)')
+            ->from(UserStatusEntity::class, 'us');
+
+        // Aplicar solo los filtros (sin ordenamiento)
+        if ($request->getSearch()) {
+            $qb->andWhere('us.name LIKE :search')
+               ->setParameter('search', '%' . $request->getSearch() . '%');
+        }
+
+        if ($request->getName()) {
+            $qb->andWhere('us.name LIKE :name')
+               ->setParameter('name', '%' . $request->getName() . '%');
+        }
+
+        if ($request->getActive() !== null) {
+            $qb->andWhere('us.active = :active')
+               ->setParameter('active', $request->getActive());
+        }
 
         return (int) $qb->getQuery()->getSingleScalarResult();
     }
