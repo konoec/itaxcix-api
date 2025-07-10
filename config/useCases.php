@@ -292,10 +292,6 @@ use itaxcix\Core\UseCases\UserCodeType\UserCodeTypeDeleteUseCase;
 use itaxcix\Core\UseCases\UserCodeType\UserCodeTypeUpdateUseCase;
 use itaxcix\Core\UseCases\UserCodeType\UserCodeTypeListUseCase;
 use itaxcix\Core\UseCases\UserReport\UserReportUseCase;
-use itaxcix\Core\UseCases\UserStatus\UserStatusCreateUseCase;
-use itaxcix\Core\UseCases\UserStatus\UserStatusDeleteUseCase;
-use itaxcix\Core\UseCases\UserStatus\UserStatusListUseCase;
-use itaxcix\Core\UseCases\UserStatus\UserStatusUpdateUseCase;
 use itaxcix\Core\Handler\Department\DepartmentCreateUseCaseHandler;
 use itaxcix\Core\Handler\Department\DepartmentDeleteUseCaseHandler;
 use itaxcix\Core\Handler\Department\DepartmentListUseCaseHandler;
@@ -304,6 +300,10 @@ use itaxcix\Core\UseCases\Department\DepartmentCreateUseCase;
 use itaxcix\Core\UseCases\Department\DepartmentDeleteUseCase;
 use itaxcix\Core\UseCases\Department\DepartmentListUseCase;
 use itaxcix\Core\UseCases\Department\DepartmentUpdateUseCase;
+use itaxcix\Core\UseCases\UserStatus\UserStatusCreateUseCase;
+use itaxcix\Core\UseCases\UserStatus\UserStatusDeleteUseCase;
+use itaxcix\Core\UseCases\UserStatus\UserStatusListUseCase;
+use itaxcix\Core\UseCases\UserStatus\UserStatusUpdateUseCase;
 use itaxcix\Core\UseCases\Vehicle\AssociateUserVehicleUseCase;
 use itaxcix\Core\UseCases\Vehicle\DisassociateUserVehicleUseCase;
 use itaxcix\Core\UseCases\VehicleClass\VehicleClassCreateUseCase;
@@ -606,8 +606,8 @@ return array(
     // District Use Cases
     DistrictListUseCase::class => autowire(DistrictListUseCase::class),
     DistrictCreateUseCase::class => autowire(DistrictCreateUseCase::class),
-    DistrictUpdateUseCase::class => autowire(DistrictUpdateUseCase::class),
-    DistrictDeleteUseCase::class => autowire(DistrictDeleteUseCase::class),
+    DistrictUpdateUseCase::class => autowire(DistrictUpdateUseCaseHandler::class),
+    DistrictDeleteUseCase::class => autowire(DistrictDeleteUseCaseHandler::class),
 
     DistrictListUseCaseHandler::class => autowire(DistrictListUseCaseHandler::class),
     DistrictCreateUseCaseHandler::class => autowire(DistrictCreateUseCaseHandler::class),
@@ -797,6 +797,11 @@ return array(
     UserCodeTypeDeleteUseCase::class => autowire(UserCodeTypeDeleteUseCaseHandler::class),
     UserCodeTypeUpdateUseCase::class => autowire(UserCodeTypeUpdateUseCaseHandler::class),
     UserCodeTypeListUseCase::class => autowire(UserCodeTypeListUseCaseHandler::class),
+
+    UserCodeTypeCreateUseCaseHandler::class => autowire(UserCodeTypeCreateUseCaseHandler::class),
+    UserCodeTypeDeleteUseCaseHandler::class => autowire(UserCodeTypeDeleteUseCaseHandler::class),
+    UserCodeTypeUpdateUseCaseHandler::class => autowire(UserCodeTypeUpdateUseCaseHandler::class),
+    UserCodeTypeListUseCaseHandler::class => autowire(UserCodeTypeListUseCaseHandler::class),
 
     UserCodeTypeValidator::class => autowire(UserCodeTypeValidator::class),
 
