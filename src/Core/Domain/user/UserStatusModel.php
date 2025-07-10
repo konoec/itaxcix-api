@@ -47,7 +47,9 @@ class UserStatusModel {
 
     public function toEntity(): UserStatusEntity {
         $entity = new UserStatusEntity();
-        $entity->setId($this->id);
+        if ($this->id !== null) {
+            $entity->setId($this->id);
+        }
         $entity->setName($this->name);
         $entity->setActive($this->active);
 
