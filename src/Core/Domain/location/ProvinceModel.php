@@ -83,8 +83,12 @@ class ProvinceModel implements JsonSerializable {
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'department' => $this->department?->jsonSerialize(),
-            'ubigeo' => $this->ubigeo
+            'ubigeo' => $this->ubigeo,
+            'department' => $this->department ? [
+                'id' => $this->department->getId(),
+                'name' => $this->department->getName(),
+                'ubigeo' => $this->department->getUbigeo()
+            ] : null
         ];
     }
 }

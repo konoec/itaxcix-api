@@ -83,8 +83,17 @@ class DistrictModel implements JsonSerializable {
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'province' => $this->province?->jsonSerialize(),
-            'ubigeo' => $this->ubigeo
+            'ubigeo' => $this->ubigeo,
+            'province' => $this->province ? [
+                'id' => $this->province->getId(),
+                'name' => $this->province->getName(),
+                'ubigeo' => $this->province->getUbigeo(),
+                'department' => $this->province->getDepartment() ? [
+                    'id' => $this->province->getDepartment()->getId(),
+                    'name' => $this->province->getDepartment()->getName(),
+                    'ubigeo' => $this->province->getDepartment()->getUbigeo()
+                ] : null
+            ] : null
         ];
     }
 }
