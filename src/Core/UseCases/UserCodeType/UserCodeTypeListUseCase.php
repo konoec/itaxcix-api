@@ -27,28 +27,20 @@ class UserCodeTypeListUseCase
             $request->sortDirection
         );
 
-        $totalItems = $this->repository->countAll($filters);
-        $totalPages = (int) ceil($totalItems / $request->perPage);
-
-        $data = array_map(function ($userCodeType) {
-            return new UserCodeTypeResponseDTO(
-                id: $userCodeType->getId(),
-                name: $userCodeType->getName(),
-                active: $userCodeType->isActive()
-            );
-        }, $userCodeTypes);
+        $total = $this->repository->countAll($filters);
 
         return [
-            'data' => array_map(fn($item) => $item->toArray(), $data),
+            'items' => array_map(fn($userCodeType) => [
+                'id' => $userCodeType->getId(),
+                'name' => $userCodeType->getName(),
+                'active' => $userCodeType->isActive()
+            ], $userCodeTypes),
             'pagination' => [
-                'current_page' => $request->page,
-                'per_page' => $request->perPage,
-                'total_items' => $totalItems,
-                'total_pages' => $totalPages,
-                'has_next_page' => $request->page < $totalPages,
-                'has_previous_page' => $request->page > 1
+                'page' => $request->page,
+                'perPage' => $request->perPage,
+                'total' => $total,
+                'totalPages' => ceil($total / $request->perPage)
             ]
         ];
     }
 }
-
