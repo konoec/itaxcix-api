@@ -81,7 +81,7 @@ class ConfigurationResponseDTO
     public static function fromModel(ConfigurationModel $model): self
     {
         return new self(
-            id: $model->getId(),
+            id: $model->getId() ?? 0, // Usar 0 como fallback si el id es null
             key: $model->getKey(),
             value: $model->getValue(),
             active: $model->isActive()
