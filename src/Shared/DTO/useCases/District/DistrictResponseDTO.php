@@ -3,6 +3,7 @@
 namespace itaxcix\Shared\DTO\useCases\District;
 
 use itaxcix\Core\Domain\location\DistrictModel;
+use JsonSerializable;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(
@@ -21,7 +22,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: "ubigeo", type: "string", example: "150122", nullable: true, description: "Código ubigeo del distrito")
     ]
 )]
-class DistrictResponseDTO
+class DistrictResponseDTO implements JsonSerializable
 {
     private int $id;
     private string $name;
@@ -79,5 +80,10 @@ class DistrictResponseDTO
             'province' => $this->province,
             'ubigeo' => $this->ubigeo
         ];
+    }
+
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
     }
 }
