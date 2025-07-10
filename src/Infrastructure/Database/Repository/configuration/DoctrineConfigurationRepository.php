@@ -70,7 +70,7 @@ class DoctrineConfigurationRepository implements ConfigurationRepositoryInterfac
     {
         $qb = $this->entityManager->createQueryBuilder();
         $qb->select('c')
-            ->from(ConfigurationModel::class, 'c');
+            ->from(ConfigurationEntity::class, 'c');
 
         // Aplicar filtros
         $this->applyFilters($qb, $dto);
@@ -88,7 +88,10 @@ class DoctrineConfigurationRepository implements ConfigurationRepositoryInterfac
         $qb->setFirstResult($offset)
             ->setMaxResults($dto->getPerPage());
 
-        $items = $qb->getQuery()->getResult();
+        $entities = $qb->getQuery()->getResult();
+
+        // Convertir entidades a modelos de dominio
+        $items = array_map(fn($entity) => $this->toDomain($entity), $entities);
 
         return [
             'items' => $items,
@@ -107,33 +110,51 @@ class DoctrineConfigurationRepository implements ConfigurationRepositoryInterfac
 
     public function findById(int $id): ?ConfigurationModel
     {
-        return $this->entityManager->find(ConfigurationModel::class, $id);
+        $entity = $this->entityManager->find(ConfigurationEntity::class, $id);
+        return $entity ? $this->toDomain($entity) : null;
     }
 
     public function findByKey(string $key): ?ConfigurationModel
     {
-        return $this->entityManager->getRepository(ConfigurationModel::class)
+        $entity = $this->entityManager->getRepository(ConfigurationEntity::class)
             ->findOneBy(['key' => $key]);
+        return $entity ? $this->toDomain($entity) : null;
     }
 
     public function create(ConfigurationModel $configuration): ConfigurationModel
     {
-        $this->entityManager->persist($configuration);
+        $entity = new ConfigurationEntity();
+        $entity->setKey($configuration->getKey());
+        $entity->setValue($configuration->getValue());
+        $entity->setActive($configuration->isActive());
+
+        $this->entityManager->persist($entity);
         $this->entityManager->flush();
-        return $configuration;
+
+        return $this->toDomain($entity);
     }
 
     public function update(ConfigurationModel $configuration): ConfigurationModel
     {
+        $entity = $this->entityManager->find(ConfigurationEntity::class, $configuration->getId());
+        if (!$entity) {
+            throw new \InvalidArgumentException('Configuration not found');
+        }
+
+        $entity->setKey($configuration->getKey());
+        $entity->setValue($configuration->getValue());
+        $entity->setActive($configuration->isActive());
+
         $this->entityManager->flush();
-        return $configuration;
+
+        return $this->toDomain($entity);
     }
 
     public function delete(int $id): bool
     {
-        $configuration = $this->findById($id);
-        if ($configuration) {
-            $configuration->setActive(false);
+        $entity = $this->entityManager->find(ConfigurationEntity::class, $id);
+        if ($entity) {
+            $entity->setActive(false);
             $this->entityManager->flush();
             return true;
         }
@@ -144,13 +165,13 @@ class DoctrineConfigurationRepository implements ConfigurationRepositoryInterfac
     {
         $qb = $this->entityManager->createQueryBuilder();
         $qb->select('COUNT(c.id)')
-            ->from(ConfigurationModel::class, 'c')
+            ->from(ConfigurationEntity::class, 'c')
             ->where('c.key = :key')
             ->setParameter('key', $key);
 
         if ($excludeId !== null) {
             $qb->andWhere('c.id != :excludeId')
-                ->setParameter('excludeId', $excludeId);
+               ->setParameter('excludeId', $excludeId);
         }
 
         return (int) $qb->getQuery()->getSingleScalarResult() > 0;
