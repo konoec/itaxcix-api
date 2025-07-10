@@ -490,9 +490,9 @@ return array(
 
     // Configuration Use Cases
     ConfigurationListUseCase::class => autowire(ConfigurationListUseCase::class),
-    ConfigurationCreateUseCase::class => autowire(ConfigurationListUseCase::class),
-    ConfigurationUpdateUseCase::class => autowire(ConfigurationListUseCase::class),
-    ConfigurationDeleteUseCase::class => autowire(ConfigurationListUseCase::class),
+    ConfigurationCreateUseCase::class => autowire(ConfigurationCreateUseCase::class),
+    ConfigurationUpdateUseCase::class => autowire(ConfigurationUpdateUseCase::class),
+    ConfigurationDeleteUseCase::class => autowire(ConfigurationDeleteUseCase::class),
 
     ConfigurationListUseCaseHandler::class => autowire(ConfigurationListUseCaseHandler::class),
     ConfigurationCreateUseCaseHandler::class => autowire(ConfigurationCreateUseCaseHandler::class),
