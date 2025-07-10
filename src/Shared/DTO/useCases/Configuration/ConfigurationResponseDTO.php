@@ -10,7 +10,7 @@ use OpenApi\Attributes as OA;
     description: "DTO de respuesta para configuraciones del sistema",
     type: "object"
 )]
-class ConfigurationResponseDTO
+class ConfigurationResponseDTO implements \JsonSerializable
 {
     #[OA\Property(
         property: "id",
@@ -157,5 +157,17 @@ class ConfigurationResponseDTO
         ];
 
         return $categories[$prefix] ?? 'General';
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            'id' => $this->id,
+            'key' => $this->key,
+            'value' => $this->value,
+            'active' => $this->active,
+            'description' => $this->description,
+            'category' => $this->category
+        ];
     }
 }
