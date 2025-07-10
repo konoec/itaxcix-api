@@ -22,8 +22,8 @@ class UserCodeTypePaginationRequestDTO
             search: !empty($data['search']) ? $data['search'] : null,
             name: !empty($data['name']) ? $data['name'] : null,
             active: isset($data['active']) ? filter_var($data['active'], FILTER_VALIDATE_BOOLEAN) : null,
-            sortBy: in_array($data['sortBy'] ?? 'name', ['id', 'name', 'active']) ? $data['sortBy'] : 'name',
-            sortDirection: in_array(strtoupper($data['sortDirection'] ?? 'ASC'), ['ASC', 'DESC']) ? strtoupper($data['sortDirection']) : 'ASC'
+            sortBy: in_array($data['sortBy'] ?? 'name', ['id', 'name', 'active']) ? ($data['sortBy'] ?? 'name') : 'name',
+            sortDirection: in_array(strtoupper($data['sortDirection'] ?? 'ASC'), ['ASC', 'DESC']) ? strtoupper($data['sortDirection'] ?? 'ASC') : 'ASC'
         );
     }
 
@@ -46,4 +46,3 @@ class UserCodeTypePaginationRequestDTO
         return $filters;
     }
 }
-
