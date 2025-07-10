@@ -3,8 +3,9 @@
 namespace itaxcix\Core\Domain\location;
 
 use itaxcix\Infrastructure\Database\Entity\location\DistrictEntity;
+use JsonSerializable;
 
-class DistrictModel {
+class DistrictModel implements JsonSerializable {
     private ?int $id;
     private ?string $name = null;
     private ?ProvinceModel $province = null;
@@ -67,11 +68,23 @@ class DistrictModel {
     public function toEntity(): DistrictEntity
     {
         $districtEntity = new DistrictEntity();
-        $districtEntity->setId($this->id);
+        if ($this->id !== null) {
+            $districtEntity->setId($this->id);
+        }
         $districtEntity->setName($this->name);
         $districtEntity->setUbigeo($this->ubigeo);
         $districtEntity->setProvince($this->province?->toEntity());
 
         return $districtEntity;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'province' => $this->province?->jsonSerialize(),
+            'ubigeo' => $this->ubigeo
+        ];
     }
 }

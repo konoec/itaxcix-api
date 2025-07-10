@@ -3,8 +3,9 @@
 namespace itaxcix\Core\Domain\location;
 
 use itaxcix\Infrastructure\Database\Entity\location\ProvinceEntity;
+use JsonSerializable;
 
-class ProvinceModel {
+class ProvinceModel implements JsonSerializable {
     private ?int $id;
     private ?string $name = null;
     private ?DepartmentModel $department = null;
@@ -67,11 +68,23 @@ class ProvinceModel {
     public function toEntity(): ProvinceEntity
     {
         $provinceEntity = new ProvinceEntity();
-        $provinceEntity->setId($this->id);
+        if ($this->id !== null) {
+            $provinceEntity->setId($this->id);
+        }
         $provinceEntity->setName($this->name);
         $provinceEntity->setDepartment($this->department?->toEntity());
         $provinceEntity->setUbigeo($this->ubigeo);
 
         return $provinceEntity;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'department' => $this->department?->jsonSerialize(),
+            'ubigeo' => $this->ubigeo
+        ];
     }
 }
