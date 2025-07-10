@@ -75,13 +75,18 @@ class DoctrineConfigurationRepository implements ConfigurationRepositoryInterfac
         // Aplicar filtros
         $this->applyFilters($qb, $dto);
 
-        // Aplicar ordenamiento
-        $qb->orderBy('c.' . $dto->getSortBy(), $dto->getSortDirection());
+        // Calcular total de registros (sin ORDER BY para evitar problemas con GROUP BY)
+        $totalQb = $this->entityManager->createQueryBuilder();
+        $totalQb->select('COUNT(c.id)')
+            ->from(ConfigurationEntity::class, 'c');
 
-        // Calcular total de registros
-        $totalQb = clone $qb;
-        $totalQb->select('COUNT(c.id)');
+        // Aplicar los mismos filtros al query de conteo
+        $this->applyFilters($totalQb, $dto);
+
         $total = (int) $totalQb->getQuery()->getSingleScalarResult();
+
+        // Aplicar ordenamiento solo al query principal
+        $qb->orderBy('c.' . $dto->getSortBy(), $dto->getSortDirection());
 
         // Aplicar paginación
         $offset = ($dto->getPage() - 1) * $dto->getPerPage();
