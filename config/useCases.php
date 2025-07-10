@@ -606,13 +606,8 @@ return array(
     // District Use Cases
     DistrictListUseCase::class => autowire(DistrictListUseCase::class),
     DistrictCreateUseCase::class => autowire(DistrictCreateUseCase::class),
-    DistrictUpdateUseCase::class => autowire(DistrictUpdateUseCaseHandler::class),
-    DistrictDeleteUseCase::class => autowire(DistrictDeleteUseCaseHandler::class),
-
-    DistrictListUseCaseHandler::class => autowire(DistrictListUseCaseHandler::class),
-    DistrictCreateUseCaseHandler::class => autowire(DistrictCreateUseCaseHandler::class),
-    DistrictUpdateUseCaseHandler::class => autowire(DistrictUpdateUseCaseHandler::class),
-    DistrictDeleteUseCaseHandler::class => autowire(DistrictDeleteUseCaseHandler::class),
+    DistrictUpdateUseCase::class => autowire(DistrictUpdateUseCase::class),
+    DistrictDeleteUseCase::class => autowire(DistrictDeleteUseCase::class),
 
     // District Validator
     DistrictValidator::class => autowire(DistrictValidator::class),
