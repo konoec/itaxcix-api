@@ -239,7 +239,6 @@ use itaxcix\Core\UseCases\Profile\GetCitizenProfileUseCase;
 use itaxcix\Core\UseCases\Profile\GetDriverProfileUseCase;
 use itaxcix\Core\UseCases\Profile\VerifyEmailChangeUseCase;
 use itaxcix\Core\UseCases\Profile\VerifyPhoneChangeUseCase;
-use itaxcix\Core\UseCases\Rating\GetUserRatingsCommentsUseCase;
 use itaxcix\Core\UseCases\ServiceType\ServiceTypeCreateUseCase;
 use itaxcix\Core\UseCases\ServiceType\ServiceTypeDeleteUseCase;
 use itaxcix\Core\UseCases\ServiceType\ServiceTypeListUseCase;
@@ -252,6 +251,7 @@ use itaxcix\Core\UseCases\Travel\RateTravelUseCase;
 use itaxcix\Core\UseCases\Travel\RequestNewTravelUseCase;
 use itaxcix\Core\UseCases\Travel\RespondToTravelRequestUseCase;
 use itaxcix\Core\UseCases\Travel\StartAcceptedTravelUseCase;
+use itaxcix\Core\UseCases\Rating\GetUserRatingsCommentsUseCase;
 use itaxcix\Core\UseCases\TravelReport\TravelReportUseCase;
 use itaxcix\Core\UseCases\TravelStatus\TravelStatusCreateUseCase;
 use itaxcix\Core\UseCases\TravelStatus\TravelStatusDeleteUseCase;
@@ -289,8 +289,8 @@ use itaxcix\Core\UseCases\User\UserProfilePhotoUploadUseCase;
 use itaxcix\Core\UseCases\User\UserProfilePhotoUseCase;
 use itaxcix\Core\UseCases\UserCodeType\UserCodeTypeCreateUseCase;
 use itaxcix\Core\UseCases\UserCodeType\UserCodeTypeDeleteUseCase;
-use itaxcix\Core\UseCases\UserCodeType\UserCodeTypeListUseCase;
 use itaxcix\Core\UseCases\UserCodeType\UserCodeTypeUpdateUseCase;
+use itaxcix\Core\UseCases\UserCodeType\UserCodeTypeListUseCase;
 use itaxcix\Core\UseCases\UserReport\UserReportUseCase;
 use itaxcix\Core\UseCases\UserStatus\UserStatusCreateUseCase;
 use itaxcix\Core\UseCases\UserStatus\UserStatusDeleteUseCase;
@@ -793,17 +793,16 @@ return array(
 
     ProcedureTypeValidator::class => autowire(ProcedureTypeValidator::class),
 
-    UserCodeTypeCreateUseCase::class => autowire(UserCodeTypeCreateUseCase::class),
-    UserCodeTypeDeleteUseCase::class => autowire(UserCodeTypeDeleteUseCase::class),
-    UserCodeTypeUpdateUseCase::class => autowire(UserCodeTypeUpdateUseCase::class),
-    UserCodeTypeListUseCase::class => autowire(UserCodeTypeListUseCase::class),
+    UserCodeTypeCreateUseCase::class => autowire(UserCodeTypeCreateUseCaseHandler::class),
+    UserCodeTypeDeleteUseCase::class => autowire(UserCodeTypeDeleteUseCaseHandler::class),
+    UserCodeTypeUpdateUseCase::class => autowire(UserCodeTypeUpdateUseCaseHandler::class),
+    UserCodeTypeListUseCase::class => autowire(UserCodeTypeListUseCaseHandler::class),
 
     UserCodeTypeCreateUseCaseHandler::class => autowire(UserCodeTypeCreateUseCaseHandler::class),
     UserCodeTypeDeleteUseCaseHandler::class => autowire(UserCodeTypeDeleteUseCaseHandler::class),
     UserCodeTypeUpdateUseCaseHandler::class => autowire(UserCodeTypeUpdateUseCaseHandler::class),
     UserCodeTypeListUseCaseHandler::class => autowire(UserCodeTypeListUseCaseHandler::class),
 
-    UserCodeTypeValidator::class => autowire(UserCodeTypeValidator::class),
 
     TravelReportUseCase::class => autowire(TravelReportUseCaseHandler::class),
     TravelReportValidator::class => autowire(TravelReportValidator::class),
