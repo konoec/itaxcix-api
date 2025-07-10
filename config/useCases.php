@@ -798,11 +798,6 @@ return array(
     UserCodeTypeUpdateUseCase::class => autowire(UserCodeTypeUpdateUseCaseHandler::class),
     UserCodeTypeListUseCase::class => autowire(UserCodeTypeListUseCaseHandler::class),
 
-    UserCodeTypeCreateUseCaseHandler::class => autowire(UserCodeTypeCreateUseCaseHandler::class),
-    UserCodeTypeDeleteUseCaseHandler::class => autowire(UserCodeTypeDeleteUseCaseHandler::class),
-    UserCodeTypeUpdateUseCaseHandler::class => autowire(UserCodeTypeUpdateUseCaseHandler::class),
-    UserCodeTypeListUseCaseHandler::class => autowire(UserCodeTypeListUseCaseHandler::class),
-
     UserCodeTypeValidator::class => autowire(UserCodeTypeValidator::class),
 
     TravelReportUseCase::class => autowire(TravelReportUseCaseHandler::class),
