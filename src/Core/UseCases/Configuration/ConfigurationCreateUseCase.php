@@ -35,10 +35,6 @@ class ConfigurationCreateUseCase
         // Guardar en la base de datos
         $savedConfiguration = $this->repository->create($configuration);
 
-        // Retornar respuesta
-        return [
-            'configuration' => ConfigurationResponseDTO::fromModel($savedConfiguration),
-            'message' => 'Configuración creada correctamente.'
-        ];
+        return ConfigurationResponseDTO::fromModel($savedConfiguration)->toArray();
     }
 }
