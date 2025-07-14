@@ -6,6 +6,7 @@ use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\QueryBuilder;
 use itaxcix\Core\Domain\travel\TravelModel;
 use itaxcix\Core\Interfaces\location\CoordinatesRepositoryInterface;
 use itaxcix\Core\Interfaces\travel\TravelRepositoryInterface;
@@ -155,6 +156,9 @@ class DoctrineTravelRepository implements TravelRepositoryInterface
             ->leftJoin('t.destination', 'destination')
             ->leftJoin('t.status', 'status');
 
+        // Aquí puedes usar applyFilters si quieres centralizar los filtros también
+        // $this->applyFilters($qb, $dto);
+
         if ($dto->startDate) {
             $qb->andWhere('t.startDate >= :startDate')
                 ->setParameter('startDate', $dto->startDate . ' 00:00:00');
@@ -183,10 +187,11 @@ class DoctrineTravelRepository implements TravelRepositoryInterface
             $qb->andWhere('destination.name LIKE :destination')
                 ->setParameter('destination', '%' . $dto->destination . '%');
         }
-        $sortBy = in_array($dto->sortBy, ['creationDate','startDate','endDate']) ? 't.' . $dto->sortBy : 't.creationDate';
-        $sortDirection = strtoupper($dto->sortDirection) === 'ASC' ? 'ASC' : 'DESC';
-        $qb->orderBy($sortBy, $sortDirection)
-            ->setFirstResult(($dto->page - 1) * $dto->perPage)
+
+        // Solo se usa applyOrdering para el orden
+        $this->applyOrdering($qb, $dto);
+
+        $qb->setFirstResult(($dto->page - 1) * $dto->perPage)
             ->setMaxResults($dto->perPage);
 
         $entities = $qb->getQuery()->getResult();
@@ -267,5 +272,20 @@ class DoctrineTravelRepository implements TravelRepositoryInterface
 
         $sortField = $sortMapping[$dto->sortBy] ?? 't.creationDate';
         $qb->orderBy($sortField, $dto->sortDirection);
+    }
+    public function countReport(TravelReportRequestDTO $dto): int
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('COUNT(t.id)')
+            ->from(TravelEntity::class, 't')
+            ->leftJoin('t.citizen', 'c')
+            ->leftJoin('t.driver', 'd')
+            ->leftJoin('t.origin', 'co')
+            ->leftJoin('t.destination', 'cd')
+            ->leftJoin('t.status', 'ts');
+
+        $this->applyFilters($qb, $dto);
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
     }
 }
