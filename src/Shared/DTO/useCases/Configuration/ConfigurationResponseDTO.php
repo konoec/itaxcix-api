@@ -10,7 +10,7 @@ use OpenApi\Attributes as OA;
     description: "DTO de respuesta para configuraciones del sistema",
     type: "object"
 )]
-class ConfigurationResponseDTO implements \JsonSerializable
+class ConfigurationResponseDTO
 {
     #[OA\Property(
         property: "id",
@@ -44,38 +44,16 @@ class ConfigurationResponseDTO implements \JsonSerializable
     )]
     private bool $active;
 
-    #[OA\Property(
-        property: "description",
-        description: "Descripción amigable de la configuración",
-        type: "string",
-        nullable: true,
-        example: "Modo de mantenimiento de la aplicación"
-    )]
-    private ?string $description;
-
-    #[OA\Property(
-        property: "category",
-        description: "Categoría de la configuración",
-        type: "string",
-        nullable: true,
-        example: "Sistema"
-    )]
-    private ?string $category;
-
     public function __construct(
         int $id,
         string $key,
         string $value,
-        bool $active,
-        ?string $description = null,
-        ?string $category = null
+        bool $active
     ) {
         $this->id = $id;
         $this->key = $key;
         $this->value = $value;
         $this->active = $active;
-        $this->description = $description;
-        $this->category = $category;
     }
 
     public static function fromModel(ConfigurationModel $model): self
@@ -106,68 +84,5 @@ class ConfigurationResponseDTO implements \JsonSerializable
     public function isActive(): bool
     {
         return $this->active;
-    }
-
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function getCategory(): ?string
-    {
-        return $this->category;
-    }
-
-    /**
-     * Obtiene una descripción amigable basada en la clave de configuración
-     */
-    private static function getKeyDescription(string $key): ?string
-    {
-        $descriptions = [
-            'app.maintenance_mode' => 'Modo de mantenimiento de la aplicación',
-            'app.name' => 'Nombre de la aplicación',
-            'app.version' => 'Versión actual de la aplicación',
-            'email.smtp_host' => 'Servidor SMTP para envío de emails',
-            'email.smtp_port' => 'Puerto del servidor SMTP',
-            'system.max_upload_size' => 'Tamaño máximo de archivo a subir',
-            'security.session_timeout' => 'Tiempo de expiración de sesión',
-            'notifications.enabled' => 'Notificaciones habilitadas',
-            'api.rate_limit' => 'Límite de peticiones por minuto',
-        ];
-
-        return $descriptions[$key] ?? null;
-    }
-
-    /**
-     * Obtiene la categoría basada en la clave de configuración
-     */
-    private static function getKeyCategory(string $key): ?string
-    {
-        $prefix = explode('.', $key)[0] ?? '';
-
-        $categories = [
-            'app' => 'Aplicación',
-            'email' => 'Correo Electrónico',
-            'system' => 'Sistema',
-            'security' => 'Seguridad',
-            'notifications' => 'Notificaciones',
-            'api' => 'API',
-            'database' => 'Base de Datos',
-            'storage' => 'Almacenamiento',
-        ];
-
-        return $categories[$prefix] ?? 'General';
-    }
-
-    public function jsonSerialize(): mixed
-    {
-        return [
-            'id' => $this->id,
-            'key' => $this->key,
-            'value' => $this->value,
-            'active' => $this->active,
-            'description' => $this->description,
-            'category' => $this->category
-        ];
     }
 }

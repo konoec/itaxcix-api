@@ -45,11 +45,7 @@ class ConfigurationDeleteUseCase
     private function isCriticalConfiguration(string $key): bool
     {
         $criticalKeys = [
-            'app.name',
-            'app.version',
-            'security.session_timeout',
-            'api.rate_limit',
-            'system.max_upload_size'
+            'ITAXCIX_NUMERO_EMERGENCIA'
         ];
 
         return in_array($key, $criticalKeys);

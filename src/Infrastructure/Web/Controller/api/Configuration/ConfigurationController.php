@@ -10,6 +10,7 @@ use itaxcix\Core\UseCases\Configuration\ConfigurationUpdateUseCase;
 use itaxcix\Infrastructure\Web\Controller\generic\AbstractController;
 use itaxcix\Shared\DTO\useCases\Configuration\ConfigurationPaginationRequestDTO;
 use itaxcix\Shared\DTO\useCases\Configuration\ConfigurationRequestDTO;
+use itaxcix\Shared\DTO\useCases\Configuration\ConfigurationResponseDTO;
 use itaxcix\Shared\Validators\useCases\Configuration\ConfigurationValidator;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
@@ -69,8 +70,7 @@ class ConfigurationController extends AbstractController
                         new OA\Property(property: "filters", type: "object"),
                         new OA\Property(property: "sortBy", type: "string", example: "key"),
                         new OA\Property(property: "sortDirection", type: "string", example: "asc")
-                    ], type: "object"),
-                    new OA\Property(property: "predefinedKeys", type: "object", description: "Claves predefinidas del sistema organizadas por categoría")
+                    ], type: "object")
                 ], type: "object")
             ],
             type: "object"
@@ -121,12 +121,9 @@ class ConfigurationController extends AbstractController
         try {
             $result = $this->listUseCase->execute($dto);
 
-            // Agregar claves predefinidas para el panel administrativo
-            $result['predefinedKeys'] = ConfigurationValidator::getPredefinedKeys();
-
             return $this->ok($result);
         } catch (\Exception $e) {
-            return $this->error("Error al obtener configuraciones: " . $e->getMessage(), 500);
+            return $this->error("Error al obtener configuraciones: " . $e->getMessage());
         }
     }
 
@@ -149,7 +146,7 @@ class ConfigurationController extends AbstractController
             properties: [
                 new OA\Property(property: "success", type: "boolean", example: true),
                 new OA\Property(property: "message", type: "string", example: "Configuración creada correctamente."),
-                new OA\Property(property: "data", ref: "#/components/schemas/ConfigurationResponseDTO")
+                new OA\Property(property: "data", ref: ConfigurationResponseDTO::class)
             ],
             type: "object"
         )
@@ -269,36 +266,6 @@ class ConfigurationController extends AbstractController
             return $this->ok($result);
         } catch (InvalidArgumentException $e) {
             return $this->error($e->getMessage(), 400);
-        }
-    }
-
-    #[OA\Get(
-        path: "/admin/configurations/predefined-keys",
-        operationId: "getPredefinedKeys",
-        description: "Obtiene las claves de configuración predefinidas del sistema organizadas por categoría.",
-        summary: "Lista claves predefinidas para configuraciones.",
-        security: [["bearerAuth" => []]],
-        tags: ["Admin - Configuration"]
-    )]
-    #[OA\Response(
-        response: 200,
-        description: "Claves predefinidas obtenidas correctamente",
-        content: new OA\JsonContent(
-            properties: [
-                new OA\Property(property: "success", type: "boolean", example: true),
-                new OA\Property(property: "message", type: "string", example: "OK"),
-                new OA\Property(property: "data", description: "Claves organizadas por categoría", type: "object")
-            ],
-            type: "object"
-        )
-    )]
-    public function getPredefinedKeys(ServerRequestInterface $request): ResponseInterface
-    {
-        try {
-            $predefinedKeys = ConfigurationValidator::getPredefinedKeys();
-            return $this->ok(['predefinedKeys' => $predefinedKeys]);
-        } catch (\Exception $e) {
-            return $this->error("Error al obtener claves predefinidas: " . $e->getMessage(), 500);
         }
     }
 }

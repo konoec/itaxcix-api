@@ -163,6 +163,7 @@ class DoctrineConfigurationRepository implements ConfigurationRepositoryInterfac
             $this->entityManager->flush();
             return true;
         }
+
         return false;
     }
 
