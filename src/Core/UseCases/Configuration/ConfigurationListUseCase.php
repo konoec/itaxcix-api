@@ -21,7 +21,7 @@ class ConfigurationListUseCase
 
         // Transformar los modelos a DTOs de respuesta
         $items = array_map(
-            fn($model) => ConfigurationResponseDTO::fromModel($model),
+            fn($model) => ConfigurationResponseDTO::fromModel($model)->toArray(),
             $result['items']
         );
 

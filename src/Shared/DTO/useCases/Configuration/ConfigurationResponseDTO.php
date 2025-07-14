@@ -85,4 +85,14 @@ class ConfigurationResponseDTO
     {
         return $this->active;
     }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'key' => $this->key,
+            'value' => $this->value,
+            'active' => $this->active,
+        ];
+    }
 }
