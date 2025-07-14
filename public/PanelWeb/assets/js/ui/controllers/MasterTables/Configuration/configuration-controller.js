@@ -10,6 +10,8 @@ class ConfigurationController {
     constructor() {
         this.configurationService = new ConfigurationService();
         this.createModalController = null;
+        this.editModalController = null;
+        this.deleteModalController = null;
         this.currentPage = 1;
         this.perPage = 15;
         this.currentFilters = {};
@@ -27,6 +29,8 @@ class ConfigurationController {
         try {
             this.setupEventListeners();
             this.initializeCreateModal();
+            this.initializeEditModal();
+            this.initializeDeleteModal();
             await this.loadConfigurations();
             this.setupTooltips();
         } catch (error) {
@@ -193,6 +197,32 @@ class ConfigurationController {
     }
 
     /**
+     * Inicializa el controlador del modal de edición
+     */
+    initializeEditModal() {
+        try {
+            this.editModalController = new EditConfigurationModalController();
+            this.editModalController.setParentController(this);
+            console.log('✅ Controlador de modal de edición inicializado');
+        } catch (error) {
+            console.error('❌ Error inicializando controlador de modal de edición:', error);
+        }
+    }
+
+    /**
+     * Inicializa el controlador del modal de eliminación
+     */
+    initializeDeleteModal() {
+        try {
+            this.deleteModalController = new DeleteConfigurationModalController();
+            this.deleteModalController.setParentController(this);
+            console.log('✅ Controlador de modal de eliminación inicializado');
+        } catch (error) {
+            console.error('❌ Error inicializando controlador de modal de eliminación:', error);
+        }
+    }
+
+    /**
      * Abre el modal de creación
      */
     openCreateModal() {
@@ -225,26 +255,23 @@ class ConfigurationController {
 
         // Editar configuración
         document.addEventListener('click', (e) => {
-            if (e.target.matches('.edit-config-btn')) {
-                const configId = parseInt(e.target.dataset.id);
+            if (e.target.matches('.edit-config-btn') || e.target.closest('.edit-config-btn')) {
+                e.preventDefault();
+                const btn = e.target.matches('.edit-config-btn') ? e.target : e.target.closest('.edit-config-btn');
+                const configId = parseInt(btn.dataset.id);
+                console.log('🔧 Click en botón editar, ID:', configId);
                 this.showEditModal(configId);
             }
         });
 
         // Eliminar configuración
         document.addEventListener('click', (e) => {
-            if (e.target.matches('.delete-config-btn')) {
-                const configId = parseInt(e.target.dataset.id);
+            if (e.target.matches('.delete-config-btn') || e.target.closest('.delete-config-btn')) {
+                e.preventDefault();
+                const btn = e.target.matches('.delete-config-btn') ? e.target : e.target.closest('.delete-config-btn');
+                const configId = parseInt(btn.dataset.id);
+                console.log('🗑️ Click en botón eliminar, ID:', configId);
                 this.showDeleteModal(configId);
-            }
-        });
-
-        // Toggle estado
-        document.addEventListener('click', (e) => {
-            if (e.target.matches('.toggle-status-btn')) {
-                const configId = parseInt(e.target.dataset.id);
-                const currentStatus = e.target.dataset.status === 'true';
-                this.toggleConfigurationStatus(configId, !currentStatus);
             }
         });
     }
@@ -284,8 +311,11 @@ class ConfigurationController {
      * Renderiza la tabla de configuraciones
      */
     renderConfigurations(data) {
-        const container = document.getElementById('configurations-table');
-        if (!container) return;
+        const container = document.getElementById('configurations-table-body');
+        if (!container) {
+            console.error('Elemento configurations-table-body no encontrado');
+            return;
+        }
 
         const configurations = data.items || [];
         
@@ -294,40 +324,9 @@ class ConfigurationController {
             return;
         }
 
-        const tableHTML = `
-            <div class="table-responsive">
-                <table class="table table-vcenter table-striped">
-                    <thead>
-                        <tr>
-                            <th class="sortable-header" data-sort="id">
-                                ID
-                                ${this.renderSortIcon('id')}
-                            </th>
-                            <th class="sortable-header" data-sort="key">
-                                Clave
-                                ${this.renderSortIcon('key')}
-                            </th>
-                            <th class="sortable-header" data-sort="value">
-                                Valor
-                                ${this.renderSortIcon('value')}
-                            </th>
-                            <th>Descripción</th>
-                            <th>Categoría</th>
-                            <th class="sortable-header" data-sort="active">
-                                Estado
-                                ${this.renderSortIcon('active')}
-                            </th>
-                            <th class="w-1">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${configurations.map(config => this.renderConfigurationRow(config)).join('')}
-                    </tbody>
-                </table>
-            </div>
-        `;
-
-        container.innerHTML = tableHTML;
+        // Solo renderizar las filas del tbody
+        const rowsHTML = configurations.map(config => this.renderConfigurationRow(config)).join('');
+        container.innerHTML = rowsHTML;
     }
 
     /**
@@ -352,17 +351,12 @@ class ConfigurationController {
                     </div>
                 </td>
                 <td>
-                    <div class="text-truncate" style="max-width: 250px;" title="${config.description}">
-                        ${config.description}
-                    </div>
-                </td>
-                <td>
-                    <span class="badge bg-azure-lt">${config.category}</span>
-                </td>
-                <td>
                     <span class="badge bg-${formattedConfig.statusBadge}-lt">
                         ${formattedConfig.statusText}
                     </span>
+                </td>
+                <td>
+                    <span class="text-muted">${formattedConfig.createdAt || '-'}</span>
                 </td>
                 <td>
                     <div class="btn-group">
@@ -370,12 +364,6 @@ class ConfigurationController {
                                 data-id="${config.id}"
                                 title="Editar configuración">
                             <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-${config.active ? 'warning' : 'success'} toggle-status-btn" 
-                                data-id="${config.id}"
-                                data-status="${config.active}"
-                                title="${config.active ? 'Desactivar' : 'Activar'} configuración">
-                            <i class="fas fa-${config.active ? 'eye-slash' : 'eye'}"></i>
                         </button>
                         <button class="btn btn-sm btn-outline-danger delete-config-btn" 
                                 data-id="${config.id}"
@@ -393,21 +381,25 @@ class ConfigurationController {
      */
     renderEmptyState() {
         return `
-            <div class="empty">
-                <div class="empty-img">
-                    <i class="fas fa-cogs fa-3x text-muted"></i>
-                </div>
-                <p class="empty-title">No hay configuraciones</p>
-                <p class="empty-subtitle text-muted">
-                    No se encontraron configuraciones con los filtros aplicados
-                </p>
-                <div class="empty-action">
-                    <button class="btn btn-primary" id="create-config-btn">
-                        <i class="fas fa-plus"></i>
-                        Crear configuración
-                    </button>
-                </div>
-            </div>
+            <tr>
+                <td colspan="6" class="text-center py-5">
+                    <div class="empty">
+                        <div class="empty-img">
+                            <i class="fas fa-cogs fa-3x text-muted"></i>
+                        </div>
+                        <p class="empty-title">No hay configuraciones</p>
+                        <p class="empty-subtitle text-muted">
+                            No se encontraron configuraciones con los filtros aplicados
+                        </p>
+                        <div class="empty-action">
+                            <button class="btn btn-primary" id="create-config-btn">
+                                <i class="fas fa-plus"></i>
+                                Crear configuración
+                            </button>
+                        </div>
+                    </div>
+                </td>
+            </tr>
         `;
     }
 
@@ -493,37 +485,35 @@ class ConfigurationController {
      * Renderiza información de meta datos
      */
     renderMetaInfo(meta) {
-        const container = document.getElementById('meta-info');
-        if (!container) return;
+        // Actualizar los spans de información
+        const showingStart = document.getElementById('showing-start');
+        const showingEnd = document.getElementById('showing-end');
+        const totalRecords = document.getElementById('total-records');
+        const currentPageInfo = document.getElementById('current-page-info');
 
-        const start = (meta.currentPage - 1) * meta.perPage + 1;
-        const end = Math.min(meta.currentPage * meta.perPage, meta.total);
+        if (showingStart && showingEnd && totalRecords) {
+            const start = (meta.currentPage - 1) * meta.perPage + 1;
+            const end = Math.min(meta.currentPage * meta.perPage, meta.total);
 
-        container.innerHTML = `
-            <div class="d-flex justify-content-between align-items-center">
-                <small class="text-muted">
-                    Mostrando ${start} a ${end} de ${meta.total} registros
-                </small>
-                <div class="d-flex align-items-center">
-                    <label class="me-2">Mostrar:</label>
-                    <select class="form-select form-select-sm" style="width: auto;" id="per-page-select">
-                        <option value="10" ${meta.perPage === 10 ? 'selected' : ''}>10</option>
-                        <option value="15" ${meta.perPage === 15 ? 'selected' : ''}>15</option>
-                        <option value="25" ${meta.perPage === 25 ? 'selected' : ''}>25</option>
-                        <option value="50" ${meta.perPage === 50 ? 'selected' : ''}>50</option>
-                    </select>
-                </div>
-            </div>
-        `;
+            showingStart.textContent = meta.total > 0 ? start : 0;
+            showingEnd.textContent = meta.total > 0 ? end : 0;
+            totalRecords.textContent = meta.total;
+        }
 
-        // Event listener para cambio de perPage
-        const perPageSelect = document.getElementById('per-page-select');
-        if (perPageSelect) {
-            perPageSelect.addEventListener('change', (e) => {
-                this.perPage = parseInt(e.target.value);
-                this.currentPage = 1;
-                this.loadConfigurations();
-            });
+        if (currentPageInfo) {
+            currentPageInfo.textContent = meta.currentPage;
+        }
+
+        // Actualizar botones de navegación
+        const prevBtn = document.getElementById('prev-page-btn');
+        const nextBtn = document.getElementById('next-page-btn');
+
+        if (prevBtn) {
+            prevBtn.disabled = meta.currentPage <= 1;
+        }
+
+        if (nextBtn) {
+            nextBtn.disabled = meta.currentPage >= meta.lastPage;
         }
     }
 
@@ -627,34 +617,39 @@ class ConfigurationController {
      * Muestra modal de edición
      */
     showEditModal(configId) {
-        // Implementar modal de edición
-        console.log('Showing edit modal for ID:', configId);
+        console.log('📝 Intentando abrir modal de edición para ID:', configId);
+        console.log('📝 Controlador de edición disponible:', !!this.editModalController);
+        
+        if (this.editModalController) {
+            this.editModalController.openModal(configId);
+        } else {
+            console.error('❌ Controlador de modal de edición no inicializado');
+            this.showError('No se pudo abrir el modal de edición');
+        }
     }
 
     /**
      * Muestra modal de eliminación
      */
     showDeleteModal(configId) {
-        // Implementar modal de eliminación
-        console.log('Showing delete modal for ID:', configId);
-    }
+        console.log('🗑️ Intentando abrir modal de eliminación para ID:', configId);
+        console.log('🗑️ Controlador de eliminación disponible:', !!this.deleteModalController);
+        
+        if (!this.deleteModalController) {
+            console.error('❌ Controlador de modal de eliminación no inicializado');
+            this.showError('No se pudo abrir el modal de eliminación');
+            return;
+        }
 
-    /**
-     * Cambia el estado de una configuración
-     */
-    async toggleConfigurationStatus(configId, newStatus) {
-        try {
-            const response = await this.configurationService.toggleConfigurationStatus(configId, newStatus);
-            
-            if (response.success) {
-                this.showSuccess(`Estado de configuración ${newStatus ? 'activado' : 'desactivado'} correctamente`);
-                this.loadConfigurations();
-            } else {
-                throw new Error(response.message || 'Error al cambiar estado');
-            }
-        } catch (error) {
-            console.error('Error toggling configuration status:', error);
-            this.showError('Error al cambiar el estado de la configuración');
+        // Buscar los datos de la configuración en los datos actuales
+        const configData = this.currentData?.find(config => config.id == configId);
+        
+        if (configData) {
+            console.log('📋 Datos de configuración encontrados:', configData);
+            this.deleteModalController.openModalWithData(configData);
+        } else {
+            console.warn('⚠️ No se encontraron datos de configuración localmente, usando método tradicional');
+            this.deleteModalController.openModal(configId);
         }
     }
 

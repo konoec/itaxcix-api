@@ -92,6 +92,9 @@ class UsersInitializer {
                         }
                         
                         console.log('✅ Gestión de Usuarios inicializada completamente');
+                        
+                        // Notificar que este módulo ha terminado de cargar
+                        LoadingScreenUtil.notifyModuleLoaded('UsersManagement');
                     }, 200);
                     
                 }, 500);
@@ -110,13 +113,6 @@ class UsersInitializer {
      */
     static initializeUsersControllers() {
         console.log('📋 === INICIALIZANDO CONTROLADORES DE USUARIOS ===');
-        
-        // Verificar que los controladores base estén listos
-        if (window.mainController && window.mainController.areBaseControllersReady()) {
-            console.log('✅ Controladores base listos, inicializando controladores de usuarios...');
-        } else {
-            console.warn('⚠️ Controladores base no están completamente listos');
-        }
         
         // Inicializar UsersListController
         console.log('📋 Inicializando UsersListController...');
@@ -232,3 +228,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 console.log('📝 UsersInitializer definido y configurado');
+

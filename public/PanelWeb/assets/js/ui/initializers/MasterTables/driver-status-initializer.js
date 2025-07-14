@@ -46,6 +46,15 @@ class DriverStatusInitializer {
                             window.topBarControllerInstance = new TopBarController();
                             console.log('🔝 TopBarController inicializado');
                         }
+
+                        // Inicializar DriverStatusListController después de todos los componentes
+                        setTimeout(() => {
+                            if (!window.driverStatusListControllerInstance) {
+                                window.driverStatusListControllerInstance = new DriverStatusListController();
+                                window.driverStatusListControllerInstance.init();
+                                console.log('📋 DriverStatusListController inicializado');
+                            }
+                        }, 300);
                     }, 200);
                     
                     // Inicializar ProfileController
@@ -67,11 +76,8 @@ class DriverStatusInitializer {
                             window.PermissionsService.initializePermissions();
                         }
                         
-                        // Ocultar pantalla de carga
-                        const loadingOverlay = document.getElementById('permissions-loading');
-                        if (loadingOverlay) {
-                            loadingOverlay.style.display = 'none';
-                        }
+                        // Notificar que el módulo está listo
+                        LoadingScreenUtil.notifyModuleLoaded('DriverStatus');
                         
                         console.log('✅ Estado de Conductores inicializados completamente');
                     }, 100);
@@ -81,11 +87,8 @@ class DriverStatusInitializer {
             } catch (error) {
                 console.error('❌ Error cargando componentes:', error);
                 
-                // Ocultar pantalla de carga en caso de error
-                const loadingOverlay = document.getElementById('permissions-loading');
-                if (loadingOverlay) {
-                    loadingOverlay.style.display = 'none';
-                }
+                // Notificar que el módulo está listo (incluso con error)
+                LoadingScreenUtil.notifyModuleLoaded('DriverStatus');
             }
             
         } else {
@@ -105,3 +108,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 console.log('📝 DriverStatusInitializer definido y configurado');
+

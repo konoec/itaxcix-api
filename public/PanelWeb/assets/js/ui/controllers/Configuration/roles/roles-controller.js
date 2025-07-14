@@ -647,13 +647,15 @@ const RolesController = (() => {
         }
     }
 
+    // Variables para el modal de edición (deben estar fuera de setupModalEvents para ser accesibles)
+    let editMode = false;
+    let editingRoleId = null;
+
     // --- Modal y formulario para crear/editar rol ---
     function setupModalEvents() {
         const openBtn = document.getElementById('create-role-btn');
         const modal = document.getElementById('role-modal');
         const form = document.getElementById('role-form');
-        let editMode = false;
-        let editingRoleId = null;
 
         // Usar Bootstrap Modal
         const modalInstance = modal ? new bootstrap.Modal(modal) : null;
@@ -662,10 +664,16 @@ const RolesController = (() => {
             if (modalInstance) {
                 modalInstance.show();
                 if (form) form.reset();
+                // Resetear variables de edición
                 editMode = false;
                 editingRoleId = null;
                 const modalTitle = document.getElementById('modal-title');
                 if (modalTitle) modalTitle.textContent = 'Crear Rol';
+                
+                console.log('🔄 Modal configurado para creación:', {
+                    editMode: editMode,
+                    editingRoleId: editingRoleId
+                });
             }
         });
 
@@ -709,7 +717,7 @@ const RolesController = (() => {
                 let result;
                 if (editMode && editingRoleId) {
                     const updateData = { id: Number(editingRoleId), name, active, web };
-                    console.log('🔄 Actualizando rol con datos:', updateData);
+                    console.log('🔄 Actualizando rol con datos completos:', updateData);
                     result = await RolesController.updateRole(updateData);
                 } else {
                     const createData = { name, active, web };
@@ -725,17 +733,57 @@ const RolesController = (() => {
                     
                     if (typeof window.showToast === 'function') {
                         window.showToast(successMessage, 'success');
-                    } else if (toast && toastMsg) {
-                        toastMsg.textContent = successMessage;
-                        toast.classList.add('show');
-                        setTimeout(() => toast.classList.remove('show'), 2000);
+                    } else {
+                        // Fallback para toast básico
+                        const toast = document.getElementById('toast');
+                        const toastMsg = document.getElementById('toast-message');
+                        if (toast && toastMsg) {
+                            toastMsg.textContent = successMessage;
+                            toast.classList.add('show');
+                            setTimeout(() => toast.classList.remove('show'), 2000);
+                        }
                     }
                     
-                    if (modalInstance) modalInstance.hide();
-                    fetchRoles(1);
-                    form.reset();
-                    editMode = false;
-                    editingRoleId = null;
+                    // Cerrar modal usando evento click en el botón de cerrar
+                    console.log('🔄 Cerrando modal...');
+                    
+                    const modalElement = document.getElementById('role-modal');
+                    if (modalElement) {
+                        // Estrategia 1: Simular click en el botón de cerrar
+                        const closeButton = modalElement.querySelector('[data-bs-dismiss="modal"]');
+                        if (closeButton) {
+                            console.log('   - Simulando click en botón de cerrar');
+                            closeButton.click();
+                        } else {
+                            // Estrategia 2: Usar Bootstrap Modal API
+                            try {
+                                console.log('   - Usando Bootstrap Modal API');
+                                const bsModal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+                                bsModal.hide();
+                            } catch (error) {
+                                console.error('   - Error con Bootstrap Modal:', error);
+                                // Estrategia 3: Cierre manual
+                                console.log('   - Cierre manual del modal');
+                                modalElement.style.display = 'none';
+                                modalElement.classList.remove('show');
+                                modalElement.setAttribute('aria-hidden', 'true');
+                                modalElement.removeAttribute('aria-modal');
+                                
+                                // Limpiar backdrop y clases del body
+                                document.body.classList.remove('modal-open');
+                                document.body.style.overflow = '';
+                                document.body.style.paddingRight = '';
+                                
+                                const backdrop = document.querySelector('.modal-backdrop');
+                                if (backdrop) backdrop.remove();
+                            }
+                        }
+                    }
+                    
+                    // Recargar datos después de un breve delay
+                    setTimeout(() => {
+                        fetchRoles(currentPage);
+                    }, 500);
                 } else {
                     // Operación falló - Mostrar error del backend
                     console.error('❌ Error en la operación:', result);
@@ -968,6 +1016,19 @@ const RolesController = (() => {
         // Cambiar título del modal
         const modalTitle = document.getElementById('modal-title');
         if (modalTitle) modalTitle.textContent = 'Editar Rol';
+        
+        // 🔧 IMPORTANTE: Configurar el modo de edición y el ID del rol
+        editMode = true;
+        editingRoleId = roleId;
+        
+        console.log('🔄 Modal configurado para edición:', {
+            roleId: roleId,
+            name: name,
+            status: status,
+            web: web,
+            editMode: editMode,
+            editingRoleId: editingRoleId
+        });
         
         modalInstance.show();
     }

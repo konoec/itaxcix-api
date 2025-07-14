@@ -67,11 +67,8 @@ class ServiceTypeInitializer {
                             window.PermissionsService.initializePermissions();
                         }
                         
-                        // Ocultar pantalla de carga
-                        const loadingOverlay = document.getElementById('permissions-loading');
-                        if (loadingOverlay) {
-                            loadingOverlay.style.display = 'none';
-                        }
+                        // Notificar que el módulo está listo
+                        LoadingScreenUtil.notifyModuleLoaded('ServiceType');
                         
                         console.log('✅ Tipos de Servicio inicializado completamente');
                     }, 400);
@@ -81,11 +78,8 @@ class ServiceTypeInitializer {
             } catch (error) {
                 console.error('❌ Error cargando componentes:', error);
                 
-                // Ocultar pantalla de carga en caso de error
-                const loadingOverlay = document.getElementById('permissions-loading');
-                if (loadingOverlay) {
-                    loadingOverlay.style.display = 'none';
-                }
+                // Notificar que el módulo está listo (incluso con error)
+                LoadingScreenUtil.notifyModuleLoaded('ServiceType');
             }
             
         } else {
@@ -105,3 +99,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 console.log('📝 ServiceTypeInitializer definido y configurado');
+

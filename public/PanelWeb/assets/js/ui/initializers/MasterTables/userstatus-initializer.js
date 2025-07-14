@@ -1,10 +1,10 @@
 /**
- * Inicializador específico para la página de Control de Admisión de Conductores
+ * Inicializador específico para la página de Gestión de Estado de Usuarios
  * Maneja solo los componentes y controladores necesarios para esta página específica
  */
-class ControlAdmisionInitializer {
+class UserStatusInitializer {
     static async init() {
-        console.log('🚗 Inicializando página de Control de Admisión de Conductores...');
+        console.log('👤 Inicializando página de Gestión de Estado de Usuarios...');
         
         if (authChecker.checkAuthentication()) {
             authChecker.updateUserDisplay();
@@ -19,12 +19,12 @@ class ControlAdmisionInitializer {
                 
                 // Cargar sidebar
                 await componentLoader.loadComponent('sidebar', '#sidebar-container', {
-                    activeSection: window.pageConfig?.activeSection || 'admission'
+                    activeSection: window.pageConfig?.activeSection || 'tablas'
                 });
                 
                 // Cargar topbar
                 await componentLoader.loadComponent('topbar', '#topbar-container', {
-                    pageTitle: window.pageConfig?.pageTitle || { icon: 'fas fa-user-check', text: 'Admisión de conductores' }
+                    pageTitle: window.pageConfig?.pageTitle || { icon: 'fas fa-user-check', text: 'Gestión de Estado de Usuarios' }
                 });
                 
                 // Cargar profile modal
@@ -44,7 +44,7 @@ class ControlAdmisionInitializer {
                     setTimeout(() => {
                         if (!window.topBarControllerInstance) {
                             window.topBarControllerInstance = new TopBarController();
-                            console.log('� TopBarController inicializado');
+                            console.log('🔝 TopBarController inicializado');
                         }
                     }, 200);
                     
@@ -60,22 +60,6 @@ class ControlAdmisionInitializer {
                         }
                     }
                     
-                    // Inicializar AdmissionControlController específico para admission control
-                    if (!window.admissionControllerInstance) {
-                        // Verificar que AdmissionControlController existe antes de instanciarlo
-                        if (typeof AdmissionControlController !== 'undefined') {
-                            const app = new AdmissionControlController();
-                            // NO ESPERAR - cargar conductores independientemente del perfil
-                            app.init().catch(error => {
-                                console.error('❌ Error cargando conductores:', error);
-                            });
-                            window.admissionControllerInstance = app;
-                            console.log('🚗 AdmissionControlController inicializado');
-                        } else {
-                            console.warn('⚠️ AdmissionControlController no está definido en esta página');
-                        }
-                    }
-                    
                     // Configurar permisos DESPUÉS de que los controladores estén listos
                     setTimeout(() => {
                         if (window.PermissionsService) {
@@ -83,13 +67,19 @@ class ControlAdmisionInitializer {
                             window.PermissionsService.initializePermissions();
                         }
                         
-                        console.log('✅ Control de Admisión inicializado completamente');
+                        console.log('✅ Estado de Usuarios inicializado completamente');
+                        
+                        // Notificar que este módulo ha terminado de cargar
+                        LoadingScreenUtil.notifyModuleLoaded('UserStatus');
                     }, 100);
                     
                 }, 500);
                 
             } catch (error) {
                 console.error('❌ Error cargando componentes:', error);
+                
+                // En caso de error, también ocultar la pantalla de carga
+                LoadingScreenUtil.notifyModuleLoaded('UserStatus');
             }
             
         } else {
@@ -100,12 +90,12 @@ class ControlAdmisionInitializer {
 
 // Auto-inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('� DOM cargado, iniciando ControlAdmisionInitializer...');
+    console.log('📄 DOM cargado, iniciando UserStatusInitializer...');
     
     // Pequeño delay para asegurar que todos los scripts estén cargados
     setTimeout(() => {
-        ControlAdmisionInitializer.init();
+        UserStatusInitializer.init();
     }, 500);
 });
 
-console.log('� ControlAdmisionInitializer definido y configurado');
+console.log('📝 UserStatusInitializer definido y configurado');

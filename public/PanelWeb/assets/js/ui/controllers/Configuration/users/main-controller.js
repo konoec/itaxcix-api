@@ -285,7 +285,8 @@ class MainController {
      */
     areBaseControllersReady() {
         return !!(window.sidebarControllerInstance && 
-                  window.topBarControllerInstance);
+                  window.topBarControllerInstance  &&   
+                  window.profileControllerInstance);
     }
 
     /**

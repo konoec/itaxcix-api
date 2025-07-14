@@ -269,19 +269,6 @@ class UserDetailsController {
                     </div>
                     <div class="card-body">
                         <div class="row">
-            `;
-            
-            // Imagen de perfil si existe
-            if (data.person.image) {
-                html += `
-                    <div class="col-12 mb-3 text-center">
-                        <img src="${data.person.image}" alt="Foto de perfil" 
-                             class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
-                    </div>
-                `;
-            }
-            
-            html += `
                             <div class="col-12">
                                 <dl class="row mb-0">
                                     <dt class="col-4">Nombre:</dt>

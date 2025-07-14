@@ -23,6 +23,9 @@
     <!-- Global toast styles -->
     <link rel="stylesheet" href="../../assets/css/global-toast.css">
     
+    <!-- Loading screen styles -->
+    <link rel="stylesheet" href="../../assets/css/loading-screen.css">
+    
     <!-- Component specific styles -->
     <link rel="stylesheet" href="../../assets/css/sidebar.css">
     <link rel="stylesheet" href="../../assets/css/topbar.css">
@@ -46,6 +49,28 @@
     </script>
 </head>
 <body>
+    <!-- Pantalla de carga moderna - visible inmediatamente -->
+    <div class="loading-screen d-flex align-items-center justify-content-center position-fixed w-100 h-100" 
+         style="top: 0; left: 0; z-index: 9999; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px);">
+        <div class="text-center">
+            <!-- Logo del sistema -->
+            <div class="mb-4">
+                <img src="../../assets/Recourse/Logo/1.png" alt="Logo" class="mb-3" style="height: 60px;">
+            </div>
+            
+            <!-- Spinner de Tabler -->
+            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            
+            <!-- Texto de carga -->
+            <div class="text-secondary">
+                <div class="fw-bold mb-1">Cargando Gestión de Configuración</div>
+                <div class="small text-muted">Preparando la interfaz y cargando componentes...</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Layout principal usando estructura Tabler -->
     <div class="page">
         <!-- Contenedor del sidebar - se carga dinámicamente -->
@@ -85,7 +110,7 @@
                         <div class="container-xl">
                             
                             <!-- Page Header con estructura Tabler -->
-                            <div id="config-content">
+                            <div id="config-content" class="mb-4">
                                 <div class="row g-2 align-items-center">
                                     <div class="col">
                                     </div>
@@ -93,12 +118,13 @@
                                     <div class="col-auto ms-auto d-print-none">
                                         <div class="btn-list">
                                             <button class="btn btn-outline-cyan" id="refresh-btn" title="Actualizar datos">
-                                                <i class="fas fa-sync-alt me-2"></i>
-                                                Actualizar
+                                                <i class="fas fa-sync-alt"></i>
                                             </button>
-                                            <button class="btn btn-indigo" id="btn-create-config">
-                                                <i class="fas fa-plus me-2"></i>
-                                                Nueva Configuración
+                                            <button class="btn btn-outline-secondary" id="clear-filters-btn" title="Limpiar filtros">
+                                                <i class="fas fa-broom"></i>
+                                            </button>
+                                            <button class="btn btn-indigo" id="btn-create-config" title="Nueva configuración">
+                                                <i class="fas fa-plus"></i>
                                             </button>
                                         </div>
                                     </div>
@@ -110,16 +136,17 @@
                                 <div class="card-header">
                                     <h3 class="card-title">
                                         <i class="fas fa-filter me-2"></i>
-                                        Filtros de búsqueda
+                                        Filtros Avanzados
                                     </h3>
                                     <div class="card-actions">
-                                        <button class="btn btn-sm btn-outline-orange" id="clear-filters-btn">
-                                            <i class="fas fa-times me-1"></i>
-                                            Limpiar
+                                        <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#advancedFilters">
+                                            <i class="fas fa-sliders-h me-1"></i>
+                                            Mostrar/Ocultar
                                         </button>
                                     </div>
                                 </div>
-                                <div class="card-body">
+                                <div class="collapse show" id="advancedFilters">
+                                    <div class="card-body">
                                     <div class="row g-3">
                                         <div class="col-md-4">
                                             <label class="form-label">Búsqueda general</label>
@@ -166,6 +193,7 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
                             <!-- Configurations Table Card -->
                             <div class="card">
@@ -248,6 +276,7 @@
     <script src="../../assets/js/ui/component-loader.js"></script>
     
     <!-- 2. Utilidades y herramientas base -->
+    <script src="../../assets/js/utils/loading-screen-util.js"></script>
     <script src="../../assets/js/global-initializer.js"></script>
     <script src="../../assets/js/ui/global-toast.js"></script>
     <script src="../../assets/js/auth/permissions.js"></script>
@@ -265,10 +294,13 @@
     <script src="../../assets/js/api/services/MasterTables/Configuration/create-configuration-service.js"></script>
 
     <!-- 3. Controladores de UI -->
+    <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
     <script src="../../assets/js/ui/controllers/MasterTables/Configuration/create-configuration-modal-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/Configuration/edit-configuration-modal-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/Configuration/delete-configuration-modal-controller.js"></script>
     <script src="../../assets/js/ui/controllers/MasterTables/Configuration/configuration-controller.js"></script>
 
     <!-- 4. Inicializador específico de la página -->

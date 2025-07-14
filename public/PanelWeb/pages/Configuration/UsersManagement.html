@@ -11,9 +11,15 @@
     <link rel="stylesheet" href="../../assets/tabler/css/tabler.min.css">
     <link rel="stylesheet" href="../../assets/tabler/css/tabler-vendors.min.css">
     <link rel="stylesheet" href="../../assets/css/global-toast.css">
+    
+    <!-- Loading screen styles -->
+    <link rel="stylesheet" href="../../assets/css/loading-screen.css">
+    
+    <!-- Component specific styles -->
     <link rel="stylesheet" href="../../assets/css/sidebar.css">
     <link rel="stylesheet" href="../../assets/css/topbar.css">
     <link rel="stylesheet" href="../../assets/css/profile.css">
+    <link rel="stylesheet" href="../../assets/css/configuration/user-edit-modal.css">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
@@ -30,6 +36,28 @@
     
 </head>
 <body>
+    <!-- Pantalla de carga moderna - visible inmediatamente -->
+    <div class="loading-screen d-flex align-items-center justify-content-center position-fixed w-100 h-100" 
+         style="top: 0; left: 0; z-index: 9999; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px);">
+        <div class="text-center">
+            <!-- Logo del sistema -->
+            <div class="mb-4">
+                <img src="../../assets/Recourse/Logo/1.png" alt="Logo" class="mb-3" style="height: 60px;">
+            </div>
+            
+            <!-- Spinner de Tabler -->
+            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            
+            <!-- Texto de carga -->
+            <div class="text-secondary">
+                <div class="fw-bold mb-1">Cargando Gestión de Usuarios</div>
+                <div class="small text-muted">Preparando la interfaz y cargando componentes...</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Contenedor principal del layout usando estructura Tabler -->
     <div class="page">
         <!-- Contenedor del sidebar - se carga dinámicamente -->
@@ -189,12 +217,12 @@
     <div class="modal modal-blur fade" id="user-details-modal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document" style="max-width: 800px;">
             <div class="modal-content" style="max-height: 85vh;">
-                <div class="modal-header border-0">
+                <div class="modal-header bg-primary text-white border-0">
                     <h5 class="modal-title">
                         <i class="fas fa-user me-2"></i>
                         Detalles del Usuario
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-0" style="max-height: calc(85vh - 80px); overflow-y: auto; overflow-x: hidden;" id="user-details-content">
                     <div class="text-center py-4">
@@ -390,164 +418,187 @@
 
     <!-- Modal de asignación de roles -->
     <div class="modal modal-blur fade" id="assign-roles-modal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+        <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 750px;">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="fas fa-user-tag me-2"></i>
-                        Asignar Roles
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Información del usuario -->
-                    <div class="mb-3">
-                        <div class="card">
-                            <div class="card-body py-2">
-                                <div class="d-flex align-items-center">
-                                    <span class="avatar avatar-sm me-2">
-                                        <i class="fas fa-user"></i>
-                                    </span>
-                                    <div>
-                                        <h4 class="mb-0" id="assign-roles-user-name">Usuario</h4>
-                                        <small class="text-muted" id="assign-roles-user-info">Información del usuario</small>
-                                    </div>
-                                </div>
+                <div class="modal-header bg-primary text-white py-2">
+                    <div class="d-flex align-items-center justify-content-between w-100">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar avatar-sm me-3" style="background: rgba(255,255,255,0.2);">
+                                <i class="fas fa-user text-white"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold" style="font-size: 0.9rem;" id="assign-roles-user-name">Usuario</div>
+                                <small class="opacity-75" style="font-size: 0.7rem;" id="assign-roles-user-info">Información del usuario</small>
+                            </div>
+                            <div class="ms-3">
+                                <div class="badge bg-white text-primary" style="font-size: 0.65rem; padding: 0.2rem 0.4rem;">Activo</div>
                             </div>
                         </div>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-
-                    <!-- Contenido principal en dos columnas -->
+                </div>
+                <div class="modal-body p-3">
+                    <!-- Contenido optimizado sin card de usuario separado -->
                     <div class="row g-3">
-                        <!-- Columna izquierda: Roles -->
-                        <div class="col-md-8">
-                            <!-- Buscador de roles -->
-                            <div class="mb-3">
-                                <div class="input-group input-group-sm">
-                                    <input type="text" class="form-control" id="search-roles-modal" placeholder="Buscar roles...">
-                                    <span class="input-group-text">
-                                        <i class="fas fa-search"></i>
-                                    </span>
-                                </div>
+                        <!-- Roles -->
+                        <div class="col-12">
+                            <!-- Buscador compacto -->
+                            <div class="mb-2">
+                                <label class="form-label mb-1 small">
+                                    <i class="fas fa-search me-1"></i>
+                                    Buscar roles
+                                </label>
+                                <input type="text" class="form-control form-control-sm" id="search-roles-modal" 
+                                       placeholder="Buscar roles...">
                             </div>
 
-                            <!-- Lista de roles -->
+                            <!-- Lista de roles más compacta -->
                             <div class="card">
-                                <div class="card-header py-2">
-                                    <h3 class="card-title">Roles disponibles</h3>
-                                    <div class="card-actions">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="filter-assigned-roles">
-                                            <label class="form-check-label" for="filter-assigned-roles">
+                                <div class="card-header py-0 px-2" style="min-height: 28px; display: flex; align-items: center;">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h6 class="card-title mb-0" style="font-size: 0.7rem; font-weight: 600;">
+                                            <i class="fas fa-list-check me-1 text-primary" style="font-size: 8px;"></i>
+                                            Roles disponibles
+                                        </h6>
+                                        <div class="form-check form-switch" style="min-height: auto; margin: 0;">
+                                            <input class="form-check-input" type="checkbox" id="filter-assigned-roles" style="transform: scale(0.7);">
+                                            <label class="form-check-label text-muted" for="filter-assigned-roles" style="font-size: 0.6rem; margin-left: 0.2rem;">
                                                 Solo asignados
                                             </label>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="card-body p-0">
-                                    <!-- Loading state -->
-                                    <div id="roles-loading" class="text-center py-4">
-                                        <div class="spinner-border text-primary" role="status">
+                                    <!-- Loading state ultra compacto -->
+                                    <div id="roles-loading" class="text-center py-1">
+                                        <div class="spinner-border text-primary mb-0" role="status" style="width: 12px; height: 12px;">
                                             <span class="visually-hidden">Cargando roles...</span>
                                         </div>
-                                        <div class="mt-2 text-muted">Cargando roles disponibles...</div>
+                                        <div class="text-muted" style="font-size: 0.55rem; margin-top: 2px;">Cargando...</div>
                                     </div>
                                     
-                                    <!-- Roles list -->
-                                    <div class="table-responsive" id="roles-table-container" style="display: none; max-height: 300px; overflow-y: auto;">
-                                        <table class="table table-vcenter card-table table-sm">
-                                            <thead>
+                                    <!-- Roles list ultra compacta con más espacio -->
+                                    <div class="table-responsive" id="roles-table-container" style="display: none; max-height: 180px; overflow-y: auto;">
+                                        <table class="table table-vcenter card-table table-hover mb-0" style="font-size: 0.65rem;">
+                                            <thead class="bg-light" style="height: 22px;">
                                                 <tr>
-                                                    <th class="w-1">
-                                                        <input class="form-check-input" type="checkbox" id="select-all-checkbox">
+                                                    <th class="w-1 py-0 px-1" style="width: 20px;">
+                                                        <input class="form-check-input" type="checkbox" id="select-all-checkbox" style="transform: scale(0.75);">
                                                     </th>
-                                                    <th>Rol</th>
-                                                    <th>Tipo</th>
-                                                    <th>Estado</th>
+                                                    <th class="py-0 px-1" style="font-size: 0.6rem; font-weight: 600;">Rol</th>
+                                                    <th class="py-0 px-1" style="font-size: 0.6rem; font-weight: 600;">Tipo</th>
+                                                    <th class="py-0 px-1" style="font-size: 0.6rem; font-weight: 600;">Estado</th>
                                                 </tr>
                                             </thead>
-                                            <tbody id="roles-list">
+                                            <tbody id="roles-list" style="font-size: 0.6rem;">
                                                 <!-- Roles se cargan dinámicamente -->
                                             </tbody>
                                         </table>
                                     </div>
                                     
-                                    <!-- Empty state -->
-                                    <div id="roles-empty" class="text-center py-3" style="display: none;">
-                                        <i class="fas fa-search text-muted fa-2x mb-2"></i>
-                                        <h4 class="text-muted">No se encontraron roles</h4>
-                                        <p class="text-muted mb-0">No hay roles que coincidan con la búsqueda</p>
+                                    <!-- Empty state ultra compacto -->
+                                    <div id="roles-empty" class="text-center py-1" style="display: none;">
+                                        <div class="avatar mx-auto mb-0" style="background: #f8f9fa; width: 20px; height: 20px;">
+                                            <i class="fas fa-search text-muted" style="font-size: 8px;"></i>
+                                        </div>
+                                        <div class="text-muted" style="font-size: 0.55rem; margin-top: 2px;">Sin roles</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Columna derecha: Acciones administrativas -->
-                        <div class="col-md-4">
+                        <!-- Acciones administrativas en formato horizontal -->
+                        <div class="col-12">
                             <div class="card">
                                 <div class="card-header py-2">
-                                    <h3 class="card-title">
-                                        <i class="fas fa-cog me-2"></i>
-                                        Acciones
-                                    </h3>
+                                    <h6 class="card-title mb-0">
+                                        <i class="fas fa-cogs me-1 text-warning"></i>
+                                        Acciones administrativas
+                                    </h6>
                                 </div>
-                                <div class="card-body">
-                                    <!-- Correo Electrónico -->
-                                    <div class="mb-3">
-                                        <label class="form-label text-muted small mb-1">Correo Electrónico</label>
-                                        <div class="input-group input-group-sm mb-2">
-                                            <input type="text" class="form-control" id="user-email-display" 
-                                                   placeholder="Cargando..." readonly style="background-color: #f8f9fa;">
+                                <div class="card-body p-2">
+                                    <div class="row g-2">
+                                        <!-- Email -->
+                                        <div class="col-md-4">
+                                            <div class="text-center p-1 border rounded" style="font-size: 0.7rem;">
+                                                <div class="d-flex align-items-center justify-content-center mb-1" style="height: 16px;">
+                                                    <i class="fas fa-envelope text-success me-1" style="font-size: 10px;"></i>
+                                                    <span style="font-size: 0.65rem; font-weight: 600;">Email</span>
+                                                </div>
+                                                <input type="text" class="form-control mb-1" 
+                                                       id="user-email-display" placeholder="Cargando..." readonly 
+                                                       style="background-color: #f8f9fa; border: none; font-size: 0.6rem; height: 20px; padding: 2px 6px;">
+                                                <button type="button" class="btn btn-success w-100" id="verify-email-btn" 
+                                                        style="height: 22px; font-size: 0.6rem; padding: 2px 6px;">
+                                                    <i class="fas fa-check" style="font-size: 8px;"></i>
+                                                    <span class="ms-1">Verificar</span>
+                                                </button>
+                                            </div>
                                         </div>
-                                        <button type="button" class="btn btn-success btn-sm w-100" id="verify-email-btn">
-                                            <i class="fas fa-check me-1"></i>
-                                            Verificar Email
-                                        </button>
-                                    </div>
 
-                                    <!-- Teléfono -->
-                                    <div class="mb-3">
-                                        <label class="form-label text-muted small mb-1">Teléfono</label>
-                                        <div class="input-group input-group-sm mb-2">
-                                            <input type="text" class="form-control" id="user-phone-display" 
-                                                   placeholder="Cargando..." readonly style="background-color: #f8f9fa;">
+                                        <!-- Teléfono -->
+                                        <div class="col-md-4">
+                                            <div class="text-center p-1 border rounded" style="font-size: 0.7rem;">
+                                                <div class="d-flex align-items-center justify-content-center mb-1" style="height: 16px;">
+                                                    <i class="fas fa-mobile-alt text-info me-1" style="font-size: 10px;"></i>
+                                                    <span style="font-size: 0.65rem; font-weight: 600;">Teléfono</span>
+                                                </div>
+                                                <input type="text" class="form-control mb-1" 
+                                                       id="user-phone-display" placeholder="Cargando..." readonly 
+                                                       style="background-color: #f8f9fa; border: none; font-size: 0.6rem; height: 20px; padding: 2px 6px;">
+                                                <button type="button" class="btn btn-info w-100" id="verify-phone-btn"
+                                                        style="height: 22px; font-size: 0.6rem; padding: 2px 6px;">
+                                                    <i class="fas fa-check" style="font-size: 8px;"></i>
+                                                    <span class="ms-1">Verificar</span>
+                                                </button>
+                                            </div>
                                         </div>
-                                        <button type="button" class="btn btn-success btn-sm w-100" id="verify-phone-btn">
-                                            <i class="fas fa-check me-1"></i>
-                                            Verificar Teléfono
-                                        </button>
-                                    </div>
 
-                                    <!-- Actualizar contraseña -->
-                                    <div>
-                                        <label class="form-label text-muted small mb-1">Actualizar Contraseña</label>
-                                        <div class="input-group input-group-sm mb-2">
-                                            <input type="password" class="form-control" id="new-password-input" 
-                                                   placeholder="Nueva contraseña">
-                                            <button class="btn btn-outline-secondary" type="button" id="toggle-new-password" 
-                                                    title="Mostrar/Ocultar contraseña">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
+                                        <!-- Contraseña -->
+                                        <div class="col-md-4">
+                                            <div class="text-center p-1 border rounded" style="font-size: 0.7rem;">
+                                                <div class="d-flex align-items-center justify-content-center mb-1" style="height: 16px;">
+                                                    <i class="fas fa-key text-warning me-1" style="font-size: 10px;"></i>
+                                                    <span style="font-size: 0.65rem; font-weight: 600;">Contraseña</span>
+                                                </div>
+                                                <div class="input-group mb-1" style="height: 20px;">
+                                                    <input type="password" class="form-control" id="new-password-input" 
+                                                           placeholder="Nueva..." style="font-size: 0.6rem; height: 20px; padding: 2px 6px;">
+                                                    <button class="btn btn-outline-secondary" type="button" id="toggle-new-password"
+                                                            style="height: 20px; width: 24px; padding: 0; font-size: 8px;">
+                                                        <i class="fas fa-eye" style="font-size: 8px;"></i>
+                                                    </button>
+                                                </div>
+                                                <button type="button" class="btn btn-warning w-100" id="reset-password-btn"
+                                                        style="height: 22px; font-size: 0.6rem; padding: 2px 6px;">
+                                                    <i class="fas fa-key" style="font-size: 8px;"></i>
+                                                    <span class="ms-1">Actualizar</span>
+                                                </button>
+                                            </div>
                                         </div>
-                                        <button type="button" class="btn btn-warning btn-sm w-100" id="reset-password-btn">
-                                            <i class="fas fa-key me-1"></i>
-                                            Actualizar Contraseña
-                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer py-2">
-                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-1"></i>
-                        Cancelar
-                    </button>
-                    <button type="button" class="btn btn-primary btn-sm" id="save-roles-btn">
-                        <i class="fas fa-save me-1"></i>
-                        Guardar Cambios
-                    </button>
+                <div class="modal-footer bg-light py-2">
+                    <div class="d-flex w-100 justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Los cambios se aplicarán inmediatamente
+                        </small>
+                        <div>
+                            <button type="button" class="btn btn-secondary btn-sm me-2" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-1"></i>
+                                Cancelar
+                            </button>
+                            <button type="button" class="btn btn-primary btn-sm" id="save-roles-btn">
+                                <i class="fas fa-save me-1"></i>
+                                Guardar
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -566,41 +617,48 @@
     </div>
 
     <!-- Scripts de Tabler -->
-    <script src="../../assets/tabler/js/tabler.min.js"></script>
+    <!-- Carga de scripts en orden específico para manejar dependencias -->
+    <!-- 1. Component Loader (debe ir primero) -->
+    <script src="../../assets/js/ui/component-loader.js"></script>
     
-    <!-- Scripts de autenticación y permisos -->
-    <script src="../../assets/js/auth/auth-checker.js"></script>
+    <!-- 2. Utilidades y herramientas base -->
+    <script src="../../assets/js/utils/loading-screen-util.js"></script>
+    <script src="../../assets/js/global-initializer.js"></script>
+    <script src="../../assets/js/ui/global-toast.js"></script>
     <script src="../../assets/js/auth/permissions.js"></script>
+    <script src="../../assets/js/auth/auth-checker.js"></script>
     <script src="../../assets/js/auth/route-guard.js"></script>
     
-    <!-- Scripts de servicios -->
-    <script src="../../assets/js/api/services/Configuration/user-service.js"></script>
-    <script src="../../assets/js/api/services/Configuration/user-create-service.js"></script>
-    <script src="../../assets/js/api/services/Configuration/role-service.js"></script>
-    <script src="../../assets/js/api/services/Configuration/assign-role-service.js"></script>
-    <script src="../../assets/js/api/services/Configuration/verify-contact-service.js"></script>
-    <script src="../../assets/js/api/services/Configuration/reset-password-service.js"></script>
+    <script>
+        // Inicializa RouteGuard para proteger la página
+        window.routeGuard = new RouteGuard("../../index.html");
+    </script>
+    
+    <!-- 3. Servicios de API -->
+    <script src="../../assets/js/api/services/Configuration/users/user-service.js"></script>
+    <script src="../../assets/js/api/services/Configuration/users/user-create-service.js"></script>
+    <script src="../../assets/js/api/services/Configuration/roles/role-service.js"></script>
+    <script src="../../assets/js/api/services/Configuration/users/assign-role-service.js"></script>
+    <script src="../../assets/js/api/services/Configuration/users/verify-contact-service.js"></script>
+    <script src="../../assets/js/api/services/Configuration/users/reset-password-service.js"></script>
     <script src="../../assets/js/api/services/profile-service.js"></script>
     
-    <!-- Scripts de UI -->
-    <script src="../../assets/js/ui/component-loader.js"></script>
-    <script src="../../assets/js/ui/global-toast.js"></script>
-    
-    <!-- Scripts de controladores base (ANTES del MainController) -->
+    <!-- 4. Controladores de UI -->
+    <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
-    
-    <!-- Controlador principal (DESPUÉS de los controladores base) -->
     <script src="../../assets/js/ui/controllers/Configuration/users/main-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Configuration/users/users-list-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Configuration/users/user-details-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Configuration/users/user-create-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Configuration/users/assign-roles-controller.js"></script>
     
-    <!-- Inicializadores -->
+    <!-- 5. Inicializador específico de la página -->
     <script src="../../assets/js/ui/initializers/Configuration/users-initializer.js"></script>
-    <script src="../../assets/js/global-initializer.js"></script>
+
+    <!-- 6. Scripts de Tabler para funcionalidad completa -->
+    <script src="../../assets/tabler/js/tabler.min.js"></script>
 
     <!-- Script para manejo del formulario de usuario -->
     <script>

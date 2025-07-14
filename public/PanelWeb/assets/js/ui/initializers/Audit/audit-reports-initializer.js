@@ -1,6 +1,11 @@
 /**
  * Inicializador del módulo de Reportes de Auditoría
- * Coordina la inicialización de todos los componentes del módulo
+ * Coordina la inicialización                     // Configurar permisos DESPUÉS de que los controladores estén listos
+                    setTimeout(() => {
+                        if (window.PermissionsService) {
+                            console.log('🔧 Inicializando sistema de permisos...');
+                            window.PermissionsService.initializePermissions();
+                        }os los componentes del módulo
  */
 class AuditReportsInitializer {
     static async init() {
@@ -95,6 +100,9 @@ class AuditReportsInitializer {
                         }
                         
                         console.log('✅ Reportes de Auditoría inicializados completamente');
+                        
+                        // Notificar que este módulo ha terminado de cargar
+                        LoadingScreenUtil.notifyModuleLoaded('AuditReports');
                     }, 100);
                     
                 }, 500);
@@ -120,3 +128,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 console.log('📝 AuditReportsInitializer definido y configurado');
+

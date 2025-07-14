@@ -58,8 +58,95 @@ class UserStatusInitializer {
                                 console.log('🔗 Referencia profile-topbar establecida');
                             }
                         }
+                        
+                        // Inicializar el controlador de lista de estados de usuario después de los controladores base
+                        setTimeout(() => {
+                            try {
+                                if (typeof UserStatusListController === 'undefined') {
+                                    throw new Error('UserStatusListController no está disponible');
+                                }
+                                window.UserStatusListController = new UserStatusListController();
+                                console.log('🗂️ UserStatusListController inicializado por el inicializador');
+                            } catch (error) {
+                                console.error('❌ Error al inicializar UserStatusListController:', error);
+                            }
+                        }, 200);
                     }, 200);
                     
+                    // Inicializar el controlador de creación de estado de usuario
+                    setTimeout(() => {
+                        try {
+                            if (typeof CreateUserStatusController === 'undefined') {
+                                throw new Error('CreateUserStatusController no está disponible');
+                            }
+                            window.createUserStatusController = new CreateUserStatusController(
+                                'createUserStatusModal',
+                                'createUserStatusForm',
+                                function(newStatus) {
+                                    // Refrescar la lista si existe el controlador de lista
+                                    if (window.UserStatusListController && typeof window.UserStatusListController.load === 'function') {
+                                        window.UserStatusListController.load();
+                                    }
+                                }
+                            );
+                            // Asignar evento al botón + para abrir el modal
+                            const btn = document.getElementById('createUserStatusBtn');
+                            if (btn) {
+                                btn.addEventListener('click', () => window.createUserStatusController.open());
+                            }
+                            console.log('➕ CreateUserStatusController inicializado');
+                        } catch (error) {
+                            console.error('❌ Error al inicializar CreateUserStatusController:', error);
+                        }
+                    }, 200);
+
+                    // Inicializar el controlador de actualización de estado de usuario
+                    setTimeout(() => {
+                        try {
+                            if (typeof UpdateUserStatusController === 'undefined') {
+                                throw new Error('UpdateUserStatusController no está disponible');
+                            }
+                            window.updateUserStatusController = new UpdateUserStatusController(
+                                function(updatedStatus) {
+                                    // Refrescar la lista si existe el controlador de lista
+                                    if (window.UserStatusListController && typeof window.UserStatusListController.load === 'function') {
+                                        window.UserStatusListController.load();
+                                    }
+                                }
+                            );
+                            console.log('✏️ UpdateUserStatusController inicializado');
+                        } catch (error) {
+                            console.error('❌ Error al inicializar UpdateUserStatusController:', error);
+                        }
+                    }, 250);
+                    
+                    // Inicializar el controlador de eliminación de estado de usuario
+                    setTimeout(() => {
+                        try {
+                            if (typeof DeleteUserStatusController === 'undefined') {
+                                throw new Error('DeleteUserStatusController no está disponible');
+                            }
+                            window.deleteUserStatusController = new DeleteUserStatusController();
+                            console.log('🗑️ DeleteUserStatusController inicializado');
+                        } catch (error) {
+                            console.error('❌ Error al inicializar DeleteUserStatusController:', error);
+                        }
+                    }, 400);
+
+                    // Inicializar el modal de confirmación global
+                    setTimeout(() => {
+                        try {
+                            if (typeof GlobalConfirmationModalController === 'undefined') {
+                                console.warn('⚠️ GlobalConfirmationModalController no está disponible');
+                            } else if (!window.globalConfirmationModalController) {
+                                window.globalConfirmationModalController = new GlobalConfirmationModalController();
+                                console.log('🗑️ GlobalConfirmationModalController inicializado');
+                            }
+                        } catch (error) {
+                            console.error('❌ Error al inicializar GlobalConfirmationModalController:', error);
+                        }
+                    }, 150);
+
                     // Configurar permisos DESPUÉS de que los controladores estén listos
                     setTimeout(() => {
                         if (window.PermissionsService) {
@@ -67,13 +154,10 @@ class UserStatusInitializer {
                             window.PermissionsService.initializePermissions();
                         }
                         
-                        // Ocultar pantalla de carga
-                        const loadingOverlay = document.getElementById('permissions-loading');
-                        if (loadingOverlay) {
-                            loadingOverlay.style.display = 'none';
-                        }
-                        
                         console.log('✅ Estado de Usuarios inicializado completamente');
+                        
+                        // Notificar que este módulo ha terminado de cargar
+                        LoadingScreenUtil.notifyModuleLoaded('UserStatus');
                     }, 400);
                     
                 }, 500);
@@ -81,11 +165,8 @@ class UserStatusInitializer {
             } catch (error) {
                 console.error('❌ Error cargando componentes:', error);
                 
-                // Ocultar pantalla de carga en caso de error
-                const loadingOverlay = document.getElementById('permissions-loading');
-                if (loadingOverlay) {
-                    loadingOverlay.style.display = 'none';
-                }
+                // En caso de error, también ocultar la pantalla de carga
+                LoadingScreenUtil.notifyModuleLoaded('UserStatus');
             }
             
         } else {
@@ -105,3 +186,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 console.log('📝 UserStatusInitializer definido y configurado');
+

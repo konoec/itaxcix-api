@@ -67,11 +67,8 @@ class TravelStatusInitializer {
                             window.PermissionsService.initializePermissions();
                         }
                         
-                        // Ocultar pantalla de carga
-                        const loadingOverlay = document.getElementById('permissions-loading');
-                        if (loadingOverlay) {
-                            loadingOverlay.style.display = 'none';
-                        }
+                        // Notificar que el módulo está listo
+                        LoadingScreenUtil.notifyModuleLoaded('TravelStatus');
                         
                         console.log('✅ Estado de Viajes inicializado completamente');
                     }, 400);
@@ -81,11 +78,8 @@ class TravelStatusInitializer {
             } catch (error) {
                 console.error('❌ Error cargando componentes:', error);
                 
-                // Ocultar pantalla de carga en caso de error
-                const loadingOverlay = document.getElementById('permissions-loading');
-                if (loadingOverlay) {
-                    loadingOverlay.style.display = 'none';
-                }
+                // Notificar que el módulo está listo (incluso con error)
+                LoadingScreenUtil.notifyModuleLoaded('TravelStatus');
             }
             
         } else {
@@ -105,3 +99,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 console.log('📝 TravelStatusInitializer definido y configurado');
+

@@ -23,6 +23,9 @@
     <!-- Global toast styles -->
     <link rel="stylesheet" href="../../assets/css/global-toast.css">
     
+    <!-- Loading screen styles -->
+    <link rel="stylesheet" href="../../assets/css/loading-screen.css">
+    
     <!-- Component specific styles -->
     <link rel="stylesheet" href="../../assets/css/sidebar.css">
     <link rel="stylesheet" href="../../assets/css/topbar.css">
@@ -46,17 +49,25 @@
     </script>
 </head>
 <body>
-    <!-- Pantalla de carga para configuración de permisos -->
-    <div id="permissions-loading" class="permissions-loading-overlay">
-        <div class="loading-content">
-            <div class="loading-car">🚕</div>
-            <h2 class="loading-title">Cargando Panel</h2>
-            <p class="loading-message">
-                Estamos configurando tu sesión y verificando los permisos asignados...
-            </p>
-            <p class="loading-steps">
-                <span id="loading-step">Validando credenciales...</span>
-            </p>
+    <!-- Pantalla de carga moderna - visible inmediatamente -->
+    <div class="loading-screen d-flex align-items-center justify-content-center position-fixed w-100 h-100" 
+         style="top: 0; left: 0; z-index: 9999; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px);">
+        <div class="text-center">
+            <!-- Logo del sistema -->
+            <div class="mb-4">
+                <img src="../../assets/Recourse/Logo/1.png" alt="Logo" class="mb-3" style="height: 60px;">
+            </div>
+            
+            <!-- Spinner de Tabler -->
+            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            
+            <!-- Texto de carga -->
+            <div class="text-secondary">
+                <div class="fw-bold mb-1">Cargando Gestión de Estado de Viajes</div>
+                <div class="small text-muted">Preparando la interfaz y cargando componentes...</div>
+            </div>
         </div>
     </div>
 
@@ -90,6 +101,7 @@
     <script src="../../assets/js/ui/component-loader.js"></script>
     
     <!-- 2. Utilidades y herramientas base -->
+    <script src="../../assets/js/utils/loading-screen-util.js"></script>
     <script src="../../assets/js/global-initializer.js"></script>
     <script src="../../assets/js/ui/global-toast.js"></script>
     <script src="../../assets/js/auth/permissions.js"></script>
@@ -105,6 +117,7 @@
     <script src="../../assets/js/api/services/profile-service.js"></script>
 
     <!-- 3. Controladores de UI -->
+    <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>

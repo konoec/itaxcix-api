@@ -67,11 +67,8 @@ class InfractionStatusInitializer {
                             window.PermissionsService.initializePermissions();
                         }
                         
-                        // Ocultar pantalla de carga
-                        const loadingOverlay = document.getElementById('permissions-loading');
-                        if (loadingOverlay) {
-                            loadingOverlay.style.display = 'none';
-                        }
+                        // Notificar que el módulo está listo
+                        LoadingScreenUtil.notifyModuleLoaded('InfractionStatus');
                         
                         console.log('✅ Estado de Infracciones inicializado completamente');
                     }, 400);
@@ -81,11 +78,8 @@ class InfractionStatusInitializer {
             } catch (error) {
                 console.error('❌ Error cargando componentes:', error);
                 
-                // Ocultar pantalla de carga en caso de error
-                const loadingOverlay = document.getElementById('permissions-loading');
-                if (loadingOverlay) {
-                    loadingOverlay.style.display = 'none';
-                }
+                // Notificar que el módulo está listo (incluso con error)
+                LoadingScreenUtil.notifyModuleLoaded('InfractionStatus');
             }
             
         } else {
@@ -105,3 +99,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 console.log('📝 InfractionStatusInitializer definido y configurado');
+

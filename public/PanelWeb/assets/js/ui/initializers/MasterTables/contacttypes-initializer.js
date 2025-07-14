@@ -1,10 +1,10 @@
 /**
- * Inicializador específico para la página de Gestión de Tipos de Documentos
+ * Inicializador específico para la página de Gestión de Tipos de Contacto
  * Maneja solo los componentes y controladores necesarios para esta página específica
  */
-class DocumentTypesInitializer {
+class ContactTypesInitializer {
     static async init() {
-        console.log('📄 Inicializando página de Gestión de Tipos de Documentos...');
+        console.log('📞 Inicializando página de Gestión de Tipos de Contacto...');
         
         if (authChecker.checkAuthentication()) {
             authChecker.updateUserDisplay();
@@ -24,7 +24,7 @@ class DocumentTypesInitializer {
                 
                 // Cargar topbar
                 await componentLoader.loadComponent('topbar', '#topbar-container', {
-                    pageTitle: window.pageConfig?.pageTitle || { icon: 'fas fa-file-alt', text: 'Gestión de Tipos de Documentos' }
+                    pageTitle: window.pageConfig?.pageTitle || { icon: 'fas fa-address-book', text: 'Gestión de Tipos de Contacto' }
                 });
                 
                 // Cargar profile modal
@@ -56,7 +56,7 @@ class DocumentTypesInitializer {
                         // Establecer referencia al profile controller en topbar
                         if (window.topBarControllerInstance) {
                             window.topBarControllerInstance.profileController = window.profileControllerInstance;
-                            console.log('� Referencia profile-topbar establecida');
+                            console.log('🔗 Referencia profile-topbar establecida');
                         }
                     }
                     
@@ -67,13 +67,10 @@ class DocumentTypesInitializer {
                             window.PermissionsService.initializePermissions();
                         }
                         
-                        // Ocultar pantalla de carga
-                        const loadingOverlay = document.getElementById('permissions-loading');
-                        if (loadingOverlay) {
-                            loadingOverlay.style.display = 'none';
-                        }
+                        console.log('✅ Tipos de Contacto inicializados completamente');
                         
-                        console.log('✅ Tipos de Documentos inicializados completamente');
+                        // Notificar que este módulo ha terminado de cargar
+                        LoadingScreenUtil.notifyModuleLoaded('ContactTypes');
                     }, 100);
                     
                 }, 500);
@@ -81,11 +78,8 @@ class DocumentTypesInitializer {
             } catch (error) {
                 console.error('❌ Error cargando componentes:', error);
                 
-                // Ocultar pantalla de carga en caso de error
-                const loadingOverlay = document.getElementById('permissions-loading');
-                if (loadingOverlay) {
-                    loadingOverlay.style.display = 'none';
-                }
+                // En caso de error, también ocultar la pantalla de carga
+                LoadingScreenUtil.notifyModuleLoaded('ContactTypes');
             }
             
         } else {
@@ -96,12 +90,12 @@ class DocumentTypesInitializer {
 
 // Auto-inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('📄 DOM cargado, iniciando DocumentTypesInitializer...');
+    console.log('📄 DOM cargado, iniciando ContactTypesInitializer...');
     
     // Pequeño delay para asegurar que todos los scripts estén cargados
     setTimeout(() => {
-        DocumentTypesInitializer.init();
+        ContactTypesInitializer.init();
     }, 500);
 });
 
-console.log('📝 DocumentTypesInitializer definido y configurado');
+console.log('📝 ContactTypesInitializer definido y configurado');

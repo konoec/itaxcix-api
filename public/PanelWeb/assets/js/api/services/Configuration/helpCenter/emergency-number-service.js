@@ -6,10 +6,10 @@ function getAuthToken() {
     return sessionStorage.getItem('token') || sessionStorage.getItem('authToken');
 }
 
-class EmergencyService {
+class EmergencyNumberService {
     static async getEmergencyNumber() {
         try {
-            console.log('🔄 EmergencyService: Obteniendo número de emergencia...');
+            console.log('🔄 EmergencyNumberService: Obteniendo número de emergencia...');
             const token = getAuthToken();
             console.log('🔑 Token disponible:', token ? 'Sí' : 'No');
             
@@ -27,14 +27,14 @@ class EmergencyService {
             
             return result;
         } catch (error) {
-            console.error('❌ Error en EmergencyService.getEmergencyNumber:', error);
+            console.error('❌ Error en EmergencyNumberService.getEmergencyNumber:', error);
             return { success: false, message: 'Error de red', error };
         }
     }
 
     static async updateEmergencyNumber(number) {
         try {
-            console.log('💾 EmergencyService: Actualizando número de emergencia a:', number);
+            console.log('💾 EmergencyNumberService: Actualizando número de emergencia a:', number);
             const token = getAuthToken();
             console.log('🔑 Token disponible:', token ? 'Sí' : 'No');
             
@@ -53,7 +53,7 @@ class EmergencyService {
             
             return result;
         } catch (error) {
-            console.error('❌ Error en EmergencyService.updateEmergencyNumber:', error);
+            console.error('❌ Error en EmergencyNumberService.updateEmergencyNumber:', error);
             return { success: false, message: 'Error de red', error };
         }
     }
@@ -61,7 +61,9 @@ class EmergencyService {
 
 // Para compatibilidad global
 if (typeof window !== 'undefined') {
-    window.EmergencyService = EmergencyService;
+    window.EmergencyNumberService = EmergencyNumberService;
+    // Mantener compatibilidad con el nombre anterior
+    window.EmergencyService = EmergencyNumberService;
 }
 
-console.log('✅ EmergencyService cargado y disponible globalmente');
+console.log('✅ EmergencyNumberService cargado y disponible globalmente');

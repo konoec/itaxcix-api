@@ -1,7 +1,4 @@
-/**
- * Inicializador específico para la página de Gestión de Roles
- * Maneja solo los componentes y controladores necesarios para esta página específica
- */
+
 class RolesInitializer {
     static async init() {
         console.log('🔐 Inicializando página de Gestión de Roles...');
@@ -82,6 +79,9 @@ class RolesInitializer {
                         }
                         
                         console.log('✅ Gestión de Roles inicializada completamente');
+                        
+                        // Notificar que este módulo ha terminado de cargar
+                        LoadingScreenUtil.notifyModuleLoaded('RolesManagement');
                     }, 100);
                     
                 }, 500);

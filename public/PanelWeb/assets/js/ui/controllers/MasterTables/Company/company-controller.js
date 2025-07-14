@@ -26,6 +26,7 @@ class CompanyController {
         
         // Servicios
         this.companyService = new CompanyService();
+        // Ya no necesitamos deleteModalController - usamos el modal global
         
         // Elementos del DOM
         this.initializeElements();
@@ -36,6 +37,7 @@ class CompanyController {
         // Event listeners del modal
         this.initializeCreateModalListeners();
         this.initializeEditModalListeners();
+        this.initializeDeleteModal();
         
         // Cargar datos iniciales
         this.loadCompanies();
@@ -586,37 +588,88 @@ class CompanyController {
     }
     
     /**
-     * Maneja la eliminación de una compañía
+     * Maneja la eliminación de una compañía usando el modal global
      */
-    async handleDeleteCompany(id, name) {
-        console.log('🏢 Eliminando empresa:', id, name);
+    handleDeleteCompany(id, name) {
+        console.log('🏢 Mostrando modal de eliminación para empresa:', id, name);
         
-        // Confirmación nativa del navegador
-        const confirmed = confirm(
-            `¿Está seguro de que desea eliminar la empresa "${name}"?\n\n` +
-            `Esta acción no se puede deshacer.`
-        );
-        if (!confirmed) return;
-        
+        // Verificar que el modal global esté disponible
+        if (!window.globalConfirmationModal) {
+            console.error('❌ Modal global de confirmación no encontrado');
+            this.showToast('El sistema de eliminación no está disponible', 'error');
+            return;
+        }
+
+        // Buscar los datos completos de la empresa
+        const company = this.currentData.find(c => c.id === parseInt(id));
+        const companyName = company ? company.name : name;
+        const companyRuc = company ? company.ruc : '';
+
+        // SVG de Tabler para empresas (edificio - mismo ícono que el listado)
+        const companyIconSvg = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <line x1="3" y1="21" x2="21" y2="21"/>
+                <line x1="9" y1="8" x2="10" y2="8"/>
+                <line x1="9" y1="12" x2="10" y2="12"/>
+                <line x1="9" y1="16" x2="10" y2="16"/>
+                <line x1="14" y1="8" x2="15" y2="8"/>
+                <line x1="14" y1="12" x2="15" y2="12"/>
+                <line x1="14" y1="16" x2="15" y2="16"/>
+                <path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16"/>
+            </svg>
+        `;
+
+        // Abrir modal de confirmación global
+        window.globalConfirmationModal.showConfirmation({
+            title: '¿Está seguro de eliminar?',
+            name: companyName,
+            subtitle: companyRuc ? `RUC: ${companyRuc}` : 'Esta acción no se puede deshacer',
+            iconSvg: companyIconSvg,
+            avatarColor: 'bg-blue',
+            confirmText: 'Eliminar',
+            loadingText: 'Eliminando empresa...',
+            onConfirm: async (data) => {
+                // Ejecutar eliminación
+                await this.deleteCompany(id);
+            },
+            data: { id: id, name: companyName, ruc: companyRuc }
+        });
+    }
+    
+    /**
+     * Elimina una empresa usando el servicio correspondiente
+     */
+    async deleteCompany(companyId) {
+        if (!companyId) {
+            throw new Error('ID de empresa no proporcionado');
+        }
+
         try {
-            // Mostrar toast de progreso
-            this.showToast('Eliminando empresa...', 'info');
+            console.log('🗑️ Iniciando eliminación de empresa ID:', companyId);
             
-            // Llamar al servicio para eliminar
-            const response = await this.companyService.deleteCompany(id);
-            
-            if (response.success) {
-                this.showToast('Empresa eliminada exitosamente', 'success');
+            // Usar el servicio de empresas para eliminar
+            const response = await this.companyService.deleteCompany(companyId);
+            console.log('📥 Respuesta del servicio:', response);
+
+            if (response && response.success) {
+                console.log('✅ Empresa eliminada correctamente');
                 
-                // Recargar la lista de empresas
-                this.loadCompanies();
+                // Mostrar mensaje de éxito
+                this.showToast('Empresa eliminada correctamente', 'success');
+                
+                // Recargar la lista para reflejar los cambios
+                await this.loadCompanies();
+                
             } else {
-                throw new Error(response.message || 'Error al eliminar empresa');
+                const errorMsg = response?.message || 'Error desconocido al eliminar la empresa';
+                console.error('❌ Error en respuesta del servicio:', errorMsg);
+                throw new Error(errorMsg);
             }
-            
+
         } catch (error) {
-            console.error('❌ Error al eliminar empresa:', error);
-            this.showToast('Error al eliminar empresa: ' + error.message, 'error');
+            console.error('❌ Error eliminando empresa:', error);
+            throw error; // Re-lanzar el error para que el modal lo maneje
         }
     }
     
@@ -771,6 +824,15 @@ class CompanyController {
         }
         
         console.log('✅ Event listeners del modal de edición inicializados');
+    }
+
+    /**
+     * Inicializa el modal de eliminación global (ya no necesita modal específico)
+     */
+    initializeDeleteModal() {
+        // El modal global se inicializa automáticamente
+        // Ya no necesitamos el modal específico de empresas
+        console.log('✅ Usando modal global de confirmación para eliminación de empresas');
     }
     
     /**

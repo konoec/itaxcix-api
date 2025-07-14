@@ -20,6 +20,9 @@
     <link rel="stylesheet" href="../../assets/tabler/css/tabler.min.css">
     <link rel="stylesheet" href="../../assets/tabler/css/tabler-vendors.min.css">
     
+    <!-- Loading screen styles -->
+    <link rel="stylesheet" href="../../assets/css/loading-screen.css">
+    
     <!-- Global toast styles -->
     <link rel="stylesheet" href="../../assets/css/global-toast.css">
     
@@ -39,24 +42,32 @@
         window.pageConfig = {
             activeSection: 'tablas', // Sección activa en el sidebar
             pageTitle: {
-                icon: 'fas fa-user-circle',
+                icon: 'fas fa-user-check',
                 text: 'Gestión de Estado de Usuarios'
             }
         };
     </script>
 </head>
 <body>
-    <!-- Pantalla de carga para configuración de permisos -->
-    <div id="permissions-loading" class="permissions-loading-overlay">
-        <div class="loading-content">
-            <div class="loading-car">🚕</div>
-            <h2 class="loading-title">Cargando Panel</h2>
-            <p class="loading-message">
-                Estamos configurando tu sesión y verificando los permisos asignados...
-            </p>
-            <p class="loading-steps">
-                <span id="loading-step">Validando credenciales...</span>
-            </p>
+    <!-- Pantalla de carga moderna - visible inmediatamente -->
+    <div class="loading-screen d-flex align-items-center justify-content-center position-fixed w-100 h-100" 
+         style="top: 0; left: 0; z-index: 9999; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px);">
+        <div class="text-center">
+            <!-- Logo del sistema -->
+            <div class="mb-4">
+                <img src="../../assets/Recourse/Logo/1.png" alt="Logo" class="mb-3" style="height: 60px;">
+            </div>
+            
+            <!-- Spinner de Tabler -->
+            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            
+            <!-- Texto de carga -->
+            <div class="text-secondary">
+                <div class="fw-bold mb-1">Cargando Gestión de Estado de Usuarios</div>
+                <div class="small text-muted">Preparando la interfaz y cargando componentes...</div>
+            </div>
         </div>
     </div>
 
@@ -73,9 +84,276 @@
             <!-- Page content area - Se implementará contenido específico aquí -->
             <div class="page-body">
                 <div class="container-xl">
-                    <div class="text-center py-5">
-                        <h2 class="text-muted">Gestión de Estado de Usuarios</h2>
-                        <p class="text-muted">El contenido específico se implementará aquí</p>
+                    <!-- Page Header con gradiente y avatar -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="page-header d-print-none bg-primary-lt rounded-3 shadow-sm p-4 mb-2">
+                                <div class="row align-items-center">
+                                    <div class="col-auto">
+                                    </div>
+                                    <div class="col">
+                                        <div class="page-pretitle text-muted">
+                                            <i class="fas fa-layer-group me-1"></i>
+                                            Gestión de Tablas Maestras
+                                        </div>
+                                        <h2 class="page-title mb-1">
+                                            <i class="fas fa-user-circle me-2 text-primary"></i>
+                                            Estados de Usuario
+                                        </h2>
+                                        <p class="text-muted mt-1 mb-0">
+                                         Administra y consulta los tipos de estado de usuario del sistema.
+                                        </p>
+                                    </div>
+                                    <div class="col-auto">
+                                        <div class="btn-list">
+                                            <button class="btn btn-outline-primary" id="refreshBtn" title="Actualizar datos">
+                                                <i class="fas fa-sync-alt text-primary"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary" id="clearFiltersBtn" title="Limpiar filtros">
+                                                <i class="fas fa-broom text-secondary"></i>
+                                            </button>
+                                            <button class="btn btn-outline-success" id="createUserStatusBtn" title="Crear nuevo estado de usuario">
+                                                <i class="fas fa-plus text-success"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Stats Cards -->
+                    <div class="row mb-4 g-3">
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="card card-sm border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <span class="bg-primary text-white avatar">
+                                                <i class="fas fa-users"></i>
+                                            </span>
+                                        </div>
+                                        <div class="col">
+                                            <div class="font-weight-medium" id="totalUserStatuses">
+                                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                                            </div>
+                                            <div class="text-muted">Total Estados</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="card card-sm border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <span class="bg-success text-white avatar">
+                                                <i class="fas fa-search"></i>
+                                            </span>
+                                        </div>
+                                        <div class="col">
+                                            <div class="font-weight-medium" id="filteredResults">
+                                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                                            </div>
+                                            <div class="text-muted">Resultados Filtrados</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="card card-sm border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <span class="bg-info text-white avatar">
+                                                <i class="fas fa-list-ol"></i>
+                                            </span>
+                                        </div>
+                                        <div class="col">
+                                            <div class="font-weight-medium" id="currentPage">
+                                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                                            </div>
+                                            <div class="text-muted">Página Actual</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="card card-sm border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <span class="bg-warning text-white avatar">
+                                                <i class="fas fa-eye"></i>
+                                            </span>
+                                        </div>
+                                        <div class="col">
+                                            <div class="font-weight-medium" id="itemsRange">
+                                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                                            </div>
+                                            <div class="text-muted">Mostrando</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Advanced Filters Card -->
+                    <div class="card mb-4 shadow-sm border-0">
+                        <div class="card-header bg-primary-lt">
+                            <h3 class="card-title">
+                                <i class="fas fa-filter me-2 text-primary"></i>
+                                Filtros Avanzados
+                            </h3>
+                            <div class="card-actions">
+                                <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#advancedFilters">
+                                    <i class="fas fa-sliders-h me-1"></i>
+                                    Mostrar/Ocultar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="collapse show" id="advancedFilters">
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <!-- Búsqueda Global -->
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted">
+                                            <i class="fas fa-search me-1 text-primary"></i>
+                                            Búsqueda Global
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-primary-lt">
+                                                <i class="fas fa-search text-primary"></i>
+                                            </span>
+                                            <input type="text" class="form-control" id="searchInput" placeholder="Buscar por nombre...">
+                                            <span class="input-group-text" id="clearSearchBtn" style="cursor: pointer;">
+                                                <i class="fas fa-times text-muted"></i>
+                                            </span>
+                                        </div>
+                                        <small class="form-hint">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Busca estados por nombre
+                                        </small>
+                                    </div>
+                                    <!-- Filtro por Nombre -->
+                                    <div class="col-md-3">
+                                        <label class="form-label text-muted">
+                                            <i class="fas fa-tag me-1 text-info"></i>
+                                            Nombre del Estado
+                                        </label>
+                                        <input type="text" class="form-control" id="nameFilter" placeholder="Filtrar por nombre específico...">
+                                        <small class="form-hint">Filtro específico por nombre</small>
+                                    </div>
+                                    <!-- Filtro por Activo -->
+                                    <div class="col-md-3">
+                                        <label class="form-label text-muted" id="activeFilterLabel">
+                                          <i id="activeFilterIcon" class="fas fa-circle-half-stroke me-1 text-primary"></i>
+                                          Estado Activo
+                                        </label>
+                                        <select class="form-select" id="activeFilter">
+                                            <option value="">Todos</option>
+                                            <option value="true">Activo</option>
+                                            <option value="false">Inactivo</option>
+                                        </select>
+                                        <small class="form-hint">Filtrar por estado activo</small>
+                                    </div>
+                                    <!-- Elementos por página -->
+                                    <div class="col-md-3">
+                                        <label class="form-label text-muted">
+                                            <i class="fas fa-list me-1 text-warning"></i>
+                                            Elementos por página
+                                        </label>
+                                        <select class="form-select" id="perPageSelect">
+                                            <option value="10">10 elementos</option>
+                                            <option value="15" selected>15 elementos</option>
+                                            <option value="25">25 elementos</option>
+                                            <option value="50">50 elementos</option>
+                                            <option value="100">100 elementos</option>
+                                        </select>
+                                    </div>
+                                    <!-- Ordenamiento -->
+                                    <div class="col-md-3">
+                                        <label class="form-label text-muted">
+                                            <i class="fas fa-sort me-1 text-primary"></i>
+                                            Ordenar por
+                                        </label>
+                                        <select class="form-select" id="sortBySelect">
+                                            <option value="name">Nombre</option>
+                                            <option value="id">ID</option>
+                                            <option value="active">Activo</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label text-muted">
+                                            <i class="fas fa-sort-amount-up me-1 text-info"></i>
+                                            Dirección
+                                        </label>
+                                        <select class="form-select" id="sortOrderSelect">
+                                            <option value="ASC">Ascendente (A-Z)</option>
+                                            <option value="DESC">Descendente (Z-A)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Table Container -->
+                    <div class="card shadow border-0">
+                        <div class="card-header bg-primary text-white">
+                            <h3 class="card-title mb-0">
+                                <i class="fas fa-table me-2"></i>
+                                Lista de Estados de Usuario
+                            </h3>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-vcenter card-table table-striped table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="w-1 text-center">
+                                                <i class="fas fa-hashtag text-muted"></i>
+                                            </th>
+                                            <th>
+                                                <i class="fas fa-user-tag me-1 text-primary"></i>
+                                                Estado de Usuario
+                                            </th>
+                                            <th class="text-center">
+                                              <i class="fas fa-circle-half-stroke me-1 text-primary"></i>
+                                              Activo
+                                            </th>
+                                            <th class="text-center">
+                                                <i class="fas fa-user me-1 text-info"></i>
+                                                Visual
+                                            </th>
+                                            <th class="w-1 text-center">
+                                                <i class="fas fa-cogs me-1 text-muted"></i>
+                                                Acciones
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="userStatusTableBody">
+                                        <tr>
+                                            <td colspan="5" class="text-center py-4">
+                                                <div class="d-flex justify-content-center align-items-center">
+                                                    <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                                    <span>Cargando estados de usuario...</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer d-flex align-items-center">
+                            <p class="m-0 text-muted">
+                                Mostrando <span id="itemsRangeFooter">--</span> de <span id="totalUserStatusesFooter">--</span> estados
+                            </p>
+                            <ul class="pagination m-0 ms-auto" id="paginationContainer">
+                                <!-- La paginación se generará dinámicamente -->
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -85,11 +363,71 @@
     <!-- Contenedor del modal - se carga dinámicamente -->
     <div id="modal-container"></div>
 
+    <!-- Modal Crear Estado de Usuario -->
+    <div class="modal modal-blur fade" id="createUserStatusModal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content shadow-lg border-0">
+          <div class="modal-header bg-primary-lt">
+            <h5 class="modal-title">
+              <i class="fas fa-plus-circle me-2 text-primary"></i>Crear Estado de Usuario
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form id="createUserStatusForm" autocomplete="off">
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="userStatusName" class="form-label">
+                  <i class="fas fa-user-tag me-1 text-primary"></i>Nombre del Estado
+                </label>
+                <input type="text" class="form-control" id="userStatusName" name="name" placeholder="Ej: Pendiente" maxlength="50" required>
+                <small class="form-hint">Nombre único para el estado de usuario.</small>
+              </div>
+              <div class="mb-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="userStatusActive" name="active" checked>
+                  <label class="form-check-label" for="userStatusActive">
+                    <i id="userStatusActiveIcon" class="fas fa-check-circle text-success"></i> <span id="userStatusActiveText">Activo</span>
+                  </label>
+                </div>
+                <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                  var activeInput = document.getElementById('userStatusActive');
+                  var icon = document.getElementById('userStatusActiveIcon');
+                  var text = document.getElementById('userStatusActiveText');
+                  if (activeInput && icon && text) {
+                    activeInput.addEventListener('change', function() {
+                      if (activeInput.checked) {
+                        icon.className = 'fas fa-check-circle text-success';
+                        text.textContent = 'Activo';
+                      } else {
+                        icon.className = 'fas fa-times-circle text-danger';
+                        text.textContent = 'Inactivo';
+                      }
+                    });
+                  }
+                });
+                </script>
+              </div>
+            </div>
+            <div class="modal-footer bg-light border-0 d-flex justify-content-between">
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                <i class="fas fa-times me-1"></i>Cancelar
+              </button>
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save me-1"></i>Crear Estado
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
     <!-- Carga de scripts en orden específico para manejar dependencias -->
     <!-- 1. Component Loader (debe ir primero) -->
     <script src="../../assets/js/ui/component-loader.js"></script>
     
     <!-- 2. Utilidades y herramientas base -->
+    <script src="../../assets/js/utils/loading-screen-util.js"></script>
     <script src="../../assets/js/global-initializer.js"></script>
     <script src="../../assets/js/ui/global-toast.js"></script>
     <script src="../../assets/js/auth/permissions.js"></script>
@@ -103,11 +441,29 @@
     
     <!-- 2. Servicios de API básicos -->
     <script src="../../assets/js/api/services/profile-service.js"></script>
+    <!-- Servicio para listar estados de usuario -->
+    <script src="../../assets/js/api/services/MasterTables/UserStatus/user-status-service.js"></script>
+    <!-- Servicio para crear estado de usuario -->
+    <script src="../../assets/js/api/services/MasterTables/UserStatus/create-user-status-service.js"></script>
+    <!-- Servicio para actualizar estado de usuario -->
+    <script src="../../assets/js/api/services/MasterTables/UserStatus/update-user-status-service.js"></script>
+    <!-- Servicio para eliminar estado de usuario -->
+    <script src="../../assets/js/api/services/MasterTables/UserStatus/delete-user-status-service.js"></script>
 
     <!-- 3. Controladores de UI -->
+    <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/global-confirmation-modal-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
+    <!-- Controlador de lista de estados de usuario (debe ir antes del inicializador) -->
+    <script src="../../assets/js/ui/controllers/MasterTables/UserStatus/user-status-list-controller.js"></script>
+    <!-- Controlador de creación de estado de usuario (debe ir antes del inicializador) -->
+    <script src="../../assets/js/ui/controllers/MasterTables/UserStatus/create-user-status-controller.js"></script>
+    <!-- Controlador de actualización de estado de usuario (debe ir antes del inicializador) -->
+    <script src="../../assets/js/ui/controllers/MasterTables/UserStatus/update-user-status-controller.js"></script>
+    <!-- Controlador de eliminación de estado de usuario (debe ir antes del inicializador) -->
+    <script src="../../assets/js/ui/controllers/MasterTables/UserStatus/delete-user-status-controller.js"></script>
 
     <!-- 4. Inicializador específico de la página -->
     <script src="../../assets/js/ui/initializers/MasterTables/user-status-initializer.js"></script>
@@ -122,5 +478,23 @@
             <span id="recovery-toast-message">Operación completada correctamente</span>
         </div>
     </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var activeFilter = document.getElementById('activeFilter');
+      var activeFilterIcon = document.getElementById('activeFilterIcon');
+      if (activeFilter && activeFilterIcon) {
+        activeFilter.addEventListener('change', function() {
+          if (activeFilter.value === 'true') {
+            activeFilterIcon.className = 'fas fa-toggle-on me-1 text-primary';
+          } else if (activeFilter.value === 'false') {
+            activeFilterIcon.className = 'fas fa-toggle-off me-1 text-secondary';
+          } else {
+            activeFilterIcon.className = 'fas fa-circle-half-stroke me-1 text-primary';
+          }
+        });
+      }
+    });
+    </script>
 </body>
 </html>

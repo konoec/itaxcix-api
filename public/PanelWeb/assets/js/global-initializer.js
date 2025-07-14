@@ -135,7 +135,7 @@ class GlobalUserMonitor {
     async loadUserServiceDynamically() {
         return new Promise((resolve, reject) => {
             const script = document.createElement('script');
-            script.src = '../../assets/js/api/services/Configuration/user-service.js';
+            script.src = '../../assets/js/api/services/Configuration/users/user-service.js';
             script.onload = () => {
                 console.log('✅ GlobalUserMonitor: UserService cargado dinámicamente');
                 resolve();

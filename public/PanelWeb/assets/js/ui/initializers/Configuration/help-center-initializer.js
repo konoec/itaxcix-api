@@ -61,10 +61,10 @@ class HelpCenterInitializer {
                     }
                     
                     // Inicializar controlador específico del Centro de Ayuda
-                    if (typeof EmergencyContactController !== 'undefined') {
-                        if (!window.emergencyContactController) {
-                            window.emergencyContactController = new EmergencyContactController();
-                            console.log('✅ EmergencyContactController inicializado');
+                    if (typeof EmergencyNumberController !== 'undefined') {
+                        if (!window.emergencyNumberController) {
+                            window.emergencyNumberController = new EmergencyNumberController();
+                            console.log('✅ EmergencyNumberController inicializado');
                         }
                     }
                     
@@ -76,6 +76,9 @@ class HelpCenterInitializer {
                         }
                         
                         console.log('✅ Centro de Ayuda inicializado completamente');
+                        
+                        // Notificar que este módulo ha terminado de cargar
+                        LoadingScreenUtil.notifyModuleLoaded('HelpCenter');
                     }, 100);
                     
                 }, 500);

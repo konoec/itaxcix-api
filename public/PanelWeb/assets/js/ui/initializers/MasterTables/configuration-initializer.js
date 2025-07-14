@@ -75,11 +75,8 @@ class ConfigurationInitializer {
                             window.PermissionsService.initializePermissions();
                         }
                         
-                        // Ocultar pantalla de carga
-                        const loadingOverlay = document.getElementById('permissions-loading');
-                        if (loadingOverlay) {
-                            loadingOverlay.style.display = 'none';
-                        }
+                        // Notificar que el módulo está listo
+                        LoadingScreenUtil.notifyModuleLoaded('Configuration');
                         
                         console.log('✅ Configuración inicializada completamente');
                     }, 100);
@@ -89,11 +86,8 @@ class ConfigurationInitializer {
             } catch (error) {
                 console.error('❌ Error cargando componentes:', error);
                 
-                // Ocultar pantalla de carga en caso de error
-                const loadingOverlay = document.getElementById('permissions-loading');
-                if (loadingOverlay) {
-                    loadingOverlay.style.display = 'none';
-                }
+                // Notificar que el módulo está listo (incluso con error)
+                LoadingScreenUtil.notifyModuleLoaded('Configuration');
             }
             
         } else {
@@ -113,3 +107,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 console.log('📝 ConfigurationInitializer definido y configurado');
+

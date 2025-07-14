@@ -10,10 +10,15 @@
     <!-- Tabler CSS Framework -->
     <link rel="stylesheet" href="../../assets/tabler/css/tabler.min.css">
     <link rel="stylesheet" href="../../assets/tabler/css/tabler-vendors.min.css">
+    <link rel="stylesheet" href="../../assets/css/global-toast.css">
+    
+    <!-- Loading screen styles -->
+    <link rel="stylesheet" href="../../assets/css/loading-screen.css">
+    
+    <!-- Component specific styles -->
     <link rel="stylesheet" href="../../assets/css/sidebar.css">
     <link rel="stylesheet" href="../../assets/css/topbar.css">
     <link rel="stylesheet" href="../../assets/css/profile.css">
-    <link rel="stylesheet" href="../../assets/css/global-toast.css">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
@@ -30,6 +35,28 @@
     
 </head>
 <body>
+    <!-- Pantalla de carga moderna - visible inmediatamente -->
+    <div class="loading-screen d-flex align-items-center justify-content-center position-fixed w-100 h-100" 
+         style="top: 0; left: 0; z-index: 9999; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px);">
+        <div class="text-center">
+            <!-- Logo del sistema -->
+            <div class="mb-4">
+                <img src="../../assets/Recourse/Logo/1.png" alt="Logo" class="mb-3" style="height: 60px;">
+            </div>
+            
+            <!-- Spinner de Tabler -->
+            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            
+            <!-- Texto de carga -->
+            <div class="text-secondary">
+                <div class="fw-bold mb-1">Cargando Gestión de Roles</div>
+                <div class="small text-muted">Preparando la interfaz y cargando componentes...</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Contenedor principal del layout usando estructura Tabler -->
     <div class="page">
         <!-- Contenedor del sidebar - se carga dinámicamente -->
@@ -315,14 +342,18 @@
             </div>
         </div>
     </div>
-    <!-- Tabler JavaScript -->
-    <script src="../../assets/tabler/js/tabler.min.js"></script>
+    <!-- Carga de scripts en orden específico para manejar dependencias -->
+    <!-- 1. Component Loader (debe ir primero) -->
+    <script src="../../assets/js/ui/component-loader.js"></script>
     
-    <!-- Scripts -->
+    <!-- 2. Utilidades y herramientas base -->
+    <script src="../../assets/js/utils/loading-screen-util.js"></script>
     <script src="../../assets/js/global-initializer.js"></script>
-    <script src="../../assets/js/auth/auth-checker.js"></script>
+    <script src="../../assets/js/ui/global-toast.js"></script>
     <script src="../../assets/js/auth/permissions.js"></script>
+    <script src="../../assets/js/auth/auth-checker.js"></script>
     <script src="../../assets/js/auth/route-guard.js"></script>
+    
     <script>
         // Inicializa RouteGuard para proteger la página
         window.routeGuard = new RouteGuard("../../index.html");
@@ -335,25 +366,33 @@
         console.log('URL de prueba:', 'https://149.130.161.148/api/v1/roles/1/permissions');
         console.log('=== FIN DIAGNÓSTICO ===');
     </script>
-    <script src="../../assets/js/api/services/profile-service.js"></script>
-    <script src="../../assets/js/api/services/Configuration/user-service.js"></script>
-    <script src="../../assets/js/api/services/Configuration/permission-service.js"></script>
-    <script src="../../assets/js/api/services/Configuration/role-service.js"></script>
-    <script src="../../assets/js/api/services/Configuration/assign-permission-service.js"></script>
     
-    <!-- Modelos -->
+    <!-- 3. Servicios de API -->
+    <script src="../../assets/js/api/services/profile-service.js"></script>
+    <script src="../../assets/js/api/services/Configuration/users/user-service.js"></script>
+    <script src="../../assets/js/api/services/Configuration/permission/permission-service.js"></script>
+    <script src="../../assets/js/api/services/Configuration/roles/role-service.js"></script>
+    <script src="../../assets/js/api/services/Configuration/roles/assign-permission-service.js"></script>
+    
+    <!-- 4. Modelos -->
     <script src="../../assets/js/api/models/user.js"></script>
     <script src="../../assets/js/api/models/permission.js"></script>
     <script src="../../assets/js/api/models/role.js"></script>
     <script src="../../assets/js/api/models/configuration.js"></script>
-    <script src="../../assets/js/ui/global-toast.js"></script>
-    <script src="../../assets/js/ui/component-loader.js"></script>
+    
+    <!-- 5. Controladores de UI -->
+    <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Configuration/roles/role-details-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Configuration/roles/roles-controller.js"></script>
+    
+    <!-- 6. Inicializador específico de la página -->
     <script src="../../assets/js/ui/initializers/Configuration/roles-initializer.js"></script>
+    
+    <!-- 7. Scripts de Tabler para funcionalidad completa -->
+    <script src="../../assets/tabler/js/tabler.min.js"></script>
     
     <!-- Script de prueba para verificar toasts -->
     <script>

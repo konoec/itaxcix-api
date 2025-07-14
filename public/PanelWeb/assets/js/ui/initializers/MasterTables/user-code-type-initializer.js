@@ -60,6 +60,46 @@ class UserCodeTypeInitializer {
                         }
                     }, 200);
                     
+                    // Inicializar el controlador de lista de tipos de código de usuario después de los controladores base
+                    setTimeout(() => {
+                        try {
+                            if (typeof UserCodeTypeListController === 'undefined') {
+                                throw new Error('UserCodeTypeListController no está disponible');
+                            }
+                            window.UserCodeTypeListController = new UserCodeTypeListController();
+                            console.log('🗂️ UserCodeTypeListController inicializado por el inicializador');
+                        } catch (error) {
+                            console.error('❌ Error al inicializar UserCodeTypeListController:', error);
+                        }
+                    }, 200);
+                    
+                    // Inicializar el controlador de creación de tipo de código de usuario
+                    setTimeout(() => {
+                        try {
+                            if (typeof CreateUserCodeTypeController === 'undefined') {
+                                throw new Error('CreateUserCodeTypeController no está disponible');
+                            }
+                            window.createUserCodeTypeController = new CreateUserCodeTypeController(
+                                'createUserCodeTypeModal',
+                                'createUserCodeTypeForm',
+                                function(newType) {
+                                    // Refrescar la lista si existe el controlador de lista
+                                    if (window.UserCodeTypeListController && typeof window.UserCodeTypeListController.load === 'function') {
+                                        window.UserCodeTypeListController.load();
+                                    }
+                                }
+                            );
+                            // Asignar evento al botón + para abrir el modal
+                            const btn = document.getElementById('createUserCodeTypeBtn');
+                            if (btn) {
+                                btn.addEventListener('click', () => window.createUserCodeTypeController.open());
+                            }
+                            console.log('➕ CreateUserCodeTypeController inicializado');
+                        } catch (error) {
+                            console.error('❌ Error al inicializar CreateUserCodeTypeController:', error);
+                        }
+                    }, 200);
+                    
                     // Configurar permisos DESPUÉS de que los controladores estén listos
                     setTimeout(() => {
                         if (window.PermissionsService) {
@@ -67,11 +107,8 @@ class UserCodeTypeInitializer {
                             window.PermissionsService.initializePermissions();
                         }
                         
-                        // Ocultar pantalla de carga
-                        const loadingOverlay = document.getElementById('permissions-loading');
-                        if (loadingOverlay) {
-                            loadingOverlay.style.display = 'none';
-                        }
+                        // Notificar que el módulo está listo
+                        LoadingScreenUtil.notifyModuleLoaded('UserCodeType');
                         
                         console.log('✅ Tipos de Código Usuario inicializado completamente');
                     }, 400);
@@ -81,11 +118,8 @@ class UserCodeTypeInitializer {
             } catch (error) {
                 console.error('❌ Error cargando componentes:', error);
                 
-                // Ocultar pantalla de carga en caso de error
-                const loadingOverlay = document.getElementById('permissions-loading');
-                if (loadingOverlay) {
-                    loadingOverlay.style.display = 'none';
-                }
+                // Notificar que el módulo está listo (incluso con error)
+                LoadingScreenUtil.notifyModuleLoaded('UserCodeType');
             }
             
         } else {
@@ -105,3 +139,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 console.log('📝 UserCodeTypeInitializer definido y configurado');
+

@@ -1,10 +1,10 @@
 /**
  * Inicializador específico para la página de Gestión de Provincias
- * Maneja solo los componentes y controladores necesarios para esta página específica
+ * Maneja los componentes y controladores necesarios para esta página específica
  */
-class ProvinceInitializer {
+class ProvincesInitializer {
     static async init() {
-        console.log('📍 Inicializando página de Gestión de Provincias...');
+        console.log('🌎 Inicializando página de Gestión de Provincias...');
         
         if (authChecker.checkAuthentication()) {
             authChecker.updateUserDisplay();
@@ -47,18 +47,38 @@ class ProvinceInitializer {
                             console.log('🔝 TopBarController inicializado');
                         }
                         
-                        // Inicializar ProfileController
-                        if (!window.profileControllerInstance) {
-                            window.profileControllerInstance = new ProfileController();
-                            console.log('👤 ProfileController inicializado');
-                            
-                            // Establecer referencia al profile controller en topbar
-                            if (window.topBarControllerInstance) {
-                                window.topBarControllerInstance.profileController = window.profileControllerInstance;
-                                console.log('� Referencia profile-topbar establecida');
+                        // Inicializar el controlador de provincias
+                        setTimeout(async () => {
+                            try {
+                                if (window.provincesController) {
+                                    await window.provincesController.init();
+                                    console.log('🌎 Controlador de provincias inicializado');
+                                }
+                                
+                                // Inicializar el controlador de actualización de provincias
+                                if (window.ProvinceUpdateController) {
+                                    window.provinceUpdateController = new ProvinceUpdateController();
+                                    console.log('✏️ Controlador de actualización de provincias inicializado');
+                                }
+                                
+                            } catch (error) {
+                                console.error('❌ Error al inicializar controlador de provincias:', error);
                             }
-                        }
+                        }, 300);
+                        
                     }, 200);
+                    
+                    // Inicializar ProfileController
+                    if (!window.profileControllerInstance) {
+                        window.profileControllerInstance = new ProfileController();
+                        console.log('👤 ProfileController inicializado');
+                        
+                        // Establecer referencia al profile controller en topbar
+                        if (window.topBarControllerInstance) {
+                            window.topBarControllerInstance.profileController = window.profileControllerInstance;
+                            console.log('🔗 Referencia profile-topbar establecida');
+                        }
+                    }
                     
                     // Configurar permisos DESPUÉS de que los controladores estén listos
                     setTimeout(() => {
@@ -67,25 +87,19 @@ class ProvinceInitializer {
                             window.PermissionsService.initializePermissions();
                         }
                         
-                        // Ocultar pantalla de carga
-                        const loadingOverlay = document.getElementById('permissions-loading');
-                        if (loadingOverlay) {
-                            loadingOverlay.style.display = 'none';
-                        }
+                        console.log('✅ Provincias inicializadas completamente');
                         
-                        console.log('✅ Provincias inicializado completamente');
-                    }, 400);
+                        // Notificar que este módulo ha terminado de cargar
+                        LoadingScreenUtil.notifyModuleLoaded('Province');
+                    }, 100);
                     
                 }, 500);
                 
             } catch (error) {
                 console.error('❌ Error cargando componentes:', error);
                 
-                // Ocultar pantalla de carga en caso de error
-                const loadingOverlay = document.getElementById('permissions-loading');
-                if (loadingOverlay) {
-                    loadingOverlay.style.display = 'none';
-                }
+                // En caso de error, también ocultar la pantalla de carga
+                LoadingScreenUtil.notifyModuleLoaded('Province');
             }
             
         } else {
@@ -96,12 +110,13 @@ class ProvinceInitializer {
 
 // Auto-inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('📄 DOM cargado, iniciando ProvinceInitializer...');
+    console.log('📄 DOM cargado, iniciando ProvincesInitializer...');
     
     // Pequeño delay para asegurar que todos los scripts estén cargados
     setTimeout(() => {
-        ProvinceInitializer.init();
+        ProvincesInitializer.init();
     }, 500);
 });
 
-console.log('📝 ProvinceInitializer definido y configurado');
+console.log('📝 ProvincesInitializer definido y configurado');
+

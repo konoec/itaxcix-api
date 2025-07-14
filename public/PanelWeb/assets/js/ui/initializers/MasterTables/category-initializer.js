@@ -67,13 +67,10 @@ class CategoryInitializer {
                             window.PermissionsService.initializePermissions();
                         }
                         
-                        // Ocultar pantalla de carga
-                        const loadingOverlay = document.getElementById('permissions-loading');
-                        if (loadingOverlay) {
-                            loadingOverlay.style.display = 'none';
-                        }
-                        
                         console.log('✅ Categorías inicializadas completamente');
+                        
+                        // Notificar que este módulo ha terminado de cargar
+                        LoadingScreenUtil.notifyModuleLoaded('Category');
                     }, 100);
                     
                 }, 500);
@@ -81,11 +78,8 @@ class CategoryInitializer {
             } catch (error) {
                 console.error('❌ Error cargando componentes:', error);
                 
-                // Ocultar pantalla de carga en caso de error
-                const loadingOverlay = document.getElementById('permissions-loading');
-                if (loadingOverlay) {
-                    loadingOverlay.style.display = 'none';
-                }
+                // En caso de error, también ocultar la pantalla de carga
+                LoadingScreenUtil.notifyModuleLoaded('Category');
             }
             
         } else {
@@ -105,3 +99,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 console.log('📝 CategoryInitializer definido y configurado');
+

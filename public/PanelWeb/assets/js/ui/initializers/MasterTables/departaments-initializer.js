@@ -1,6 +1,6 @@
 /**
  * Inicializador específico para la página de Gestión de Departamentos
- * Maneja solo los componentes y controladores necesarios para esta página específica
+ * Maneja los componentes y controladores necesarios para esta página específica
  */
 class DepartamentsInitializer {
     static async init() {
@@ -46,6 +46,33 @@ class DepartamentsInitializer {
                             window.topBarControllerInstance = new TopBarController();
                             console.log('🔝 TopBarController inicializado');
                         }
+                        
+                        // Inicializar el controlador de departamentos
+                        setTimeout(async () => {
+                            try {
+                                if (window.departmentsController) {
+                                    await window.departmentsController.init();
+                                    console.log('🗺️ Controlador de departamentos inicializado');
+                                }
+                                
+                                if (window.departmentCreateController) {
+                                    window.departmentCreateController.init();
+                                    console.log('🆕 Controlador de creación de departamentos inicializado');
+                                }
+
+                                // Inicializar controlador de actualización de departamentos
+                                if (window.DepartmentUpdateController) {
+                                    window.departmentUpdateController = new DepartmentUpdateController();
+                                    console.log('✏️ Controlador de actualización de departamentos inicializado');
+                                }
+
+                                // El modal global de confirmación se inicializa automáticamente
+                                console.log('🗑️ Modal global de confirmación disponible para departamentos');
+                            } catch (error) {
+                                console.error('❌ Error al inicializar controladores de departamentos:', error);
+                            }
+                        }, 300);
+                        
                     }, 200);
                     
                     // Inicializar ProfileController
@@ -67,13 +94,10 @@ class DepartamentsInitializer {
                             window.PermissionsService.initializePermissions();
                         }
                         
-                        // Ocultar pantalla de carga
-                        const loadingOverlay = document.getElementById('permissions-loading');
-                        if (loadingOverlay) {
-                            loadingOverlay.style.display = 'none';
-                        }
-                        
                         console.log('✅ Departamentos inicializados completamente');
+                        
+                        // Notificar que este módulo ha terminado de cargar
+                        LoadingScreenUtil.notifyModuleLoaded('Departaments');
                     }, 100);
                     
                 }, 500);
@@ -81,11 +105,8 @@ class DepartamentsInitializer {
             } catch (error) {
                 console.error('❌ Error cargando componentes:', error);
                 
-                // Ocultar pantalla de carga en caso de error
-                const loadingOverlay = document.getElementById('permissions-loading');
-                if (loadingOverlay) {
-                    loadingOverlay.style.display = 'none';
-                }
+                // En caso de error, también ocultar la pantalla de carga
+                LoadingScreenUtil.notifyModuleLoaded('Departaments');
             }
             
         } else {
@@ -105,3 +126,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 console.log('📝 DepartamentsInitializer definido y configurado');
+

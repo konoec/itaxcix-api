@@ -11,6 +11,11 @@
     <link rel="stylesheet" href="../../assets/tabler/css/tabler.min.css">
     <link rel="stylesheet" href="../../assets/tabler/css/tabler-vendors.min.css">
     <link rel="stylesheet" href="../../assets/css/global-toast.css">
+    
+    <!-- Loading screen styles -->
+    <link rel="stylesheet" href="../../assets/css/loading-screen.css">
+    
+    <!-- Component specific styles -->
     <link rel="stylesheet" href="../../assets/css/sidebar.css">
     <link rel="stylesheet" href="../../assets/css/topbar.css">
     <link rel="stylesheet" href="../../assets/css/profile.css">
@@ -31,6 +36,28 @@
     
 </head>
 <body>
+    <!-- Pantalla de carga moderna - visible inmediatamente -->
+    <div class="loading-screen d-flex align-items-center justify-content-center position-fixed w-100 h-100" 
+         style="top: 0; left: 0; z-index: 9999; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px);">
+        <div class="text-center">
+            <!-- Logo del sistema -->
+            <div class="mb-4">
+                <img src="../../assets/Recourse/Logo/1.png" alt="Logo" class="mb-3" style="height: 60px;">
+            </div>
+            
+            <!-- Spinner de Tabler -->
+            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            
+            <!-- Texto de carga -->
+            <div class="text-secondary">
+                <div class="fw-bold mb-1">Cargando Reportes de Auditoría</div>
+                <div class="small text-muted">Preparando la interfaz y cargando componentes...</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Contenedor principal del layout usando estructura Tabler -->
     <div class="page">
         <!-- Contenedor del sidebar - se carga dinámicamente -->
@@ -777,15 +804,24 @@
         </div>
     </div>
     
-    <!-- Scripts de Tabler -->
-    <script src="../../assets/tabler/js/tabler.min.js"></script>
+    <!-- Carga de scripts en orden específico para manejar dependencias -->
+    <!-- 1. Component Loader (debe ir primero) -->
+    <script src="../../assets/js/ui/component-loader.js"></script>
     
-    <!-- Scripts básicos del sistema -->
-    <script src="../../assets/js/auth/auth-checker.js"></script>
+    <!-- 2. Utilidades y herramientas base -->
+    <script src="../../assets/js/utils/loading-screen-util.js"></script>
+    <script src="../../assets/js/global-initializer.js"></script>
+    <script src="../../assets/js/ui/global-toast.js"></script>
     <script src="../../assets/js/auth/permissions.js"></script>
+    <script src="../../assets/js/auth/auth-checker.js"></script>
     <script src="../../assets/js/auth/route-guard.js"></script>
     
-    <!-- Scripts de servicios -->
+    <script>
+        // Inicializa RouteGuard para proteger la página
+        window.routeGuard = new RouteGuard("../../index.html");
+    </script>
+    
+    <!-- 3. Servicios de API -->
     <script src="../../assets/js/api/services/profile-service.js"></script>
     <script src="../../assets/js/api/services/Audit/incident-reports-service.js"></script>
     <script src="../../assets/js/api/services/Audit/vehicle-reports-service.js"></script>
@@ -794,16 +830,11 @@
     <script src="../../assets/js/api/services/Audit/rating-reports-service.js"></script>
     <script src="../../assets/js/api/services/Audit/user-reports-service.js"></script>
     
-    <!-- Scripts de UI -->
-    <script src="../../assets/js/ui/component-loader.js"></script>
-    <script src="../../assets/js/ui/global-toast.js"></script>
-    
-    <!-- Scripts de controladores base (ANTES del MainController) -->
+    <!-- 4. Controladores de UI -->
+    <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
-    
-    <!-- Controladores de reportes de auditoría -->
     <script src="../../assets/js/ui/controllers/Audit/base-reports-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Audit/incident-reports-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Audit/vehicle-reports-controller.js"></script>
@@ -813,9 +844,11 @@
     <script src="../../assets/js/ui/controllers/Audit/user-reports-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Audit/audit-reports-main-controller.js"></script>
     
-    <!-- Inicializadores -->
+    <!-- 5. Inicializador específico de la página -->
     <script src="../../assets/js/ui/initializers/Audit/audit-reports-initializer.js"></script>
-    <script src="../../assets/js/global-initializer.js"></script>
+    
+    <!-- 6. Scripts de Tabler para funcionalidad completa -->
+    <script src="../../assets/tabler/js/tabler.min.js"></script>
 
 </body>
 </html>

@@ -62,18 +62,19 @@ class CompanyInitializer {
                     
                     // Inicializar controlador específico de empresas
                     setTimeout(() => {
-                        CompanyInitializer.initializeCompanyModule();
+                        CompanyInitializer.initializeCompanyModule(() => {
+                            // Configurar permisos DESPUÉS de que el módulo específico esté listo
+                            if (window.PermissionsService) {
+                                console.log('🔧 Inicializando sistema de permisos...');
+                                window.PermissionsService.initializePermissions();
+                            }
+                            
+                            console.log('✅ Gestión de Empresas inicializada completamente');
+                            
+                            // Notificar que este módulo ha terminado de cargar
+                            LoadingScreenUtil.notifyModuleLoaded('Companies');
+                        });
                     }, 100);
-                    
-                    // Configurar permisos DESPUÉS de que los controladores estén listos
-                    setTimeout(() => {
-                        if (window.PermissionsService) {
-                            console.log('🔧 Inicializando sistema de permisos...');
-                            window.PermissionsService.initializePermissions();
-                        }
-                        
-                        console.log('✅ Gestión de Empresas inicializada completamente');
-                    }, 200);
                     
                 }, 500);
                 
@@ -88,8 +89,9 @@ class CompanyInitializer {
 
     /**
      * Función de inicialización principal del módulo de empresas
+     * @param {Function} callback - Función a ejecutar cuando termine la inicialización
      */
-    static initializeCompanyModule() {
+    static initializeCompanyModule(callback = null) {
     console.log('🏢 Inicializando módulo de empresas...');
     
     try {
@@ -128,6 +130,11 @@ class CompanyInitializer {
             // Notificar que el módulo está listo
             if (window.showToast) {
                 window.showToast('Sistema de gestión de compañías cargado', 'success');
+            }
+            
+            // Ejecutar callback si se proporcionó
+            if (callback && typeof callback === 'function') {
+                callback();
             }
         }, 100);
         
@@ -435,3 +442,4 @@ document.addEventListener('DOMContentLoaded', function() {
 window.addEventListener('beforeunload', CompanyInitializer.cleanupCompanyModule);
 
 console.log('📝 CompanyInitializer definido y configurado');
+

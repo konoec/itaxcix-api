@@ -65,7 +65,7 @@ class CreateConfigurationModalController {
                                                    placeholder="Ej: app.timeout" 
                                                    required
                                                    maxlength="100"
-                                                   pattern="^[a-zA-Z0-9._-]+$">
+                                                   pattern="^[a-zA-Z0-9._\\-]+$">
                                             <div class="invalid-feedback">
                                                 La clave es requerida y solo puede contener letras, números, puntos, guiones y guiones bajos.
                                             </div>

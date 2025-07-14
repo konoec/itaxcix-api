@@ -20,6 +20,9 @@
     <link rel="stylesheet" href="../../assets/tabler/css/tabler.min.css">
     <link rel="stylesheet" href="../../assets/tabler/css/tabler-vendors.min.css">
     
+    <!-- Loading screen styles -->
+    <link rel="stylesheet" href="../../assets/css/loading-screen.css">
+    
     <!-- Global toast styles -->
     <link rel="stylesheet" href="../../assets/css/global-toast.css">
     
@@ -39,24 +42,32 @@
         window.pageConfig = {
             activeSection: 'tablas', // Sección activa en el sidebar
             pageTitle: {
-                icon: 'fas fa-map-marker-alt',
+                icon: 'fas fa-map',
                 text: 'Gestión de Provincias'
             }
         };
     </script>
 </head>
 <body>
-    <!-- Pantalla de carga para configuración de permisos -->
-    <div id="permissions-loading" class="permissions-loading-overlay">
-        <div class="loading-content">
-            <div class="loading-car">🚕</div>
-            <h2 class="loading-title">Cargando Panel</h2>
-            <p class="loading-message">
-                Estamos configurando tu sesión y verificando los permisos asignados...
-            </p>
-            <p class="loading-steps">
-                <span id="loading-step">Validando credenciales...</span>
-            </p>
+    <!-- Pantalla de carga moderna - visible inmediatamente -->
+    <div class="loading-screen d-flex align-items-center justify-content-center position-fixed w-100 h-100" 
+         style="top: 0; left: 0; z-index: 9999; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px);">
+        <div class="text-center">
+            <!-- Logo del sistema -->
+            <div class="mb-4">
+                <img src="../../assets/Recourse/Logo/1.png" alt="Logo" class="mb-3" style="height: 60px;">
+            </div>
+            
+            <!-- Spinner de Tabler -->
+            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            
+            <!-- Texto de carga -->
+            <div class="text-secondary">
+                <div class="fw-bold mb-1">Cargando Gestión de Provincias</div>
+                <div class="small text-muted">Preparando la interfaz y cargando componentes...</div>
+            </div>
         </div>
     </div>
 
@@ -70,19 +81,435 @@
             <!-- Contenedor del topbar - se carga dinámicamente -->
             <div id="topbar-container"></div>
             
-            <!-- Page content area - Se implementará contenido específico aquí -->
+            <!-- Page content area -->
             <div class="page-body">
                 <div class="container-xl">
-                    <div class="text-center py-5">
-                        <h2 class="text-muted">Gestión de Provincias</h2>
-                        <p class="text-muted">El contenido específico se implementará aquí</p>
+                    <!-- Page Header con gradiente -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="page-header d-print-none">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <div class="page-pretitle text-muted">
+                                            <i class="fas fa-layer-group me-1"></i>
+                                            Gestión de Tablas Maestras
+                                        </div>
+                                        <h2 class="page-title">
+                                            <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                                            Provincias del Perú
+                                        </h2>
+                                        <p class="text-muted mt-1">
+                                            Administra y consulta la información de las provincias organizadas por departamentos
+                                        </p>
+                                    </div>
+                                    <div class="col-auto">
+                                        <div class="btn-list">
+                                            <button class="btn btn-outline-primary" id="refreshBtn" title="Actualizar datos">
+                                                <i class="fas fa-sync-alt text-primary"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary" id="clearFiltersBtn" title="Limpiar filtros">
+                                                <i class="fas fa-broom text-secondary"></i>
+                                            </button>
+                                            <button class="btn btn-primary" id="createProvinceBtn" title="Crear provincia">
+                                                <i class="fas fa-plus text-white"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div class="row mb-4">
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="card card-sm">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <span class="bg-primary text-white avatar">
+                                                <i class="fas fa-map-marker-alt"></i>
+                                            </span>
+                                        </div>
+                                        <div class="col">
+                                            <div class="font-weight-medium" id="totalProvinces">
+                                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                                            </div>
+                                            <div class="text-muted">Total Provincias</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="card card-sm">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <span class="bg-success text-white avatar">
+                                                <i class="fas fa-search"></i>
+                                            </span>
+                                        </div>
+                                        <div class="col">
+                                            <div class="font-weight-medium" id="filteredResults">
+                                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                                            </div>
+                                            <div class="text-muted">Resultados Filtrados</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="card card-sm">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <span class="bg-info text-white avatar">
+                                                <i class="fas fa-list-ol"></i>
+                                            </span>
+                                        </div>
+                                        <div class="col">
+                                            <div class="font-weight-medium" id="currentPage">
+                                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                                            </div>
+                                            <div class="text-muted">Página Actual</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="card card-sm">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <span class="bg-warning text-white avatar">
+                                                <i class="fas fa-eye"></i>
+                                            </span>
+                                        </div>
+                                        <div class="col">
+                                            <div class="font-weight-medium" id="itemsRange">
+                                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                                            </div>
+                                            <div class="text-muted">Mostrando</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Filters Card -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-filter me-2 text-primary"></i>
+                                Filtros Avanzados
+                            </h3>
+                            <div class="card-actions">
+                                <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#advancedFilters">
+                                    <i class="fas fa-sliders-h me-1"></i>
+                                    Mostrar/Ocultar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="collapse show" id="advancedFilters">
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <!-- Búsqueda Global -->
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted">
+                                            <i class="fas fa-search me-1 text-primary"></i>
+                                            Búsqueda Global
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-primary-lt">
+                                                <i class="fas fa-search text-primary"></i>
+                                            </span>
+                                            <input type="text" class="form-control" id="searchInput" placeholder="Buscar por nombre, UBIGEO o departamento...">
+                                            <span class="input-group-text" id="clearSearchBtn" style="cursor: pointer;">
+                                                <i class="fas fa-times text-muted"></i>
+                                            </span>
+                                        </div>
+                                        <small class="form-hint">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Busca provincias por nombre, ubigeo o departamento
+                                        </small>
+                                    </div>
+                                    <!-- Filtro por Nombre -->
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted">
+                                            <i class="fas fa-tag me-1 text-info"></i>
+                                            Nombre de Provincia
+                                        </label>
+                                        <input type="text" class="form-control" id="nameFilter" placeholder="Filtrar por nombre específico...">
+                                        <small class="form-hint">Filtro específico por nombre</small>
+                                    </div>
+                                    <!-- Filtro por Departamento -->
+                                    <div class="col-md-4">
+                                        <label class="form-label text-muted">
+                                            <i class="fas fa-map me-1 text-success"></i>
+                                            Departamento
+                                        </label>
+                                        <select class="form-select" id="departmentFilter">
+                                            <option value="">Todos los departamentos</option>
+                                            <!-- Los departamentos se cargarán dinámicamente -->
+                                        </select>
+                                        <small class="form-hint">Filtrar por departamento</small>
+                                    </div>
+                                    <!-- Filtro por UBIGEO -->
+                                    <div class="col-md-4">
+                                        <label class="form-label text-muted">
+                                            <i class="fas fa-barcode me-1 text-info"></i>
+                                            Código UBIGEO
+                                        </label>
+                                        <input type="text" class="form-control" id="ubigeoFilter" placeholder="Ej: 1501">
+                                        <small class="form-hint">Filtrar por código UBIGEO</small>
+                                    </div>
+                                    <!-- Elementos por página -->
+                                    <div class="col-md-4">
+                                        <label class="form-label text-muted">
+                                            <i class="fas fa-list me-1 text-warning"></i>
+                                            Elementos por página
+                                        </label>
+                                        <select class="form-select" id="perPageSelect">
+                                            <option value="10">10 elementos</option>
+                                            <option value="15" selected>15 elementos</option>
+                                            <option value="25">25 elementos</option>
+                                            <option value="50">50 elementos</option>
+                                            <option value="100">100 elementos</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <!-- Controles de Ordenamiento -->
+                                <div class="row g-3 mt-2">
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted">
+                                            <i class="fas fa-sort me-1 text-primary"></i>
+                                            Ordenar por
+                                        </label>
+                                        <select class="form-select" id="sortBySelect">
+                                            <option value="name">Nombre</option>
+                                            <option value="id">ID</option>
+                                            <option value="ubigeo">UBIGEO</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted">
+                                            <i class="fas fa-sort-amount-up me-1 text-info"></i>
+                                            Dirección
+                                        </label>
+                                        <select class="form-select" id="sortOrderSelect">
+                                            <option value="ASC">Ascendente (A-Z)</option>
+                                            <option value="DESC">Descendente (Z-A)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Table Container -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-table me-2 text-primary"></i>
+                                Lista de Provincias
+                            </h3>
+                            <div class="card-actions">
+                                <div class="d-flex align-items-center text-muted">
+                                    <i class="fas fa-clock me-1"></i>
+                                    <span class="small">Última actualización: <span id="lastUpdateTime">--</span></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-vcenter card-table table-striped">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="w-1 text-center">
+                                                <i class="fas fa-hashtag text-muted"></i>
+                                            </th>
+                                            <th>
+                                                <i class="fas fa-map-marker-alt me-1 text-primary"></i>
+                                                Provincia
+                                            </th>
+                                            <th>
+                                                <i class="fas fa-map me-1 text-success"></i>
+                                                Departamento
+                                            </th>
+                                            <th class="text-center">
+                                                <i class="fas fa-barcode me-1 text-info"></i>
+                                                UBIGEO
+                                            </th>
+                                            <th class="w-1 text-center">
+                                                <i class="fas fa-cogs me-1 text-muted"></i>
+                                                Acciones
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="provincesTableBody">
+                                        <!-- Los datos se cargarán dinámicamente -->
+                                        <tr>
+                                            <td colspan="5" class="text-center py-4">
+                                                <div class="d-flex justify-content-center align-items-center">
+                                                    <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                                    <span>Cargando provincias...</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer d-flex align-items-center">
+                            <p class="m-0 text-muted">
+                                <i class="fas fa-info-circle me-2 text-primary"></i>
+                                Mostrando <span id="itemsRangeFooter">--</span> de <span id="totalProvincesFooter">--</span> provincias
+                            </p>
+                            <ul class="pagination m-0 ms-auto" id="paginationContainer">
+                                <!-- La paginación se generará dinámicamente -->
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Contenedor del modal - se carga dinámicamente -->
+    <!-- Modal para Crear Provincia -->
+    <div class="modal modal-blur fade" id="createProvinceModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-green text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-plus-circle me-2"></i>
+                        Crear Nueva Provincia
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="createProvinceForm">
+                    <div class="modal-body">
+                        <div class="row g-2">
+                            <!-- Campo Nombre -->
+                            <div class="col-12">
+                                <label for="provinceName" class="form-label required mb-1">
+                                    <i class="fas fa-map-marker-alt me-1 text-primary"></i>
+                                    Nombre de la Provincia
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-primary-lt">
+                                        <i class="fas fa-font text-primary"></i>
+                                    </span>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="provinceName" 
+                                           name="name"
+                                           placeholder="Ejemplo: Huaura, Cañete..."
+                                           required
+                                           maxlength="100"
+                                           autocomplete="off">
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                                <small class="form-hint text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Nombre oficial de la provincia
+                                </small>
+                            </div>
+
+                            <!-- Campo Departamento -->
+                            <div class="col-12">
+                                <label for="provinceDepartment" class="form-label required mb-1">
+                                    <i class="fas fa-map me-1 text-success"></i>
+                                    Departamento
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-success-lt">
+                                        <i class="fas fa-layer-group text-success"></i>
+                                    </span>
+                                    <select class="form-select" 
+                                            id="provinceDepartment" 
+                                            name="departmentId"
+                                            required>
+                                        <option value="">Seleccione departamento...</option>
+                                        <!-- Los departamentos se cargarán dinámicamente -->
+                                    </select>
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                            </div>
+
+                            <!-- Campo Ubigeo -->
+                            <div class="col-12">
+                                <label for="provinceUbigeo" class="form-label required mb-1">
+                                    <i class="fas fa-barcode me-1 text-info"></i>
+                                    Código Ubigeo
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-info-lt">
+                                        <i class="fas fa-hashtag text-info"></i>
+                                    </span>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="provinceUbigeo" 
+                                           name="ubigeo"
+                                           placeholder="Ej: 1501, 1509..."
+                                           required
+                                           pattern="^[0-9]{4}$"
+                                           maxlength="4"
+                                           autocomplete="off">
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                                <small class="form-hint text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    4 dígitos según INEI
+                                </small>
+                            </div>
+
+                            <!-- Preview Card Compacta -->
+                            <div class="col-12 mt-2">
+                                <div class="card bg-green-lt border-green">
+                                    <div class="card-body py-2">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <div class="avatar bg-green text-white">
+                                                    <i class="fas fa-eye"></i>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="fw-bold" id="previewProvinceName">
+                                                    <span class="text-muted">Vista previa</span>
+                                                </div>
+                                                <div class="text-muted small">
+                                                    <span id="previewDepartment" class="badge bg-success-lt me-1">--</span>
+                                                    <span id="previewProvinceUbigeo" class="badge bg-info-lt">--</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i>
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-green" id="saveProvinceBtn">
+                            <i class="fas fa-save me-1"></i>
+                            Crear Provincia
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor del modal de perfil (necesario para ProfileController) -->
     <div id="modal-container"></div>
 
     <!-- Carga de scripts en orden específico para manejar dependencias -->
@@ -90,6 +517,7 @@
     <script src="../../assets/js/ui/component-loader.js"></script>
     
     <!-- 2. Utilidades y herramientas base -->
+    <script src="../../assets/js/utils/loading-screen-util.js"></script>
     <script src="../../assets/js/global-initializer.js"></script>
     <script src="../../assets/js/ui/global-toast.js"></script>
     <script src="../../assets/js/auth/permissions.js"></script>
@@ -103,16 +531,30 @@
     
     <!-- 2. Servicios de API básicos -->
     <script src="../../assets/js/api/services/profile-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/Departments/departments-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/Provinces/provinces-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/Provinces/create-province-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/Provinces/province-update-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/Provinces/province-delete-service.js"></script>
 
-    <!-- 3. Controladores de UI -->
+    <!-- 3. Controladores de UI base (modal global primero) -->
+    <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/global-confirmation-modal-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
+    
+    <!-- 4. Controladores específicos de provincias -->
+    <script src="../../assets/js/ui/controllers/MasterTables/Provinces/create-province-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/Provinces/provinces-list-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/Provinces/create-province-modal-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/Provinces/province-update-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/Provinces/province-delete-controller.js"></script>
 
-    <!-- 4. Inicializador específico de la página -->
+    <!-- 5. Inicializador específico de la página -->
     <script src="../../assets/js/ui/initializers/MasterTables/province-initializer.js"></script>
 
-    <!-- 5. Scripts de Tabler para funcionalidad completa -->
+    <!-- 6. Scripts de Tabler para funcionalidad completa -->
     <script src="../../assets/tabler/js/tabler.min.js"></script>
 
     <!-- Toast notification for profile operations -->
@@ -122,5 +564,238 @@
             <span id="recovery-toast-message">Operación completada correctamente</span>
         </div>
     </div>
+
+    <script>
+    // Cargar el modal HTML y preparar el controlador
+    (async function() {
+      console.log('🏗️ Inicializando modal de crear provincia...');
+      
+      // Configurar el botón para abrir el modal
+      const btn = document.getElementById('createProvinceBtn');
+      if (btn) {
+        btn.setAttribute('data-bs-toggle', 'modal');
+        btn.setAttribute('data-bs-target', '#createProvinceModal');
+        console.log('✅ Botón de crear provincia configurado');
+      }
+
+      // Cargar departamentos cuando se abra el modal
+      const modal = document.getElementById('createProvinceModal');
+      if (modal) {
+        modal.addEventListener('shown.bs.modal', async function() {
+          console.log('📂 Modal abierto, cargando departamentos...');
+          await loadDepartments();
+        });
+      }
+    })();
+
+    // Función para cargar departamentos
+    async function loadDepartments() {
+      const departmentSelect = document.getElementById('provinceDepartment');
+      if (!departmentSelect) {
+        console.error('❌ Select de departamentos no encontrado');
+        return;
+      }
+
+      try {
+        // Mostrar loading
+        departmentSelect.innerHTML = '<option value="">Cargando departamentos...</option>';
+        departmentSelect.disabled = true;
+
+        console.log('🔄 Obteniendo departamentos de la API...');
+        
+        // Llamar al servicio de departamentos
+        const response = await DepartmentsService.getDepartments(1, 100, '', 'name', 'ASC');
+        console.log('📥 Respuesta de departamentos:', response);
+
+        if (response.success && response.data) {
+          const departments = response.data.data || response.data.items || response.data || [];
+          console.log('📋 Departamentos obtenidos:', departments.length);
+
+          // Limpiar y llenar el select
+          departmentSelect.innerHTML = '<option value="">Seleccione departamento...</option>';
+          
+          departments.forEach(dept => {
+            const option = document.createElement('option');
+            option.value = dept.id;
+            option.textContent = dept.name;
+            departmentSelect.appendChild(option);
+          });
+
+          departmentSelect.disabled = false;
+          console.log('✅ Departamentos cargados exitosamente');
+        } else {
+          throw new Error('Respuesta de API inválida');
+        }
+      } catch (error) {
+        console.error('❌ Error al cargar departamentos:', error);
+        departmentSelect.innerHTML = '<option value="">Error al cargar departamentos</option>';
+        departmentSelect.disabled = false;
+        
+        // Mostrar mensaje de error al usuario
+        if (window.GlobalToast) {
+          GlobalToast.show('Error al cargar departamentos', 'error');
+        }
+      }
+    }
+
+    // Funcionalidad de Vista Previa para el Modal
+    document.addEventListener('DOMContentLoaded', function() {
+        const provinceNameInput = document.getElementById('provinceName');
+        const provinceDepartmentSelect = document.getElementById('provinceDepartment');
+        const provinceUbigeoInput = document.getElementById('provinceUbigeo');
+        
+        const previewName = document.getElementById('previewProvinceName');
+        const previewDepartment = document.getElementById('previewDepartment');
+        const previewUbigeo = document.getElementById('previewProvinceUbigeo');
+
+        // Manejar envío del formulario
+        const form = document.getElementById('createProvinceForm');
+        const saveBtn = document.getElementById('saveProvinceBtn');
+        
+        if (form) {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault(); // Prevenir recarga de página
+                console.log('📝 Enviando formulario de crear provincia...');
+                
+                try {
+                    // Deshabilitar botón y mostrar loading
+                    saveBtn.disabled = true;
+                    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Creando...';
+                    
+                    // Obtener datos del formulario
+                    const formData = {
+                        name: provinceNameInput.value.trim(),
+                        departmentId: parseInt(provinceDepartmentSelect.value),
+                        ubigeo: provinceUbigeoInput.value.trim()
+                    };
+                    
+                    console.log('📤 Datos a enviar:', formData);
+                    
+                    // Validar datos
+                    if (!formData.name) {
+                        throw new Error('El nombre de la provincia es requerido');
+                    }
+                    if (!formData.departmentId) {
+                        throw new Error('Debe seleccionar un departamento');
+                    }
+                    if (!formData.ubigeo || !/^[0-9]{4}$/.test(formData.ubigeo)) {
+                        throw new Error('El código UBIGEO debe tener 4 dígitos');
+                    }
+                    
+                    // Llamar al servicio para crear la provincia
+                    const response = await fetch('https://149.130.161.148/api/v1/admin/provinces', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${sessionStorage.getItem('token') || sessionStorage.getItem('authToken')}`,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    const result = await response.json();
+                    console.log('📥 Respuesta de la API:', result);
+                    
+                    if (response.ok && result.success) {
+                        // Éxito
+                        console.log('✅ Provincia creada exitosamente');
+                        
+                        // Mostrar mensaje de éxito
+                        if (window.GlobalToast) {
+                            GlobalToast.show('Provincia creada exitosamente', 'success');
+                        }
+                        
+                        // Cerrar modal
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('createProvinceModal'));
+                        if (modal) {
+                            modal.hide();
+                        }
+                        
+                        // Recargar lista de provincias si existe el controlador
+                        if (window.ProvincesListController && window.ProvincesListController.load) {
+                            window.ProvincesListController.load();
+                        } else {
+                            // Si no existe el controlador, recargar la página
+                            setTimeout(() => location.reload(), 1000);
+                        }
+                        
+                    } else {
+                        // Error de la API
+                        throw new Error(result.message || 'Error al crear la provincia');
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ Error al crear provincia:', error);
+                    
+                    // Mostrar mensaje de error
+                    if (window.GlobalToast) {
+                        GlobalToast.show(error.message || 'Error al crear la provincia', 'error');
+                    } else {
+                        alert(error.message || 'Error al crear la provincia');
+                    }
+                    
+                } finally {
+                    // Restaurar botón
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = '<i class="fas fa-save me-1"></i> Crear Provincia';
+                }
+            });
+        }
+
+        function updatePreview() {
+            // Actualizar nombre
+            if (provinceNameInput && provinceNameInput.value.trim()) {
+                previewName.innerHTML = `<span class="text-primary">${provinceNameInput.value}</span>`;
+            } else {
+                previewName.innerHTML = '<span class="text-muted">Vista previa</span>';
+            }
+
+            // Actualizar departamento
+            if (provinceDepartmentSelect && provinceDepartmentSelect.value) {
+                const selectedOption = provinceDepartmentSelect.options[provinceDepartmentSelect.selectedIndex];
+                previewDepartment.textContent = selectedOption.text;
+                previewDepartment.className = 'badge bg-success-lt me-1';
+            } else {
+                previewDepartment.textContent = '--';
+                previewDepartment.className = 'badge bg-success-lt me-1';
+            }
+
+            // Actualizar UBIGEO
+            if (provinceUbigeoInput && provinceUbigeoInput.value.trim()) {
+                previewUbigeo.textContent = provinceUbigeoInput.value;
+                previewUbigeo.className = 'badge bg-info-lt';
+            } else {
+                previewUbigeo.textContent = '--';
+                previewUbigeo.className = 'badge bg-info-lt';
+            }
+        }
+
+        // Agregar event listeners
+        if (provinceNameInput) {
+            provinceNameInput.addEventListener('input', updatePreview);
+        }
+        if (provinceDepartmentSelect) {
+            provinceDepartmentSelect.addEventListener('change', updatePreview);
+        }
+        if (provinceUbigeoInput) {
+            provinceUbigeoInput.addEventListener('input', updatePreview);
+        }
+
+        // Limpiar vista previa cuando se cierra el modal
+        const modal = document.getElementById('createProvinceModal');
+        if (modal) {
+            modal.addEventListener('hidden.bs.modal', function() {
+                previewName.innerHTML = '<span class="text-muted">Vista previa</span>';
+                previewDepartment.textContent = '--';
+                previewUbigeo.textContent = '--';
+                
+                // Limpiar formulario
+                if (form) {
+                    form.reset();
+                }
+            });
+        }
+    });
+    </script>
 </body>
 </html>

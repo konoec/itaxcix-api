@@ -26,6 +26,7 @@
     <link rel="stylesheet" href="../../assets/css/topbar.css">
     <link rel="stylesheet" href="../../assets/css/profile.css">
     <link rel="stylesheet" href="../../assets/css/admission-control.css">
+    <link rel="stylesheet" href="../../assets/css/loading-screen.css">
     
     <!-- Font Awesome para iconografía -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -42,6 +43,30 @@
     </script>
 </head>
 <body>
+    <!-- PANTALLA DE CARGA - APARECE INMEDIATAMENTE -->
+    <div class="loading-screen d-flex align-items-center justify-content-center position-fixed w-100 h-100" 
+         style="top: 0; left: 0; z-index: 9999; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px);">
+        
+        <div class="text-center">
+            <!-- Logo del sistema -->
+            <div class="mb-4">
+                <img src="../../assets/Recourse/Logo/1.png" alt="Logo" class="mb-3" style="height: 60px;">
+            </div>
+            
+            <!-- Spinner de Tabler -->
+            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            
+            <!-- Texto de carga -->
+            <div class="text-secondary">
+                <div class="fw-bold mb-1">Cargando Admisión de Conductores</div>
+                <div class="small text-muted">Preparando la interfaz y cargando componentes...</div>
+            </div>
+        </div>
+        
+    </div>
+    
     <!-- Contenedor principal del layout usando estructura Tabler -->
     <div class="page">
         <!-- Contenedor del sidebar - se carga dinámicamente -->
@@ -331,6 +356,8 @@
     <script src="../../assets/tabler/js/tabler.min.js"></script>
     
     <!-- 2. Utilidades y herramientas base -->
+    <script src="../../assets/js/ui/initializers/global-loading-initializer.js"></script>
+    <script src="../../assets/js/utils/loading-screen-util.js?v=10s"></script>
     <script src="../../assets/js/global-initializer.js"></script>
     <script src="../../assets/js/auth/auth-checker.js"></script>
     <script src="../../assets/js/auth/permissions.js"></script>
@@ -347,15 +374,15 @@
     <!-- 4. Servicios de API -->
     <script src="../../assets/js/api/services/driver-service.js"></script>
     <script src="../../assets/js/api/services/profile-service.js"></script>
-    <script src="../../assets/js/api/services/Configuration/user-service.js"></script>
+    <script src="../../assets/js/api/services/Configuration/users/user-service.js"></script>
     <!-- 5. Controladores de UI -->
     <script src="../../assets/js/ui/component-loader.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
     <script src="../../assets/js/ui/global-toast.js"></script>
     <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
     <script src="../../assets/js/ui/controllers/admission-control-controller.js"></script>
-    
-    <script src="../../assets/js/ui/initializers/admission-control-initializer.js"></script>
+    <script src="../../assets/js/ui/initializers/Admission/admission-control-initializer.js"></script>
 </body>
 </html>

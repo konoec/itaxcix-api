@@ -23,6 +23,11 @@
     
     <!-- Hojas de estilo -->
     <link rel="stylesheet" href="../../assets/css/global-toast.css">
+    
+    <!-- Loading screen styles -->
+    <link rel="stylesheet" href="../../assets/css/loading-screen.css">
+    
+    <!-- Component specific styles -->
     <link rel="stylesheet" href="../../assets/css/sidebar.css">
     <link rel="stylesheet" href="../../assets/css/topbar.css">
     <link rel="stylesheet" href="../../assets/css/profile.css">
@@ -44,6 +49,28 @@
     </script>
 </head>
 <body>
+    <!-- Pantalla de carga moderna - visible inmediatamente -->
+    <div class="loading-screen d-flex align-items-center justify-content-center position-fixed w-100 h-100" 
+         style="top: 0; left: 0; z-index: 9999; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px);">
+        <div class="text-center">
+            <!-- Logo del sistema -->
+            <div class="mb-4">
+                <img src="../../assets/Recourse/Logo/1.png" alt="Logo" class="mb-3" style="height: 60px;">
+            </div>
+            
+            <!-- Spinner de Tabler -->
+            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            
+            <!-- Texto de carga -->
+            <div class="text-secondary">
+                <div class="fw-bold mb-1">Cargando Gestión de Permisos</div>
+                <div class="small text-muted">Preparando la interfaz y cargando componentes...</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Contenedor principal del layout usando estructura Tabler -->
     <div class="page">
         <!-- Contenedor del sidebar - se carga dinámicamente -->
@@ -245,13 +272,15 @@
     </div>
 
     <!-- Carga de scripts en orden específico para manejar dependencias -->
-    <!-- 1. Tabler JS (Bootstrap) -->
-    <script src="../../assets/tabler/js/tabler.min.js"></script>
+    <!-- 1. Component Loader (debe ir primero) -->
+    <script src="../../assets/js/ui/component-loader.js"></script>
     
     <!-- 2. Utilidades y herramientas base -->
+    <script src="../../assets/js/utils/loading-screen-util.js"></script>
     <script src="../../assets/js/global-initializer.js"></script>
-    <script src="../../assets/js/auth/auth-checker.js"></script>
+    <script src="../../assets/js/ui/global-toast.js"></script>
     <script src="../../assets/js/auth/permissions.js"></script>
+    <script src="../../assets/js/auth/auth-checker.js"></script>
     <script src="../../assets/js/auth/route-guard.js"></script>
     
     <script>
@@ -266,21 +295,21 @@
     
     <!-- 4. Servicios de API -->
     <script src="../../assets/js/api/services/profile-service.js"></script>
-    <script src="../../assets/js/api/services/Configuration/user-service.js"></script>
-    <script src="../../assets/js/api/services/Configuration/permission-service.js"></script>
+    <script src="../../assets/js/api/services/Configuration/users/user-service.js"></script>
+    <script src="../../assets/js/api/services/Configuration/permission/permission-service.js"></script>
     
     <!-- 5. Controladores de UI -->
-    <script src="../../assets/js/ui/component-loader.js"></script>
-    <script src="../../assets/js/ui/global-toast.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
-    
-    <!-- Controladores específicos de configuración -->
     <script src="../../assets/js/ui/controllers/Configuration/permissions/permissions-controller.js?v=20250106002"></script>
     
-    <!-- Inicializador dedicado para permisos -->
+    <!-- 6. Inicializador específico de la página -->
     <script src="../../assets/js/ui/initializers/Configuration/permissions-initializer.js?v=20250106002"></script>
+    
+    <!-- 7. Scripts de Tabler para funcionalidad completa -->
+    <script src="../../assets/tabler/js/tabler.min.js"></script>
 </body>
 </html>
 

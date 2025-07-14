@@ -74,6 +74,9 @@ class BrandInitializer {
                         }
                         
                         console.log('✅ Marcas inicializadas completamente');
+                        
+                        // Notificar que este módulo ha terminado de cargar
+                        LoadingScreenUtil.notifyModuleLoaded('Brand');
                     }, 100);
                     
                 }, 500);
@@ -105,3 +108,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 console.log('📝 BrandInitializer definido y configurado');
+

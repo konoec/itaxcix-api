@@ -1,0 +1,20 @@
+/**
+ * Pantalla de carga usando componentes de Tabler
+ * Se muestra ANTES que cualquier otra cosa al cargar la página
+ */
+
+.loading-screen {
+    transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+}
+
+.loading-screen.hidden {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* Asegurar que la pantalla de carga esté visible por defecto */
+.loading-screen:not(.hidden) {
+    opacity: 1 !important;
+    visibility: visible !important;
+}

@@ -243,9 +243,15 @@ class AssignRolesController {
             // Cargar roles actuales del usuario - con manejo de error mejorado
             try {
                 const userRolesResponse = await this.fetchUserRoles(this.currentUserId);
-                if (userRolesResponse && userRolesResponse.data && Array.isArray(userRolesResponse.data)) {
-                    this.currentUserRoles = userRolesResponse.data;
-                    console.log('👤 Roles del usuario:', this.currentUserRoles.length);
+                if (userRolesResponse && userRolesResponse.success && userRolesResponse.data) {
+                    // El endpoint devuelve los roles en data.roles
+                    if (userRolesResponse.data.roles && Array.isArray(userRolesResponse.data.roles)) {
+                        this.currentUserRoles = userRolesResponse.data.roles;
+                        console.log('👤 Roles del usuario cargados:', this.currentUserRoles.length);
+                        console.log('👤 Estructura de roles del usuario:', this.currentUserRoles);
+                    } else {
+                        this.currentUserRoles = [];
+                    }
                 } else {
                     this.currentUserRoles = [];
                 }
@@ -258,7 +264,17 @@ class AssignRolesController {
             }
             
             // Marcar roles ya asignados - asegurar que currentUserRoles sea array
-            this.selectedRoles = Array.isArray(this.currentUserRoles) ? this.currentUserRoles.map(role => role.id) : [];
+            // Extraer IDs de roles asignados del usuario
+            this.selectedRoles = Array.isArray(this.currentUserRoles) ? 
+                this.currentUserRoles.map(role => {
+                    // Manejar diferentes estructuras de respuesta
+                    if (role && typeof role === 'object') {
+                        return role.id || role.roleId || role.role_id;
+                    }
+                    return role;
+                }).filter(id => id !== undefined && id !== null) : [];
+            
+            console.log('✅ Roles seleccionados inicialmente:', this.selectedRoles);
             
             // Aplicar filtros y mostrar roles
             this.applyFilters();
@@ -374,9 +390,12 @@ class AssignRolesController {
         }
 
         // Filtro de roles asignados
-        if (showOnlyAssigned && Array.isArray(this.currentUserRoles)) {
-            const assignedRoleIds = this.currentUserRoles.map(role => role.id);
-            filtered = filtered.filter(role => assignedRoleIds.includes(role.id));
+        if (showOnlyAssigned) {
+            console.log('🔍 Filtrando solo roles asignados...');
+            console.log('📋 Roles seleccionados para filtro:', this.selectedRoles);
+            
+            filtered = filtered.filter(role => this.selectedRoles.includes(role.id));
+            console.log('✅ Roles filtrados (solo asignados):', filtered.map(r => r.name));
         }
 
         this.filteredRoles = filtered;
@@ -406,24 +425,39 @@ class AssignRolesController {
         emptyState.style.display = 'none';
         
         const rolesHtml = this.filteredRoles.map(role => {
+            // Verificar si este rol está en los roles seleccionados
             const isSelected = this.selectedRoles.includes(role.id);
             const roleType = role.web ? 'Web' : 'Móvil';
             const statusClass = role.active ? 'text-success' : 'text-danger';
             const statusText = role.active ? 'Activo' : 'Inactivo';
             
+            // Verificar si es un rol de ciudadano que no se puede asignar
+            const isCitizenRole = this.isCitizenRole(role);
+            
+            // Debug log para verificar la lógica
+            console.log(`🔍 Rol ${role.name} (ID: ${role.id}) - ¿Está seleccionado?`, isSelected, '¿Es rol ciudadano?', isCitizenRole);
+            console.log('📋 Roles seleccionados actuales:', this.selectedRoles);
+            
             return `
                 <tr>
                     <td>
-                        <input class="form-check-input role-checkbox" 
-                               type="checkbox" 
-                               value="${role.id}" 
-                               ${isSelected ? 'checked' : ''}>
+                        ${isCitizenRole ? `
+                            <i class="fas fa-lock text-muted" 
+                               title="Este rol es asignado automáticamente por la app móvil"></i>
+                        ` : `
+                            <input class="form-check-input role-checkbox" 
+                                   type="checkbox" 
+                                   value="${role.id}" 
+                                   ${isSelected ? 'checked' : ''}>
+                        `}
                     </td>
                     <td>
                         ${role.name}
+                        ${isSelected ? '<span class="badge bg-success ms-2">Asignado</span>' : ''}
+                        ${isCitizenRole ? '<span class="badge bg-secondary text-white ms-2">Solo App Móvil</span>' : ''}
                     </td>
                     <td>
-                        <span class="badge ${role.web ? 'bg-blue text-white' : 'bg-purple text-white'}">${roleType}</span>
+                        <span class="badge ${role.web ? 'text-white' : 'bg-info text-white'}" ${role.web ? 'style="background-color: #d4af37;"' : ''}>${roleType}</span>
                     </td>
                     <td>
                         <span class="${statusClass}">${statusText}</span>
@@ -442,13 +476,85 @@ class AssignRolesController {
     }
 
     /**
+     * Verifica si un rol es de ciudadano y no se puede asignar desde el panel web
+     */
+    isCitizenRole(role) {
+        if (!role || !role.name) return false;
+        
+        // Lista de nombres de roles que son exclusivos de la app móvil
+        const citizenRoleNames = [
+            'ciudadano',
+            'citizen',
+            'usuario móvil',
+            'mobile user',
+            'conductor',
+            'driver',
+            'propietario',
+            'owner',
+            'pasajero',
+            'passenger'
+        ];
+        
+        const roleName = role.name.toLowerCase().trim();
+        
+        // Verificar si coincide con algún nombre de rol de ciudadano
+        const isCitizen = citizenRoleNames.some(citizenRole => 
+            roleName.includes(citizenRole) || citizenRole.includes(roleName)
+        );
+        
+        // También verificar si es un rol móvil (no web) como indicador adicional
+        const isMobileOnly = !role.web;
+        
+        // Considerar como rol de ciudadano si coincide con el nombre O si es solo móvil y no es administrativo
+        return isCitizen || (isMobileOnly && !this.isAdminRole(role));
+    }
+
+    /**
+     * Verifica si un rol es administrativo (aunque sea móvil)
+     */
+    isAdminRole(role) {
+        if (!role || !role.name) return false;
+        
+        const adminRoleNames = [
+            'admin',
+            'administrador',
+            'supervisor',
+            'moderador',
+            'moderator',
+            'operador',
+            'operator',
+            'soporte',
+            'support',
+            'técnico',
+            'tecnico',
+            'technical'
+        ];
+        
+        const roleName = role.name.toLowerCase().trim();
+        
+        return adminRoleNames.some(adminRole => 
+            roleName.includes(adminRole) || adminRole.includes(roleName)
+        );
+    }
+
+    /**
      * Configura los eventos de los checkboxes de roles
      */
     setupRoleCheckboxEvents() {
-        const checkboxes = document.querySelectorAll('.role-checkbox');
+        const checkboxes = document.querySelectorAll('.role-checkbox:not([disabled])');
         checkboxes.forEach(checkbox => {
             checkbox.addEventListener('change', (e) => {
                 const roleId = parseInt(e.target.value);
+                
+                // Buscar el rol para verificar si es de ciudadano
+                const role = this.allRoles.find(r => r.id === roleId);
+                if (role && this.isCitizenRole(role)) {
+                    // Si es un rol de ciudadano, revertir el cambio
+                    e.target.checked = this.selectedRoles.includes(roleId);
+                    this.showToast('⚠️ Los roles de aplicación móvil no se pueden asignar desde el panel web', 'warning');
+                    return;
+                }
+                
                 if (e.target.checked) {
                     if (!this.selectedRoles.includes(roleId)) {
                         this.selectedRoles.push(roleId);
@@ -467,7 +573,8 @@ class AssignRolesController {
      */
     selectAllVisibleRoles() {
         this.filteredRoles.forEach(role => {
-            if (!this.selectedRoles.includes(role.id)) {
+            // Solo seleccionar roles que no sean de ciudadano
+            if (!this.isCitizenRole(role) && !this.selectedRoles.includes(role.id)) {
                 this.selectedRoles.push(role.id);
             }
         });
@@ -479,7 +586,10 @@ class AssignRolesController {
      * Deselecciona todos los roles visibles
      */
     deselectAllVisibleRoles() {
-        const filteredRoleIds = this.filteredRoles.map(role => role.id);
+        const filteredRoleIds = this.filteredRoles
+            .filter(role => !this.isCitizenRole(role)) // Solo deseleccionar roles que no sean de ciudadano
+            .map(role => role.id);
+            
         this.selectedRoles = this.selectedRoles.filter(id => !filteredRoleIds.includes(id));
         
         this.renderRoles();
@@ -492,18 +602,28 @@ class AssignRolesController {
         const selectAllCheckbox = document.getElementById('select-all-checkbox');
         if (!selectAllCheckbox) return;
         
-        const visibleRoleIds = this.filteredRoles.map(role => role.id);
-        const selectedVisibleRoles = this.selectedRoles.filter(id => visibleRoleIds.includes(id));
+        // Solo considerar roles que se pueden seleccionar (no bloqueados)
+        const selectableRoles = this.filteredRoles.filter(role => !this.isCitizenRole(role));
+        const selectableRoleIds = selectableRoles.map(role => role.id);
+        const selectedSelectableRoles = this.selectedRoles.filter(id => selectableRoleIds.includes(id));
         
-        if (selectedVisibleRoles.length === 0) {
+        if (selectableRoleIds.length === 0) {
+            // Si no hay roles seleccionables, deshabilitar el checkbox maestro
             selectAllCheckbox.checked = false;
             selectAllCheckbox.indeterminate = false;
-        } else if (selectedVisibleRoles.length === visibleRoleIds.length) {
+            selectAllCheckbox.disabled = true;
+        } else if (selectedSelectableRoles.length === 0) {
+            selectAllCheckbox.checked = false;
+            selectAllCheckbox.indeterminate = false;
+            selectAllCheckbox.disabled = false;
+        } else if (selectedSelectableRoles.length === selectableRoleIds.length) {
             selectAllCheckbox.checked = true;
             selectAllCheckbox.indeterminate = false;
+            selectAllCheckbox.disabled = false;
         } else {
             selectAllCheckbox.checked = false;
             selectAllCheckbox.indeterminate = true;
+            selectAllCheckbox.disabled = false;
         }
     }
 
@@ -693,23 +813,62 @@ class AssignRolesController {
                 return;
             }
 
-            // Confirmar acción
-            const confirmed = confirm(`¿Está seguro de que desea verificar manualmente el email de ${this.currentUserData.firstName} ${this.currentUserData.lastName}?\n\nEmail: ${email}`);
+            // Confirmar acción con más información
+            const confirmed = confirm(
+                `¿Está seguro de que desea VERIFICAR MANUALMENTE el email de este usuario?\n\n` +
+                `Usuario: ${this.currentUserData.firstName} ${this.currentUserData.lastName}\n` +
+                `Email: ${email}\n\n` +
+                `Esta acción marcará el email como verificado en el sistema.`
+            );
             if (!confirmed) return;
 
-            this.showToast('Verificando email...', 'info');
+            // Deshabilitar botón y mostrar loading
+            const verifyBtn = document.getElementById('verify-email-btn');
+            const originalText = verifyBtn?.innerHTML;
+            if (verifyBtn) {
+                verifyBtn.disabled = true;
+                verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Verificando...';
+            }
+
+            this.showToast('🔍 Buscando contacto de email del usuario...', 'info');
 
             const result = await window.VerifyContactService.verifyEmailContact(this.currentUserId);
             
             if (result.success) {
                 this.showToast('✅ Email verificado exitosamente', 'success');
+                
+                // Actualizar la lista de usuarios si existe para reflejar el cambio
+                if (window.usersListController && window.usersListController.refreshUsersList) {
+                    setTimeout(() => {
+                        window.usersListController.refreshUsersList();
+                    }, 1000);
+                }
             } else {
-                this.showToast('❌ Error al verificar email: ' + result.message, 'error');
+                console.error('❌ Error al verificar email:', result);
+                let errorMessage = result.message || 'Error al verificar email';
+                
+                // Manejar mensajes de error específicos
+                if (errorMessage.includes('contacto no pertenece')) {
+                    errorMessage = 'El contacto de email no se encontró o no pertenece a este usuario';
+                } else if (errorMessage.includes('No se encontró')) {
+                    errorMessage = 'Este usuario no tiene un contacto de email registrado';
+                } else if (errorMessage.includes('token')) {
+                    errorMessage = 'Error de autenticación. Por favor, inicie sesión nuevamente';
+                }
+                
+                this.showToast('❌ ' + errorMessage, 'error');
             }
 
         } catch (error) {
             console.error('❌ Error en verificación de email:', error);
-            this.showToast('Error al verificar email: ' + error.message, 'error');
+            this.showToast('Error inesperado al verificar email: ' + error.message, 'error');
+        } finally {
+            // Restaurar botón
+            const verifyBtn = document.getElementById('verify-email-btn');
+            if (verifyBtn) {
+                verifyBtn.disabled = false;
+                verifyBtn.innerHTML = '<i class="fas fa-envelope-check me-1"></i>Verificar Email';
+            }
         }
     }
 
@@ -736,23 +895,62 @@ class AssignRolesController {
                 return;
             }
 
-            // Confirmar acción
-            const confirmed = confirm(`¿Está seguro de que desea verificar manualmente el teléfono de ${this.currentUserData.firstName} ${this.currentUserData.lastName}?\n\nTeléfono: ${phone}`);
+            // Confirmar acción con más información
+            const confirmed = confirm(
+                `¿Está seguro de que desea VERIFICAR MANUALMENTE el teléfono de este usuario?\n\n` +
+                `Usuario: ${this.currentUserData.firstName} ${this.currentUserData.lastName}\n` +
+                `Teléfono: ${phone}\n\n` +
+                `Esta acción marcará el teléfono como verificado en el sistema.`
+            );
             if (!confirmed) return;
 
-            this.showToast('Verificando teléfono...', 'info');
+            // Deshabilitar botón y mostrar loading
+            const verifyBtn = document.getElementById('verify-phone-btn');
+            const originalText = verifyBtn?.innerHTML;
+            if (verifyBtn) {
+                verifyBtn.disabled = true;
+                verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Verificando...';
+            }
+
+            this.showToast('🔍 Buscando contacto de teléfono del usuario...', 'info');
 
             const result = await window.VerifyContactService.verifyPhoneContact(this.currentUserId);
             
             if (result.success) {
                 this.showToast('✅ Teléfono verificado exitosamente', 'success');
+                
+                // Actualizar la lista de usuarios si existe para reflejar el cambio
+                if (window.usersListController && window.usersListController.refreshUsersList) {
+                    setTimeout(() => {
+                        window.usersListController.refreshUsersList();
+                    }, 1000);
+                }
             } else {
-                this.showToast('❌ Error al verificar teléfono: ' + result.message, 'error');
+                console.error('❌ Error al verificar teléfono:', result);
+                let errorMessage = result.message || 'Error al verificar teléfono';
+                
+                // Manejar mensajes de error específicos
+                if (errorMessage.includes('contacto no pertenece')) {
+                    errorMessage = 'El contacto de teléfono no se encontró o no pertenece a este usuario';
+                } else if (errorMessage.includes('No se encontró')) {
+                    errorMessage = 'Este usuario no tiene un contacto de teléfono registrado';
+                } else if (errorMessage.includes('token')) {
+                    errorMessage = 'Error de autenticación. Por favor, inicie sesión nuevamente';
+                }
+                
+                this.showToast('❌ ' + errorMessage, 'error');
             }
 
         } catch (error) {
             console.error('❌ Error en verificación de teléfono:', error);
-            this.showToast('Error al verificar teléfono: ' + error.message, 'error');
+            this.showToast('Error inesperado al verificar teléfono: ' + error.message, 'error');
+        } finally {
+            // Restaurar botón
+            const verifyBtn = document.getElementById('verify-phone-btn');
+            if (verifyBtn) {
+                verifyBtn.disabled = false;
+                verifyBtn.innerHTML = '<i class="fas fa-phone-check me-1"></i>Verificar Teléfono';
+            }
         }
     }
 

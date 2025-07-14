@@ -20,8 +20,14 @@
     <link rel="stylesheet" href="../../assets/tabler/css/tabler.min.css">
     <link rel="stylesheet" href="../../assets/tabler/css/tabler-vendors.min.css">
     
+    <!-- Loading screen styles -->
+    <link rel="stylesheet" href="../../assets/css/loading-screen.css">
+    
     <!-- Global toast styles -->
     <link rel="stylesheet" href="../../assets/css/global-toast.css">
+    
+    <!-- Confirmation modal styles -->
+    <link rel="stylesheet" href="../../assets/css/confirmation-modal.css">
     
     <!-- Component specific styles -->
     <link rel="stylesheet" href="../../assets/css/sidebar.css">
@@ -39,24 +45,32 @@
         window.pageConfig = {
             activeSection: 'tablas', // Sección activa en el sidebar
             pageTitle: {
-                icon: 'fas fa-map-marked-alt',
+                icon: 'fas fa-map-pin',
                 text: 'Gestión de Distritos'
             }
         };
     </script>
 </head>
 <body>
-    <!-- Pantalla de carga para configuración de permisos -->
-    <div id="permissions-loading" class="permissions-loading-overlay">
-        <div class="loading-content">
-            <div class="loading-car">🚕</div>
-            <h2 class="loading-title">Cargando Panel</h2>
-            <p class="loading-message">
-                Estamos configurando tu sesión y verificando los permisos asignados...
-            </p>
-            <p class="loading-steps">
-                <span id="loading-step">Validando credenciales...</span>
-            </p>
+    <!-- Pantalla de carga moderna - visible inmediatamente -->
+    <div class="loading-screen d-flex align-items-center justify-content-center position-fixed w-100 h-100" 
+         style="top: 0; left: 0; z-index: 9999; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px);">
+        <div class="text-center">
+            <!-- Logo del sistema -->
+            <div class="mb-4">
+                <img src="../../assets/Recourse/Logo/1.png" alt="Logo" class="mb-3" style="height: 60px;">
+            </div>
+            
+            <!-- Spinner de Tabler -->
+            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            
+            <!-- Texto de carga -->
+            <div class="text-secondary">
+                <div class="fw-bold mb-1">Cargando Gestión de Distritos</div>
+                <div class="small text-muted">Preparando la interfaz y cargando componentes...</div>
+            </div>
         </div>
     </div>
 
@@ -73,23 +87,432 @@
             <!-- Page content area - Se implementará contenido específico aquí -->
             <div class="page-body">
                 <div class="container-xl">
-                    <div class="text-center py-5">
-                        <h2 class="text-muted">Gestión de Distritos</h2>
-                        <p class="text-muted">El contenido específico se implementará aquí</p>
+                    <!-- Page Header con gradiente -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="page-header d-print-none">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <div class="page-pretitle text-muted">
+                                            <i class="fas fa-layer-group me-1"></i>
+                                            Gestión de Tablas Maestras
+                                        </div>
+                                        <h2 class="page-title">
+                                            <i class="fas fa-map-marked-alt me-2 text-primary"></i>
+                                            Distritos del Perú
+                                        </h2>
+                                        <p class="text-muted mt-1">
+                                            Administra y consulta la información de los distritos organizados por provincias
+                                        </p>
+                                    </div>
+                                    <div class="col-auto">
+                                        <div class="btn-list">
+                                            <button class="btn btn-outline-primary" id="refreshBtn" title="Actualizar datos">
+                                                <i class="fas fa-sync-alt text-primary"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary" id="clearFiltersBtn" title="Limpiar filtros">
+                                                <i class="fas fa-broom text-secondary"></i>
+                                            </button>
+                                            <button class="btn btn-primary" id="openCreateDistrictModalBtn" title="Crear nuevo distrito" data-bs-toggle="modal" data-bs-target="#createDistrictModal">
+                                                <i class="fas fa-plus me-1"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Stats Cards -->
+                    <div class="row mb-4">
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="card card-sm">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <span class="bg-primary text-white avatar">
+                                                <i class="fas fa-map-marked-alt"></i>
+                                            </span>
+                                        </div>
+                                        <div class="col">
+                                            <div class="font-weight-medium" id="totalDistricts">
+                                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                                            </div>
+                                            <div class="text-muted">Total Distritos</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="card card-sm">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <span class="bg-success text-white avatar">
+                                                <i class="fas fa-search"></i>
+                                            </span>
+                                        </div>
+                                        <div class="col">
+                                            <div class="font-weight-medium" id="filteredResults">
+                                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                                            </div>
+                                            <div class="text-muted">Resultados Filtrados</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="card card-sm">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <span class="bg-info text-white avatar">
+                                                <i class="fas fa-list-ol"></i>
+                                            </span>
+                                        </div>
+                                        <div class="col">
+                                            <div class="font-weight-medium" id="currentPage">
+                                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                                            </div>
+                                            <div class="text-muted">Página Actual</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="card card-sm">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <span class="bg-warning text-white avatar">
+                                                <i class="fas fa-eye"></i>
+                                            </span>
+                                        </div>
+                                        <div class="col">
+                                            <div class="font-weight-medium" id="itemsRange">
+                                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                                            </div>
+                                            <div class="text-muted">Mostrando</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Advanced Filters Card -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-filter me-2 text-primary"></i>
+                                Filtros Avanzados
+                            </h3>
+                            <div class="card-actions">
+                                <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#advancedFilters">
+                                    <i class="fas fa-sliders-h me-1"></i>
+                                    Mostrar/Ocultar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="collapse show" id="advancedFilters">
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <!-- Búsqueda Global -->
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted">
+                                            <i class="fas fa-search me-1 text-primary"></i>
+                                            Búsqueda Global
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-primary-lt">
+                                                <i class="fas fa-search text-primary"></i>
+                                            </span>
+                                            <input type="text" class="form-control" id="searchInput" placeholder="Buscar por nombre, UBIGEO o provincia...">
+                                            <span class="input-group-text" id="clearSearchBtn" style="cursor: pointer;">
+                                                <i class="fas fa-times text-muted"></i>
+                                            </span>
+                                        </div>
+                                        <small class="form-hint">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Busca distritos por nombre, ubigeo o provincia
+                                        </small>
+                                    </div>
+                                    <!-- Filtro por Nombre -->
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted">
+                                            <i class="fas fa-tag me-1 text-info"></i>
+                                            Nombre de Distrito
+                                        </label>
+                                        <input type="text" class="form-control" id="nameFilter" placeholder="Filtrar por nombre específico...">
+                                        <small class="form-hint">Filtro específico por nombre</small>
+                                    </div>
+                                    <!-- Filtro por Provincia -->
+                                    <div class="col-md-4">
+                                        <label class="form-label text-muted">
+                                            <i class="fas fa-map me-1 text-success"></i>
+                                            Provincia
+                                        </label>
+                                        <select class="form-select" id="provinceFilter">
+                                            <option value="">Todas las provincias</option>
+                                            <!-- Las provincias se cargarán dinámicamente -->
+                                        </select>
+                                        <small class="form-hint">Filtrar por provincia</small>
+                                    </div>
+                                    <!-- Filtro por UBIGEO -->
+                                    <div class="col-md-4">
+                                        <label class="form-label text-muted">
+                                            <i class="fas fa-barcode me-1 text-info"></i>
+                                            Código UBIGEO
+                                        </label>
+                                        <input type="text" class="form-control" id="ubigeoFilter" placeholder="Ej: 150122">
+                                        <small class="form-hint">Filtrar por código UBIGEO</small>
+                                    </div>
+                                    <!-- Elementos por página -->
+                                    <div class="col-md-4">
+                                        <label class="form-label text-muted">
+                                            <i class="fas fa-list me-1 text-warning"></i>
+                                            Elementos por página
+                                        </label>
+                                        <select class="form-select" id="perPageSelect">
+                                            <option value="10">10 elementos</option>
+                                            <option value="15" selected>15 elementos</option>
+                                            <option value="25">25 elementos</option>
+                                            <option value="50">50 elementos</option>
+                                            <option value="100">100 elementos</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <!-- Controles de Ordenamiento -->
+                                <div class="row g-3 mt-2">
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted">
+                                            <i class="fas fa-sort me-1 text-primary"></i>
+                                            Ordenar por
+                                        </label>
+                                        <select class="form-select" id="sortBySelect">
+                                            <option value="name">Nombre</option>
+                                            <option value="id">ID</option>
+                                            <option value="ubigeo">UBIGEO</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted">
+                                            <i class="fas fa-sort-amount-up me-1 text-info"></i>
+                                            Dirección
+                                        </label>
+                                        <select class="form-select" id="sortOrderSelect">
+                                            <option value="asc">Ascendente (A-Z)</option>
+                                            <option value="desc">Descendente (Z-A)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Table Container -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-table me-2 text-primary"></i>
+                                Lista de Distritos
+                            </h3>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-vcenter card-table table-striped">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="w-1 text-center">
+                                                <i class="fas fa-hashtag text-muted"></i>
+                                            </th>
+                                            <th>
+                                                <i class="fas fa-map-marker-alt me-1 text-primary"></i>
+                                                Distrito
+                                            </th>
+                                            <th>
+                                                <i class="fas fa-map me-1 text-success"></i>
+                                                Provincia
+                                            </th>
+                                            <th>
+                                                <i class="fas fa-map me-1 text-info"></i>
+                                                Departamento
+                                            </th>
+                                            <th class="text-center">
+                                                <i class="fas fa-barcode me-1 text-info"></i>
+                                                UBIGEO
+                                            </th>
+                                            <th class="w-1 text-center">
+                                                <i class="fas fa-cogs me-1 text-muted"></i>
+                                                Acciones
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="districtsTableBody">
+                                        <tr>
+                                            <td colspan="6" class="text-center py-4">
+                                                <div class="d-flex justify-content-center align-items-center">
+                                                    <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                                    <span>Cargando distritos...</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer d-flex align-items-center">
+                            <p class="m-0 text-muted">
+                                <i class="fas fa-info-circle me-2 text-primary"></i>
+                                Mostrando <span id="footerItemsRange">--</span> de <span id="footerTotalDistricts">--</span> distritos
+                            </p>
+                            <ul class="pagination m-0 ms-auto" id="paginationContainer">
+                                <!-- La paginación se generará dinámicamente -->
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Contenedor del modal - se carga dinámicamente -->
-    <div id="modal-container"></div>
+    <!-- Modal para Crear Distrito -->
+    <div class="modal modal-blur fade" id="createDistrictModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-orange text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-plus-circle me-2"></i>
+                        Crear Nuevo Distrito
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="createDistrictForm">
+                    <div class="modal-body">
+                        <div class="row g-2">
+                            <!-- Campo Nombre -->
+                            <div class="col-12">
+                                <label for="districtName" class="form-label required mb-1">
+                                    <i class="fas fa-map-marker-alt me-1 text-primary"></i>
+                                    Nombre del Distrito
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-primary-lt">
+                                        <i class="fas fa-font text-primary"></i>
+                                    </span>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="districtName" 
+                                           name="name"
+                                           placeholder="Ejemplo: Miraflores, San Isidro..."
+                                           required
+                                           maxlength="100"
+                                           autocomplete="off">
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                                <small class="form-hint text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Nombre oficial del distrito
+                                </small>
+                            </div>
+
+                            <!-- Campo Provincia -->
+                            <div class="col-12">
+                                <label for="districtProvince" class="form-label required mb-1">
+                                    <i class="fas fa-map me-1 text-success"></i>
+                                    Provincia
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-success-lt">
+                                        <i class="fas fa-layer-group text-success"></i>
+                                    </span>
+                                    <select class="form-select" 
+                                            id="districtProvince" 
+                                            name="provinceId"
+                                            required>
+                                        <option value="">Seleccione provincia...</option>
+                                        <!-- Las provincias se cargarán dinámicamente -->
+                                    </select>
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                            </div>
+
+                            <!-- Campo Ubigeo -->
+                            <div class="col-12">
+                                <label for="districtUbigeo" class="form-label required mb-1">
+                                    <i class="fas fa-barcode me-1 text-info"></i>
+                                    Código Ubigeo
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-info-lt">
+                                        <i class="fas fa-hashtag text-info"></i>
+                                    </span>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="districtUbigeo" 
+                                           name="ubigeo"
+                                           placeholder="Ej: 150122, 150101..."
+                                           required
+                                           pattern="^[0-9]{6}$"
+                                           maxlength="6"
+                                           autocomplete="off">
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                                <small class="form-hint text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    6 dígitos según INEI
+                                </small>
+                            </div>
+
+                            <!-- Preview Card Compacta -->
+                            <div class="col-12 mt-2">
+                                <div class="card bg-orange-lt border-orange">
+                                    <div class="card-body py-2">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <div class="avatar bg-orange text-white">
+                                                    <i class="fas fa-eye"></i>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="fw-bold" id="previewDistrictName">
+                                                    <span class="text-muted">Vista previa</span>
+                                                </div>
+                                                <div class="text-muted small">
+                                                    <span id="previewProvince" class="badge bg-success-lt me-1">--</span>
+                                                    <span id="previewDistrictUbigeo" class="badge bg-info-lt">--</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i>
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-orange" id="saveDistrictBtn">
+                            <i class="fas fa-save me-1"></i>
+                            Crear Distrito
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor del modal de perfil (necesario para ProfileController) -->
+<div id="modal-container"></div>
 
     <!-- Carga de scripts en orden específico para manejar dependencias -->
     <!-- 1. Component Loader (debe ir primero) -->
     <script src="../../assets/js/ui/component-loader.js"></script>
     
     <!-- 2. Utilidades y herramientas base -->
+    <script src="../../assets/js/utils/loading-screen-util.js"></script>
     <script src="../../assets/js/global-initializer.js"></script>
     <script src="../../assets/js/ui/global-toast.js"></script>
     <script src="../../assets/js/auth/permissions.js"></script>
@@ -103,11 +526,22 @@
     
     <!-- 2. Servicios de API básicos -->
     <script src="../../assets/js/api/services/profile-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/Provinces/provinces-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/Districts/districts-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/Districts/create-district-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/Districts/district-update-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/Districts/district-delete-service.js"></script>
 
     <!-- 3. Controladores de UI -->
+    <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/global-confirmation-modal-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/Districts/districts-list-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/Districts/create-district-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/Districts/district-update-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/Districts/district-delete-controller.js"></script>
 
     <!-- 4. Inicializador específico de la página -->
     <script src="../../assets/js/ui/initializers/MasterTables/district-initializer.js"></script>
@@ -122,5 +556,280 @@
             <span id="recovery-toast-message">Operación completada correctamente</span>
         </div>
     </div>
+
+    <script>
+    // Cargar el modal HTML y preparar el controlador
+    (async function() {
+      console.log('🏗️ Inicializando modal de crear distrito...');
+      
+      // Configurar el botón para abrir el modal
+      const btn = document.getElementById('openCreateDistrictModalBtn');
+      if (btn) {
+        btn.setAttribute('data-bs-toggle', 'modal');
+        btn.setAttribute('data-bs-target', '#createDistrictModal');
+        console.log('✅ Botón de crear distrito configurado');
+      }
+
+      // Cargar provincias cuando se abra el modal
+      const modal = document.getElementById('createDistrictModal');
+      if (modal) {
+        modal.addEventListener('shown.bs.modal', async function() {
+          console.log('📂 Modal abierto, cargando provincias...');
+          await loadProvinces();
+        });
+      }
+    })();
+
+    // Función para cargar provincias
+    async function loadProvinces() {
+      const provinceSelect = document.getElementById('districtProvince');
+      if (!provinceSelect) {
+        console.error('❌ Select de provincias no encontrado');
+        return;
+      }
+
+      try {
+        // Mostrar loading
+        provinceSelect.innerHTML = '<option value="">Cargando provincias...</option>';
+        provinceSelect.disabled = true;
+
+        console.log('🔄 Obteniendo provincias de la API...');
+        console.log('🔍 Verificando disponibilidad de ProvincesService:', typeof ProvincesService);
+        
+        // Verificar si el servicio está disponible
+        if (typeof ProvincesService === 'undefined') {
+          throw new Error('ProvincesService no está disponible. Verifique que el script se haya cargado correctamente.');
+        }
+        
+        // Llamar al servicio de provincias con parámetros para obtener todas
+        console.log('📞 Llamando a ProvincesService.getProvinces()...');
+        const response = await ProvincesService.getProvinces(1, 200, '', null, null, null, 'name', 'ASC');
+        console.log('📥 Respuesta completa de provincias:', response);
+
+        if (response && response.success && response.data) {
+          const data = response.data;
+          console.log('📊 Estructura de datos:', data);
+          
+          // Intentar diferentes estructuras de datos
+          let provinces = [];
+          if (data.data && Array.isArray(data.data)) {
+            provinces = data.data;
+          } else if (data.items && Array.isArray(data.items)) {
+            provinces = data.items;
+          } else if (Array.isArray(data)) {
+            provinces = data;
+          } else {
+            console.error('❌ Estructura de datos no reconocida:', data);
+            throw new Error('Estructura de datos de provincias no reconocida');
+          }
+          
+          console.log('📋 Provincias extraídas:', provinces.length);
+          console.log('📋 Primera provincia (muestra):', provinces[0]);
+
+          if (provinces.length === 0) {
+            throw new Error('No se encontraron provincias en la respuesta');
+          }
+
+          // Limpiar y llenar el select
+          provinceSelect.innerHTML = '<option value="">Seleccione provincia...</option>';
+          
+          // Simplemente listar todas las provincias sin agrupar
+          provinces.forEach(province => {
+            const option = document.createElement('option');
+            option.value = province.id;
+            option.textContent = province.name;
+            option.setAttribute('data-province-id', province.id);
+            option.setAttribute('data-province-name', province.name);
+            option.setAttribute('data-department-name', province.department ? province.department.name : 'N/A');
+            option.setAttribute('data-ubigeo', province.ubigeo || 'N/A');
+            provinceSelect.appendChild(option);
+          });
+
+          provinceSelect.disabled = false;
+          console.log('✅ Provincias cargadas exitosamente');
+          
+          // Mostrar estadísticas en consola
+          console.log(`📊 Total: ${provinces.length} provincias cargadas`);
+        } else {
+          console.error('❌ Respuesta de API inválida:', response);
+          throw new Error('Respuesta de API inválida o sin datos');
+        }
+      } catch (error) {
+        console.error('❌ Error detallado al cargar provincias:', error);
+        console.error('❌ Stack trace:', error.stack);
+        
+        provinceSelect.innerHTML = '<option value="">Error al cargar provincias</option>';
+        provinceSelect.disabled = false;
+        
+        // Mostrar mensaje de error al usuario
+        if (window.GlobalToast) {
+          GlobalToast.show(`Error al cargar provincias: ${error.message}`, 'error');
+        } else {
+          alert(`Error al cargar provincias: ${error.message}`);
+        }
+      }
+    }
+
+    // Funcionalidad de Vista Previa y Envío para el Modal
+    document.addEventListener('DOMContentLoaded', function() {
+        const districtNameInput = document.getElementById('districtName');
+        const districtProvinceSelect = document.getElementById('districtProvince');
+        const districtUbigeoInput = document.getElementById('districtUbigeo');
+        
+        const previewName = document.getElementById('previewDistrictName');
+        const previewProvince = document.getElementById('previewProvince');
+        const previewUbigeo = document.getElementById('previewDistrictUbigeo');
+
+        // Manejar envío del formulario
+        const form = document.getElementById('createDistrictForm');
+        const saveBtn = document.getElementById('saveDistrictBtn');
+        
+        if (form) {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault(); // Prevenir recarga de página
+                console.log('📝 Enviando formulario de crear distrito...');
+                
+                try {
+                    // Deshabilitar botón y mostrar loading
+                    saveBtn.disabled = true;
+                    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Creando...';
+                    
+                    // Obtener datos del formulario
+                    const formData = {
+                        name: districtNameInput.value.trim(),
+                        provinceId: parseInt(districtProvinceSelect.value),
+                        ubigeo: districtUbigeoInput.value.trim()
+                    };
+                    
+                    console.log('📤 Datos a enviar:', formData);
+                    
+                    // Validar datos
+                    if (!formData.name) {
+                        throw new Error('El nombre del distrito es requerido');
+                    }
+                    if (!formData.provinceId) {
+                        throw new Error('Debe seleccionar una provincia');
+                    }
+                    if (!formData.ubigeo || !/^[0-9]{6}$/.test(formData.ubigeo)) {
+                        throw new Error('El código UBIGEO debe tener 6 dígitos');
+                    }
+                    
+                    // Llamar al servicio para crear el distrito
+                    const response = await fetch('https://149.130.161.148/api/v1/admin/districts', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${sessionStorage.getItem('token') || sessionStorage.getItem('authToken')}`,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    const result = await response.json();
+                    console.log('📥 Respuesta de la API:', result);
+                    
+                    if (response.ok && result.success) {
+                        // Éxito
+                        console.log('✅ Distrito creado exitosamente');
+                        
+                        // Mostrar mensaje de éxito
+                        if (window.GlobalToast) {
+                            GlobalToast.show('Distrito creado exitosamente', 'success');
+                        }
+                        
+                        // Cerrar modal
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('createDistrictModal'));
+                        if (modal) {
+                            modal.hide();
+                        }
+                        
+                        // Recargar lista de distritos si existe el controlador
+                        if (window.DistrictsListController && window.DistrictsListController.load) {
+                            window.DistrictsListController.load();
+                        } else {
+                            // Si no existe el controlador, recargar la página
+                            setTimeout(() => location.reload(), 1000);
+                        }
+                        
+                    } else {
+                        // Error de la API
+                        throw new Error(result.message || 'Error al crear el distrito');
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ Error al crear distrito:', error);
+                    
+                    // Mostrar mensaje de error
+                    if (window.GlobalToast) {
+                        GlobalToast.show(error.message || 'Error al crear el distrito', 'error');
+                    } else {
+                        alert(error.message || 'Error al crear el distrito');
+                    }
+                    
+                } finally {
+                    // Restaurar botón
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = '<i class="fas fa-save me-1"></i> Crear Distrito';
+                }
+            });
+        }
+
+        function updatePreview() {
+            // Actualizar nombre
+            if (districtNameInput && districtNameInput.value.trim()) {
+                previewName.innerHTML = `<span class="text-primary">${districtNameInput.value}</span>`;
+            } else {
+                previewName.innerHTML = '<span class="text-muted">Vista previa</span>';
+            }
+
+            // Actualizar provincia (simplificado)
+            if (districtProvinceSelect && districtProvinceSelect.value) {
+                const selectedOption = districtProvinceSelect.options[districtProvinceSelect.selectedIndex];
+                const provinceName = selectedOption.getAttribute('data-province-name') || selectedOption.text;
+                
+                previewProvince.textContent = provinceName;
+                previewProvince.className = 'badge bg-success-lt me-1';
+            } else {
+                previewProvince.textContent = '--';
+                previewProvince.className = 'badge bg-success-lt me-1';
+            }
+
+            // Actualizar UBIGEO
+            if (districtUbigeoInput && districtUbigeoInput.value.trim()) {
+                previewUbigeo.textContent = districtUbigeoInput.value;
+                previewUbigeo.className = 'badge bg-info-lt';
+            } else {
+                previewUbigeo.textContent = '--';
+                previewUbigeo.className = 'badge bg-info-lt';
+            }
+        }
+
+        // Agregar event listeners
+        if (districtNameInput) {
+            districtNameInput.addEventListener('input', updatePreview);
+        }
+        if (districtProvinceSelect) {
+            districtProvinceSelect.addEventListener('change', updatePreview);
+        }
+        if (districtUbigeoInput) {
+            districtUbigeoInput.addEventListener('input', updatePreview);
+        }
+
+        // Limpiar vista previa cuando se cierra el modal
+        const modal = document.getElementById('createDistrictModal');
+        if (modal) {
+            modal.addEventListener('hidden.bs.modal', function() {
+                previewName.innerHTML = '<span class="text-muted">Vista previa</span>';
+                previewProvince.textContent = '--';
+                previewUbigeo.textContent = '--';
+                
+                // Limpiar formulario
+                if (form) {
+                    form.reset();
+                }
+            });
+        }
+    });
+    </script>
 </body>
 </html>

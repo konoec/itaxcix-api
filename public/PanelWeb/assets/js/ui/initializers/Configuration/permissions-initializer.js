@@ -81,6 +81,9 @@ class PermissionsInitializer {
                         }
                         
                         console.log('✅ Gestión de Permisos inicializada completamente');
+                        
+                        // Notificar que este módulo ha terminado de cargar
+                        LoadingScreenUtil.notifyModuleLoaded('PermissionsManagement');
                     }, 100);
                     
                 }, 500);
@@ -179,3 +182,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 console.log('📝 PermissionsInitializer definido y configurado');
+

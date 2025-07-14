@@ -78,6 +78,9 @@ class AuditRegistryInitializer {
                         }
                         
                         console.log('✅ Registro de Auditoría inicializado completamente');
+                        
+                        // Notificar que este módulo ha terminado de cargar
+                        LoadingScreenUtil.notifyModuleLoaded('AuditRegistry');
                     }, 100);
                     
                 }, 500);
@@ -102,3 +105,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 console.log('📝 AuditRegistryInitializer definido y configurado');
+
