@@ -154,5 +154,4 @@ return array(
     InfractionStatusRepositoryInterface::class => autowire(DoctrineInfractionStatusRepository::class),
     InfractionRepositoryInterface::class => autowire(DoctrineInfractionRepository::class),
     AuditLogRepositoryInterface::class => autowire(DoctrineAuditLogRepository::class),
-
 );

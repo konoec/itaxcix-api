@@ -3,7 +3,7 @@
 namespace itaxcix\Core\UseCases\DriverStatus;
 
 use InvalidArgumentException;
-use itaxcix\Core\Interfaces\Driver\DriverStatusRepositoryInterface;
+use itaxcix\Core\Interfaces\user\DriverStatusRepositoryInterface;
 
 class DriverStatusDeleteUseCase
 {

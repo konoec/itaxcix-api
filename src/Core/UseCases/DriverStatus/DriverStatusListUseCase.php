@@ -2,7 +2,7 @@
 
 namespace itaxcix\Core\UseCases\DriverStatus;
 
-use itaxcix\Core\Interfaces\Driver\DriverStatusRepositoryInterface;
+use itaxcix\Core\Interfaces\user\DriverStatusRepositoryInterface;
 use itaxcix\Shared\DTO\useCases\DriverStatus\DriverStatusPaginationRequestDTO;
 use itaxcix\Shared\DTO\useCases\DriverStatus\DriverStatusResponseDTO;
 

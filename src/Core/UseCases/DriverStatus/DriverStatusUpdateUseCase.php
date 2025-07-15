@@ -4,7 +4,7 @@ namespace itaxcix\Core\UseCases\DriverStatus;
 
 use InvalidArgumentException;
 use itaxcix\Core\Domain\user\DriverStatusModel;
-use itaxcix\Core\Interfaces\Driver\DriverStatusRepositoryInterface;
+use itaxcix\Core\Interfaces\user\DriverStatusRepositoryInterface;
 use itaxcix\Shared\DTO\useCases\DriverStatus\DriverStatusRequestDTO;
 use itaxcix\Shared\DTO\useCases\DriverStatus\DriverStatusResponseDTO;
 
