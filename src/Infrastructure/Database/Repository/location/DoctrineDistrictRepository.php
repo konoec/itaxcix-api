@@ -232,13 +232,16 @@ class DoctrineDistrictRepository implements DistrictRepositoryInterface
             return false;
         }
 
-        $entity->setActive(false);
-        $this->entityManager->persist($entity);
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->remove($entity);
+            $this->entityManager->flush();
+        } catch (ORMException $e) {
+            // Si ocurre un error al eliminar, podemos lanzar una excepción o manejarlo de otra manera
+            throw new RuntimeException("Error eliminando distrito con ID $id: " . $e->getMessage());
+        }
 
         return true;
     }
-
     public function existsByName(string $name, ?int $excludeId = null): bool
     {
         $qb = $this->entityManager->createQueryBuilder()
