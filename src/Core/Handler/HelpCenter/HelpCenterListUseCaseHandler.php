@@ -6,6 +6,7 @@ use itaxcix\Core\Interfaces\help\HelpCenterRepositoryInterface;
 use itaxcix\Core\UseCases\HelpCenter\HelpCenterListUseCase;
 use itaxcix\Shared\DTO\useCases\HelpCenter\HelpCenterPaginationRequestDTO;
 use itaxcix\Shared\DTO\generic\PaginationResponseDTO;
+use itaxcix\Shared\DTO\useCases\HelpCenter\HelpCenterResponseDTO;
 
 class HelpCenterListUseCaseHandler implements HelpCenterListUseCase
 {
@@ -18,6 +19,20 @@ class HelpCenterListUseCaseHandler implements HelpCenterListUseCase
 
     public function execute(HelpCenterPaginationRequestDTO $dto): PaginationResponseDTO
     {
-        return $this->helpCenterRepository->findAllHelpItemsPaginated($dto->page, $dto->perPage);
+        // Obtén los datos paginados del repositorio
+        $paginationResult = $this->helpCenterRepository->findAllHelpItemsPaginated($dto->page, $dto->perPage);
+
+        $rawItems = $paginationResult['items'] ?? [];
+        $meta = $paginationResult['meta'] ?? null;
+
+        $items = array_map(
+            fn($item) => HelpCenterResponseDTO::fromModel($item),
+            $rawItems
+        );
+
+        return new PaginationResponseDTO(
+            $items,
+            $meta
+        );
     }
 }

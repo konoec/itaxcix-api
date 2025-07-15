@@ -18,4 +18,15 @@ readonly class HelpCenterResponseDTO {
         #[OA\Property(description: "Si el elemento está activo", example: true)]
         public bool $active,
     ) {}
+
+    public static function fromModel($model): self
+    {
+        return new self(
+            id: (int) $model->id,
+            title: (string) $model->title,
+            subtitle: (string) $model->subtitle,
+            answer: (string) $model->answer,
+            active: (bool) $model->active,
+        );
+    }
 }
