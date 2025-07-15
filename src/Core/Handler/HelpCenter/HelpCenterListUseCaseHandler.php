@@ -22,7 +22,7 @@ class HelpCenterListUseCaseHandler implements HelpCenterListUseCase
         // Obtén los datos paginados del repositorio
         $paginationResult = $this->helpCenterRepository->findAllHelpItemsPaginated($dto->page, $dto->perPage);
 
-        $rawItems = $paginationResult->items
+        $rawItems = $paginationResult->items;
         $meta = $paginationResult->meta ?? null;
 
         $items = array_map(
