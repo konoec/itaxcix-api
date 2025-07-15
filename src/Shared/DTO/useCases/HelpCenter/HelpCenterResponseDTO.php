@@ -22,11 +22,11 @@ readonly class HelpCenterResponseDTO {
     public static function fromModel($model): self
     {
         return new self(
-            id: (int) $model->id,
-            title: (string) $model->title,
-            subtitle: (string) $model->subtitle,
-            answer: (string) $model->answer,
-            active: (bool) $model->active,
+            id: (int) $model->getId(),
+            title: (string) $model->getTitle(),
+            subtitle: (string) $model->getSubtitle(),
+            answer: (string) $model->getAnswer(),
+            active: (bool) $model->isActive(),
         );
     }
 }
