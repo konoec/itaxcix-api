@@ -101,7 +101,7 @@ class IncidentTypeController extends AbstractController
 
             $result = $this->listHandler->handle($paginationRequest);
 
-            return $this->ok('Tipos de incidencia obtenidos exitosamente', $result);
+            return $this->ok($result);
         } catch (\Exception $e) {
             return $this->error('Error al obtener los tipos de incidencia: ' . $e->getMessage());
         }
