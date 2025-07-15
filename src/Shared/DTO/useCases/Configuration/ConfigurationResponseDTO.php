@@ -4,13 +4,14 @@ namespace itaxcix\Shared\DTO\useCases\Configuration;
 
 use itaxcix\Core\Domain\configuration\ConfigurationModel;
 use OpenApi\Attributes as OA;
+use Respect\Validation\Rules\Json;
 
 #[OA\Schema(
     schema: "ConfigurationResponseDTO",
     description: "DTO de respuesta para configuraciones del sistema",
     type: "object"
 )]
-class ConfigurationResponseDTO
+class ConfigurationResponseDTO implements \JsonSerializable
 {
     #[OA\Property(
         property: "id",
@@ -94,5 +95,10 @@ class ConfigurationResponseDTO
             'value' => $this->value,
             'active' => $this->active,
         ];
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return $this->toArray();
     }
 }
