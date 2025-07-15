@@ -238,10 +238,10 @@ return function (RouteCollector $r) {
         $r->put('/admin/service-types/{id}', [JwtPermissionMiddleware::class, 'TABLAS MAESTRAS', [ServiceTypeController::class, 'update']]);
         $r->delete('/admin/service-types/{id}', [JwtPermissionMiddleware::class, 'TABLAS MAESTRAS', [ServiceTypeController::class, 'delete']]);
 
-        $r->get('/incident-types', [JwtPermissionMiddleware::class, 'TABLAS MAESTRAS', [IncidentTypeController::class, 'list']]);
-        $r->post('/incident-types', [JwtPermissionMiddleware::class, 'TABLAS MAESTRAS', [IncidentTypeController::class, 'create']]);
-        $r->put('/incident-types/{id}', [JwtPermissionMiddleware::class, 'TABLAS MAESTRAS', [IncidentTypeController::class, 'update']]);
-        $r->delete('/incident-types/{id}', [JwtPermissionMiddleware::class, 'TABLAS MAESTRAS', [IncidentTypeController::class, 'delete']]);
+        $r->get('/admin/incident-types', [JwtPermissionMiddleware::class, 'TABLAS MAESTRAS', [IncidentTypeController::class, 'list']]);
+        $r->post('/admin/incident-types', [JwtPermissionMiddleware::class, 'TABLAS MAESTRAS', [IncidentTypeController::class, 'create']]);
+        $r->put('/admin/incident-types/{id}', [JwtPermissionMiddleware::class, 'TABLAS MAESTRAS', [IncidentTypeController::class, 'update']]);
+        $r->delete('/admin/incident-types/{id}', [JwtPermissionMiddleware::class, 'TABLAS MAESTRAS', [IncidentTypeController::class, 'delete']]);
 
         $r->get('/admin/infraction-severities', [JwtPermissionMiddleware::class, 'TABLAS MAESTRAS', [InfractionSeverityController::class, 'list']]);
         $r->post('/admin/infraction-severities', [JwtPermissionMiddleware::class, 'TABLAS MAESTRAS', [InfractionSeverityController::class, 'create']]);
