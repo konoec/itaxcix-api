@@ -22,17 +22,7 @@ class DistrictDeleteUseCase
             throw new RuntimeException("District with ID {$id} not found");
         }
 
-        $result = $this->districtRepository->delete($id);
-
-        if ($result) {
-            $result = [
-                'message' => 'Distrito eliminado correctamente.'
-            ];
-        }else{
-            throw new RuntimeException("Error al eliminar el distrito con ID {$id}");
-        }
-
         // Eliminar del repositorio
-        return $result;
+        return $this->districtRepository->delete($id);
     }
 }

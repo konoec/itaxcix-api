@@ -266,7 +266,9 @@ class DistrictController extends AbstractController
             $success = $this->deleteUseCase->execute($id);
 
             if ($success) {
-                return $this->ok($success);
+                return $this->ok(
+                    ["message" => "Distrito eliminado exitosamente"]
+                );
             } else {
                 return $this->error("No se pudo eliminar el distrito", 500);
             }
