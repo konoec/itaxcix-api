@@ -101,7 +101,7 @@ class InfractionSeverityController extends AbstractController
 
             $result = $this->listHandler->handle($paginationRequest);
 
-            return $this->ok('Gravedades de infracción obtenidas exitosamente', $result);
+            return $this->ok($result);
         } catch (\Exception $e) {
             return $this->error('Error al obtener las gravedades de infracción: ' . $e->getMessage());
         }
@@ -159,7 +159,7 @@ class InfractionSeverityController extends AbstractController
             $requestDTO = InfractionSeverityRequestDTO::fromArray($data);
             $result = $this->createHandler->handle($requestDTO);
 
-            return $this->ok('Gravedad de infracción creada exitosamente', $result->toArray(), 201);
+            return $this->ok($result->toArray());
         } catch (InvalidArgumentException $e) {
             return $this->error('Datos inválidos: ' . $e->getMessage(), 400);
         } catch (\Exception $e) {
@@ -226,7 +226,7 @@ class InfractionSeverityController extends AbstractController
             $requestDTO = InfractionSeverityRequestDTO::fromArray($data);
             $result = $this->updateHandler->handle($id, $requestDTO);
 
-            return $this->ok('Gravedad de infracción actualizada exitosamente', $result->toArray());
+            return $this->ok($result->toArray());
         } catch (InvalidArgumentException $e) {
             return $this->error('Datos inválidos: ' . $e->getMessage(), 400);
         } catch (\Exception $e) {
@@ -270,7 +270,11 @@ class InfractionSeverityController extends AbstractController
                 return $this->error('No se pudo eliminar la gravedad de infracción', 400);
             }
 
-            return $this->ok('Gravedad de infracción eliminada exitosamente');
+            return $this->ok(
+                [
+                    'message' => 'Gravedad de infracción eliminada exitosamente'
+                ]
+            );
         } catch (\Exception $e) {
             return $this->error('Error al eliminar la gravedad de infracción: ' . $e->getMessage());
         }
