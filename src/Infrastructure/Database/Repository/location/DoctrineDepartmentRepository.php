@@ -126,8 +126,7 @@ class DoctrineDepartmentRepository implements DepartmentRepositoryInterface
             return false;
         }
 
-        $entity->setActive(false);
-        $this->entityManager->persist($entity);
+        $this->entityManager->remove($entity);
         $this->entityManager->flush();
 
         return true;
