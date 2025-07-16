@@ -66,14 +66,16 @@ class DoctrineDocumentTypeRepository implements DocumentTypeRepositoryInterface
             $qb->andWhere('dt.active = true');
         }
 
+        // Antes de aplicar paginación y ordenamiento
+        $totalQuery = clone $qb;
+        $totalQuery->resetDQLPart('orderBy');
+        $total = $totalQuery->select('COUNT(dt.id)')->getQuery()->getSingleScalarResult();
+
         // Aplicar ordenamiento
         if ($dto->getSortBy() && in_array($dto->getSortBy(), ['id', 'name', 'active'])) {
             $qb->orderBy('dt.' . $dto->getSortBy(), $dto->getSortDirection());
         }
 
-        // Calcular total antes de la paginación
-        $totalQuery = clone $qb;
-        $total = $totalQuery->select('COUNT(dt.id)')->getQuery()->getSingleScalarResult();
 
         // Aplicar paginación
         $qb->setFirstResult(($dto->getPage() - 1) * $dto->getPerPage())
