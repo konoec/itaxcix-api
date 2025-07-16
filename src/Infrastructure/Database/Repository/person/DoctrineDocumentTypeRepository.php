@@ -84,9 +84,10 @@ class DoctrineDocumentTypeRepository implements DocumentTypeRepositoryInterface
         $entities = $qb->getQuery()->getResult();
 
         $models = array_map([$this, 'toDomain'], $entities);
+        $items = array_map(fn($model) => $model->toArray(), $models);
 
         return [
-            'items' => $models,
+            'items' => $items,
             'meta' => [
                 'total' => (int)$total,
                 'perPage' => $dto->getPerPage(),

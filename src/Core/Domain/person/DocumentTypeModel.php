@@ -54,4 +54,13 @@ class DocumentTypeModel {
 
         return $entity;
     }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'active' => $this->active,
+        ];
+    }
 }
