@@ -16,17 +16,19 @@ class VehicleClassPaginationRequestDTO
 
     public static function fromArray(array $data): self
     {
+        $sortBy = $data['sortBy'] ?? 'name';
+        $sortDirection = strtoupper($data['sortDirection'] ?? 'ASC');
+
         return new self(
             page: max(1, (int)($data['page'] ?? 1)),
             perPage: min(100, max(1, (int)($data['perPage'] ?? 15))),
             search: !empty($data['search']) ? $data['search'] : null,
             name: !empty($data['name']) ? $data['name'] : null,
             active: isset($data['active']) ? filter_var($data['active'], FILTER_VALIDATE_BOOLEAN) : null,
-            sortBy: in_array($data['sortBy'] ?? 'name', ['id', 'name', 'active']) ? $data['sortBy'] : 'name',
-            sortDirection: in_array(strtoupper($data['sortDirection'] ?? 'ASC'), ['ASC', 'DESC']) ? strtoupper($data['sortDirection']) : 'ASC'
+            sortBy: in_array($sortBy, ['id', 'name', 'active']) ? $sortBy : 'name',
+            sortDirection: in_array($sortDirection, ['ASC', 'DESC']) ? $sortDirection : 'ASC'
         );
     }
-
     public function getFilters(): array
     {
         $filters = [];

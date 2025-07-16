@@ -101,7 +101,7 @@ class VehicleClassController extends AbstractController
 
             $result = $this->listHandler->handle($paginationRequest);
 
-            return $this->ok('Clases de vehículos obtenidas exitosamente', $result);
+            return $this->ok($result);
         } catch (\Exception $e) {
             return $this->error('Error al obtener las clases de vehículos: ' . $e->getMessage());
         }
@@ -159,7 +159,7 @@ class VehicleClassController extends AbstractController
             $requestDTO = VehicleClassRequestDTO::fromArray($data);
             $result = $this->createHandler->handle($requestDTO);
 
-            return $this->ok('Clase de vehículo creada exitosamente', $result->toArray(), 201);
+            return $this->ok($result->toArray(), 201);
         } catch (InvalidArgumentException $e) {
             return $this->error('Datos inválidos: ' . $e->getMessage(), 400);
         } catch (\Exception $e) {
@@ -226,7 +226,7 @@ class VehicleClassController extends AbstractController
             $requestDTO = VehicleClassRequestDTO::fromArray($data);
             $result = $this->updateHandler->handle($id, $requestDTO);
 
-            return $this->ok('Clase de vehículo actualizada exitosamente', $result->toArray());
+            return $this->ok($result->toArray());
         } catch (InvalidArgumentException $e) {
             return $this->error('Datos inválidos: ' . $e->getMessage(), 400);
         } catch (\Exception $e) {
