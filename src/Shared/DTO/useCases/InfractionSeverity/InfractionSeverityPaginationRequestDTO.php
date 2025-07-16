@@ -2,16 +2,16 @@
 
 namespace itaxcix\Shared\DTO\useCases\InfractionSeverity;
 
-class InfractionSeverityPaginationRequestDTO
+readonly class InfractionSeverityPaginationRequestDTO
 {
     public function __construct(
-        public readonly int $page = 1,
-        public readonly int $perPage = 15,
-        public readonly ?string $search = null,
-        public readonly ?string $name = null,
-        public readonly ?bool $active = null,
-        public readonly string $sortBy = 'name',
-        public readonly string $sortDirection = 'ASC'
+        public int     $page = 1,
+        public int     $perPage = 15,
+        public ?string $search = null,
+        public ?string $name = null,
+        public ?bool   $active = null,
+        public string  $sortBy = 'name',
+        public string  $sortDirection = 'ASC'
     ) {}
 
     public static function fromArray(array $data): self
