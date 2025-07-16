@@ -795,7 +795,7 @@ return array(
 
     UserCodeTypeValidator::class => autowire(UserCodeTypeValidator::class),
 
-    TravelReportUseCase::class => autowire(TravelReportUseCaseHandler::class),
+    TravelReportUseCase::class => autowire(TravelReportUseCase::class),
     TravelReportValidator::class => autowire(TravelReportValidator::class),
 
     UserReportUseCase::class => autowire(),
