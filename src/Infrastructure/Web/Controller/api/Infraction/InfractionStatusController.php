@@ -101,7 +101,7 @@ class InfractionStatusController extends AbstractController
 
             $result = $this->listHandler->handle($paginationRequest);
 
-            return $this->ok('Estados de infracción obtenidos exitosamente', $result);
+            return $this->ok($result);
         } catch (\Exception $e) {
             return $this->error('Error al obtener los estados de infracción: ' . $e->getMessage());
         }
@@ -159,7 +159,7 @@ class InfractionStatusController extends AbstractController
             $requestDTO = InfractionStatusRequestDTO::fromArray($data);
             $result = $this->createHandler->handle($requestDTO);
 
-            return $this->ok('Estado de infracción creado exitosamente', $result->toArray(), 201);
+            return $this->ok($result->toArray());
         } catch (InvalidArgumentException $e) {
             return $this->error('Datos inválidos: ' . $e->getMessage(), 400);
         } catch (\Exception $e) {
@@ -226,7 +226,7 @@ class InfractionStatusController extends AbstractController
             $requestDTO = InfractionStatusRequestDTO::fromArray($data);
             $result = $this->updateHandler->handle($id, $requestDTO);
 
-            return $this->ok('Estado de infracción actualizado exitosamente', $result->toArray());
+            return $this->ok($result->toArray());
         } catch (InvalidArgumentException $e) {
             return $this->error('Datos inválidos: ' . $e->getMessage(), 400);
         } catch (\Exception $e) {
