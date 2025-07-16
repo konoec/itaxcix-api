@@ -101,7 +101,7 @@ class ProcedureTypeController extends AbstractController
 
             $result = $this->listHandler->handle($paginationRequest);
 
-            return $this->ok('Tipos de trámite obtenidos exitosamente', $result);
+            return $this->ok($result);
         } catch (\Exception $e) {
             return $this->error('Error al obtener los tipos de trámite: ' . $e->getMessage());
         }
@@ -159,7 +159,7 @@ class ProcedureTypeController extends AbstractController
             $requestDTO = ProcedureTypeRequestDTO::fromArray($data);
             $result = $this->createHandler->handle($requestDTO);
 
-            return $this->ok('Tipo de trámite creado exitosamente', $result->toArray(), 201);
+            return $this->ok($result->toArray());
         } catch (InvalidArgumentException $e) {
             return $this->error('Datos inválidos: ' . $e->getMessage(), 400);
         } catch (\Exception $e) {
@@ -226,7 +226,7 @@ class ProcedureTypeController extends AbstractController
             $requestDTO = ProcedureTypeRequestDTO::fromArray($data);
             $result = $this->updateHandler->handle($id, $requestDTO);
 
-            return $this->ok('Tipo de trámite actualizado exitosamente', $result->toArray());
+            return $this->ok($result->toArray());
         } catch (InvalidArgumentException $e) {
             return $this->error('Datos inválidos: ' . $e->getMessage(), 400);
         } catch (\Exception $e) {
