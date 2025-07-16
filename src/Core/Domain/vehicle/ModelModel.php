@@ -4,7 +4,7 @@ namespace itaxcix\Core\Domain\vehicle;
 
 use itaxcix\Infrastructure\Database\Entity\vehicle\ModelEntity;
 
-class ModelModel {
+class ModelModel implements \JsonSerializable {
     private ?int $id;
     private string $name;
     private ?BrandModel $brand = null;
@@ -72,5 +72,15 @@ class ModelModel {
         $modelEntity->setActive($this->active);
         $modelEntity->setBrand($this->brand?->toEntity());
         return $modelEntity;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'brand' => $this->getBrand() ? $this->getBrand()->jsonSerialize() : null,
+            'active' => $this->isActive(),
+        ];
     }
 }
