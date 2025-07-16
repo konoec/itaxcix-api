@@ -44,7 +44,7 @@ use itaxcix\Infrastructure\Web\Controller\api\Driver\DriverStatusController;
 use itaxcix\Infrastructure\Web\Controller\api\Person\DocumentTypeController;
 use itaxcix\Infrastructure\Web\Controller\api\location\DepartmentController;
 use itaxcix\Infrastructure\Web\Controller\api\location\ProvinceController;
-use itaxcix\Infrastructure\Web\Controller\api\vehicle\BrandController;
+use itaxcix\Infrastructure\Web\Controller\api\Vehicle\BrandController;
 use itaxcix\Infrastructure\Web\Controller\api\Vehicle\FuelTypeController;
 use itaxcix\Infrastructure\Web\Controller\api\Vehicle\VehicleClassController;
 use itaxcix\Infrastructure\Web\Controller\api\Vehicle\ModelController;
