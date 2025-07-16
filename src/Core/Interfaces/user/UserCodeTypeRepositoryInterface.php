@@ -13,4 +13,5 @@ interface UserCodeTypeRepositoryInterface
     public function delete(int $id): bool;
     public function countAll(array $filters = []): int;
     public function existsByName(string $name, ?int $excludeId = null): bool;
+    public function findById(int $id): ?UserCodeTypeModel;
 }

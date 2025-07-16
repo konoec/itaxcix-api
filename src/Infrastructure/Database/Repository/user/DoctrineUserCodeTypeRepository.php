@@ -138,4 +138,10 @@ class DoctrineUserCodeTypeRepository implements UserCodeTypeRepositoryInterface
         }
         return (int) $qb->getQuery()->getSingleScalarResult() > 0;
     }
+
+    public function findById(int $id): ?UserCodeTypeModel
+    {
+        $entity = $this->entityManager->find(UserCodeTypeEntity::class, $id);
+        return $entity ? $this->toDomain($entity) : null;
+    }
 }

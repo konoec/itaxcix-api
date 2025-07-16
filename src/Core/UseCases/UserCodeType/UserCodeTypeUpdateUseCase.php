@@ -6,7 +6,6 @@ use itaxcix\Core\Domain\user\UserCodeTypeModel;
 use itaxcix\Core\Interfaces\user\UserCodeTypeRepositoryInterface;
 use itaxcix\Shared\DTO\useCases\UserCodeType\UserCodeTypeRequestDTO;
 use itaxcix\Shared\DTO\useCases\UserCodeType\UserCodeTypeResponseDTO;
-
 class UserCodeTypeUpdateUseCase
 {
     private UserCodeTypeRepositoryInterface $repository;
