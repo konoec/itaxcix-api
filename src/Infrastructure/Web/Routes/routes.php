@@ -41,7 +41,7 @@ use itaxcix\Infrastructure\Web\Controller\api\Configuration\ConfigurationControl
 use itaxcix\Infrastructure\Web\Controller\api\User\UserStatusController;
 use itaxcix\Infrastructure\Web\Controller\api\User\ContactTypeController;
 use itaxcix\Infrastructure\Web\Controller\api\Driver\DriverStatusController;
-use itaxcix\Infrastructure\Web\Controller\api\Person\DocumentTypeController;
+use itaxcix\Infrastructure\Web\Controller\api\person\DocumentTypeController;
 use itaxcix\Infrastructure\Web\Controller\api\location\DepartmentController;
 use itaxcix\Infrastructure\Web\Controller\api\location\ProvinceController;
 use itaxcix\Infrastructure\Web\Controller\api\Vehicle\BrandController;
