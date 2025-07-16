@@ -168,8 +168,7 @@ class DoctrineProvinceRepository implements ProvinceRepositoryInterface
             return false;
         }
 
-        $entity->setActive(false);
-        $this->entityManager->persist($entity);
+        $this->entityManager->remove($entity);
         $this->entityManager->flush();
 
         return true;
