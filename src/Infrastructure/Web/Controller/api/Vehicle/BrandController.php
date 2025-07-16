@@ -1,6 +1,6 @@
 <?php
 
-namespace itaxcix\Infrastructure\Web\Controller\api\Vehicle;
+namespace itaxcix\Infrastructure\Web\Controller\api\vehicle;
 
 use InvalidArgumentException;
 use itaxcix\Core\Handler\Brand\BrandCreateUseCaseHandler;
