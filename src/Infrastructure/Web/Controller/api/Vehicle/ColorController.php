@@ -101,10 +101,7 @@ class ColorController extends AbstractController
 
             $result = $this->listHandler->handle($paginationRequest);
 
-            return $this->ok([
-                'data' => $result,
-                'message' => 'Colores obtenidos exitosamente'
-            ]);
+            return $this->ok($result);
         } catch (\Exception $e) {
             return $this->error('Error al obtener colores: ' . $e->getMessage(), 500);
         }
@@ -162,10 +159,7 @@ class ColorController extends AbstractController
 
             $result = $this->createHandler->handle($colorRequest);
 
-            return $this->ok([
-                'data' => $result->toArray(),
-                'message' => 'Color creado exitosamente'
-            ], 201);
+            return $this->ok($result->toArray());
         } catch (InvalidArgumentException $e) {
             return $this->error($e->getMessage(), 400);
         } catch (\Exception $e) {
@@ -227,10 +221,7 @@ class ColorController extends AbstractController
 
             $result = $this->updateHandler->handle($id, $colorRequest);
 
-            return $this->ok([
-                'data' => $result->toArray(),
-                'message' => 'Color actualizado exitosamente'
-            ]);
+            return $this->ok($result->toArray());
         } catch (InvalidArgumentException $e) {
             return $this->error($e->getMessage(), 404);
         } catch (\Exception $e) {
@@ -271,7 +262,6 @@ class ColorController extends AbstractController
             }
 
             return $this->ok([
-                'data' => null,
                 'message' => 'Color eliminado exitosamente'
             ]);
         } catch (InvalidArgumentException $e) {

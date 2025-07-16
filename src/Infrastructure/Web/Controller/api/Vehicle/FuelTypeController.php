@@ -101,10 +101,7 @@ class FuelTypeController extends AbstractController
 
             $result = $this->listHandler->handle($paginationRequest);
 
-            return $this->ok([
-                'data' => $result,
-                'message' => 'Tipos de combustible obtenidos exitosamente'
-            ]);
+            return $this->ok($result);
         } catch (\Exception $e) {
             return $this->error('Error al obtener tipos de combustible: ' . $e->getMessage(), 500);
         }
@@ -162,10 +159,7 @@ class FuelTypeController extends AbstractController
 
             $result = $this->createHandler->handle($fuelTypeRequest);
 
-            return $this->ok([
-                'data' => $result->toArray(),
-                'message' => 'Tipo de combustible creado exitosamente'
-            ], 201);
+            return $this->ok($result->toArray());
         } catch (InvalidArgumentException $e) {
             return $this->error($e->getMessage(), 400);
         } catch (\Exception $e) {
@@ -227,10 +221,7 @@ class FuelTypeController extends AbstractController
 
             $result = $this->updateHandler->handle($id, $fuelTypeRequest);
 
-            return $this->ok([
-                'data' => $result->toArray(),
-                'message' => 'Tipo de combustible actualizado exitosamente'
-            ]);
+            return $this->ok($result->toArray());
         } catch (InvalidArgumentException $e) {
             return $this->error($e->getMessage(), 404);
         } catch (\Exception $e) {
@@ -271,7 +262,6 @@ class FuelTypeController extends AbstractController
             }
 
             return $this->ok([
-                'data' => null,
                 'message' => 'Tipo de combustible eliminado exitosamente'
             ]);
         } catch (InvalidArgumentException $e) {

@@ -101,10 +101,7 @@ class CategoryController extends AbstractController
 
             $result = $this->listHandler->handle($paginationRequest);
 
-            return $this->ok([
-                'data' => $result,
-                'message' => 'Categorías de vehículos obtenidas exitosamente'
-            ]);
+            return $this->ok($result);
         } catch (\Exception $e) {
             return $this->error('Error al obtener categorías de vehículos: ' . $e->getMessage(), 500);
         }
@@ -162,10 +159,7 @@ class CategoryController extends AbstractController
 
             $result = $this->createHandler->handle($categoryRequest);
 
-            return $this->ok([
-                'data' => $result->toArray(),
-                'message' => 'Categoría de vehículo creada exitosamente'
-            ], 201);
+            return $this->ok($result->toArray());
         } catch (InvalidArgumentException $e) {
             return $this->error($e->getMessage(), 400);
         } catch (\Exception $e) {
@@ -227,10 +221,7 @@ class CategoryController extends AbstractController
 
             $result = $this->updateHandler->handle($id, $categoryRequest);
 
-            return $this->ok([
-                'data' => $result->toArray(),
-                'message' => 'Categoría de vehículo actualizada exitosamente'
-            ]);
+            return $this->ok($result->toArray());
         } catch (InvalidArgumentException $e) {
             return $this->error($e->getMessage(), 404);
         } catch (\Exception $e) {
@@ -271,7 +262,6 @@ class CategoryController extends AbstractController
             }
 
             return $this->ok([
-                'data' => null,
                 'message' => 'Categoría de vehículo eliminada exitosamente'
             ]);
         } catch (InvalidArgumentException $e) {
