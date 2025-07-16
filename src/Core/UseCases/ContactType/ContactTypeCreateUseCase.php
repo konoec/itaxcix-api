@@ -3,7 +3,7 @@
 namespace itaxcix\Core\UseCases\ContactType;
 
 use itaxcix\Core\Domain\user\ContactTypeModel;
-use itaxcix\Core\Interfaces\User\ContactTypeRepositoryInterface;
+use itaxcix\Core\Interfaces\user\ContactTypeRepositoryInterface;
 use itaxcix\Shared\DTO\useCases\ContactType\ContactTypeRequestDTO;
 use itaxcix\Shared\DTO\useCases\ContactType\ContactTypeResponseDTO;
 

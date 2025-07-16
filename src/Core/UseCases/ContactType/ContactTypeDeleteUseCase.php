@@ -2,7 +2,7 @@
 
 namespace itaxcix\Core\UseCases\ContactType;
 
-use itaxcix\Core\Interfaces\User\ContactTypeRepositoryInterface;
+use itaxcix\Core\Interfaces\user\ContactTypeRepositoryInterface;
 
 class ContactTypeDeleteUseCase
 {
