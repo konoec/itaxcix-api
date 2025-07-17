@@ -29,8 +29,8 @@ class ContactTypeValidator
         }
 
         // Validar activo (opcional, por defecto true)
-        if (isset($data['active']) && !is_bool($data['active'])) {
-            $errors['active'] = 'El campo activo debe ser verdadero o falso';
+        if (isset($data['active']) && $data['active'] !== '' && !in_array($data['active'], ['0', '1', 0, 1, true, false, 'true', 'false'], true)) {
+            $errors['active'] = 'El filtro activo debe ser verdadero o falso';
         }
 
         return $errors;
