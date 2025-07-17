@@ -32,12 +32,21 @@ class FuelTypePaginationRequestDTO
 
     public static function fromArray(array $data): self
     {
+        $active = null;
+        if (isset($data['active'])) {
+            if ($data['active'] === 'false' || $data['active'] === false || $data['active'] === 0 || $data['active'] === '0') {
+                $active = false;
+            } elseif ($data['active'] === 'true' || $data['active'] === true || $data['active'] === 1 || $data['active'] === '1') {
+                $active = true;
+            }
+        }
+
         return new self(
             page: (int) ($data['page'] ?? 1),
             perPage: (int) ($data['perPage'] ?? 15),
             search: $data['search'] ?? null,
             name: $data['name'] ?? null,
-            active: isset($data['active']) ? (bool) $data['active'] : null,
+            active: $active,
             sortBy: $data['sortBy'] ?? 'name',
             sortDirection: $data['sortDirection'] ?? 'ASC'
         );
