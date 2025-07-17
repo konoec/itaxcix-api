@@ -28,8 +28,19 @@ class ModelListUseCase
 
         $total = $this->modelRepository->countTotal($filters);
 
+        // Mapear los modelos al formato requerido
+        $data = array_map(function($model) {
+            return [
+                'id' => $model->getId(),
+                'name' => $model->getName(),
+                'brandId' => $model->getBrand()->getId(),
+                'brandName' => $model->getBrand()->getName(),
+                'active' => $model->isActive(),
+            ];
+        }, $models);
+
         return [
-            'data' => $models,
+            'data' => $data,
             'pagination' => [
                 'page' => $requestDTO->page,
                 'perPage' => $requestDTO->perPage,
