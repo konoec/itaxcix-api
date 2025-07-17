@@ -33,7 +33,7 @@ class FuelTypeListUseCase
         }, $fuelTypes);
 
         return [
-            'items' => array_map(fn($dto) => $dto->toArray(), $fuelTypeDTOs),
+            'data' => array_map(fn($dto) => $dto->toArray(), $fuelTypeDTOs),
             'meta' => [
                 'total' => $totalItems,
                 'perPage' => $request->perPage,

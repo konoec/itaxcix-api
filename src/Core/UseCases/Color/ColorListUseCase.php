@@ -33,7 +33,7 @@ class ColorListUseCase
         }, $colors);
 
         return [
-            'items' => array_map(fn($dto) => $dto->toArray(), $colorDTOs),
+            'data' => array_map(fn($dto) => $dto->toArray(), $colorDTOs),
             'meta' => [
                 'total' => $totalItems,
                 'perPage' => $request->perPage,

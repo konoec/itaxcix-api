@@ -33,7 +33,7 @@ class CategoryListUseCase
         }, $categories);
 
         return [
-            'items' => array_map(fn($dto) => $dto->toArray(), $categoryDTOs),
+            'data' => array_map(fn($dto) => $dto->toArray(), $categoryDTOs),
             'meta' => [
                 'total' => $totalItems,
                 'perPage' => $request->perPage,
