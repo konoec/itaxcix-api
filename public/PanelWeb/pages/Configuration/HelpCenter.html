@@ -29,6 +29,7 @@
     <link rel="stylesheet" href="../../assets/css/topbar.css">
     <link rel="stylesheet" href="../../assets/css/profile.css">
     <link rel="stylesheet" href="../../assets/css/confirmation-modal.css">
+    <link rel="stylesheet" href="../../assets/css/configuration/help-center.css">
     
     <!-- Font Awesome para iconografía -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -80,32 +81,159 @@
             <!-- Contenido principal de la página -->
             <div class="page-body">
                 <div class="container-xl">
-                    <!-- Configuración de Centro de Ayuda -->
-                    <div class="card" id="card-emergencia">
+                    <!-- Header del Centro de Ayuda con botón de emergencia -->
+                    <div class="row align-items-center mb-4">
+                        <div class="col">
+                            <h1 class="page-title">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-help-circle me-2 text-primary" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"/>
+                                    <path d="M12 17l0 .01"/>
+                                    <path d="M12 13.5a1.5 1.5 0 0 1 1 -1.5a2.6 2.6 0 1 0 -3 -4"/>
+                                </svg>
+                                Centro de Ayuda
+                            </h1>
+                            <p class="text-muted mb-0">Gestión del centro de ayuda y configuración de emergencia</p>
+                        </div>
+                        <div class="col-auto">
+                            <!-- Botón actualizar tabla -->
+                            <button class="btn btn-outline-cyan me-2" id="refresh-help-center-btn" title="Actualizar datos">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                            <!-- Botón de emergencia -->
+                            <button type="button" class="btn btn-danger me-2" id="emergency-call-btn" 
+                                    title="Llamada de Emergencia">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-phone-call" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2"/>
+                                    <path d="M15 7a2 2 0 0 1 2 2"/>
+                                    <path d="M15 3a6 6 0 0 1 6 6"/>
+                                </svg>
+                            </button>
+                            <!-- Botón crear elemento -->
+                            <button type="button" class="btn btn-primary" id="create-help-center-item-btn" 
+                                    title="Crear Elemento">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-plus" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M12 5l0 14"/>
+                                    <path d="M5 12l14 0"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Contenido principal - Elementos del Centro de Ayuda -->
+                    <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">
-                                <i class="fas fa-question-circle me-2"></i>
-                                Centro de Ayuda - Configuración de Contacto
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-list me-2" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M9 6l11 0"/>
+                                    <path d="M9 12l11 0"/>
+                                    <path d="M9 18l11 0"/>
+                                    <path d="M5 6l0 .01"/>
+                                    <path d="M5 12l0 .01"/>
+                                    <path d="M5 18l0 .01"/>
+                                </svg>
+                                Elementos del Centro de Ayuda
                             </h3>
                         </div>
-                        <form id="emergency-inline-form">
-                            <div class="card-body">
-                                <div class="mb-3">
-                                    <label class="form-label" for="emergencia">Número de emergencia:</label>
-                                    <input type="tel" class="form-control" id="emergencia" name="emergencia" 
-                                           placeholder="Ej: +51911111111" maxlength="15" required>
-                                    <div class="form-text">Número de contacto para emergencias críticas</div>
-                                    <div class="invalid-feedback" id="emergency-inline-message"></div>
+                        <div class="card-body">
+                            <!-- Barra de búsqueda y filtros -->
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"/>
+                                                <path d="M21 21l-6 -6"/>
+                                            </svg>
+                                        </span>
+                                        <input type="text" class="form-control" id="help-center-search" placeholder="Buscar por título o subtítulo...">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-select" id="help-center-per-page">
+                                        <option value="10">10 elementos</option>
+                                        <option value="15" selected>15 elementos</option>
+                                        <option value="25">25 elementos</option>
+                                        <option value="50">50 elementos</option>
+                                        <option value="100">100 elementos</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="text-muted small" id="help-center-items-count">
+                                        <!-- Contador de elementos se actualizará dinámicamente -->
+                                    </div>
                                 </div>
                             </div>
-                            <div class="card-footer text-end">
-                                <button type="button" class="btn btn-secondary me-2 btn-cancel" id="cancel-inline-emergency">Cancelar</button>
-                                <button type="submit" class="btn btn-primary btn-save">
-                                    <i class="fas fa-save me-1"></i>
-                                    Guardar Configuración
-                                </button>
+
+                            <!-- Contenedor de loading -->
+                            <div id="help-center-loading" style="display: none;">
+                                <div class="text-center py-5">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Cargando...</span>
+                                    </div>
+                                    <div class="mt-2 text-muted">Cargando elementos...</div>
+                                </div>
                             </div>
-                        </form>
+
+                            <!-- Contenedor de la tabla -->
+                            <div id="help-center-table-container">
+                                <!-- La tabla se renderizará aquí dinámicamente -->
+                            </div>
+
+                            <!-- Estado vacío -->
+                            <div id="help-center-empty-state" style="display: none;">
+                                <div class="text-center py-5 text-muted">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-help-circle" width="48" height="48" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                        <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"/>
+                                        <path d="M12 17l0 .01"/>
+                                        <path d="M12 13.5a1.5 1.5 0 0 1 1 -1.5a2.6 2.6 0 1 0 -3 -4"/>
+                                    </svg>
+                                    <p class="mt-3">No hay elementos del centro de ayuda registrados</p>
+                                    <button class="btn btn-primary mt-2" id="create-first-help-center-item">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-plus me-1" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                            <path d="M12 5l0 14"/>
+                                            <path d="M5 12l14 0"/>
+                                        </svg>
+                                        Crear primer elemento
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer d-flex align-items-center">
+                            <p class="m-0 text-muted">
+                                Mostrando <span id="help-center-showing-start">0</span> a <span id="help-center-showing-end">0</span> 
+                                de <span id="help-center-total-records">0</span> registros
+                            </p>
+                            <ul class="pagination m-0 ms-auto">
+                                <li class="page-item">
+                                    <button class="page-link" id="help-center-prev-page-btn" disabled>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                            <path d="M15 6l-6 6l6 6"/>
+                                        </svg>
+                                        Anterior
+                                    </button>
+                                </li>
+                                <li class="page-item active">
+                                    <span class="page-link" id="help-center-current-page-info">1</span>
+                                </li>
+                                <li class="page-item">
+                                    <button class="page-link" id="help-center-next-page-btn">
+                                        Siguiente
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-right" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                            <path d="M9 6l6 6l-6 6"/>
+                                        </svg>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -215,13 +343,21 @@
     <script src="../../assets/js/api/services/profile-service.js"></script>
     <script src="../../assets/js/api/services/Configuration/users/user-service.js"></script>
     <script src="../../assets/js/api/services/Configuration/helpCenter/emergency-number-service.js"></script>
+    <script src="../../assets/js/api/services/Configuration/helpCenter/help-center-service.js"></script>
+    <script src="../../assets/js/api/services/Configuration/helpCenter/create-help-center-service.js"></script>
+    <script src="../../assets/js/api/services/Configuration/helpCenter/delete-help-center-service.js"></script>
     
     <!-- 4. Controladores de UI -->
     <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
+    <!-- Controlador del modal de confirmación global -->
+    <script src="../../assets/js/ui/controllers/Components/global-confirmation-modal-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Configuration/help-center/emergency-number-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Configuration/help-center/help-center-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Configuration/help-center/create-help-center-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Configuration/help-center/delete-help-center-controller.js"></script>
     
     <!-- 5. Inicializador específico de la página -->
     <script src="../../assets/js/ui/initializers/Configuration/help-center-initializer.js"></script>

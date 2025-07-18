@@ -128,14 +128,11 @@ class UserStatusListController {
                     </span>
                 </td>
                 <td class="text-center">
-                    <span class="avatar bg-${s.active ? 'green' : 'red'}-lt"><i class="fas fa-user"></i></span>
-                </td>
-                <td class="text-center">
                     <button class="btn btn-outline-warning btn-sm me-1 edit-user-status-btn" title="Editar" data-id="${s.id}"><i class="fas fa-edit"></i></button>
                     <button class="btn btn-sm btn-outline-red delete-user-status-btn" title="Eliminar" data-id="${s.id}" data-name="${s.name}"><i class="fas fa-trash text-red"></i></button>
                 </td>
             </tr>
-        `).join('') : `<tr><td colspan="5" class="text-center text-muted">No hay resultados</td></tr>`;
+        `).join('') : `<tr><td colspan="4" class="text-center text-muted">No hay resultados</td></tr>`;
         // Stats
         this.stats.total.textContent = data.pagination?.total || 0;
         this.stats.filtered.textContent = items.length || 0;

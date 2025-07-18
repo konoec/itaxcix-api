@@ -168,7 +168,7 @@ class DriverStatusService {
             },
             predefinedStatuses: apiResponse.data.predefinedStatuses || {},
             success: true,
-            message: apiResponse.message || 'OK'
+            message: apiResponse.message || 'Operación realizada correctamente.'
         };
     }
 

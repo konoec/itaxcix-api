@@ -56,9 +56,27 @@ class FuelTypeInitializer {
                         // Establecer referencia al profile controller en topbar
                         if (window.topBarControllerInstance) {
                             window.topBarControllerInstance.profileController = window.profileControllerInstance;
-                            console.log('� Referencia profile-topbar establecida');
+                            console.log('🔗 Referencia profile-topbar establecida');
                         }
                     }
+                    
+                    // Inicializar FuelTypeController
+                    setTimeout(() => {
+                        if (!window.fuelTypeController) {
+                            window.fuelTypeController = new FuelTypeController();
+                            console.log('⛽ FuelTypeController inicializado');
+                        }
+                        // Inicializar FuelTypeCreateController
+                        if (!window.fuelTypeCreateControllerInstance && typeof FuelTypeCreateController !== 'undefined') {
+                            window.fuelTypeCreateControllerInstance = new FuelTypeCreateController();
+                            console.log('🟩 FuelTypeCreateController inicializado');
+                        }
+                        // Enlazar botón de crear tipo de combustible
+                        const createBtn = document.getElementById('createFuelTypeBtn');
+                        if (createBtn) {
+                            createBtn.setAttribute('data-action', 'create-fuel-type');
+                        }
+                    }, 300);
                     
                     // Configurar permisos DESPUÉS de que los controladores estén listos
                     setTimeout(() => {

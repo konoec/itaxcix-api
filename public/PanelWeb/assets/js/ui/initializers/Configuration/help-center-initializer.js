@@ -4,6 +4,13 @@
  */
 class HelpCenterInitializer {
     static async init() {
+        // Evitar inicialización múltiple
+        if (window.helpCenterInitialized) {
+            console.log('⚠️ HelpCenterInitializer ya fue inicializado, evitando duplicación');
+            return;
+        }
+        window.helpCenterInitialized = true;
+        
         console.log('🆘 Inicializando página de Centro de Ayuda...');
         
         if (authChecker.checkAuthentication()) {
@@ -60,11 +67,66 @@ class HelpCenterInitializer {
                         }
                     }
                     
-                    // Inicializar controlador específico del Centro de Ayuda
+                    // Inicializar controladores específicos del Centro de Ayuda
                     if (typeof EmergencyNumberController !== 'undefined') {
                         if (!window.emergencyNumberController) {
                             window.emergencyNumberController = new EmergencyNumberController();
                             console.log('✅ EmergencyNumberController inicializado');
+                        }
+                    }
+                    
+                    // Inicializar controlador de elementos del centro de ayuda
+                    if (typeof HelpCenterController !== 'undefined') {
+                        if (!window.helpCenterController) {
+                            console.log('🔧 Creando nueva instancia de HelpCenterController...');
+                            window.helpCenterController = new HelpCenterController();
+                            console.log('✅ HelpCenterController inicializado');
+                            
+                            // Inicializar la carga de datos después de un pequeño delay
+                            setTimeout(() => {
+                                console.log('🚀 Iniciando carga de datos del centro de ayuda...');
+                                window.helpCenterController.initialize();
+                            }, 200);
+                        } else {
+                            console.log('⚠️ HelpCenterController ya existe, evitando duplicación');
+                        }
+                    }
+
+                    // Inicializar controlador de creación de elementos
+                    if (typeof CreateHelpCenterController !== 'undefined') {
+                        if (!window.createHelpCenterController) {
+                            console.log('🔧 Creando nueva instancia de CreateHelpCenterController...');
+                            window.createHelpCenterController = new CreateHelpCenterController(
+                                function(newItem) {
+                                    // Callback cuando se crea un nuevo elemento
+                                    console.log('✅ Nuevo elemento creado, refrescando lista...');
+                                    if (window.helpCenterController && typeof window.helpCenterController.loadHelpCenterItems === 'function') {
+                                        window.helpCenterController.loadHelpCenterItems();
+                                    }
+                                }
+                            );
+                            console.log('✅ CreateHelpCenterController inicializado');
+                        } else {
+                            console.log('⚠️ CreateHelpCenterController ya existe, evitando duplicación');
+                        }
+                    }
+
+                    // Inicializar controlador de eliminación de elementos
+                    if (typeof DeleteHelpCenterController !== 'undefined') {
+                        if (!window.deleteHelpCenterController) {
+                            console.log('🔧 Creando nueva instancia de DeleteHelpCenterController...');
+                            window.deleteHelpCenterController = new DeleteHelpCenterController(
+                                function(deletedItem) {
+                                    // Callback cuando se elimina un elemento
+                                    console.log('✅ Elemento eliminado, refrescando lista...');
+                                    if (window.helpCenterController && typeof window.helpCenterController.loadHelpCenterItems === 'function') {
+                                        window.helpCenterController.loadHelpCenterItems();
+                                    }
+                                }
+                            );
+                            console.log('✅ DeleteHelpCenterController inicializado');
+                        } else {
+                            console.log('⚠️ DeleteHelpCenterController ya existe, evitando duplicación');
                         }
                     }
                     
@@ -85,6 +147,10 @@ class HelpCenterInitializer {
                 
             } catch (error) {
                 console.error('❌ Error cargando componentes:', error);
+                // En caso de error, ocultar la pantalla de carga para no dejar al usuario colgado
+                if (window.LoadingScreenUtil) {
+                    LoadingScreenUtil.notifyModuleLoaded('HelpCenter');
+                }
             }
             
         } else {
@@ -99,7 +165,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Pequeño delay para asegurar que todos los scripts estén cargados
     setTimeout(() => {
-        HelpCenterInitializer.init();
+        HelpCenterInitializer.init().catch(error => {
+            console.error('❌ Error crítico en HelpCenterInitializer:', error);
+            // En caso de error crítico, ocultar la pantalla de carga
+            if (window.LoadingScreenUtil) {
+                LoadingScreenUtil.notifyModuleLoaded('HelpCenter');
+            }
+        });
     }, 500);
 });
 

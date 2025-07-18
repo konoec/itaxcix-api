@@ -268,28 +268,28 @@ const RoleDetailsController = (() => {
         
         // Ocultar mensaje de "no hay permisos" y mostrar lista
         if (noPermissionsMessage) noPermissionsMessage.style.display = 'none';
-        permissionsList.style.display = 'block';
+        permissionsList.style.display = ''; // Quitar display block para que funcione como tbody
         
-        // Renderizar cada permiso
+        // Renderizar cada permiso como fila de tabla
         filteredPermissions.forEach(permission => {
             const isAssigned = permissionsData.assignedPermissionIds.includes(permission.id.toString());
             
-            const permissionItem = document.createElement('div');
-            permissionItem.className = 'permission-assignment-item';
-            permissionItem.innerHTML = `
-                <div class="permission-name">${permission.name}</div>
-                <div class="permission-type">
-                    <span class="type-badge ${permission.type.toLowerCase()}">${permission.type}</span>
-                </div>
-                <div class="permission-checkbox-container">
+            const permissionRow = document.createElement('tr');
+            permissionRow.innerHTML = `
+                <td style="width: 50%; padding: 12px 16px; vertical-align: middle;">${permission.name}</td>
+                <td style="width: 25%; padding: 12px 16px; vertical-align: middle; text-align: center;">
+                    <span>${permission.type}</span>
+                </td>
+                <td style="width: 25%; padding: 12px 16px; vertical-align: middle; text-align: center;">
                     <input type="checkbox" 
-                           class="permission-checkbox" 
+                           class="form-check-input permission-checkbox" 
                            data-permission-id="${permission.id}"
+                           style="transform: scale(1.2);"
                            ${isAssigned ? 'checked' : ''}>
-                </div>
+                </td>
             `;
             
-            permissionsList.appendChild(permissionItem);
+            permissionsList.appendChild(permissionRow);
         });
         
         console.log('✅ Lista de permisos renderizada:', filteredPermissions.length, 'items');

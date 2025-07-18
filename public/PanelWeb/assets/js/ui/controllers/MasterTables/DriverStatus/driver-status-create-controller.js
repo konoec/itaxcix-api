@@ -74,41 +74,9 @@ class DriverStatusCreateController {
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="mb-3">
-                                            <label class="form-label">
-                                                <i class="fas fa-toggle-on text-muted me-1"></i>
-                                                Estado
-                                            </label>
-                                            <div class="form-selectgroup form-selectgroup-boxes d-flex flex-column">
-                                                <label class="form-selectgroup-item flex-fill">
-                                                    <input type="radio" name="active" value="true" class="form-selectgroup-input" checked>
-                                                    <div class="form-selectgroup-label d-flex align-items-center p-3">
-                                                        <div class="me-3">
-                                                            <span class="form-selectgroup-check"></span>
-                                                        </div>
-                                                        <div>
-                                                            <div class="font-weight-medium">
-                                                                <i class="fas fa-check-circle text-success me-2"></i>
-                                                                Activo
-                                                            </div>
-                                                            <div class="text-muted">El estado estará disponible para asignar a conductores</div>
-                                                        </div>
-                                                    </div>
-                                                </label>
-                                                <label class="form-selectgroup-item flex-fill">
-                                                    <input type="radio" name="active" value="false" class="form-selectgroup-input">
-                                                    <div class="form-selectgroup-label d-flex align-items-center p-3">
-                                                        <div class="me-3">
-                                                            <span class="form-selectgroup-check"></span>
-                                                        </div>
-                                                        <div>
-                                                            <div class="font-weight-medium">
-                                                                <i class="fas fa-times-circle text-danger me-2"></i>
-                                                                Inactivo
-                                                            </div>
-                                                            <div class="text-muted">El estado no estará disponible para nuevas asignaciones</div>
-                                                        </div>
-                                                    </div>
-                                                </label>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="driverStatusActive" name="active" checked>
+                                                <label class="form-check-label" for="driverStatusActive">Activo</label>
                                             </div>
                                         </div>
                                     </div>
@@ -160,7 +128,7 @@ class DriverStatusCreateController {
         const formData = new FormData(event.target);
         const data = {
             name: formData.get('name').trim(),
-            active: formData.get('active') === 'true'
+            active: document.getElementById('driverStatusActive').checked
         };
 
         // Validar datos
@@ -177,10 +145,12 @@ class DriverStatusCreateController {
             
             if (response.success) {
                 // Mostrar mensaje de éxito
-                window.globalToast.show(
-                    response.message || 'Estado de conductor creado correctamente',
-                    'success'
-                );
+                if (window.GlobalToast) {
+                    window.GlobalToast.show(
+                        response.message || 'Estado de conductor creado correctamente',
+                        'success'
+                    );
+                }
 
                 // Cerrar modal
                 const modal = bootstrap.Modal.getInstance(document.getElementById('createDriverStatusModal'));
@@ -194,10 +164,12 @@ class DriverStatusCreateController {
             }
         } catch (error) {
             console.error('Error al crear estado de conductor:', error);
-            window.globalToast.show(
-                error.message || 'Error al crear el estado de conductor',
-                'error'
-            );
+            if (window.GlobalToast) {
+                window.GlobalToast.show(
+                    error.message || 'Error al crear el estado de conductor',
+                    'error'
+                );
+            }
         } finally {
             this.setSubmittingState(false);
         }
@@ -240,7 +212,9 @@ class DriverStatusCreateController {
      */
     showValidationErrors(errors) {
         errors.forEach(error => {
-            window.globalToast.show(error, 'error');
+            if (window.GlobalToast) {
+                window.GlobalToast.show(error, 'error');
+            }
         });
     }
 

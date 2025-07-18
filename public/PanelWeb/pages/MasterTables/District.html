@@ -703,32 +703,78 @@
                     
                     console.log('📤 Datos a enviar:', formData);
                     
-                    // Validar datos
-                    if (!formData.name) {
-                        throw new Error('El nombre del distrito es requerido');
+                    // Validar datos más estrictamente
+                    if (!formData.name || formData.name.length < 2) {
+                        throw new Error('El nombre del distrito debe tener al menos 2 caracteres');
                     }
-                    if (!formData.provinceId) {
-                        throw new Error('Debe seleccionar una provincia');
+                    if (!formData.provinceId || isNaN(formData.provinceId)) {
+                        throw new Error('Debe seleccionar una provincia válida');
                     }
                     if (!formData.ubigeo || !/^[0-9]{6}$/.test(formData.ubigeo)) {
-                        throw new Error('El código UBIGEO debe tener 6 dígitos');
+                        throw new Error('El código UBIGEO debe tener exactamente 6 dígitos numéricos');
                     }
                     
-                    // Llamar al servicio para crear el distrito
-                    const response = await fetch('https://149.130.161.148/api/v1/admin/districts', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${sessionStorage.getItem('token') || sessionStorage.getItem('authToken')}`,
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify(formData)
-                    });
+                    // Verificar que el token existe
+                    const token = sessionStorage.getItem('token') || sessionStorage.getItem('authToken');
+                    if (!token) {
+                        throw new Error('Token de autenticación no encontrado. Inicie sesión nuevamente.');
+                    }
                     
-                    const result = await response.json();
-                    console.log('📥 Respuesta de la API:', result);
+                    console.log('🔑 Token encontrado:', token ? 'Sí' : 'No');
                     
-                    if (response.ok && result.success) {
+                    // Usar el servicio de crear distrito si está disponible
+                    let response;
+                    if (typeof CreateDistrictService !== 'undefined') {
+                        console.log('🎯 Usando CreateDistrictService...');
+                        response = await CreateDistrictService.createDistrict(formData);
+                    } else {
+                        console.log('🌐 Usando fetch directo...');
+                        // Llamar directamente a la API con manejo de errores mejorado
+                        const fetchResponse = await fetch('https://149.130.161.148/api/v1/admin/districts', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`,
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify(formData)
+                        });
+                        
+                        // Verificar si la respuesta es JSON válida
+                        let result;
+                        const contentType = fetchResponse.headers.get('content-type');
+                        if (contentType && contentType.includes('application/json')) {
+                            result = await fetchResponse.json();
+                        } else {
+                            const textResponse = await fetchResponse.text();
+                            console.error('❌ Respuesta no-JSON:', textResponse);
+                            throw new Error(`Error del servidor (${fetchResponse.status}): Respuesta inválida`);
+                        }
+                        
+                        console.log('📥 Respuesta de la API:', result);
+                        console.log('📊 Status HTTP:', fetchResponse.status);
+                        
+                        if (!fetchResponse.ok) {
+                            // Manejar diferentes tipos de errores
+                            if (fetchResponse.status === 400) {
+                                throw new Error(result.message || 'Datos inválidos. Verifique la información ingresada.');
+                            } else if (fetchResponse.status === 401) {
+                                throw new Error('Sesión expirada. Inicie sesión nuevamente.');
+                            } else if (fetchResponse.status === 409) {
+                                throw new Error('El distrito ya existe con el mismo nombre o UBIGEO.');
+                            } else if (fetchResponse.status === 422) {
+                                throw new Error('Datos de validación incorrectos. Verifique los campos.');
+                            } else {
+                                throw new Error(result.message || `Error del servidor (${fetchResponse.status})`);
+                            }
+                        }
+                        
+                        response = result;
+                    }
+                    
+                    console.log('📥 Respuesta final:', response);
+                    
+                    if (response && (response.success || response.status === 'success')) {
                         // Éxito
                         console.log('✅ Distrito creado exitosamente');
                         
@@ -753,17 +799,30 @@
                         
                     } else {
                         // Error de la API
-                        throw new Error(result.message || 'Error al crear el distrito');
+                        throw new Error(response.message || 'Error desconocido al crear el distrito');
                     }
                     
                 } catch (error) {
                     console.error('❌ Error al crear distrito:', error);
+                    console.error('❌ Stack trace:', error.stack);
+                    
+                    // Log adicional para debugging
+                    console.error('🔍 Detalles del error:');
+                    console.error('- Mensaje:', error.message);
+                    console.error('- Tipo:', error.name);
+                    console.error('- Datos del formulario que se intentaron enviar:', {
+                        name: districtNameInput?.value,
+                        provinceId: districtProvinceSelect?.value,
+                        ubigeo: districtUbigeoInput?.value
+                    });
+                    
+                    let errorMessage = error.message || 'Error desconocido al crear el distrito';
                     
                     // Mostrar mensaje de error
                     if (window.GlobalToast) {
-                        GlobalToast.show(error.message || 'Error al crear el distrito', 'error');
+                        GlobalToast.show(errorMessage, 'error');
                     } else {
-                        alert(error.message || 'Error al crear el distrito');
+                        alert(errorMessage);
                     }
                     
                 } finally {

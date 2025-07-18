@@ -67,6 +67,17 @@ class TucModalityInitializer {
                             window.PermissionsService.initializePermissions();
                         }
                         
+                        // *** INICIALIZAR TucModalityController ***
+                        console.log('🚛 Inicializando TucModalityController...');
+                        try {
+                            if (!window.tucModalityController) {
+                                window.tucModalityController = new TucModalityController();
+                                console.log('✅ TucModalityController inicializado correctamente');
+                            }
+                        } catch (error) {
+                            console.error('❌ Error inicializando TucModalityController:', error);
+                        }
+                        
                         // Notificar que el módulo está listo
                         LoadingScreenUtil.notifyModuleLoaded('TucModality');
                         

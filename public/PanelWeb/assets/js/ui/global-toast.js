@@ -29,10 +29,8 @@ window.showRecoveryToast = function(message, type = 'success', duration = 4000) 
     
     if (toast && toastMessage && toastContent) {
         console.log('✅ Todos los elementos encontrados, configurando toast...');
-        
-        // Configurar el mensaje
-        toastMessage.textContent = message;
-        
+        // Si el mensaje es vacío, usar un mensaje formal por defecto
+        toastMessage.textContent = message && message.trim() !== '' ? message : 'Operación realizada correctamente.';
         // Configurar estilos según el tipo
         if (type === 'error') {
             toastContent.classList.remove('success', 'deactivated', 'warning');
@@ -78,11 +76,10 @@ window.showRecoveryToast = function(message, type = 'success', duration = 4000) 
         const fallbackMessage = document.getElementById('toast-message');
         
         if (fallbackToast && fallbackMessage) {
-            fallbackMessage.textContent = message;
+            fallbackMessage.textContent = message && message.trim() !== '' ? message : 'Operación realizada correctamente.';
             fallbackToast.classList.remove('success', 'error', 'info', 'warning');
             fallbackToast.classList.add(type);
             fallbackToast.classList.add('show');
-            
             setTimeout(() => {
                 fallbackToast.classList.remove('show');
             }, duration);

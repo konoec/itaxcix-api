@@ -33,6 +33,9 @@
     
     <!-- TucModality specific styles -->
     <link rel="stylesheet" href="../../assets/css/mastertables/companies.css">
+    <!-- Service y Controller de creación de modalidad TUC -->
+    <script src="../../assets/js/api/services/MasterTables/TucModality/tuc-modality-create-service.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/TucModality/tuc-modality-create-controller.js"></script>
     
     <!-- Font Awesome para iconografía -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -81,13 +84,266 @@
             <!-- Contenedor del topbar - se carga dinámicamente -->
             <div id="topbar-container"></div>
             
-            <!-- Page content area - Se implementará contenido específico aquí -->
+            <!-- Page content area -->
+            <div class="page-header d-print-none">
+                <div class="container-xl">
+                    <!-- Loading State -->
+                    <div id="tuc-modalities-loading" class="tuc-modalities-loading" style="display: none;">
+                        <div class="d-flex justify-content-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <h3 class="mt-3">Cargando modalidades TUC...</h3>
+                            <p class="text-muted">Obteniendo datos del sistema</p>
+                        </div>
+                    </div>
+
+                    <!-- Page Header con estructura Tabler -->
+                    <div id="tuc-modalities-content">
+                        <div class="row g-2 align-items-center">
+                            <div class="col">
+                            </div>
+                            <!-- Page title actions -->
+                            <div class="col-auto ms-auto d-print-none">
+                                <div class="btn-list">
+                                    <button class="btn btn-outline-cyan" id="refresh-tuc-modalities-btn" title="Actualizar datos">
+                                        <i class="fas fa-sync-alt me-1"></i> Actualizar
+                                    </button>
+                                    <button class="btn btn-outline-secondary" id="clear-filters-btn" title="Limpiar filtros">
+                                        <i class="fas fa-broom me-1"></i> Limpiar
+                                    </button>
+                                    <button class="btn btn-outline-success" id="createTucModalityBtn" title="Crear modalidad TUC">
+                                        <i class="fas fa-plus me-1"></i> Crear Modalidad
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Page body -->
             <div class="page-body">
                 <div class="container-xl">
-                    <div class="text-center py-5">
-                        <h2 class="text-muted">Gestión de Modalidades TUC</h2>
-                        <p class="text-muted">El contenido específico se implementará aquí</p>
+
+                    <!-- Statistics Cards with Sparklines -->
+                    <div class="row mb-4" id="tuc-modalities-stats">
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="card card-sm">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <span class="bg-blue text-white avatar">
+                                                <i class="fas fa-id-card"></i>
+                                            </span>
+                                        </div>
+                                        <div class="col">
+                                            <div class="fw-bold" id="total-tuc-modalities">0</div>
+                                            <div class="text-muted">Total Modalidades</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="card card-sm">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <span class="bg-green text-white avatar">
+                                                <i class="fas fa-check-circle"></i>
+                                            </span>
+                                        </div>
+                                        <div class="col">
+                                            <div class="fw-bold" id="active-tuc-modalities">0</div>
+                                            <div class="text-muted">Activas</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="card card-sm">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <span class="bg-red text-white avatar">
+                                                <i class="fas fa-times-circle"></i>
+                                            </span>
+                                        </div>
+                                        <div class="col">
+                                            <div class="fw-bold" id="inactive-tuc-modalities">0</div>
+                                            <div class="text-muted">Inactivas</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="card card-sm">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <span class="bg-yellow text-white avatar">
+                                                <i class="fas fa-chart-line"></i>
+                                            </span>
+                                        </div>
+                                        <div class="col">
+                                            <div class="fw-bold" id="growth-percentage">0%</div>
+                                            <div class="text-muted">Crecimiento</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Filters and Search Card -->
+                    <div class="card mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h3 class="card-title">
+                                <i class="fas fa-filter me-2"></i>
+                                Filtros y Búsqueda
+                            </h3>
+                            <div class="card-actions">
+                                <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#advancedFilters">
+                                    <i class="fas fa-sliders-h me-1"></i>
+                                    Mostrar/Ocultar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="collapse show" id="advancedFilters">
+                            <div class="card-body">
+                                <div class="row g-3">
+                                <!-- Búsqueda general -->
+                                <div class="col-md-4">
+                                    <label class="form-label">Búsqueda General</label>
+                                    <div class="input-group">
+                                        <input type="text" 
+                                               class="form-control" 
+                                               id="tuc-modality-search-input"
+                                               placeholder="Buscar por nombre...">
+                                        <button class="btn btn-primary" type="button" id="search-btn">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                    <small class="form-hint">Busca en nombres de modalidades TUC</small>
+                                </div>
+                                
+                                <!-- Filtro por nombre específico -->
+                                <div class="col-md-4">
+                                    <label class="form-label">Nombre Específico</label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="tuc-modality-name-filter"
+                                           placeholder="Filtrar por nombre exacto">
+                                    <small class="form-hint">Filtro por nombre específico</small>
+                                </div>
+                                
+                                <!-- Filtro por estado -->
+                                <div class="col-md-4">
+                                    <label class="form-label">Estado</label>
+                                    <select class="form-select" id="tuc-modality-status-filter">
+                                        <option value="all">Todos los estados</option>
+                                        <option value="true">Solo activas</option>
+                                        <option value="false">Solo inactivas</option>
+                                    </select>
+                                    <small class="form-hint">Filtrar por estado activo/inactivo</small>
+                                </div>
+                            </div>
+                            
+                            <div class="row g-3 mt-1">
+                                <!-- Ordenamiento -->
+                                <div class="col-md-6">
+                                    <label class="form-label">Ordenar por</label>
+                                    <select class="form-select" id="sort-by-select">
+                                        <option value="id">ID</option>
+                                        <option value="name" selected>Nombre</option>
+                                        <option value="active">Estado</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label class="form-label">Dirección</label>
+                                    <select class="form-select" id="sort-direction-select">
+                                        <option value="ASC" selected>Ascendente</option>
+                                        <option value="DESC">Descendente</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Table Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-id-card me-2"></i>
+                                        Lista de Modalidades TUC
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-vcenter card-table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="w-1">#</th>
+                                        <th>Nombre</th>
+                                        <th>Estado</th>
+                                        <th class="w-1">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tuc-modalities-table-body">
+                                    <!-- Los datos se cargarán dinámicamente aquí -->
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4">
+                                            <div class="text-muted">
+                                                <div class="spinner-border mb-3" role="status"></div>
+                                                <p>Cargando modalidades TUC...</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Pagination Footer -->
+                        <div class="card-footer d-flex align-items-center">
+                            <p class="m-0 text-muted">
+                                Mostrando 
+                                <span id="showing-start">0</span> 
+                                a 
+                                <span id="showing-end">0</span> 
+                                de 
+                                <span id="total-records">0</span> 
+                                entradas
+                            </p>
+                            <ul class="pagination m-0 ms-auto">
+                                <li class="page-item">
+                                    <button class="page-link" id="prev-page-btn" disabled>
+                                        <i class="fas fa-chevron-left"></i>
+                                        Anterior
+                                    </button>
+                                </li>
+                                <li class="page-item active">
+                                    <span class="page-link" id="current-page-info">Página 1 de 1</span>
+                                </li>
+                                <li class="page-item">
+                                    <button class="page-link" id="next-page-btn" disabled>
+                                        Siguiente
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -115,22 +371,20 @@
     
     <!-- 2. Servicios de API básicos -->
     <script src="../../assets/js/api/services/profile-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/TucModality/tuc-modality-service.js"></script>
 
     <!-- 3. Controladores de UI -->
-<script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/TucModality/tuc-modality-controller.js"></script>
 
     <!-- 4. Inicializador específico de la página -->
     <script src="../../assets/js/ui/initializers/MasterTables/tuc-modality-initializer.js"></script>
 
     <!-- 5. Scripts de Tabler para funcionalidad completa -->
     <script src="../../assets/tabler/js/tabler.min.js"></script>
-
-    <!-- 6. Scripts de pantalla de carga (deben ir al final) -->
-    <script src="../../assets/js/ui/loading-screen-util.js"></script>
-    <script src="../../assets/js/ui/loading-screen-controller.js"></script>
 
     <!-- Toast notification for profile operations -->
     <div id="recovery-toast" class="recovery-toast">

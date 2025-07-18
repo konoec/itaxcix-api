@@ -5,83 +5,61 @@
 class InfractionStatusInitializer {
     static async init() {
         console.log('📋 Inicializando página de Gestión de Estado de Infracciones...');
-        
         if (authChecker.checkAuthentication()) {
             authChecker.updateUserDisplay();
             authChecker.setupLogoutButton();
-            
-            // Inicializar ComponentLoader
             const componentLoader = new ComponentLoader();
-            
             try {
                 // Cargar componentes HTML dinámicamente ANTES de inicializar controladores
                 console.log('🔄 Cargando componentes HTML...');
-                
-                // Cargar sidebar
                 await componentLoader.loadComponent('sidebar', '#sidebar-container', {
                     activeSection: window.pageConfig?.activeSection || 'tablas'
                 });
-                
-                // Cargar topbar
                 await componentLoader.loadComponent('topbar', '#topbar-container', {
                     pageTitle: window.pageConfig?.pageTitle || { icon: 'fas fa-clipboard-check', text: 'Gestión de Estado de Infracciones' }
                 });
-                
-                // Cargar profile modal
                 await componentLoader.loadComponent('profile-modal', '#modal-container');
-                
                 console.log('✅ Todos los componentes HTML cargados');
-                
-                // Esperar más tiempo para que el DOM se actualice completamente
                 setTimeout(() => {
-                    // Ahora inicializar controladores que necesitan los elementos del DOM
                     if (!window.sidebarControllerInstance) {
                         window.sidebarControllerInstance = new SidebarController();
                         console.log('📁 SidebarController inicializado');
                     }
-                    
-                    // Inicializar TopBarController DESPUÉS del sidebar con delay adicional
                     setTimeout(() => {
                         if (!window.topBarControllerInstance) {
                             window.topBarControllerInstance = new TopBarController();
                             console.log('🔝 TopBarController inicializado');
                         }
-                        
-                        // Inicializar ProfileController
-                        if (!window.profileControllerInstance) {
-                            window.profileControllerInstance = new ProfileController();
-                            console.log('👤 ProfileController inicializado');
-                            
-                            // Establecer referencia al profile controller en topbar
-                            if (window.topBarControllerInstance) {
-                                window.topBarControllerInstance.profileController = window.profileControllerInstance;
-                                console.log('🔗 Referencia profile-topbar establecida');
+                        setTimeout(() => {
+                            if (!window.infractionStatusListControllerInstance) {
+                                window.infractionStatusListControllerInstance = new InfractionStatusListController();
+                                window.infractionStatusListController = window.infractionStatusListControllerInstance;
+                                window.infractionStatusListControllerInstance.init();
+                                console.log('📋 InfractionStatusListController inicializado');
                             }
-                        }
+                        }, 300);
                     }, 200);
-                    
-                    // Configurar permisos DESPUÉS de que los controladores estén listos
+                    if (!window.profileControllerInstance) {
+                        window.profileControllerInstance = new ProfileController();
+                        console.log('👤 ProfileController inicializado');
+                        if (window.topBarControllerInstance) {
+                            window.topBarControllerInstance.profileController = window.profileControllerInstance;
+                            console.log('🔗 Referencia profile-topbar establecida');
+                        }
+                    }
                     setTimeout(() => {
                         if (window.PermissionsService) {
                             console.log('🔧 Inicializando sistema de permisos...');
                             window.PermissionsService.initializePermissions();
                         }
-                        
-                        // Notificar que el módulo está listo
                         LoadingScreenUtil.notifyModuleLoaded('InfractionStatus');
-                        
-                        console.log('✅ Estado de Infracciones inicializado completamente');
-                    }, 400);
-                    
+                        console.log('✅ Estado de Infracciones inicializados completamente');
+                    }, 100);
                 }, 500);
-                
             } catch (error) {
                 console.error('❌ Error cargando componentes:', error);
-                
-                // Notificar que el módulo está listo (incluso con error)
                 LoadingScreenUtil.notifyModuleLoaded('InfractionStatus');
             }
-            
         } else {
             console.log('❌ Usuario no autenticado, redirigiendo...');
         }
@@ -91,12 +69,17 @@ class InfractionStatusInitializer {
 // Auto-inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
     console.log('📄 DOM cargado, iniciando InfractionStatusInitializer...');
-    
-    // Pequeño delay para asegurar que todos los scripts estén cargados
     setTimeout(() => {
         InfractionStatusInitializer.init();
+        // Agregar evento para abrir el modal de creación
+        const createBtn = document.getElementById('createInfractionStatusBtn');
+        if (createBtn && window.infractionStatusCreateController) {
+            createBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.infractionStatusCreateController.openCreateModal();
+            });
+        }
     }, 500);
 });
 
 console.log('📝 InfractionStatusInitializer definido y configurado');
-

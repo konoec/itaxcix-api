@@ -61,60 +61,6 @@ class ConfigurationService {
 
             console.log('🌐 Llamando API:', `${this.baseUrl}${this.endpoint}?${params.toString()}`);
 
-            // TEMPORAL: Datos de prueba para testing
-            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                console.log('🧪 Usando datos de prueba para localhost');
-                const mockData = {
-                    success: true,
-                    message: "Configuraciones obtenidas correctamente",
-                    data: {
-                        items: [
-                            {
-                                id: 1,
-                                key: "app.maintenance_mode",
-                                value: "false",
-                                active: true,
-                                description: "Modo de mantenimiento de la aplicación",
-                                category: "Sistema",
-                                created_at: "2024-01-15T10:30:00Z"
-                            },
-                            {
-                                id: 2,
-                                key: "app.session_timeout",
-                                value: "3600",
-                                active: true,
-                                description: "Tiempo de expiración de sesión en segundos",
-                                category: "Seguridad",
-                                created_at: "2024-01-15T10:31:00Z"
-                            },
-                            {
-                                id: 3,
-                                key: "mail.enabled",
-                                value: "true",
-                                active: false,
-                                description: "Habilitar envío de emails",
-                                category: "Email",
-                                created_at: "2024-01-15T10:32:00Z"
-                            }
-                        ],
-                        meta: {
-                            currentPage: 1,
-                            perPage: 15,
-                            total: 3,
-                            lastPage: 1
-                        }
-                    }
-                };
-
-                // Guardar en cache
-                this.cache.set(cacheKey, {
-                    data: mockData,
-                    timestamp: Date.now()
-                });
-
-                return mockData;
-            }
-
             const url = `${this.baseUrl}${this.endpoint}?${params.toString()}`;
             
             const response = await fetch(url, {
@@ -154,54 +100,6 @@ class ConfigurationService {
         try {
             console.log('🔍 Obteniendo configuración por ID:', id);
 
-            // TEMPORAL: Datos de prueba para testing
-            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                console.log('🧪 Usando datos de prueba para getConfigurationById');
-                
-                const mockConfigs = {
-                    1: {
-                        id: 1,
-                        key: "app.maintenance_mode",
-                        value: "false",
-                        active: true,
-                        description: "Modo de mantenimiento de la aplicación",
-                        category: "Sistema",
-                        created_at: "2024-01-15T10:30:00Z"
-                    },
-                    2: {
-                        id: 2,
-                        key: "app.session_timeout",
-                        value: "3600",
-                        active: true,
-                        description: "Tiempo de expiración de sesión en segundos",
-                        category: "Seguridad",
-                        created_at: "2024-01-15T10:31:00Z"
-                    },
-                    3: {
-                        id: 3,
-                        key: "mail.enabled",
-                        value: "true",
-                        active: false,
-                        description: "Habilitar envío de emails",
-                        category: "Email",
-                        created_at: "2024-01-15T10:32:00Z"
-                    }
-                };
-
-                const config = mockConfigs[id];
-                if (config) {
-                    return {
-                        success: true,
-                        message: "Configuración encontrada",
-                        data: {
-                            configuration: config
-                        }
-                    };
-                } else {
-                    throw new Error('Configuración no encontrada');
-                }
-            }
-
             const response = await fetch(`${this.baseUrl}${this.endpoint}/${id}`, {
                 method: 'GET',
                 headers: {
@@ -215,7 +113,11 @@ class ConfigurationService {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            return await response.json();
+            const result = await response.json();
+            if (!result.message || result.message.trim().toUpperCase() === 'OK') {
+                result.message = 'Configuración guardada correctamente';
+            }
+            return result;
         } catch (error) {
             console.error('Error fetching configuration by ID:', error);
             throw error;
@@ -274,39 +176,6 @@ class ConfigurationService {
             console.log('🔄 Actualizando configuración ID:', id);
             console.log('🔄 Datos a enviar:', configData);
 
-            // TEMPORAL: Simular respuesta exitosa para testing
-            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                console.log('🧪 Simulando actualización para localhost');
-                
-                // Simular delay de red
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
-                const mockResponse = {
-                    success: true,
-                    message: "OK",
-                    data: {
-                        configuration: {
-                            id: id,
-                            key: configData.key,
-                            value: configData.value,
-                            active: configData.active,
-                            description: "Configuración actualizada correctamente",
-                            category: "Sistema"
-                        },
-                        message: "Configuración actualizada correctamente."
-                    },
-                    error: null,
-                    timestamp: {
-                        date: new Date().toISOString(),
-                        timezone_type: 3,
-                        timezone: "America/Lima"
-                    }
-                };
-
-                console.log('🧪 Respuesta simulada:', mockResponse);
-                return mockResponse;
-            }
-
             const url = `${this.baseUrl}${this.endpoint}/${id}`;
             console.log('🌐 URL de actualización:', url);
 
@@ -349,26 +218,6 @@ class ConfigurationService {
     async deleteConfiguration(id) {
         try {
             console.log('🗑️ Eliminando configuración ID:', id);
-
-            // TEMPORAL: Simular respuesta exitosa para testing
-            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                console.log('🧪 Simulando eliminación para localhost');
-                
-                // Simular delay de red
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                
-                const mockResponse = {
-                    success: true,
-                    message: "Configuración eliminada correctamente."
-                };
-
-                console.log('🧪 Respuesta simulada:', mockResponse);
-                
-                // Limpiar cache
-                this.clearCache();
-                
-                return mockResponse;
-            }
 
             const url = `${this.baseUrl}${this.endpoint}/${id}`;
             console.log('🌐 URL de eliminación:', url);

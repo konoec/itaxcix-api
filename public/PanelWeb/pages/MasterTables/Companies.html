@@ -141,9 +141,6 @@
                                             </div>
                                         </div>
                                         <!-- Mini sparkline chart for total companies -->
-                                        <div class="chart-sm mt-2">
-                                            <div id="sparkline-total-companies" class="sparkline-container"></div>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -162,9 +159,6 @@
                                             </div>
                                         </div>
                                         <!-- Mini sparkline chart for active companies -->
-                                        <div class="chart-sm mt-2">
-                                            <div id="sparkline-active-companies" class="sparkline-container"></div>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -182,10 +176,6 @@
                                                 <div class="text-muted">Inactivas</div>
                                             </div>
                                         </div>
-                                        <!-- Mini sparkline chart for inactive companies -->
-                                        <div class="chart-sm mt-2">
-                                            <div id="sparkline-inactive-companies" class="sparkline-container"></div>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -202,10 +192,6 @@
                                                 <div class="fw-bold" id="growth-percentage">0%</div>
                                                 <div class="text-muted">Crecimiento</div>
                                             </div>
-                                        </div>
-                                        <!-- Mini sparkline chart for growth -->
-                                        <div class="chart-sm mt-2">
-                                            <div id="sparkline-growth" class="sparkline-container"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -238,7 +224,21 @@
                                                 <i class="fas fa-search"></i>
                                             </button>
                                         </div>
-                                    </div>
+                                    </div>                             
+<div class="col-md-2">
+    <label class="form-label text-muted">
+        <i class="fas fa-list-ol me-1"></i>
+        Por Página
+    </label>
+    <select class="form-select" id="companies-per-page">
+        <option value="5">5</option>
+        <option value="15" selected>15</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+    </select>
+</div>
+
                                     <div class="col-md-2">
                                         <label class="form-label">Estado</label>
                                         <select class="form-select" id="company-status-filter">
@@ -310,7 +310,6 @@
                                             <th>Empresa</th>
                                             <th>RUC</th>
                                             <th>Estado</th>
-                                            <th>Fecha Registro</th>
                                             <th class="w-1">Acciones</th>
                                         </tr>
                                     </thead>
@@ -324,23 +323,9 @@
                                     Mostrando <span id="showing-start">0</span> a <span id="showing-end">0</span> 
                                     de <span id="total-records">0</span> registros
                                 </p>
-                                <ul class="pagination m-0 ms-auto">
-                                    <li class="page-item">
-                                        <button class="page-link" id="prev-page-btn" disabled>
-                                            <i class="fas fa-chevron-left"></i>
-                                            Anterior
-                                        </button>
-                                    </li>
-                                    <li class="page-item active">
-                                        <span class="page-link" id="current-page-info">1</span>
-                                    </li>
-                                    <li class="page-item">
-                                        <button class="page-link" id="next-page-btn">
-                                            Siguiente
-                                            <i class="fas fa-chevron-right"></i>
-                                        </button>
-                                    </li>
-                                </ul>
+                                <nav id="pagination-container" class="ms-auto">
+                            <ul class="pagination justify-content-center m-0"></ul>
+                                </nav>
                             </div>
                         </div>
                     </div>
@@ -525,20 +510,25 @@
     <!-- 2. Servicios de API -->
     <script src="../../assets/js/api/services/profile-service.js"></script>
     <script src="../../assets/js/api/services/MasterTables/Company/company-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/Company/company-create-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/Company/company-update-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/Company/company-delete-service.js"></script>
 
+    <!-- 5. Scripts de Tabler para funcionalidad completa -->
+    <script src="../../assets/tabler/js/tabler.min.js"></script>
     <!-- 3. Controladores de UI -->
     <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/global-confirmation-modal-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/Company/edit-company-controller.js"></script>
     <script src="../../assets/js/ui/controllers/MasterTables/Company/company-controller.js"></script>
 
     <!-- 4. Inicializador específico de la página -->
     <script src="../../assets/js/ui/initializers/MasterTables/company-initializer.js"></script>
 
-    <!-- 5. Scripts de Tabler para funcionalidad completa -->
-    <script src="../../assets/tabler/js/tabler.min.js"></script>
+    
 
     <!-- Verificación de sistema de toast -->
     <script>

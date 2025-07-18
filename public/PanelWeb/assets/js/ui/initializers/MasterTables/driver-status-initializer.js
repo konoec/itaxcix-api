@@ -51,6 +51,7 @@ class DriverStatusInitializer {
                         setTimeout(() => {
                             if (!window.driverStatusListControllerInstance) {
                                 window.driverStatusListControllerInstance = new DriverStatusListController();
+                                window.driverStatusListController = window.driverStatusListControllerInstance; // Alias para compatibilidad
                                 window.driverStatusListControllerInstance.init();
                                 console.log('📋 DriverStatusListController inicializado');
                             }

@@ -1,7 +1,3 @@
-/**
- * Inicializador específico para la página de Gestión de Tipos de Servicio
- * Maneja solo los componentes y controladores necesarios para esta página específica
- */
 class ServiceTypeInitializer {
     static async init() {
         console.log('🔔 Inicializando página de Gestión de Tipos de Servicio...');
@@ -65,6 +61,17 @@ class ServiceTypeInitializer {
                         if (window.PermissionsService) {
                             console.log('🔧 Inicializando sistema de permisos...');
                             window.PermissionsService.initializePermissions();
+                        }
+                        
+                        // *** FALTABA ESTO: Inicializar ServiceTypeController ***
+                        console.log('🚕 Inicializando ServiceTypeController...');
+                        try {
+                            if (!window.serviceTypeController) {
+                                window.serviceTypeController = new ServiceTypeController();
+                                console.log('✅ ServiceTypeController inicializado correctamente');
+                            }
+                        } catch (error) {
+                            console.error('❌ Error inicializando ServiceTypeController:', error);
                         }
                         
                         // Notificar que el módulo está listo

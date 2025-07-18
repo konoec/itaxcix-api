@@ -99,6 +99,41 @@ class UserCodeTypeInitializer {
                             console.error('❌ Error al inicializar CreateUserCodeTypeController:', error);
                         }
                     }, 200);
+                
+
+                    // Inicializar el controlador de actualización de tipo de código de usuario
+                    setTimeout(() => {
+                        try {
+                            if (typeof UpdateUserCodeTypeController === 'undefined') {
+                                throw new Error('UpdateUserCodeTypeController no está disponible');
+                            }
+                            window.updateUserCodeTypeController = new UpdateUserCodeTypeController(
+                                function(updatedType) {
+                                    // Refrescar la lista si existe el controlador de lista
+                                    if (window.UserCodeTypeListController && typeof window.UserCodeTypeListController.load === 'function') {
+                                        window.UserCodeTypeListController.load();
+                                    }
+                                }
+                            );
+                            console.log('✏️ UpdateUserCodeTypeController inicializado');
+                        } catch (error) {
+                            console.error('❌ Error al inicializar UpdateUserCodeTypeController:', error);
+                        }
+                    }, 250);
+
+                    // Inicializar el controlador de eliminación de tipo de código de usuario
+                    setTimeout(() => {
+                        try {
+                            if (typeof DeleteUserCodeTypeController === 'undefined') {
+                                throw new Error('DeleteUserCodeTypeController no está disponible');
+                            }
+                            window.deleteUserCodeTypeController = new DeleteUserCodeTypeController();
+                            console.log('🗑️ DeleteUserCodeTypeController inicializado');
+                        } catch (error) {
+                            console.error('❌ Error al inicializar DeleteUserCodeTypeController:', error);
+                        }
+                    }, 300);
+                }, 200);
                     
                     // Configurar permisos DESPUÉS de que los controladores estén listos
                     setTimeout(() => {
@@ -111,9 +146,7 @@ class UserCodeTypeInitializer {
                         LoadingScreenUtil.notifyModuleLoaded('UserCodeType');
                         
                         console.log('✅ Tipos de Código Usuario inicializado completamente');
-                    }, 400);
-                    
-                }, 500);
+                    }, 400);                    
                 
             } catch (error) {
                 console.error('❌ Error cargando componentes:', error);

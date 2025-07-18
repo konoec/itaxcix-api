@@ -610,17 +610,25 @@ class DriverStatusListController {
                         </div>
                     </div>
                 </td>
-                <td class="text-center">
+                <td>
                     ${status.active ? 
-                        '<span class="badge bg-success"><i class="fas fa-check me-1"></i>Activo</span>' : 
-                        '<span class="badge bg-danger"><i class="fas fa-times me-1"></i>Inactivo</span>'
+                        '<span class="badge bg-success-lt"><i class="fas fa-check-circle me-1"></i>Activo</span>' : 
+                        '<span class="badge bg-danger-lt"><i class="fas fa-times-circle me-1"></i>Inactivo</span>'
                     }
                 </td>
                 <td>
                     <div class="btn-list flex-nowrap">
                         <button class="btn btn-sm btn-outline-primary" 
-                                title="Ver detalles">
-                            <i class="fas fa-eye"></i>
+                                data-action="edit-driver-status"
+                                data-driver-status-id="${status.id}"
+                                title="Editar estado">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" 
+                                data-action="delete-driver-status"
+                                data-driver-status-id="${status.id}"
+                                title="Eliminar estado">
+                            <i class="fas fa-trash"></i>
                         </button>
                     </div>
                 </td>
@@ -888,8 +896,11 @@ class DriverStatusListController {
      */
     handleAddStatus() {
         console.log('➕ Abriendo modal para agregar nuevo estado de conductor');
-        // TODO: Implementar modal de creación cuando se cree el endpoint POST
-        this.showErrorToast('Funcionalidad de agregar nuevo estado próximamente disponible');
+        if (window.driverStatusCreateController && typeof window.driverStatusCreateController.openCreateModal === 'function') {
+            window.driverStatusCreateController.openCreateModal();
+        } else {
+            this.showErrorToast('No se encontró el controlador de creación de estado');
+        }
     }
 
     /**

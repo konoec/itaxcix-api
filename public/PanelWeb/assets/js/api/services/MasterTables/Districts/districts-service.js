@@ -44,7 +44,11 @@ class DistrictsService {
             const errorData = await response.json().catch(() => ({}));
             throw new Error(errorData.message || 'Error al obtener distritos');
         }
-        return await response.json();
+        const result = await response.json();
+        if (!result.message || result.message.trim().toUpperCase() === 'OK') {
+            result.message = 'Distrito creado correctamente';
+        }
+        return result;
     }
 }
 window.DistrictsService = DistrictsService;

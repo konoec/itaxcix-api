@@ -89,9 +89,6 @@ class DeleteConfigurationModalController {
                                                 <div class="font-weight-medium" id="delete-config-key">
                                                     <span class="placeholder col-6"></span>
                                                 </div>
-                                                <div class="text-muted" id="delete-config-description">
-                                                    <span class="placeholder col-8"></span>
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -186,8 +183,14 @@ class DeleteConfigurationModalController {
      */
     async openModal(configId, configData = null) {
         console.log('🚀 Abriendo modal de eliminación para ID:', configId);
+        
+        // Si ya tenemos datos, usar el método más directo
+        if (configData) {
+            this.openModalWithData(configData);
+            return;
+        }
+
         this.currentConfigId = configId;
-        this.currentConfigData = configData;
         
         try {
             // Asegurar que el modal existe en el DOM
@@ -200,17 +203,10 @@ class DeleteConfigurationModalController {
                 return;
             }
 
-            // Si ya tenemos datos, usar directamente
-            if (configData) {
-                console.log('� Usando datos proporcionados directamente');
-                this.populateModal(configData);
-                this.showModal();
-            } else {
-                // Si no tenemos datos, cargarlos
-                console.log('📥 Cargando datos de configuración...');
-                await this.loadConfigurationData(configId);
-                this.showModal();
-            }
+            // Como último recurso, intentar cargar datos del servidor
+            console.log('📥 Cargando datos de configuración desde servidor...');
+            await this.loadConfigurationData(configId);
+            this.showModal();
 
         } catch (error) {
             console.error('❌ Error opening modal:', error);
@@ -247,17 +243,10 @@ class DeleteConfigurationModalController {
         console.log('📝 Rellenando modal con datos:', configData);
         
         const keyElement = document.getElementById('delete-config-key');
-        const descriptionElement = document.getElementById('delete-config-description');
         
         if (keyElement) {
             // Remover placeholder y agregar contenido real
             keyElement.innerHTML = `<code class="text-danger">${configData.key || 'Configuración desconocida'}</code>`;
-        }
-        
-        if (descriptionElement) {
-            // Remover placeholder y agregar descripción
-            const description = configData.description || 'Sin descripción disponible';
-            descriptionElement.innerHTML = `<small class="text-muted">${description}</small>`;
         }
         
         console.log('✅ Modal rellenado correctamente con componentes Tabler');
@@ -408,10 +397,8 @@ class DeleteConfigurationModalController {
         
         // Limpiar contenido
         const keyElement = document.getElementById('delete-config-key');
-        const descriptionElement = document.getElementById('delete-config-description');
         
         if (keyElement) keyElement.textContent = '-';
-        if (descriptionElement) descriptionElement.textContent = '-';
     }
 
     /**
@@ -419,8 +406,21 @@ class DeleteConfigurationModalController {
      * @param {string} message - Mensaje a mostrar
      */
     showSuccess(message) {
-        if (window.globalToast) {
+        console.log('✅ Mostrando mensaje de éxito:', message);
+        
+        // Intentar múltiples formas de mostrar el toast
+        if (window.GlobalToast && typeof window.GlobalToast.show === 'function') {
+            console.log('📢 Usando window.GlobalToast.show');
+            window.GlobalToast.show(message, 'success');
+        } else if (window.showRecoveryToast && typeof window.showRecoveryToast === 'function') {
+            console.log('📢 Usando window.showRecoveryToast');
+            window.showRecoveryToast(message, 'success');
+        } else if (window.globalToast && typeof window.globalToast.show === 'function') {
+            console.log('📢 Usando window.globalToast.show');
             window.globalToast.show(message, 'success');
+        } else {
+            console.warn('⚠️ Sistema de toast no disponible, usando alert como fallback');
+            alert(`✅ ${message}`);
         }
     }
 
@@ -429,8 +429,21 @@ class DeleteConfigurationModalController {
      * @param {string} message - Mensaje a mostrar
      */
     showError(message) {
-        if (window.globalToast) {
+        console.log('❌ Mostrando mensaje de error:', message);
+        
+        // Intentar múltiples formas de mostrar el toast
+        if (window.GlobalToast && typeof window.GlobalToast.show === 'function') {
+            console.log('📢 Usando window.GlobalToast.show');
+            window.GlobalToast.show(message, 'error');
+        } else if (window.showRecoveryToast && typeof window.showRecoveryToast === 'function') {
+            console.log('📢 Usando window.showRecoveryToast');
+            window.showRecoveryToast(message, 'error');
+        } else if (window.globalToast && typeof window.globalToast.show === 'function') {
+            console.log('📢 Usando window.globalToast.show');
             window.globalToast.show(message, 'error');
+        } else {
+            console.warn('⚠️ Sistema de toast no disponible, usando alert como fallback');
+            alert(`❌ ${message}`);
         }
     }
 
@@ -446,12 +459,29 @@ class DeleteConfigurationModalController {
             return;
         }
 
-        // Guardar los datos para uso posterior
-        this.currentConfigData = configData;
-        
-        // Crear y mostrar el modal
-        this.createModalHTML(configData);
-        this.showModal();
+        try {
+            // Asegurar que el modal existe en el DOM
+            const modalElement = document.getElementById(this.modalId);
+            console.log('🔍 Modal element encontrado:', !!modalElement);
+            
+            if (!modalElement) {
+                console.error(`❌ Modal element with ID ${this.modalId} not found`);
+                this.showError('Error: No se pudo encontrar el modal');
+                return;
+            }
+
+            // Guardar los datos para uso posterior
+            this.currentConfigId = configData.id;
+            this.currentConfigData = configData;
+            
+            // Rellenar el modal con los datos y mostrarlo
+            this.populateModal(configData);
+            this.showModal();
+
+        } catch (error) {
+            console.error('❌ Error opening modal with data:', error);
+            this.showError('Error al abrir el modal de eliminación');
+        }
     }
 }
 

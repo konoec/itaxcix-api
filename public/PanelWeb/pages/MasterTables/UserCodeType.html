@@ -26,6 +26,9 @@
     <!-- Loading screen styles -->
     <link rel="stylesheet" href="../../assets/css/loading-screen.css">
     
+    <!-- Confirmation modal styles -->
+    <link rel="stylesheet" href="../../assets/css/confirmation-modal.css">
+    
     <!-- Component specific styles -->
     <link rel="stylesheet" href="../../assets/css/sidebar.css">
     <link rel="stylesheet" href="../../assets/css/topbar.css">
@@ -323,10 +326,6 @@
                                 <i class="fas fa-circle-half-stroke me-1 text-primary"></i>
                                 Estado
                               </th>
-                              <th class="text-center">
-                                <i class="fas fa-user-tag me-1 text-info"></i>
-                                Visual
-                              </th>
                               <th class="w-1 text-center">
                                 <i class="fas fa-cogs me-1 text-muted"></i>
                                 Acciones
@@ -335,7 +334,7 @@
                           </thead>
                           <tbody id="userCodeTypeTableBody">
                             <tr>
-                              <td colspan="5" class="text-center py-4">
+                              <td colspan="4" class="text-center py-4">
                                 <div class="d-flex justify-content-center align-items-center">
                                   <div class="spinner-border spinner-border-sm me-2" role="status"></div>
                                   <span>Cargando tipos de código de usuario...</span>
@@ -425,16 +424,26 @@
     <script src="../../assets/js/api/services/MasterTables/UserCodeType/user-code-type-service.js"></script>
     <!-- Servicio para crear tipo de código de usuario -->
     <script src="../../assets/js/api/services/MasterTables/UserCodeType/create-user-code-type-service.js"></script>
+    <!-- Servicio para actualizar tipo de código de usuario -->
+    <script src="../../assets/js/api/services/MasterTables/UserCodeType/update-user-code-type-service.js"></script>
+    <!-- Servicio para eliminar tipo de código de usuario -->
+    <script src="../../assets/js/api/services/MasterTables/UserCodeType/delete-user-code-type-service.js"></script>
 
     <!-- 3. Controladores de UI -->
     <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
+    <!-- Controlador del modal de confirmación global -->
+    <script src="../../assets/js/ui/controllers/Components/global-confirmation-modal-controller.js"></script>
     <!-- Controlador de lista de tipos de código de usuario -->
     <script src="../../assets/js/ui/controllers/MasterTables/UserCodeType/user-code-type-list-controller.js"></script>
     <!-- Controlador de creación de tipo de código de usuario -->
     <script src="../../assets/js/ui/controllers/MasterTables/UserCodeType/create-user-code-type-controller.js"></script>
+    <!-- Controlador de actualización de tipo de código de usuario -->
+    <script src="../../assets/js/ui/controllers/MasterTables/UserCodeType/update-user-code-type-controller.js"></script>
+    <!-- Controlador de eliminación de tipo de código de usuario -->
+    <script src="../../assets/js/ui/controllers/MasterTables/UserCodeType/delete-user-code-type-controller.js"></script>
 
     <!-- 4. Inicializador específico de la página -->
     <script src="../../assets/js/ui/initializers/MasterTables/user-code-type-initializer.js"></script>
@@ -450,22 +459,5 @@
         </div>
     </div>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      var activeFilter = document.getElementById('activeFilter');
-      var activeFilterIcon = document.getElementById('activeFilterIcon');
-      if (activeFilter && activeFilterIcon) {
-        activeFilter.addEventListener('change', function() {
-          if (activeFilter.value === 'true') {
-            activeFilterIcon.className = 'fas fa-toggle-on me-1 text-primary';
-          } else if (activeFilter.value === 'false') {
-            activeFilterIcon.className = 'fas fa-toggle-off me-1 text-secondary';
-          } else {
-            activeFilterIcon.className = 'fas fa-circle-half-stroke me-1 text-primary';
-          }
-        });
-      }
-    });
-    </script>
 </body>
 </html>

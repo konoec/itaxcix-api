@@ -56,8 +56,26 @@ class BrandInitializer {
                         // Establecer referencia al profile controller en topbar
                         if (window.topBarControllerInstance) {
                             window.topBarControllerInstance.profileController = window.profileControllerInstance;
-                            console.log('� Referencia profile-topbar establecida');
+                            console.log('🔗 Referencia profile-topbar establecida');
                         }
+                    }
+                    
+                    // Inicializar BrandListController específico del módulo
+                    if (!window.brandListControllerInstance && typeof BrandListController !== 'undefined') {
+                        window.brandListControllerInstance = new BrandListController();
+                        window.brandListController = window.brandListControllerInstance;
+                        if (typeof window.brandListControllerInstance.init === 'function') {
+                            window.brandListControllerInstance.init();
+                            console.log('📋 BrandListController inicializado con init()');
+                        } else {
+                            console.log('📋 BrandListController inicializado (sin método init)');
+                        }
+                    }
+                    // Inicializar BrandEditController
+                    if (!window.brandEditControllerInstance) {
+                        window.brandEditControllerInstance = new BrandEditController();
+                        window.brandEditController = window.brandEditControllerInstance;
+                        console.log('📝 BrandEditController inicializado');
                     }
                     
                     // Configurar permisos DESPUÉS de que los controladores estén listos

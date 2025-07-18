@@ -31,7 +31,11 @@ class CreateProvinceService {
                 throw new Error(errorData.message || 'Error al crear provincia');
             }
 
-            return await response.json();
+            const result = await response.json();
+            if (!result.message || result.message.trim().toUpperCase() === 'OK') {
+                result.message = 'Provincia creada correctamente';
+            }
+            return result;
         } catch (error) {
             throw error;
         }

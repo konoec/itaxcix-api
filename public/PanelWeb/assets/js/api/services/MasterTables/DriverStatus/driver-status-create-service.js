@@ -4,7 +4,7 @@
  */
 class DriverStatusCreateService {
     constructor() {
-        this.baseUrl = window.API_BASE_URL || 'http://localhost:8080';
+        this.baseUrl = 'https://149.130.161.148/api/v1';
         this.apiUrl = `${this.baseUrl}/admin/driver-statuses`;
     }
 
@@ -17,8 +17,9 @@ class DriverStatusCreateService {
      */
     async createDriverStatus(driverStatusData) {
         try {
-            const token = localStorage.getItem('adminToken');
+            const token = sessionStorage.getItem('authToken');
             if (!token) {
+                console.error('Token de autenticación no encontrado en sessionStorage. Asegúrate de iniciar sesión antes de realizar esta acción.');
                 throw new Error('Token de autenticación no encontrado');
             }
 
@@ -36,7 +37,11 @@ class DriverStatusCreateService {
                 throw new Error(errorData.message || `Error HTTP: ${response.status}`);
             }
 
-            return await response.json();
+            const result = await response.json();
+            if (!result.message || result.message.trim().toUpperCase() === 'OK') {
+                result.message = 'Estado de conductor creado correctamente';
+            }
+            return result;
         } catch (error) {
             console.error('Error al crear estado de conductor:', error);
             throw error;

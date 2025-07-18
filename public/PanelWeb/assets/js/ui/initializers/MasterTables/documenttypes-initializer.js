@@ -49,16 +49,26 @@ class DocumentTypesInitializer {
                     }, 200);
                     
                     // Inicializar ProfileController
-                    if (!window.profileControllerInstance) {
-                        window.profileControllerInstance = new ProfileController();
-                        console.log('👤 ProfileController inicializado');
-                        
-                        // Establecer referencia al profile controller en topbar
-                        if (window.topBarControllerInstance) {
-                            window.topBarControllerInstance.profileController = window.profileControllerInstance;
-                            console.log('🔗 Referencia profile-topbar establecida');
+                    setTimeout(() => {
+                        if (!window.profileControllerInstance) {
+                            window.profileControllerInstance = new ProfileController();
+                            console.log('👤 ProfileController inicializado');
+                            
+                            // Establecer referencia al profile controller en topbar
+                            if (window.topBarControllerInstance) {
+                                window.topBarControllerInstance.profileController = window.profileControllerInstance;
+                                console.log('🔗 Referencia profile-topbar establecida');
+                            }
                         }
-                    }
+                    }, 300);
+                    
+                    // Inicializar controlador principal de DocumentTypes
+                    setTimeout(() => {
+                        if (!window.documentTypesListController) {
+                            window.documentTypesListController = new DocumentTypesListController();
+                            console.log('📋 DocumentTypesListController inicializado');
+                        }
+                    }, 400);
                     
                     // Configurar permisos DESPUÉS de que los controladores estén listos
                     setTimeout(() => {
@@ -71,7 +81,7 @@ class DocumentTypesInitializer {
                         
                         // Notificar que este módulo ha terminado de cargar
                         LoadingScreenUtil.notifyModuleLoaded('DocumentTypes');
-                    }, 100);
+                    }, 500);
                     
                 }, 500);
                 
@@ -97,5 +107,3 @@ document.addEventListener('DOMContentLoaded', function() {
         DocumentTypesInitializer.init();
     }, 500);
 });
-
-console.log('📝 DocumentTypesInitializer definido y configurado');

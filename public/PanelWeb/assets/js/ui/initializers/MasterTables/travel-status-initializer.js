@@ -58,6 +58,17 @@ class TravelStatusInitializer {
                                 console.log('🔗 Referencia profile-topbar establecida');
                             }
                         }
+                        
+                        // Inicializar controlador principal de TravelStatus
+                        if (!window.travelStatusListController) {
+                            window.travelStatusListController = new TravelStatusListController();
+                            console.log('🚗 TravelStatusListController inicializado');
+                        }
+                        // Inicializar TravelStatusCreateController
+                        if (!window.travelStatusCreateController && typeof TravelStatusCreateController !== 'undefined') {
+                            window.travelStatusCreateController = new TravelStatusCreateController();
+                            console.log('📝 TravelStatusCreateController inicializado');
+                        }
                     }, 200);
                     
                     // Configurar permisos DESPUÉS de que los controladores estén listos

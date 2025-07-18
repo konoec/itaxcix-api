@@ -83,7 +83,7 @@ class UpdateUserStatusController {
             <div class="modal modal-blur fade" id="editUserStatusModal" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content shadow-lg border-0">
-                        <div class="modal-header bg-orange text-white">
+                        <div class="modal-header bg-blue text-white">
                             <h5 class="modal-title">
                                 <i class="fas fa-edit me-2"></i>
                                 Editar Estado de Usuario
@@ -143,7 +143,7 @@ class UpdateUserStatusController {
                                     <i class="fas fa-times me-1"></i>
                                     Cancelar
                                 </button>
-                                <button type="submit" class="btn btn-orange" id="editUserStatusSubmitBtn">
+                                <button type="submit" class="btn btn-blue" id="editUserStatusSubmitBtn">
                                     <i class="fas fa-save me-1"></i>
                                     Actualizar Estado
                                 </button>

@@ -1,141 +1,349 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <!-- Configuración básica del documento -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- Configuración de caché para prevenir almacenamiento de datos sensibles -->
-    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="../../assets/Recourse/Logo/1.png">
-    <link rel="shortcut icon" href="../../assets/Recourse/Logo/1.png">
-    
-    <title>Panel de Administración - Categorías</title>
-    
-    <!-- Tabler CSS Framework -->
-    <link rel="stylesheet" href="../../assets/tabler/css/tabler.min.css">
-    <link rel="stylesheet" href="../../assets/tabler/css/tabler-vendors.min.css">
-    
-    <!-- Loading screen styles (must be loaded first) -->
-    <link rel="stylesheet" href="../../assets/css/loading-screen.css">
-    
-    <!-- Global toast styles -->
-    <link rel="stylesheet" href="../../assets/css/global-toast.css">
-    
-    <!-- Component specific styles -->
-    <link rel="stylesheet" href="../../assets/css/sidebar.css">
-    <link rel="stylesheet" href="../../assets/css/topbar.css">
-    <link rel="stylesheet" href="../../assets/css/profile.css">
-    
-    <!-- Category specific styles -->
-    <link rel="stylesheet" href="../../assets/css/mastertables/companies.css">
-    
-    <!-- Font Awesome para iconografía -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <!-- Configuración de la página -->
-    <script>
-        window.pageConfig = {
-            activeSection: 'tablas', // Sección activa en el sidebar
-            pageTitle: {
-                icon: 'fas fa-folder',
-                text: 'Gestión de Categorías'
-            }
-        };
-    </script>
+  <!-- Configuración básica del documento -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Prevención de caché -->
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="../../assets/Recourse/Logo/1.png" />
+  <link rel="shortcut icon" href="../../assets/Recourse/Logo/1.png" />
+
+  <title>Panel de Administración - Categorías</title>
+
+  <!-- Tabler CSS -->
+  <link rel="stylesheet" href="../../assets/tabler/css/tabler.min.css" />
+  <link rel="stylesheet" href="../../assets/tabler/css/tabler-vendors.min.css" />
+
+  <!-- Loading screen styles -->
+  <link rel="stylesheet" href="../../assets/css/loading-screen.css" />
+
+  <!-- Global toast styles -->
+  <link rel="stylesheet" href="../../assets/css/global-toast.css" />
+
+  <!-- Component styles -->
+  <link rel="stylesheet" href="../../assets/css/sidebar.css" />
+  <link rel="stylesheet" href="../../assets/css/topbar.css" />
+  <link rel="stylesheet" href="../../assets/css/profile.css" />
+
+  <!-- Category styles -->
+  <link rel="stylesheet" href="../../assets/css/mastertables/companies.css" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+  <!-- Configuración de la página -->
+  <script>
+    window.pageConfig = {
+      activeSection: 'tablas',
+      pageTitle: {
+        icon: 'fas fa-folder',
+        text: 'Gestión de Categorías'
+      }
+    };
+  </script>
 </head>
 <body>
-    <!-- Pantalla de carga moderna - visible inmediatamente -->
-    <div class="loading-screen d-flex align-items-center justify-content-center position-fixed w-100 h-100" 
-         style="top: 0; left: 0; z-index: 9999; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px);">
-        <div class="text-center">
-            <!-- Logo del sistema -->
-            <div class="mb-4">
-                <img src="../../assets/Recourse/Logo/1.png" alt="Logo" class="mb-3" style="height: 60px;">
-            </div>
-            
-            <!-- Spinner de Tabler -->
-            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
-                <span class="visually-hidden">Cargando...</span>
-            </div>
-            
-            <!-- Texto de carga -->
-            <div class="text-secondary">
-                <div class="fw-bold mb-1">Cargando Gestión de Categorías</div>
-                <div class="small text-muted">Preparando la interfaz y cargando componentes...</div>
-            </div>
-        </div>
+  <!-- Loading screen -->
+  <div
+    class="loading-screen d-flex align-items-center justify-content-center position-fixed w-100 h-100"
+    style="top:0; left:0; z-index:9999; background-color:rgba(255,255,255,0.95); backdrop-filter:blur(5px);"
+  >
+    <div class="text-center">
+      <div class="mb-4">
+        <img src="../../assets/Recourse/Logo/1.png" alt="Logo" style="height:60px;" />
+      </div>
+      <div class="spinner-border text-primary mb-3" role="status" style="width:3rem; height:3rem">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <div class="text-secondary">
+        <div class="fw-bold mb-1">Cargando Gestión de Categorías</div>
+        <div class="small text-muted">Preparando la interfaz y cargando componentes...</div>
+      </div>
     </div>
+  </div>
 
-    <!-- Layout principal usando estructura Tabler -->
-    <div class="page">
-        <!-- Contenedor del sidebar - se carga dinámicamente -->
-        <div id="sidebar-container"></div>
+  <div class="page">
+    <!-- Sidebar dinámico -->
+    <div id="sidebar-container"></div>
 
-        <!-- Contenido principal usando estructura Tabler -->
-        <div class="page-wrapper">
-            <!-- Contenedor del topbar - se carga dinámicamente -->
-            <div id="topbar-container"></div>
-            
-            <!-- Page content area - Se implementará contenido específico aquí -->
-            <div class="page-body">
-                <div class="container-xl">
-                    <div class="text-center py-5">
-                        <h2 class="text-muted">Gestión de Categorías</h2>
-                        <p class="text-muted">El contenido específico se implementará aquí</p>
+    <div class="page-wrapper">
+      <!-- Topbar dinámico -->
+      <div id="topbar-container"></div>
+
+      <div class="page-body">
+        <div class="container-xl">
+          <!-- Header y acciones -->
+          <div class="row mb-4">
+            <div class="col-12">
+              <div class="page-header d-print-none bg-primary-lt rounded shadow-sm p-4 mb-2" style="margin:0;">
+                <div class="row align-items-center">
+                  <div class="col">
+                    <div class="page-pretitle text-muted">
+                      <i class="fas fa-layer-group me-1"></i> Gestión de Tablas Maestras
                     </div>
+                    <h2 class="page-title mb-1">
+                      <i class="fas fa-folder me-2 text-primary"></i> Categorías
+                    </h2>
+                    <p class="text-muted mt-1 mb-0">
+                      Administra y consulta las categorías de vehículos.
+                    </p>
+                  </div>
+                  <div class="col-auto">
+                    <div class="btn-list">
+                      <button id="refreshCategoryBtn" class="btn btn-outline-primary" title="Actualizar">
+                        <i class="fas fa-sync-alt"></i>
+                      </button>
+                      <button id="clearCategoryFiltersBtn" class="btn btn-outline-secondary" title="Limpiar">
+                        <i class="fas fa-broom"></i>
+                      </button>
+                      <button id="createCategoryBtn" class="btn btn-outline-success" title="Crear" data-action="create-category">
+                        <i class="fas fa-plus"></i>
+                      </button>
+  <div id="modal-container"></div>
+</body>
+  <!-- Scripts para controlador y service de creación -->
+  <script src="../../assets/js/api/services/MasterTables/Category/category-create-service.js"></script>
+  <script src="../../assets/js/ui/controllers/MasterTables/Category/category-create-controller.js"></script>
+                    </div>
+                  </div>
                 </div>
+              </div>
             </div>
+          </div>
+
+          <!-- Estadísticas -->
+          <div class="row mb-4 g-3">
+            <div class="col-sm-6 col-lg-3">
+              <div class="card card-sm border-0 shadow-sm">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col-auto">
+                      <span class="bg-primary text-white avatar">
+                        <i class="fas fa-folder"></i>
+                      </span>
+                    </div>
+                    <div class="col">
+                      <div class="font-weight-medium" id="totalCategories">
+                        <div class="spinner-border spinner-border-sm" role="status"></div>
+                      </div>
+                      <div class="text-muted">Total Categorías</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+              <div class="card card-sm border-0 shadow-sm">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col-auto">
+                      <span class="bg-success text-white avatar">
+                        <i class="fas fa-search"></i>
+                      </span>
+                    </div>
+                    <div class="col">
+                      <div class="font-weight-medium" id="filteredCategories">
+                        <div class="spinner-border spinner-border-sm" role="status"></div>
+                      </div>
+                      <div class="text-muted">Resultados Filtrados</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+              <div class="card card-sm border-0 shadow-sm">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col-auto">
+                      <span class="bg-info text-white avatar">
+                        <i class="fas fa-list-ol"></i>
+                      </span>
+                    </div>
+                    <div class="col">
+                      <div class="font-weight-medium" id="currentCategoryPage">
+                        <div class="spinner-border spinner-border-sm" role="status"></div>
+                      </div>
+                      <div class="text-muted">Página Actual</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+              <div class="card card-sm border-0 shadow-sm">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col-auto">
+                      <span class="bg-warning text-white avatar">
+                        <i class="fas fa-eye"></i>
+                      </span>
+                    </div>
+                    <div class="col">
+                      <div class="font-weight-medium" id="categoriesRange">
+                        <div class="spinner-border spinner-border-sm" role="status"></div>
+                      </div>
+                      <div class="text-muted">Mostrando</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filtros avanzados -->
+          <div class="card mb-4 shadow-sm border-0">
+            <div class="card-header bg-primary-lt d-flex justify-content-between">
+              <h3 class="card-title">
+                <i class="fas fa-filter me-2 text-primary"></i> Filtros Avanzados
+              </h3>
+              <button class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#categoryFilters">
+                <i class="fas fa-sliders-h"></i>
+              </button>
+            </div>
+            <div id="categoryFilters" class="collapse show">
+              <div class="card-body">
+                <div class="row g-3">
+                  <div class="col-md-4">
+                    <label class="form-label text-muted">
+                      <i class="fas fa-search me-1 text-primary"></i> Búsqueda Global
+                    </label>
+                    <div class="input-group">
+                      <input type="text" id="categorySearchInput" class="form-control" placeholder="Buscar por nombre…" />
+                      <span id="clearCategorySearchBtn" class="input-group-text" style="cursor:pointer">
+                        <i class="fas fa-times text-muted"></i>
+                      </span>
+                    </div>
+                    <small class="form-hint">Busca en el nombre de la categoría</small>
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label text-muted">
+                      <i class="fas fa-folder me-1 text-info"></i> Nombre
+                    </label>
+                    <input type="text" id="categoryNameFilter" class="form-control" placeholder="Filtro por nombre…" />
+                    <small class="form-hint">Filtro específico</small>
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label text-muted">
+                      <i class="fas fa-circle-half-stroke me-1 text-primary"></i> Activo
+                    </label>
+                    <select id="categoryActiveFilter" class="form-select">
+                      <option value="">Todos</option>
+                      <option value="true">Activo</option>
+                      <option value="false">Inactivo</option>
+                    </select>
+                    <small class="form-hint">Filtrar estado</small>
+                  </div>
+                  <div class="col-md-1">
+                    <label class="form-label text-muted">
+                      <i class="fas fa-list me-1 text-warning"></i> Por pág.
+                    </label>
+                    <select id="categoryPerPageSelect" class="form-select">
+                      <option value="10">10</option>
+                      <option value="15" selected>15</option>
+                      <option value="25">25</option>
+                      <option value="50">50</option>
+                    </select>
+                  </div>
+                  <div class="col-md-1">
+                    <label class="form-label text-muted">
+                      <i class="fas fa-sort me-1 text-primary"></i> Ordenar por
+                    </label>
+                    <select id="categorySortBySelect" class="form-select">
+                      <option value="name" selected>Nombre</option>
+                      <option value="id">ID</option>
+                      <option value="active">Activo</option>
+                    </select>
+                  </div>
+                  <div class="col-md-1">
+                    <label class="form-label text-muted">
+                      <i class="fas fa-sort-amount-up me-1 text-info"></i> Dirección
+                    </label>
+                    <select id="categorySortDirectionSelect" class="form-select">
+                      <option value="ASC" selected>ASC</option>
+                      <option value="DESC">DESC</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabla de categorías -->
+          <div class="card shadow-sm border-0">
+            <div class="card-header bg-primary text-white">
+              <h3 class="card-title mb-0">
+                <i class="fas fa-table me-2"></i> Lista de Categorías
+              </h3>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-vcenter card-table table-striped table-hover align-middle mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th class="w-1 text-center"><i class="fas fa-hashtag text-muted"></i></th>
+                      <th>Categoría</th>
+                      <th class="text-center"><i class="fas fa-circle-half-stroke text-primary"></i></th>
+                      <th class="w-1 text-center"><i class="fas fa-cogs text-muted"></i></th>
+                    </tr>
+                  </thead>
+                  <tbody id="categoryTableBody">
+                    <tr>
+                      <td colspan="4" class="text-center py-4">
+                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                        Cargando categorías...
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card-footer d-flex align-items-center">
+              <p class="m-0 text-muted">
+                Mostrando <span id="categoriesRangeFooter">--</span> de <span id="totalCategoriesFooter">--</span> categorías
+              </p>
+              <ul id="categoryPagination" class="pagination m-0 ms-auto"></ul>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Contenedor del modal - se carga dinámicamente -->
-    <div id="modal-container"></div>
+  <!-- Modal container -->
+  <div id="modal-container"></div>
 
-    <!-- Carga de scripts en orden específico para manejar dependencias -->
-    <!-- 1. Loading screen utilities (must be loaded first) -->
-    <script src="../../assets/js/utils/loading-screen-util.js"></script>
-    <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
-    
-    <!-- 2. Component Loader -->
-    <script src="../../assets/js/ui/component-loader.js"></script>
-    
-    <!-- 3. Utilidades y herramientas base -->
-    <script src="../../assets/js/global-initializer.js"></script>
-    <script src="../../assets/js/ui/global-toast.js"></script>
-    <script src="../../assets/js/auth/permissions.js"></script>
-    <script src="../../assets/js/auth/auth-checker.js"></script>
-    <script src="../../assets/js/auth/route-guard.js"></script>
-    
-    <script>
-        // Inicializa RouteGuard para proteger la página
-        window.routeGuard = new RouteGuard("../../index.html");
-    </script>
-    
-    <!-- 4. Servicios de API básicos -->
-    <script src="../../assets/js/api/services/profile-service.js"></script>
+  <!-- Scripts en orden -->
+  <script src="../../assets/js/utils/loading-screen-util.js"></script>
+  <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
+  <script src="../../assets/js/ui/component-loader.js"></script>
+  <script src="../../assets/js/global-initializer.js"></script>
+  <script src="../../assets/js/ui/global-toast.js"></script>
+  <script src="../../assets/js/auth/permissions.js"></script>
+  <script src="../../assets/js/auth/auth-checker.js"></script>
+  <script src="../../assets/js/auth/route-guard.js"></script>
+  <script>window.routeGuard = new RouteGuard('../../index.html');</script>
+  <script src="../../assets/js/api/services/profile-service.js"></script>
+  <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
+  <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
+  <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
+  <script src="../../assets/js/api/services/MasterTables/Category/category-service.js"></script>
+  <script src="../../assets/js/ui/controllers/MasterTables/Category/category-list-controller.js"></script>
+  <script src="../../assets/js/ui/initializers/MasterTables/category-initializer.js"></script>
+  <script src="../../assets/tabler/js/tabler.min.js"></script>
 
-    <!-- 5. Controladores de UI -->
-    <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
-    <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
-    <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
-
-    <!-- 6. Inicializador específico de la página -->
-    <script src="../../assets/js/ui/initializers/MasterTables/category-initializer.js"></script>
-
-    <!-- 7. Scripts de Tabler para funcionalidad completa -->
-    <script src="../../assets/tabler/js/tabler.min.js"></script>
-
-    <!-- Toast notification for profile operations -->
-    <div id="recovery-toast" class="recovery-toast">
-        <div class="recovery-toast-content">
-            <i class="fas fa-check-circle"></i>
-            <span id="recovery-toast-message">Operación completada correctamente</span>
-        </div>
+  <!-- Toast notification -->
+  <div id="recovery-toast" class="recovery-toast">
+    <div class="recovery-toast-content">
+      <i class="fas fa-check-circle"></i>
+      <span id="recovery-toast-message">Operación completada correctamente</span>
     </div>
+  </div>
 </body>
 </html>

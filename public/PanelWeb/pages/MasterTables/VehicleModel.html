@@ -32,7 +32,7 @@
     <link rel="stylesheet" href="../../assets/css/profile.css">
     
     <!-- VehicleModel specific styles -->
-    <link rel="stylesheet" href="../../assets/css/mastertables/companies.css">
+    
     
     <!-- Font Awesome para iconografía -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -84,9 +84,288 @@
             <!-- Page content area - Se implementará contenido específico aquí -->
             <div class="page-body">
                 <div class="container-xl">
-                    <div class="text-center py-5">
-                        <h2 class="text-muted">Gestión de Modelos de Vehículos</h2>
-                        <p class="text-muted">El contenido específico se implementará aquí</p>
+                    <!-- Page Header con gradiente y avatar -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="page-header d-print-none bg-primary-lt rounded-3 shadow-sm p-4 mb-2">
+                                <div class="row align-items-center">
+                                    <div class="col-auto">
+                                    </div>
+                                    <div class="col">
+                                        <div class="page-pretitle text-muted">
+                                            <i class="fas fa-layer-group me-1"></i>
+                                            Gestión de Tablas Maestras
+                                        </div>
+                                        <h2 class="page-title mb-1">
+                                            <i class="fas fa-car-side me-2 text-primary"></i>
+                                            Modelos de Vehículos
+                                        </h2>
+                                        <p class="text-muted mt-1 mb-0">
+                                            Administra y consulta los modelos de vehículos del sistema.
+                                        </p>
+                                    </div>
+                                    <div class="col-auto">
+                                        <div class="btn-list">
+                                            <button class="btn btn-outline-primary" id="refreshBtn" title="Actualizar datos">
+                                                <i class="fas fa-sync-alt text-primary"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary" id="clearFiltersBtn" title="Limpiar filtros">
+                                                <i class="fas fa-broom text-secondary"></i>
+                                            </button>
+                                            <button class="btn btn-outline-success" id="createVehicleModelBtn" title="Crear nuevo modelo" data-action="create-vehicle-model">
+                                                <i class="fas fa-plus text-success"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Stats Cards -->
+                    <div class="row mb-4 g-3">
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="card card-sm border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <span class="bg-primary text-white avatar">
+                                                <i class="fas fa-car-side"></i>
+                                            </span>
+                                        </div>
+                                        <div class="col">
+                                            <div class="font-weight-medium" id="totalVehicleModels">
+                                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                                            </div>
+                                            <div class="text-muted">Total Modelos</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="card card-sm border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <span class="bg-success text-white avatar">
+                                                <i class="fas fa-search"></i>
+                                            </span>
+                                        </div>
+                                        <div class="col">
+                                            <div class="font-weight-medium" id="filteredResults">
+                                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                                            </div>
+                                            <div class="text-muted">Resultados Filtrados</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="card card-sm border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <span class="bg-info text-white avatar">
+                                                <i class="fas fa-list-ol"></i>
+                                            </span>
+                                        </div>
+                                        <div class="col">
+                                            <div class="font-weight-medium" id="currentPage">
+                                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                                            </div>
+                                            <div class="text-muted">Página Actual</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="card card-sm border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <span class="bg-warning text-white avatar">
+                                                <i class="fas fa-eye"></i>
+                                            </span>
+                                        </div>
+                                        <div class="col">
+                                            <div class="font-weight-medium" id="itemsRange">
+                                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                                            </div>
+                                            <div class="text-muted">Mostrando</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Advanced Filters Card -->
+                    <div class="card mb-4 shadow-sm border-0">
+                        <div class="card-header bg-primary-lt">
+                            <h3 class="card-title">
+                                <i class="fas fa-filter me-2 text-primary"></i>
+                                Filtros Avanzados
+                            </h3>
+                            <div class="card-actions">
+                                <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#advancedFilters">
+                                    <i class="fas fa-sliders-h me-1"></i>
+                                    Mostrar/Ocultar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="collapse show" id="advancedFilters">
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <!-- Búsqueda Global -->
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted">
+                                            <i class="fas fa-search me-1 text-primary"></i>
+                                            Búsqueda Global
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-primary-lt">
+                                                <i class="fas fa-search text-primary"></i>
+                                            </span>
+                                            <input type="text" class="form-control" id="searchInput" placeholder="Buscar por nombre del modelo...">
+                                            <span class="input-group-text" id="clearSearchBtn" style="cursor: pointer;">
+                                                <i class="fas fa-times text-muted"></i>
+                                            </span>
+                                        </div>
+                                        <small class="form-hint">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Busca modelos por nombre
+                                        </small>
+                                    </div>
+                                    <!-- Filtro por Nombre -->
+                                    <div class="col-md-3">
+                                        <label class="form-label text-muted">
+                                            <i class="fas fa-car-side me-1 text-info"></i>
+                                            Nombre del Modelo
+                                        </label>
+                                        <input type="text" class="form-control" id="nameFilter" placeholder="Filtrar por nombre específico...">
+                                        <small class="form-hint">Filtro específico por nombre</small>
+                                    </div>
+                                    <!-- Filtro por Marca -->
+                                    <div class="col-md-3">
+                                        <label class="form-label text-muted">
+                                            <i class="fas fa-tag me-1 text-warning"></i>
+                                            ID de Marca
+                                        </label>
+                                        <input type="number" class="form-control" id="brandIdFilter" placeholder="ID de marca...">
+                                        <small class="form-hint">Filtrar por ID de marca específica</small>
+                                    </div>
+                                    <!-- Filtro por Activo -->
+                                    <div class="col-md-3">
+                                        <label class="form-label text-muted" id="activeFilterLabel">
+                                            <i id="activeFilterIcon" class="fas fa-circle-half-stroke me-1 text-primary"></i>
+                                            Estado Activo
+                                        </label>
+                                        <select class="form-select" id="activeFilter">
+                                            <option value="">Todos</option>
+                                            <option value="true">Activo</option>
+                                            <option value="false">Inactivo</option>
+                                        </select>
+                                        <small class="form-hint">Filtrar por estado activo</small>
+                                    </div>
+                                    <!-- Elementos por página -->
+                                    <div class="col-md-3">
+                                        <label class="form-label text-muted">
+                                            <i class="fas fa-list me-1 text-warning"></i>
+                                            Elementos por página
+                                        </label>
+                                        <select class="form-select" id="perPageSelect">
+                                            <option value="10">10 elementos</option>
+                                            <option value="15" selected>15 elementos</option>
+                                            <option value="25">25 elementos</option>
+                                            <option value="50">50 elementos</option>
+                                            <option value="100">100 elementos</option>
+                                        </select>
+                                    </div>
+                                    <!-- Ordenamiento -->
+                                    <div class="col-md-3">
+                                        <label class="form-label text-muted">
+                                            <i class="fas fa-sort me-1 text-primary"></i>
+                                            Ordenar por
+                                        </label>
+                                        <select class="form-select" id="sortBySelect">
+                                            <option value="name" selected>Nombre</option>
+                                            <option value="id">ID</option>
+                                            <option value="active">Activo</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label text-muted">
+                                            <i class="fas fa-sort-amount-up me-1 text-info"></i>
+                                            Orden
+                                        </label>
+                                        <select class="form-select" id="sortOrderSelect">
+                                            <option value="ASC" selected>Ascendente (A-Z)</option>
+                                            <option value="DESC">Descendente (Z-A)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Table Container -->
+                    <div class="card shadow border-0">
+                        <div class="card-header bg-primary text-white">
+                            <h3 class="card-title mb-0">
+                                <i class="fas fa-table me-2"></i>
+                                Lista de Modelos de Vehículos
+                            </h3>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-vcenter card-table table-striped table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="w-1 text-center">
+                                                <i class="fas fa-hashtag text-muted"></i>
+                                            </th>
+                                            <th>
+                                                <i class="fas fa-car-side me-1 text-primary"></i>
+                                                Modelo
+                                            </th>
+                                            <th>
+                                                <i class="fas fa-tag me-1 text-info"></i>
+                                                Marca
+                                            </th>
+                                            <th class="text-center">
+                                                <i class="fas fa-circle-half-stroke me-1 text-primary"></i>
+                                                Activo
+                                            </th>
+                                            <th class="w-1 text-center">
+                                                <i class="fas fa-cogs me-1 text-muted"></i>
+                                                Acciones
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="vehicleModelTableBody">
+                                        <tr>
+                                            <td colspan="5" class="text-center py-4">
+                                                <div class="d-flex justify-content-center align-items-center">
+                                                    <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                                    <span>Cargando modelos de vehículos...</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer d-flex align-items-center">
+                            <p class="m-0 text-muted">
+                                Mostrando <span id="itemsRangeFooter">--</span> de <span id="totalVehicleModelsFooter">--</span> modelos
+                            </p>
+                            <ul class="pagination m-0 ms-auto" id="paginationContainer">
+                                <!-- La paginación se generará dinámicamente -->
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -94,7 +373,58 @@
     </div>
 
     <!-- Contenedor del modal - se carga dinámicamente -->
-    <div id="modal-container"></div>
+    <div id="modal-container">
+      <!-- Modal de creación de modelo de vehículo -->
+      <div class="modal fade" id="vehicleModelCreateModal" tabindex="-1" aria-labelledby="vehicleModelCreateModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <form autocomplete="off">
+              <div class="modal-header bg-primary-lt">
+                <h5 class="modal-title" id="vehicleModelCreateModalLabel">
+                  <i class="fas fa-car-side me-2 text-primary"></i> Crear Modelo de Vehículo
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+              </div>
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label for="vehicleModelNameInput" class="form-label">Nombre del Modelo <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" id="vehicleModelNameInput" maxlength="100" required placeholder="Ej: Corolla, Hilux, Civic...">
+                </div>
+                <div class="mb-3">
+  <label for="vehicleModelBrandSearch" class="form-label">Marca <span class="text-danger">*</span></label>
+  <input
+    type="text"
+    id="vehicleModelBrandSearch"
+    class="form-control mb-2"
+    autocomplete="off"
+    placeholder="Buscar marca por nombre...">
+  <select
+    class="form-select"
+    id="vehicleModelBrandSelect"
+    required
+    size="8"
+    style="max-height: 220px; overflow-y: auto;">
+    <option value="">Seleccione una marca</option>
+  </select>
+</div>
+                <div class="form-check form-switch mb-3">
+                  <input class="form-check-input" type="checkbox" id="vehicleModelActiveCheckbox" checked>
+                  <label class="form-check-label" for="vehicleModelActiveCheckbox">Activo</label>
+                </div>
+                <div id="vehicleModelCreateErrorMsg" class="alert alert-danger d-none small py-2 px-3 mb-0"></div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="vehicleModelCancelBtn" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary" id="vehicleModelSaveBtn">
+                  <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true"></span>
+                  Guardar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Carga de scripts en orden específico para manejar dependencias -->
     <!-- 1. Component Loader (debe ir primero) -->
@@ -115,17 +445,44 @@
     
     <!-- 2. Servicios de API básicos -->
     <script src="../../assets/js/api/services/profile-service.js"></script>
+    
+    <!-- 3. Servicios específicos del módulo -->
+    <script src="../../assets/js/api/services/MasterTables/VehicleModel/vehicle-model-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/VehicleModel/vehicle-model-update-service.js"></script>
+    <!-- Servicio para crear modelo de vehículo -->
+     <script src="../../assets/js/api/services/MasterTables/Brand/brand-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/VehicleModel/vehicle-model-create-service.js"></script>
+    
 
-    <!-- 3. Controladores de UI -->
+    <!-- 4. Controladores de UI -->
     <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
+    
+    <!-- 5. Controladores específicos del módulo -->
+    <script src="../../assets/js/ui/controllers/MasterTables/VehicleModel/vehicle-model-list-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/VehicleModel/vehicle-model-create-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/VehicleModel/vehicle-model-edit-controller.js"></script>
 
-    <!-- 4. Inicializador específico de la página -->
+    <!-- 6. Inicializador específico de la página -->
     <script src="../../assets/js/ui/initializers/MasterTables/vehicle-model-initializer.js"></script>
 
-    <!-- 5. Scripts de Tabler para funcionalidad completa -->
+    <script>
+    // Abrir el modal de creación de modelo de vehículo al hacer click en el botón
+    document.addEventListener('DOMContentLoaded', function() {
+      var btn = document.getElementById('createVehicleModelBtn');
+      var modal = document.getElementById('vehicleModelCreateModal');
+      if (btn && modal && window.bootstrap) {
+        btn.addEventListener('click', function() {
+          var modalInstance = window.bootstrap.Modal.getOrCreateInstance(modal);
+          modalInstance.show();
+        });
+      }
+    });
+    </script>
+
+    <!-- 7. Scripts de Tabler para funcionalidad completa -->
     <script src="../../assets/tabler/js/tabler.min.js"></script>
 
     <!-- Toast notification for profile operations -->

@@ -29,7 +29,11 @@ class CreateUserStatusService {
                 const errorData = await response.json().catch(() => ({}));
                 throw new Error(errorData.message || 'Error al crear estado de usuario');
             }
-            return await response.json();
+            const result = await response.json();
+            if (!result.message || result.message.trim().toUpperCase() === 'OK') {
+                result.message = 'Estado de usuario creado correctamente';
+            }
+            return result;
         } catch (error) {
             throw error;
         }

@@ -58,6 +58,13 @@ class InfractionSeverityInitializer {
                                 console.log('🔗 Referencia profile-topbar establecida');
                             }
                         }
+                        
+                        // Inicializar controlador principal de InfractionSeverity
+                        if (!window.infractionSeverityListController) {
+                            window.infractionSeverityListController = new InfractionSeverityListController();
+                            window.infractionSeverityController = window.infractionSeverityListController;
+                            console.log('⚠️ InfractionSeverityListController inicializado');
+                        }
                     }, 200);
                     
                     // Configurar permisos DESPUÉS de que los controladores estén listos

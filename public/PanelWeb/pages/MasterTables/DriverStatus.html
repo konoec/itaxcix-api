@@ -23,6 +23,9 @@
     <!-- Global toast styles -->
     <link rel="stylesheet" href="../../assets/css/global-toast.css">
     
+    <!-- Confirmation modal styles -->
+    <link rel="stylesheet" href="../../assets/css/confirmation-modal.css">
+    
     <!-- Loading screen styles -->
     <link rel="stylesheet" href="../../assets/css/loading-screen.css">
     
@@ -85,13 +88,28 @@
             <!-- Page content area - Se carga dinámicamente por el controlador -->
             <div class="page-body">
                 <div class="container-xl">
-                    <div class="text-center py-5">
-                        <div class="spinner-border text-primary mb-3" role="status">
-                            <span class="visually-hidden">Inicializando...</span>
+                    <div class="row mb-4 align-items-center">
+                        <div class="col">
+                            <h2 class="page-title mb-1">
+                                <i class="fas fa-user-check me-2 text-primary"></i>
+                                Gestión de Estados de Conductores
+                            </h2>
+                            <p class="text-muted mt-1 mb-0">
+                                Administra y consulta los estados de conductor del sistema.
+                            </p>
                         </div>
-                        <h3 class="text-muted">Gestión de Estados de Conductores</h3>
-                        <p class="text-muted">Inicializando interfaz y cargando datos...</p>
+                        <div class="col-auto">
+                            <button type="button" 
+                                    class="btn btn-primary" 
+                                    id="createDriverStatusBtn"
+                                    data-action="create-driver-status">
+                                <i class="fas fa-plus me-1"></i>
+                                Nuevo Estado
+                            </button>
+                        </div>
                     </div>
+                    <!-- Aquí irá la tabla/lista de estados de conductor -->
+                    <div id="driver-status-list-container"></div>
                 </div>
             </div>
         </div>
@@ -123,16 +141,21 @@
     <!-- Servicio específico de DriverStatus -->
     <script src="../../assets/js/api/services/MasterTables/DriverStatus/driver-status-service.js"></script>
     <script src="../../assets/js/api/services/MasterTables/DriverStatus/driver-status-create-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/DriverStatus/driver-status-update-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/DriverStatus/driver-status-delete-service.js"></script>
 
     <!-- 3. Controladores de UI -->
     <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/global-confirmation-modal-controller.js"></script>
     
     <!-- Controlador específico de DriverStatus -->
     <script src="../../assets/js/ui/controllers/MasterTables/DriverStatus/driver-status-list-controller.js"></script>
     <script src="../../assets/js/ui/controllers/MasterTables/DriverStatus/driver-status-create-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/DriverStatus/driver-status-edit-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/DriverStatus/driver-status-delete-controller.js"></script>
 
     <!-- 4. Inicializador específico de la página -->
     <script src="../../assets/js/ui/initializers/MasterTables/driver-status-initializer.js"></script>

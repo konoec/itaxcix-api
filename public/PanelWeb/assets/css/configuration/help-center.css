@@ -1,0 +1,72 @@
+/* Estilos para el botón de emergencia del Centro de Ayuda */
+
+.emergency-btn {
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    transition: all 0.3s ease;
+    animation: pulse-emergency 2s infinite;
+}
+
+.emergency-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+@keyframes pulse-emergency {
+    0% {
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    }
+    50% {
+        box-shadow: 0 4px 25px rgba(220, 53, 69, 0.5);
+    }
+    100% {
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    }
+}
+
+/* Modal de emergencia */
+.emergency-modal .modal-content {
+    border: none;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.emergency-modal .modal-header {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+    border-bottom: none;
+}
+
+.emergency-modal .modal-body {
+    padding: 2rem;
+    text-align: center;
+}
+
+.emergency-modal .btn-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    border: none;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    transition: all 0.3s ease;
+}
+
+.emergency-modal .btn-danger:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+/* Quitar margin por defecto de los iconos en botones */
+.btn .icon {
+    margin: 0 !important;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    #emergency-call-btn {
+        width: 50px !important;
+        height: 50px !important;
+    }
+    
+    #emergency-call-btn i {
+        font-size: 1.2rem !important;
+    }
+}

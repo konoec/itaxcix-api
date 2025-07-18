@@ -283,7 +283,7 @@ class DeleteCompanyModalController {
             this.setLoadingState(true);
             
             console.log('📡 Llamando al servicio de eliminación...');
-            const response = await this.companyService.deleteCompany(companyId);
+            const response = await this.companyService.delete(companyId);
             console.log('📥 Respuesta del servicio:', response);
 
             if (response && response.success) {

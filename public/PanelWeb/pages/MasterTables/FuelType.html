@@ -82,17 +82,285 @@
             <!-- Contenedor del topbar - se carga dinámicamente -->
             <div id="topbar-container"></div>
             
-            <!-- Page content area - Se implementará contenido específico aquí -->
-            <div class="page-body">
-                <div class="container-xl">
-                    <div class="text-center py-5">
-                        <h2 class="text-muted">Gestión de Tipos de Combustible</h2>
-                        <p class="text-muted">El contenido específico se implementará aquí</p>
+            <div class="page-header d-print-none">
+                    <div class="container-xl">
+                        <!-- Loading State -->
+                        <div id="fuel-types-loading" class="fuel-types-loading" style="display: none;">
+                            <div class="d-flex justify-content-center py-4">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <h3 class="mt-3">Cargando tipos de combustible...</h3>
+                                <p class="text-muted">Obteniendo datos del sistema</p>
+                            </div>
+                        </div>
+
+                        <!-- Page Header con estructura Tabler -->
+                        <div id="fuel-types-content">
+                            <div class="row g-2 align-items-center">
+                                <div class="col">
+                                </div>
+                                <!-- Page title actions -->
+                                <div class="col-auto ms-auto d-print-none">
+                                    <div class="btn-list">
+                                        <button class="btn btn-outline-cyan" id="refresh-fuel-types-btn" title="Actualizar datos">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                        <button class="btn btn-outline-secondary" id="clear-filters-btn" title="Limpiar filtros">
+                                            <i class="fas fa-broom"></i>
+                                        </button>
+                                        <button class="btn btn-outline-success" id="createFuelTypeBtn" title="Crear tipo de combustible" data-action="create-fuel-type">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
+                
+                <!-- Page body -->
+                <div class="page-body">
+                    <div class="container-xl">
+
+                        <!-- Statistics Cards with Sparklines -->
+                        <div class="row mb-4" id="fuel-types-stats">
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="card card-sm">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <span class="bg-blue text-white avatar">
+                                                    <i class="fas fa-gas-pump"></i>
+                                                </span>
+                                            </div>
+                                            <div class="col">
+                                                <div class="fw-bold" id="total-fuel-types">0</div>
+                                                <div class="text-muted">Total Tipos</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="card card-sm">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <span class="bg-green text-white avatar">
+                                                    <i class="fas fa-check-circle"></i>
+                                                </span>
+                                            </div>
+                                            <div class="col">
+                                                <div class="fw-bold" id="active-fuel-types">0</div>
+                                                <div class="text-muted">Activos</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="card card-sm">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <span class="bg-red text-white avatar">
+                                                    <i class="fas fa-times-circle"></i>
+                                                </span>
+                                            </div>
+                                            <div class="col">
+                                                <div class="fw-bold" id="inactive-fuel-types">0</div>
+                                                <div class="text-muted">Inactivos</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="card card-sm">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <span class="bg-yellow text-white avatar">
+                                                    <i class="fas fa-chart-line"></i>
+                                                </span>
+                                            </div>
+                                            <div class="col">
+                                                <div class="fw-bold" id="growth-percentage">0%</div>
+                                                <div class="text-muted">Crecimiento</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Filters and Search Card -->
+                        <div class="card mb-4">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h3 class="card-title mb-0">
+                                    <i class="fas fa-filter me-2"></i>
+                                    Filtros y Búsqueda
+                                </h3>
+                                <button
+                                    class="btn btn-sm btn-outline-primary"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#advancedFuelTypeFilters"
+                                    aria-expanded="true"
+                                    aria-controls="advancedFuelTypeFilters"
+                                >
+                                    <i class="fas fa-sliders-h me-1"></i> Mostrar/Ocultar
+                                </button>
+                            </div>
+                            <div id="advancedFuelTypeFilters" class="collapse show">
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <!-- Búsqueda general -->
+                                        <div class="col-md-4">
+                                            <label class="form-label">Búsqueda General</label>
+                                            <div class="input-group">
+                                                <input type="text" 
+                                                       class="form-control" 
+                                                       id="fuel-type-search-input"
+                                                       placeholder="Buscar por nombre...">
+                                                <button class="btn btn-primary" type="button" id="search-btn">
+                                                    <i class="fas fa-search"></i>
+                                                </button>
+                                            </div>
+                                            <small class="form-hint">Busca en nombres de tipos de combustible</small>
+                                        </div>
+                                        
+                                        <!-- Filtro por nombre específico -->
+                                        <div class="col-md-4">
+                                            <label class="form-label">Nombre Específico</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="fuel-type-name-filter"
+                                                   placeholder="Filtrar por nombre exacto">
+                                            <small class="form-hint">Filtro por nombre específico</small>
+                                        </div>
+                                        
+                                        <!-- Filtro por estado -->
+                                        <div class="col-md-4">
+                                            <label class="form-label">Estado</label>
+                                            <select class="form-select" id="fuel-type-status-filter">
+                                                <option value="all">Todos los estados</option>
+                                                <option value="true">Solo activos</option>
+                                                <option value="false">Solo inactivos</option>
+                                            </select>
+                                            <small class="form-hint">Filtrar por estado activo/inactivo</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row g-3 mt-1">
+                                        <!-- Elementos por página -->
+                                        <div class="col-md-4">
+                                            <label class="form-label">Elementos por página</label>
+                                            <select class="form-select" id="fuel-type-per-page-select">
+                                                <option value="5">5</option>
+                                                <option value="10">10</option>
+                                                <option value="15" selected>15</option>
+                                                <option value="25">25</option>
+                                                <option value="50">50</option>
+                                                <option value="100">100</option>
+                                            </select>
+                                            <small class="form-hint">Cantidad de registros por página</small>
+                                        </div>
+                                        <!-- Ordenamiento -->
+                                        <div class="col-md-4">
+                                            <label class="form-label">Ordenar por</label>
+                                            <select class="form-select" id="sort-by-select">
+                                                <option value="id">ID</option>
+                                                <option value="name" selected>Nombre</option>
+                                                <option value="active">Estado</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Dirección</label>
+                                            <select class="form-select" id="sort-direction-select">
+                                                <option value="ASC" selected>Ascendente</option>
+                                                <option value="DESC">Descendente</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Main Table Card -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <h3 class="card-title">
+                                            <i class="fas fa-gas-pump me-2"></i>
+                                            Lista de Tipos de Combustible
+                                        </h3>
+                                    </div>
+                                    <div class="col-auto">
+                                        <div class="btn-list">
+                                            <button class="btn btn-outline-success btn-sm" id="export-excel-btn">
+                                                <i class="fas fa-file-excel me-1"></i> Excel
+                                            </button>
+                                            <button class="btn btn-outline-danger btn-sm" id="export-pdf-btn">
+                                                <i class="fas fa-file-pdf me-1"></i> PDF
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-vcenter card-table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th class="w-1">#</th>
+                                            <th>Nombre</th>
+                                            <th>Estado</th>
+                                            <th class="w-1">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="fuel-types-table-body">
+                                        <!-- Los datos se cargarán dinámicamente aquí -->
+                                        <tr>
+                                            <td colspan="4" class="text-center py-4">
+                                                <div class="text-muted">
+                                                    <div class="spinner-border mb-3" role="status"></div>
+                                                    <p>Cargando tipos de combustible...</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Pagination Footer -->
+                            <!-- Pagination Footer -->
+<div class="card-footer d-flex align-items-center">
+    <p class="m-0 text-muted">
+        Mostrando 
+        <span id="showing-start">0</span> 
+        a 
+        <span id="showing-end">0</span> 
+        de 
+        <span id="total-records">0</span> 
+        entradas (por página: <span id="per-page-info">15</span>)
+    </p>
+    <ul class="pagination m-0 ms-auto" id="paginationContainer">
+        <!-- Controlador inyecta aquí los botones de paginación tipo [<] [1] [>] -->
+    </ul>
+</div>
+
+
+                    </div>
+                </div>
         </div>
     </div>
+    <!-- Modal container -->
+    <div id="modal-container"></div>
 
     <!-- Contenedor del modal - se carga dinámicamente -->
     <div id="modal-container"></div>
@@ -116,12 +384,14 @@
     
     <!-- 2. Servicios de API básicos -->
     <script src="../../assets/js/api/services/profile-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/FuelType/fuel-type-service.js"></script>
 
     <!-- 3. Controladores de UI -->
     <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/FuelType/fuel-type-controller.js"></script>
 
     <!-- 4. Inicializador específico de la página -->
     <script src="../../assets/js/ui/initializers/MasterTables/fuel-type-initializer.js"></script>
@@ -136,5 +406,8 @@
             <span id="recovery-toast-message">Operación completada correctamente</span>
         </div>
     </div>
+    <!-- Scripts para controlador y service de creación -->
+    <script src="../../assets/js/api/services/MasterTables/FuelType/fuel-type-create-service.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/FuelType/fuel-type-create-controller.js"></script>
 </body>
 </html>

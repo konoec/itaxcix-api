@@ -144,26 +144,6 @@ class EditConfigurationModalController {
                                             Máximo 500 caracteres. Puede ser texto, número, JSON, etc.
                                         </div>
                                     </div>
-
-                                    <!-- Info adicional -->
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Descripción</label>
-                                                <p id="editConfigDescription" class="form-control-plaintext text-muted">
-                                                    -
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Categoría</label>
-                                                <p id="editConfigCategory" class="form-control-plaintext">
-                                                    <span class="badge bg-azure-lt">-</span>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </form>
                             </div>
 
@@ -287,9 +267,11 @@ class EditConfigurationModalController {
     /**
      * Abre el modal para editar una configuración
      * @param {number} configId - ID de la configuración a editar
+     * @param {object} configData - Datos de la configuración (opcional, si no se pasa hace fetch)
      */
-    async openModal(configId) {
+    async openModal(configId, configData = null) {
         console.log('🚀 Abriendo modal de edición para ID:', configId);
+        console.log('📊 Datos recibidos:', configData ? 'Sí' : 'No');
         this.currentConfigId = configId;
         
         try {
@@ -334,8 +316,15 @@ class EditConfigurationModalController {
 
             console.log('✅ Modal mostrado, cargando configuración...');
             
-            // Cargar datos
-            await this.loadConfiguration(configId);
+            // Cargar datos: usar los proporcionados o hacer fetch
+            if (configData) {
+                console.log('📋 Usando datos proporcionados directamente');
+                this.populateForm(configData);
+                this.showContentState();
+            } else {
+                console.log('🌐 Datos no proporcionados, haciendo fetch...');
+                await this.loadConfiguration(configId);
+            }
         } catch (error) {
             console.error('❌ Error opening modal:', error);
             this.showError('Error al abrir el modal de edición');
@@ -394,18 +383,6 @@ class EditConfigurationModalController {
         if (editConfigKey) editConfigKey.value = config.key || '';
         if (editConfigValue) editConfigValue.value = config.value || '';
         if (editConfigActive) editConfigActive.checked = config.active === true;
-
-        // Info adicional
-        const editConfigDescription = document.getElementById('editConfigDescription');
-        const editConfigCategory = document.getElementById('editConfigCategory');
-        
-        if (editConfigDescription) {
-            editConfigDescription.textContent = config.description || 'Sin descripción';
-        }
-        
-        if (editConfigCategory) {
-            editConfigCategory.innerHTML = `<span class="badge bg-azure-lt">${config.category || 'Sin categoría'}</span>`;
-        }
 
         // Actualizar texto del switch
         const statusText = document.querySelector('#editConfigActive + label .status-text');

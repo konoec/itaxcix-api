@@ -325,9 +325,21 @@ class GlobalConfirmationModalController {
     }
 }
 
-// Crear instancia global única
+// Crear instancia global única cuando el DOM esté listo
 if (!window.globalConfirmationModal) {
-    window.globalConfirmationModal = new GlobalConfirmationModalController();
+    // Si el DOM ya está cargado, crear inmediatamente
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!window.globalConfirmationModal) {
+                window.globalConfirmationModal = new GlobalConfirmationModalController();
+                window.GlobalConfirmationModalController = GlobalConfirmationModalController;
+            }
+        });
+    } else {
+        // El DOM ya está cargado
+        window.globalConfirmationModal = new GlobalConfirmationModalController();
+        window.GlobalConfirmationModalController = GlobalConfirmationModalController;
+    }
 }
 
 console.log('✅ GlobalConfirmationModalController cargado correctamente');

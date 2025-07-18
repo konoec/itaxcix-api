@@ -140,7 +140,7 @@ class DepartmentsService {
                 hasPrev: apiResponse.data.pagination?.hasPrev || false
             },
             success: true,
-            message: apiResponse.message || 'OK'
+            message: apiResponse.message || 'Operación realizada correctamente.'
         };
     }
 }
