@@ -19,4 +19,5 @@ interface UserContactRepositoryInterface
     public function updateContactConfirmation(int $contactId, bool $confirmed): bool;
     public function findContactsByUserAndType(int $userId, int $typeId): array;
     public function toDomain(object $entity): UserContactModel;
+    public function findByContactTypeId(int $contactTypeId): bool;
 }

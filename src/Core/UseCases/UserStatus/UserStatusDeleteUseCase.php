@@ -38,7 +38,7 @@ class UserStatusDeleteUseCase
 
         // Verificar si el estado de usuario está asociado a algún usuario
         $usersWithStatus = $this->userRepository->findByStatusId($id);
-        if (!empty($usersWithStatus)) {
+        if ($usersWithStatus) {
             throw new InvalidArgumentException('No se puede eliminar el estado de usuario porque está asociado a uno o más usuarios.');
         }
 

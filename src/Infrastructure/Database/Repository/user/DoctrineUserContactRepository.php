@@ -271,4 +271,18 @@ class DoctrineUserContactRepository implements UserContactRepositoryInterface
         $entities = $query->getResult();
         return array_map([$this, 'toDomain'], $entities);
     }
+
+    public function findByContactTypeId(int $contactTypeId): bool
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('uc')
+            ->from(UserContactEntity::class, 'uc')
+            ->where('uc.type = :typeId')
+            ->andWhere('uc.active = true')
+            ->setParameter('typeId', $contactTypeId)
+            ->getQuery();
+
+        $entity = $query->getOneOrNullResult();
+        return $entity ? true : false;
+    }
 }
