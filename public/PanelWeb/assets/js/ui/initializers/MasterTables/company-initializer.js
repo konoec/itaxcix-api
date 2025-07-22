@@ -122,29 +122,36 @@ class CompanyInitializer {
   static _initShortcuts() {
     console.log('🏢 Configurando atajos de teclado...');
     document.addEventListener('keydown', e => {
-      if (['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
-      if ((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='n') {
-        e.preventDefault();
-        window.companyController?.handleAddCompany();
-      }
-      if ((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='r') {
-        e.preventDefault();
-        window.companyController?.loadCompanies();
-      }
-      if (e.key==='F5') {
-        e.preventDefault();
-        window.companyController?.loadCompanies();
-      }
-      if (e.key==='Escape') {
-        window.companyController?.clearFilters();
-      }
-      if ((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='f') {
-        e.preventDefault();
-        const input = document.getElementById('company-search-input');
-        input?.focus();
-        input?.select();
-      }
-    });
+  if (['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
+
+  // Ctrl+N o Cmd+N: Nueva empresa
+  if ((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='n') {
+    e.preventDefault();
+    window.companyController?.handleAddCompany();
+  }
+  // Ctrl+R o Cmd+R: Recargar tabla
+  if ((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='r') {
+    e.preventDefault();
+    window.companyController?.loadCompanies();
+  }
+  // SOLO F5 normal, NO Ctrl+F5 ni Shift+F5
+  if (e.key==='F5' && !e.ctrlKey && !e.shiftKey && !e.metaKey) {
+    e.preventDefault();
+    window.companyController?.loadCompanies();
+  }
+  // Escape: limpiar filtros
+  if (e.key==='Escape') {
+    window.companyController?.clearFilters();
+  }
+  // Ctrl+F: buscar
+  if ((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='f') {
+    e.preventDefault();
+    const input = document.getElementById('company-search-input');
+    input?.focus();
+    input?.select();
+  }
+});
+
     console.log('✅ Atajos de teclado configurados');
   }
 
@@ -175,8 +182,6 @@ class CompanyInitializer {
 
   static cleanupCompanyModule() {
     console.log('🏢 Limpiando módulo de compañías...');
-    window.companyServiceInstance?.clearCache();
-    console.log('✅ Cache limpia');
   }
 }
 

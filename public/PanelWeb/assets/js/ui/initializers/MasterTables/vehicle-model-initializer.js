@@ -34,7 +34,6 @@ class VehicleModelInitializer {
                             if (!window.vehicleModelListControllerInstance) {
                                 window.vehicleModelListControllerInstance = new VehicleModelListController();
                                 window.vehicleModelListController = window.vehicleModelListControllerInstance;
-                                // Usar load si no existe init
                                 if (typeof window.vehicleModelListControllerInstance.init === 'function') {
                                     window.vehicleModelListControllerInstance.init();
                                 } else if (typeof window.vehicleModelListControllerInstance.load === 'function') {
@@ -46,12 +45,12 @@ class VehicleModelInitializer {
                     }, 200);
 
                     // Inicializar VehicleModelEditController
-                       if (!window.vehicleModelEditControllerInstance) {
+                    if (!window.vehicleModelEditControllerInstance) {
                         window.vehicleModelEditControllerInstance = new VehicleModelEditController();
                         window.vehicleModelEditController = window.vehicleModelEditControllerInstance;
-                         console.log('📝 VehicleModelEditController inicializado');
-                         }
-                         
+                        console.log('📝 VehicleModelEditController inicializado');
+                    }
+
                     // Inicializar ProfileController
                     if (!window.profileControllerInstance) {
                         window.profileControllerInstance = new ProfileController();
@@ -61,6 +60,25 @@ class VehicleModelInitializer {
                             console.log('🔗 Referencia profile-topbar establecida');
                         }
                     }
+
+                    // Inicializar y exponer el controlador de eliminación de modelo
+                    if (!window.deleteModelControllerInstance) {
+                        window.deleteModelControllerInstance = new DeleteModelController();
+                        window.deleteModelController = window.deleteModelControllerInstance;
+                        console.log('🗑️ DeleteModelController inicializado');
+                    }
+
+                    // Enlazar el evento click de los botones de eliminar modelo
+                    document.body.addEventListener('click', function(e) {
+                        const btn = e.target.closest('[data-action="delete-model"]');
+                        if (btn) {
+                            const modelId = parseInt(btn.getAttribute('data-model-id'), 10);
+                            const modelName = btn.getAttribute('data-model-name') || '';
+                            const modelData = { id: modelId, name: modelName };
+                            window.deleteModelController.handleDeleteButtonClick(btn, modelData);
+                        }
+                    });
+
                     setTimeout(() => {
                         if (window.PermissionsService) {
                             console.log('🔧 Inicializando sistema de permisos...');

@@ -235,5 +235,4 @@ class UserStatusListController {
     }
 }
 
-// NO INSTANCIAR AUTOMÁTICAMENTE AQUÍ
-// window.UserStatusListController = new UserStatusListController();
+ window.UserStatusListController = UserStatusListController;

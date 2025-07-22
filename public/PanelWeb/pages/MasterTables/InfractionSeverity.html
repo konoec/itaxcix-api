@@ -361,8 +361,12 @@
         </div>
     </div>
 
-    <!-- Contenedor del modal - se carga dinámicamente -->
-    <div id="modal-container"></div>
+    <!-- Contenedor de edición de severidad (debe estar antes de los scripts) -->
+    <div id="edit-modal-container"></div>
+    <!-- Contenedor de modales: perfil -->
+    <div id="modal-container">
+        <div id="profile-modal-container"></div>
+    </div>
 
     <!-- Carga de scripts en orden específico para manejar dependencias -->
     <!-- 1. Component Loader (debe ir primero) -->
@@ -383,7 +387,8 @@
     
     <!-- 2. Servicios de API básicos -->
     <script src="../../assets/js/api/services/profile-service.js"></script>
-    <!-- Servicio para listar severidades de infracciones -->
+    <!-- Servicio para editar severidades de infracciones -->
+    <script src="../../assets/js/api/services/MasterTables/InfractionSeverity/infraction-severity-update-service.js"></script>
     <script src="../../assets/js/api/services/MasterTables/InfractionSeverity/infraction-severity-service.js"></script>
 
     <!-- 3. Controladores de UI -->
@@ -392,7 +397,8 @@
     <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
     
-    <!-- Controladores específicos de InfractionSeverity -->
+    <!-- Controlador de edición de severidad de infracción -->
+    <script src="../../assets/js/ui/controllers/MasterTables/InfractionSeverity/infraction-severity-edit-controller.js"></script>
     <script src="../../assets/js/ui/controllers/MasterTables/InfractionSeverity/infraction-severity-list-controller.js"></script>
 
     <!-- 4. Inicializador específico de la página -->

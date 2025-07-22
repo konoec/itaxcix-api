@@ -143,63 +143,35 @@ class RatingReportsService {
     }
 
     /**
-     * Exporta los reportes de calificaciones a Excel
+     * Exporta los reportes de calificaciones a CSV usando el endpoint paginado y descarga en frontend
      * @param {Object} params - Parámetros de filtrado
-     * @returns {Promise<Blob>} Archivo Excel
+     * @returns {Promise<void>} Descarga el archivo CSV
      */
     async exportRatingReports(params = {}) {
         try {
-            const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
-            if (!token) {
-                throw new Error('Token de autenticación no encontrado');
-            }
+            // Obtener todos los datos (puedes ajustar para paginación si hay muchos)
+            const allParams = { ...params, page: 1, perPage: 100 };
+            const response = await this.getRatingReports(allParams);
+            const rows = response?.data?.data || [];
+            if (!rows.length) throw new Error('No hay datos para exportar');
 
-            console.log('📤 Exportando reportes de calificaciones con parámetros:', params);
+            // Definir columnas
+            const columns = ['id', 'raterId', 'raterName', 'ratedId', 'ratedName', 'travelId', 'score', 'comment'];
+            const csv = [columns.join(',')].concat(
+                rows.map(row => columns.map(col => `"${(row[col] ?? '').toString().replace(/"/g, '""')}"`).join(','))
+            ).join('\r\n');
 
-            // Construir parámetros de consulta (similar al método anterior)
-            const queryParams = new URLSearchParams();
-            
-            if (params.raterId && Number.isInteger(params.raterId)) {
-                queryParams.append('raterId', params.raterId.toString());
-            }
-            
-            if (params.ratedId && Number.isInteger(params.ratedId)) {
-                queryParams.append('ratedId', params.ratedId.toString());
-            }
-            
-            if (params.travelId && Number.isInteger(params.travelId)) {
-                queryParams.append('travelId', params.travelId.toString());
-            }
-            
-            if (params.minScore && Number.isInteger(params.minScore)) {
-                queryParams.append('minScore', params.minScore.toString());
-            }
-            
-            if (params.maxScore && Number.isInteger(params.maxScore)) {
-                queryParams.append('maxScore', params.maxScore.toString());
-            }
-            
-            if (params.comment && typeof params.comment === 'string') {
-                queryParams.append('comment', params.comment.trim());
-            }
-
-            const url = `${this.baseUrl}${this.endpoints.ratings}/export?${queryParams.toString()}`;
-            console.log('📡 URL de exportación:', url);
-
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`Error al exportar reportes: ${response.status} - ${response.statusText}`);
-            }
-
-            return await response.blob();
-
+            // Descargar CSV
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'calificaciones.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            console.log('✅ Exportación CSV completada');
         } catch (error) {
             console.error('❌ Error al exportar reportes de calificaciones:', error);
             throw error;

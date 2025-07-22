@@ -18,7 +18,6 @@ class DeleteUserStatusService {
         try {
             console.log(`🗑️ Eliminando estado de usuario con ID: ${id}`);
 
-            // Validar ID
             if (!id || isNaN(id)) {
                 throw new Error('ID de estado de usuario inválido');
             }
@@ -39,24 +38,17 @@ class DeleteUserStatusService {
                 }
             });
 
-            console.log(`📥 Respuesta del servidor:`, response.status, response.statusText);
-
-            // Procesar respuesta
             const result = await response.json();
             console.log('📄 Datos de respuesta:', result);
 
             if (response.ok && result.success) {
-                console.log('✅ Estado de usuario eliminado exitosamente');
                 return {
                     success: true,
                     message: result.message || 'Estado de usuario eliminado exitosamente',
                     data: result.data || null
                 };
             } else {
-                // Error en la respuesta
                 const errorMessage = result.message || 'Error al eliminar el estado de usuario';
-                console.error('❌ Error en la respuesta:', errorMessage);
-                
                 return {
                     success: false,
                     message: errorMessage,
@@ -66,15 +58,12 @@ class DeleteUserStatusService {
 
         } catch (error) {
             console.error('❌ Error en deleteUserStatus:', error);
-            
-            // Manejar errores específicos
             if (error.name === 'TypeError' && error.message.includes('fetch')) {
                 return {
                     success: false,
                     message: 'Error de conexión. Verifique su internet e intente nuevamente.'
                 };
             }
-
             return {
                 success: false,
                 message: error.message || 'Error interno del sistema'
@@ -99,8 +88,7 @@ class DeleteUserStatusService {
             errors.push('ID del estado de usuario es requerido');
         }
 
-        // Validaciones adicionales si es necesario
-        // Por ejemplo, si hay estados que no se pueden eliminar
+        // Ejemplo de protección adicional: no permitir eliminar "Activo"
         if (userStatusData.name && userStatusData.name.toLowerCase() === 'activo') {
             errors.push('No se puede eliminar el estado "Activo" del sistema');
         }
@@ -112,24 +100,24 @@ class DeleteUserStatusService {
     }
 
     /**
-     * Obtiene mensaje de confirmación personalizado para la eliminación
+     * Configuración para el modal de confirmación de eliminación
      * @param {Object} userStatusData - Datos del estado de usuario
-     * @returns {Object} Configuración del modal de confirmación
+     * @returns {Object} Configuración del modal
      */
     getConfirmationConfig(userStatusData) {
         if (!userStatusData) {
             return {
                 title: 'Eliminar Estado de Usuario',
-                message: '¿Está seguro de que desea eliminar este estado de usuario?',
-                type: 'danger'
+                details: '¿Está seguro de que desea eliminar este estado de usuario?',
+                confirmText: 'Sí, Eliminar',
+                cancelText: 'Cancelar',
+                icon: 'fas fa-trash-alt'
             };
         }
 
         return {
             title: 'Confirmar Eliminación',
-            message: `¿Está seguro de que desea eliminar el estado "${userStatusData.name}"?`,
-            details: 'Esta acción no se puede deshacer y podría afectar a los usuarios que tengan asignado este estado.',
-            type: 'danger',
+            details: `¿Está seguro de que desea eliminar el estado "${userStatusData.name}"? Esta acción no se puede deshacer y podría afectar a los usuarios que tengan asignado este estado.`,
             confirmText: 'Sí, Eliminar',
             cancelText: 'Cancelar',
             icon: 'fas fa-trash-alt'
@@ -137,7 +125,7 @@ class DeleteUserStatusService {
     }
 }
 
-// Hacer disponible globalmente
-window.DeleteUserStatusService = DeleteUserStatusService;
+// Instancia global
+window.DeleteUserStatusService = new DeleteUserStatusService();
 
 console.log('✅ DeleteUserStatusService cargado correctamente');

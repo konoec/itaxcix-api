@@ -73,7 +73,35 @@ class CategoryInitializer {
                         if (createBtn) {
                             createBtn.setAttribute('data-action', 'create-category');
                         }
+                        // --- INICIO: Integración DeleteCategoryController ---
+                        // Instanciar el service y el controller de eliminación de categoría
+                        window.DeleteCategoryService = window.DeleteCategoryService || new DeleteCategoryService();
+                        window.deleteCategoryControllerInstance = new DeleteCategoryController();
+                        window.deleteCategoryController = window.deleteCategoryControllerInstance;
+                        // Registrar evento global para botones de eliminar categoría
+                        document.addEventListener('click', function(e) {
+                            const btn = e.target.closest('[data-action="delete-category"]');
+                            if (btn) {
+                                const categoryId = parseInt(btn.getAttribute('data-category-id'), 10);
+                                const categoryName = btn.getAttribute('data-category-name') || '';
+                                const categoryData = { id: categoryId, name: categoryName };
+                                window.deleteCategoryController.handleDeleteButtonClick(btn, categoryData);
+                            }
+                        });
+                        console.log('🗑️ DeleteCategoryController inicializado y eventos registrados');
+                        // --- FIN: Integración DeleteCategoryController ---
                     }, 300);
+
+                    // Inicializar CategoryEditController después de la lista
+                    if (!window.CategoryEditController) {
+                        if (window.CategoryEditControllerClass) {
+                            window.CategoryEditController = new window.CategoryEditControllerClass();
+                            window.categoryEditController = window.CategoryEditController;
+                            console.log('✏️ CategoryEditController inicializado desde el inicializador');
+                        } else {
+                            console.error('❌ No se encontró la clase CategoryEditControllerClass');
+                        }
+                    }
 
                     // Configurar permisos DESPUÉS de que los controladores estén listos
                     setTimeout(() => {

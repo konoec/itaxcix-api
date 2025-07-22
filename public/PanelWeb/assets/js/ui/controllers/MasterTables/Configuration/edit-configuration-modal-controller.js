@@ -512,41 +512,49 @@ class EditConfigurationModalController {
      * Cierra el modal
      */
     closeModal() {
-        try {
-            const modalElement = document.getElementById(this.modalId);
-            if (!modalElement) return;
+    try {
+        const modalElement = document.getElementById(this.modalId);
+        if (!modalElement) return;
 
-            // Intentar cerrar usando Bootstrap
-            if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-                const modal = bootstrap.Modal.getInstance(modalElement);
-                if (modal) {
-                    modal.hide();
-                    return;
-                }
-            }
+        let modalInstance = null;
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            modalInstance = bootstrap.Modal.getInstance(modalElement);
+        } else if (window.bootstrap && window.bootstrap.Modal) {
+            modalInstance = window.bootstrap.Modal.getInstance(modalElement);
+        }
 
-            if (window.bootstrap && window.bootstrap.Modal) {
-                const modal = window.bootstrap.Modal.getInstance(modalElement);
-                if (modal) {
-                    modal.hide();
-                    return;
-                }
-            }
-
-            // Fallback: cerrar manualmente
+        // Si existe instancia de modal de Bootstrap, ciérrala
+        if (modalInstance) {
+            modalInstance.hide();
+        } else {
+            // Fallback manual
             modalElement.style.display = 'none';
             modalElement.classList.remove('show');
             document.body.classList.remove('modal-open');
-            
-            // Remover backdrop
             const backdrop = document.getElementById(`${this.modalId}-backdrop`);
             if (backdrop) {
                 backdrop.remove();
             }
-        } catch (error) {
-            console.error('Error closing modal:', error);
         }
+
+        // REFRESCA LA TABLA SIEMPRE (después de cerrar)
+        setTimeout(() => {
+            console.log('🟢 Cerrando modal y recargando tabla...');
+            if (this.parentController && typeof this.parentController.loadConfigurations === 'function') {
+                if (this.parentController.configurationService.clearCache) {
+                    this.parentController.configurationService.clearCache();
+                }
+                this.parentController.loadConfigurations();
+            }
+            if (window.GlobalToast) {
+    window.GlobalToast.show('Configuraciones actualizadas correctamente', 'success');
+        } },
+    );
+    } catch (error) {
+        console.error('Error closing modal:', error);
     }
+}
+
 
     /**
      * Resetea el modal a su estado inicial

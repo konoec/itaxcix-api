@@ -579,10 +579,7 @@ class AdminUserController extends AbstractController
             // Validar los datos antes de crear el DTO
             $validationErrors = $this->createAdminUserValidator->validate($data);
             if (!empty($validationErrors)) {
-                return $this->badRequest([
-                    'message' => 'Errores de validación',
-                    'errors' => $validationErrors
-                ]);
+                return $this->error('Errores de validación', 400);
             }
 
             // Crear el DTO usando el validador

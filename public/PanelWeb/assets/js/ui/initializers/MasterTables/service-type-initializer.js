@@ -73,10 +73,18 @@ class ServiceTypeInitializer {
                         } catch (error) {
                             console.error('❌ Error inicializando ServiceTypeController:', error);
                         }
-                        
+                        // Inicializar ServiceTypeEditController después de la lista
+                        if (!window.ServiceTypeEditController) {
+                            if (window.ServiceTypeEditControllerClass) {
+                                window.ServiceTypeEditController = new window.ServiceTypeEditControllerClass();
+                                window.serviceTypeEditController = window.ServiceTypeEditController;
+                                console.log('✏️ ServiceTypeEditController inicializado desde el inicializador');
+                            } else {
+                                console.error('❌ No se encontró la clase ServiceTypeEditControllerClass');
+                            }
+                        }
                         // Notificar que el módulo está listo
                         LoadingScreenUtil.notifyModuleLoaded('ServiceType');
-                        
                         console.log('✅ Tipos de Servicio inicializado completamente');
                     }, 400);
                     

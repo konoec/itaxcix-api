@@ -390,8 +390,6 @@ class DriverStatusEditController {
     }
 }
 
-// Inicializar controlador
-window.DriverStatusEditController = new DriverStatusEditController();
-window.driverStatusEditController = window.DriverStatusEditController;
-
-console.log('✅ DriverStatusEditController cargado y disponible globalmente');
+// Exportar la clase globalmente para uso en el inicializador
+window.DriverStatusEditControllerClass = DriverStatusEditController;
+console.log('✅ DriverStatusEditController definido y exportado globalmente');

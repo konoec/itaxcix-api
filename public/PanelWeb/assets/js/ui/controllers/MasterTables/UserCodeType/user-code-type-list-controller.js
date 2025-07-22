@@ -262,5 +262,5 @@ class UserCodeTypeListController {
     }
 }
 
-// NO INSTANCIAR AUTOMÁTICAMENTE AQUÍ
-// window.UserCodeTypeListController = new UserCodeTypeListController();
+//export
+window.UserCodeTypeListController = UserCodeTypeListController;

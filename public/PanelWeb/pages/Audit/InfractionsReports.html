@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../../assets/Recourse/Logo/1.png" />
+    <link rel="shortcut icon" href="../../assets/Recourse/Logo/1.png" />
+
+    <title>Auditoría - Reporte de Infracciones</title>
+
+    <!-- Tabler CSS Framework -->
+    <link rel="stylesheet" href="../../assets/tabler/css/tabler.min.css" />
+    <link rel="stylesheet" href="../../assets/tabler/css/tabler-vendors.min.css" />
+
+    <!-- Global styles -->
+    <link rel="stylesheet" href="../../assets/css/global-toast.css" />
+    <link rel="stylesheet" href="../../assets/css/loading-screen.css" />
+    <link rel="stylesheet" href="../../assets/css/sidebar.css" />
+    <link rel="stylesheet" href="../../assets/css/profile.css" />
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+    <!-- Configuración dinámica de sección -->
+    <script>
+        window.pageConfig = {
+            activeSection: 'reportes',
+            pageTitle: {
+                icon: 'fas fa-exclamation-triangle',
+                text: 'Reporte de Infracciones'
+            }
+        };
+    </script>
+</head>
+<body>
+    <!-- Pantalla de carga global -->
+    <div
+        class="loading-screen d-flex align-items-center justify-content-center position-fixed w-100 h-100"
+        style="top: 0; left: 0; z-index: 9999; background-color: rgba(255,255,255,0.95); backdrop-filter: blur(5px);"
+    >
+        <div class="text-center">
+            <div class="mb-4">
+                <img src="../../assets/Recourse/Logo/1.png" alt="Logo" class="mb-3" style="height: 60px" />
+            </div>
+            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <div class="text-secondary">
+                <div class="fw-bold mb-1">Cargando Panel de Infracciones</div>
+                <div class="small text-muted">Preparando la interfaz y cargando componentes...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page">
+        <!-- Sidebar dinámico -->
+        <div id="sidebar-container"></div>
+
+        <div class="page-wrapper">
+            <!-- Topbar dinámico -->
+            <div id="topbar-container"></div>
+
+            <!-- Contenido principal -->
+            <div class="page-body">
+                <div class="container-xl">
+                    <!-- Filtros avanzados con collapse -->
+                    <div class="card mb-4" id="infractions-filters">
+                        <div class="card-header d-flex align-items-center justify-content-between pb-2">
+                            <h3 class="card-title mb-0">
+                                <i class="fas fa-filter me-2"></i>
+                                Filtros avanzados de infracciones
+                            </h3>
+                            <div class="card-actions ms-auto">
+                                <button
+                                    class="btn btn-sm btn-outline-primary"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#advancedInfractionsFilters"
+                                    aria-expanded="true"
+                                    aria-controls="advancedInfractionsFilters"
+                                >
+                                    <i class="fas fa-sliders-h me-1"></i> Mostrar/Ocultar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="collapse show" id="advancedInfractionsFilters">
+                            <div class="card-body pt-0">
+                                <form class="row g-3 align-items-end">
+                                    <div class="col-md-2">
+                                        <label for="filter-infraction-user-id" class="form-label">Usuario (ID)</label>
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            class="form-control"
+                                            id="filter-infraction-user-id"
+                                            placeholder="ID usuario"
+                                        />
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="filter-severity-id" class="form-label">Severidad (ID)</label>
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            class="form-control"
+                                            id="filter-severity-id"
+                                            placeholder="ID severidad"
+                                        />
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="filter-infraction-status-id" class="form-label">Estado (ID)</label>
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            class="form-control"
+                                            id="filter-infraction-status-id"
+                                            placeholder="ID estado"
+                                        />
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="filter-date-from" class="form-label">Fecha Desde</label>
+                                        <input
+                                            type="date"
+                                            class="form-control"
+                                            id="filter-date-from"
+                                            placeholder="YYYY-MM-DD"
+                                        />
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="filter-date-to" class="form-label">Fecha Hasta</label>
+                                        <input
+                                            type="date"
+                                            class="form-control"
+                                            id="filter-date-to"
+                                            placeholder="YYYY-MM-DD"
+                                        />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="filter-infraction-description" class="form-label">Descripción</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="filter-infraction-description"
+                                            placeholder="Palabra clave"
+                                        />
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="infraction-sort-by" class="form-label">Ordenar por</label>
+                                        <select id="infraction-sort-by" class="form-select">
+                                            <option value="id">ID</option>
+                                            <option value="userId">Usuario</option>
+                                            <option value="severityId">Severidad</option>
+                                            <option value="statusId">Estado</option>
+                                            <option value="date">Fecha</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="infraction-sort-direction" class="form-label">Dirección</label>
+                                        <select id="infraction-sort-direction" class="form-select">
+                                            <option value="DESC" selected>Descendente</option>
+                                            <option value="ASC">Ascendente</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="page-size-select" class="form-label">Por página</label>
+                                        <select id="page-size-select" class="form-select">
+                                            <option value="5">5</option>
+                                            <option value="10">10</option>
+                                            <option value="20" selected>20</option>
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 d-flex gap-2">
+                                        <button type="button" class="btn btn-primary w-100" id="apply-filters-btn-infractions">
+                                            <i class="fas fa-search"></i> Aplicar Filtros
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="btn btn-outline-secondary w-100"
+                                            id="clear-filters-btn-infractions"
+                                        >
+                                            <i class="fas fa-broom"></i> Limpiar
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="btn btn-outline-info w-100"
+                                            id="refresh-data-btn-infractions"
+                                        >
+                                            <i class="fas fa-sync-alt"></i> Refrescar
+                                        </button>
+                                    </div>
+                                </form>
+                                <!-- Errores de validación de filtros -->
+                                <div id="validation-errors-infractions" style="display:none;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla principal -->
+                    <div class="card">
+                        <div class="card-header" id="infractions-headers">
+                            <h3 class="card-title"><i class="fas fa-list me-2"></i>Lista de Infracciones</h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-vcenter" id="infractions-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>ID Usuario</th>
+                                        <th>Nombre Usuario</th>
+                                        <th>ID Severidad</th>
+                                        <th>Severidad</th>
+                                        <th>ID Estado</th>
+                                        <th>Estado</th>
+                                        <th>Fecha</th>
+                                        <th>Descripción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="infractions-table-body">
+                                    <!-- Filas dinámicas de la tabla -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer d-flex align-items-center">
+                            <div class="me-auto">
+                                <span id="pagination-info-infractions"></span>
+                            </div>
+                            <nav>
+                                <ul class="pagination mb-0" id="pagination-container">
+                                    <!-- Botones de paginación dinámicos -->
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modales globales -->
+    <div id="modal-container"></div>
+
+    <!-- Toast notification para operaciones -->
+    <div id="recovery-toast" class="recovery-toast">
+        <div class="recovery-toast-content">
+            <i class="fas fa-check-circle"></i>
+            <span id="recovery-toast-message">Operación completada correctamente</span>
+        </div>
+    </div>
+
+    <!-- Scripts base y componentes globales -->
+    <script src="../../assets/js/ui/component-loader.js"></script>
+    <script src="../../assets/js/utils/loading-screen-util.js"></script>
+    <script src="../../assets/js/global-initializer.js"></script>
+    <script src="../../assets/js/ui/global-toast.js"></script>
+    <script src="../../assets/js/auth/permissions.js"></script>
+    <script src="../../assets/js/auth/auth-checker.js"></script>
+    <script src="../../assets/js/auth/route-guard.js"></script>
+    <script>
+        window.routeGuard = new RouteGuard("../../index.html");
+    </script>
+    <script src="../../assets/js/api/services/profile-service.js"></script>
+    <script src="../../assets/js/api/services/Audit/infraction-reports-service.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Audit/infraction-reports-controller.js"></script>
+    
+    <!-- Inicializador -->
+    <script src="../../assets/js/ui/initializers/Audit/audit-reports-initializer-infractions.js"></script>
+    <script src="../../assets/tabler/js/tabler.min.js"></script>
+</body>
+</html>

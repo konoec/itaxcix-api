@@ -73,6 +73,11 @@ class ProcedureTypesInitializer {
                         window.procedureTypeCreateController = new ProcedureTypeCreateController();
                         console.log('📝 ProcedureTypeCreateController inicializado');
                     }
+                    // Inicializar ProcedureTypeEditController después de la lista
+                    if (!window.procedureTypeEditController && typeof ProcedureTypeEditControllerClass !== 'undefined') {
+                        window.procedureTypeEditController = new window.ProcedureTypeEditControllerClass();
+                        console.log('✏️ ProcedureTypeEditController inicializado desde el inicializador');
+                    }
                 }, 300);
 
                 // Configurar permisos y notificar que el módulo está listo

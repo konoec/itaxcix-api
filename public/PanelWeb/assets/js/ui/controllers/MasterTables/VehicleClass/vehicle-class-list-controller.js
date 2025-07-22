@@ -23,6 +23,9 @@ class VehicleClassListController {
     this.refreshBtn = document.getElementById('refreshVehicleClassBtn');
     this.clearBtn = document.getElementById('clearVehicleClassFiltersBtn');
 
+    // Exponer el controlador globalmente para el flujo de eliminación
+    window.vehicleClassListController = this;
+
     this.initEvents();
     setTimeout(() => this.load(), 100);
   }
@@ -154,7 +157,12 @@ class VehicleClassListController {
           <td class="text-center">
             <div class="btn-group">
               <button class="btn btn-sm btn-outline-warning"><i class="fas fa-edit"></i></button>
-              <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+              <button class="btn btn-sm btn-outline-danger"
+                data-action="delete-vehicle-class"
+                data-vehicle-class-id="${c.id}"
+                data-vehicle-class-name="${c.name}">
+                <i class="fas fa-trash"></i>
+              </button>
             </div>
           </td>
         </tr>

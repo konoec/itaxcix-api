@@ -214,12 +214,11 @@ class InfractionSeverityListController {
             return;
         }
         
-        if (window.updateInfractionSeverityController) {
-            // Pasar tanto el ID como los datos para evitar llamada a la API
-            window.updateInfractionSeverityController.showEditModal(id, infractionSeverityData);
+        // Usar el controlador de edición global
+        if (window.infractionSeverityEditController) {
+            window.infractionSeverityEditController.openEditModal(id, infractionSeverityData);
         } else {
-            console.error('❌ updateInfractionSeverityController no está disponible');
-            GlobalToast.show('Error: Controlador de edición no disponible', 'error');
+            window.GlobalToast?.showErrorToast('Controlador de edición no disponible');
         }
     }
 

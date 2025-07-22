@@ -160,9 +160,10 @@ class DocumentTypeEditController {
                 if (window.GlobalToast) {
                     window.GlobalToast.show(response.message || 'Tipo de documento actualizado correctamente', 'success');
                 }
-                // Actualizar la lista si existe el controlador
-                if (window.documentTypesListController && typeof window.documentTypesListController.refreshData === 'function') {
-                    window.documentTypesListController.refreshData();
+                // Actualizar la lista automáticamente
+                const listController = window.documentTypesListController || window.documentTypesListControllerInstance;
+                if (listController && typeof listController.load === 'function') {
+                    listController.load();
                 }
                 // Cerrar el modal
                 const modal = bootstrap.Modal.getInstance(document.getElementById('editDocumentTypeModal'));

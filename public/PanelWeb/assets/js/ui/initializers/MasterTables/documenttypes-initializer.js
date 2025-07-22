@@ -68,6 +68,23 @@ class DocumentTypesInitializer {
                             window.documentTypesListController = new DocumentTypesListController();
                             console.log('📋 DocumentTypesListController inicializado');
                         }
+                        // --- INTEGRACIÓN: Controlador de eliminación de tipo de documento ---
+                        if (!window.DeleteDocumentTypeService) {
+                            window.DeleteDocumentTypeService = new DeleteDocumentTypeService();
+                        }
+                        if (!window.deleteDocumentTypeController) {
+                            window.deleteDocumentTypeController = new DeleteDocumentTypeController();
+                        }
+                        // Delegación de eventos para los botones de eliminar
+                        document.body.addEventListener('click', function(e) {
+                            const btn = e.target.closest('[data-action="delete-document-type"]');
+                            if (btn) {
+                                const id = Number(btn.getAttribute('data-document-type-id'));
+                                const name = btn.getAttribute('data-name') || btn.dataset.name || '';
+                                window.deleteDocumentTypeController.handleDeleteButtonClick(btn, { id, name });
+                            }
+                        });
+                        // --- FIN integración ---
                     }, 400);
                     
                     // Configurar permisos DESPUÉS de que los controladores estén listos

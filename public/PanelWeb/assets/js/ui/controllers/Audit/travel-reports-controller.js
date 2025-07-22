@@ -1,343 +1,365 @@
 /**
- * Controlador para reportes de viajes
- * Extiende BaseReportsController para manejar reportes de viajes específicamente
+ * Controlador para reportes de viajes con filtros y paginación avanzada
  */
-class TravelReportsController extends BaseReportsController {
+class TravelReportsController {
     constructor() {
-        super();
         console.log('🚕 Inicializando TravelReportsController...');
-        
-        // Filtros específicos para viajes
+
+        // Filtros y paginación por defecto
         this.filters = {
-            citizenId: '',
-            driverId: '',
-            statusId: '',
-            startDate: '',
-            endDate: '',
-            origin: '',
-            destination: '',
             sortBy: 'creationDate',
             sortDirection: 'DESC'
         };
-        
-        // Servicio de datos
+        this.currentPage = 1;
+        this.perPage = 20;
+        this.totalPages = 1;
+        this.totalResults = 0;
+
+        // Servicio de datos (ya está global)
         this.service = window.travelReportsService;
-        
-        // Elementos específicos del DOM
-        this.initializeTravelElements();
-        
-        // Event listeners específicos
-        this.initializeTravelEventListeners();
-    }
-    
-    /**
-     * Inicializa los elementos específicos para viajes
-     */
-    initializeTravelElements() {
-        // Sección de filtros específica
-        this.filtersSection = document.getElementById('travels-filters');
-        this.headers = document.getElementById('travels-headers');
-        
-        // Filtros específicos
-        this.filterCitizenId = document.getElementById('filter-citizen-id');
-        this.filterDriverId = document.getElementById('filter-driver-id');
+
+        // Elementos del DOM
+        this.incidentsTableBody  = document.getElementById('incidents-table-body');
+        this.pageSizeSelect      = document.getElementById('page-size-select');
+        this.paginationInfo      = document.getElementById('pagination-info-travels');
+        this.paginationContainer = document.querySelector('.card-footer ul.pagination') || document.getElementById('pagination-container');
+
+        // Filtros
+        this.filterCitizenId      = document.getElementById('filter-citizen-id');
+        this.filterDriverId       = document.getElementById('filter-driver-id');
         this.filterTravelStatusId = document.getElementById('filter-travel-status-id');
-        this.filterStartDate = document.getElementById('filter-start-date');
-        this.filterEndDate = document.getElementById('filter-end-date');
-        this.filterOrigin = document.getElementById('filter-origin');
-        this.filterDestination = document.getElementById('filter-destination');
-        this.travelSortBy = document.getElementById('travel-sort-by');
-        this.travelSortDirection = document.getElementById('travel-sort-direction');
-        
-        // Botones de acción específicos
-        this.applyFiltersBtn = document.getElementById('apply-filters-btn-travels');
-        this.clearFiltersBtn = document.getElementById('clear-filters-btn-travels');
-        this.refreshDataBtn = document.getElementById('refresh-data-btn-travels');
-        
-        console.log('✅ Elementos específicos de viajes inicializados');
+        this.filterStartDate      = document.getElementById('filter-start-date');
+        this.filterEndDate        = document.getElementById('filter-end-date');
+        this.filterOrigin         = document.getElementById('filter-origin');
+        this.filterDestination    = document.getElementById('filter-destination');
+        this.travelSortBy         = document.getElementById('travel-sort-by');
+        this.travelSortDirection  = document.getElementById('travel-sort-direction');
+        this.applyFiltersBtn      = document.getElementById('apply-filters-btn-travels');
+        this.clearFiltersBtn      = document.getElementById('clear-filters-btn-travels');
+        this.refreshDataBtn       = document.getElementById('refresh-data-btn-travels');
+
+        // Listeners
+        this._bindEvents();
+
+        // Cargar datos al instanciar
+        this.loadReports();
     }
-    
-    /**
-     * Inicializa los event listeners específicos para viajes
-     */
-    initializeTravelEventListeners() {
-        // Botones de acción
+
+    _bindEvents() {
+        if (this.pageSizeSelect) {
+            this.pageSizeSelect.addEventListener('change', (e) => {
+                this.perPage = parseInt(e.target.value);
+                this.currentPage = 1;
+                this.loadReports();
+            });
+        }
         if (this.applyFiltersBtn) {
             this.applyFiltersBtn.addEventListener('click', () => this.applyFilters());
         }
-        
         if (this.clearFiltersBtn) {
             this.clearFiltersBtn.addEventListener('click', () => this.clearFilters());
         }
-        
         if (this.refreshDataBtn) {
-            this.refreshDataBtn.addEventListener('click', () => this.refreshData());
+            this.refreshDataBtn.addEventListener('click', () => this.loadReports());
         }
-        
-        // Enter en campos de texto
-        [this.filterCitizenId, this.filterDriverId, this.filterTravelStatusId, this.filterOrigin, this.filterDestination].forEach(input => {
+        // Enter en los inputs de filtros = aplicar
+        [
+            this.filterCitizenId,
+            this.filterDriverId,
+            this.filterTravelStatusId,
+            this.filterStartDate,
+            this.filterEndDate,
+            this.filterOrigin,
+            this.filterDestination
+        ].forEach(input => {
             if (input) {
                 input.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        this.applyFilters();
-                    }
+                    if (e.key === 'Enter') this.applyFilters();
                 });
             }
         });
-        
-        console.log('✅ Event listeners específicos de viajes inicializados');
+        // Cuando cambie "Ordenar por" o "Dirección", aplicar filtros
+        if (this.travelSortBy) {
+            this.travelSortBy.addEventListener('change', () => this.applyFilters());
+        }
+        if (this.travelSortDirection) {
+            this.travelSortDirection.addEventListener('change', () => this.applyFilters());
+        }
+        // Paginación avanzada: los clicks los maneja _renderPaginationButtons()
     }
-    
-    /**
-     * Carga reportes de viajes con filtros
-     */
+
+    applyFilters() {
+        // Lee los valores de los filtros del DOM
+        this.filters = {
+            sortBy: this.travelSortBy?.value || 'creationDate',
+            sortDirection: this.travelSortDirection?.value || 'DESC'
+        };
+
+        const citizenId = this.filterCitizenId?.value;
+        if (citizenId) this.filters.citizenId = parseInt(citizenId);
+
+        const driverId = this.filterDriverId?.value;
+        if (driverId) this.filters.driverId = parseInt(driverId);
+
+        const statusId = this.filterTravelStatusId?.value;
+        if (statusId) this.filters.statusId = parseInt(statusId);
+
+        const startDate = this.filterStartDate?.value;
+        if (startDate) this.filters.startDate = startDate;
+
+        const endDate = this.filterEndDate?.value;
+        if (endDate) this.filters.endDate = endDate;
+
+        const origin = this.filterOrigin?.value;
+        if (origin) this.filters.origin = origin;
+
+        const destination = this.filterDestination?.value;
+        if (destination) this.filters.destination = destination;
+
+        this.currentPage = 1; // reset a la primera página
+        this.loadReports();
+    }
+
+    clearFilters() {
+        // Limpia todos los filtros visuales y de lógica
+        if (this.filterCitizenId)      this.filterCitizenId.value = '';
+        if (this.filterDriverId)       this.filterDriverId.value = '';
+        if (this.filterTravelStatusId) this.filterTravelStatusId.value = '';
+        if (this.filterStartDate)      this.filterStartDate.value = '';
+        if (this.filterEndDate)        this.filterEndDate.value = '';
+        if (this.filterOrigin)         this.filterOrigin.value = '';
+        if (this.filterDestination)    this.filterDestination.value = '';
+        if (this.travelSortBy)         this.travelSortBy.value = 'creationDate';
+        if (this.travelSortDirection)  this.travelSortDirection.value = 'DESC';
+        if (this.pageSizeSelect)       this.pageSizeSelect.value = '20';
+
+        this.filters = {
+            sortBy: 'creationDate',
+            sortDirection: 'DESC'
+        };
+        this.perPage = 20;
+        this.currentPage = 1;
+        this.loadReports();
+    }
+
     async loadReports() {
         if (!this.service) {
-            console.error('❌ Servicio de viajes no disponible');
-            this.showErrorState('Servicio de viajes no disponible');
+            this.renderTable([]);
             return;
         }
-
         try {
-            this.showLoadingState();
-            
-            const requestFilters = {
+            // Limpia la tabla antes de cargar
+            if (this.incidentsTableBody) this.incidentsTableBody.innerHTML = '<tr><td colspan="9">Cargando...</td></tr>';
+            const params = {
                 page: this.currentPage,
                 perPage: this.perPage,
                 ...this.filters
             };
-            
-            console.log('🔄 Cargando reportes de viajes con filtros:', requestFilters);
-            
-            const response = await this.service.getTravelReports(requestFilters);
-            
-            if (response && response.success && response.data) {
-                this.currentData = response.data.data || [];
-                
-                // Extraer información de paginación
-                const pagination = response.data.pagination;
-                if (pagination) {
-                    this.totalResults = pagination.total_items || 0;
-                    this.totalPages = pagination.total_pages || 1;
-                    this.currentPage = pagination.current_page || 1;
-                    this.perPage = pagination.per_page || 20;
-                } else {
-                    this.totalResults = this.currentData.length;
-                    this.totalPages = 1;
-                    this.currentPage = 1;
-                    this.perPage = 20;
-                }
-                
-                this.renderTable();
-                this.updatePagination();
-                this.showTableState();
-                
-                console.log('✅ Reportes de viajes cargados exitosamente');
+            const response = await this.service.getTravelReports(params);
+            console.log('🟢 Respuesta API:', response);
+
+            let data = [];
+            if (response && response.success && response.data && Array.isArray(response.data.data)) {
+                data = response.data.data;
+                // Actualiza paginación
+                const pagination = response.data.pagination || {};
+                this.totalPages = pagination.total_pages || 1;
+                this.currentPage = pagination.current_page || 1;
+                this.perPage = pagination.per_page || this.perPage;
+                this.totalResults = pagination.total_items || data.length;
             } else {
-                throw new Error('Respuesta inválida del servidor');
+                this.totalPages = 1;
+                this.currentPage = 1;
+                this.totalResults = 0;
             }
-            
+            this.renderTable(data);
+            this.updatePaginationUI();
         } catch (error) {
-            console.error('❌ Error al cargar reportes de viajes:', error);
-            this.showErrorState(error.message || 'Error al cargar los reportes de viajes');
+            if (this.incidentsTableBody)
+                this.incidentsTableBody.innerHTML = `<tr><td colspan="9">Error cargando datos: ${error.message}</td></tr>`;
+            if (this.paginationInfo) this.paginationInfo.innerText = '';
         }
     }
-    
-    /**
-     * Aplica los filtros actuales
-     */
-    applyFilters() {
-        this.updateFiltersFromForm();
-        this.currentPage = 1;
-        this.loadReports();
-    }
-    
-    /**
-     * Limpia todos los filtros
-     */
-    clearFilters() {
-        // Limpiar formulario
-        if (this.filterCitizenId) this.filterCitizenId.value = '';
-        if (this.filterDriverId) this.filterDriverId.value = '';
-        if (this.filterTravelStatusId) this.filterTravelStatusId.value = '';
-        if (this.filterStartDate) this.filterStartDate.value = '';
-        if (this.filterEndDate) this.filterEndDate.value = '';
-        if (this.filterOrigin) this.filterOrigin.value = '';
-        if (this.filterDestination) this.filterDestination.value = '';
-        if (this.travelSortBy) this.travelSortBy.value = 'creationDate';
-        if (this.travelSortDirection) this.travelSortDirection.value = 'DESC';
-        if (this.pageSizeSelect) this.pageSizeSelect.value = '20';
-        
-        // Resetear filtros
-        this.filters = {
-            citizenId: '',
-            driverId: '',
-            statusId: '',
-            startDate: '',
-            endDate: '',
-            origin: '',
-            destination: '',
-            sortBy: 'creationDate',
-            sortDirection: 'DESC'
-        };
-        
-        this.perPage = 20;
-        this.currentPage = 1;
-        
-        this.loadReports();
-    }
-    
-    /**
-     * Refresca los datos
-     */
-    refreshData() {
-        this.loadReports();
-    }
-    
-    /**
-     * Actualiza los filtros desde el formulario
-     */
-    updateFiltersFromForm() {
-        this.filters = {
-            citizenId: this.filterCitizenId?.value || '',
-            driverId: this.filterDriverId?.value || '',
-            statusId: this.filterTravelStatusId?.value || '',
-            startDate: this.filterStartDate?.value || '',
-            endDate: this.filterEndDate?.value || '',
-            origin: this.filterOrigin?.value || '',
-            destination: this.filterDestination?.value || '',
-            sortBy: this.travelSortBy?.value || 'creationDate',
-            sortDirection: this.travelSortDirection?.value || 'DESC'
-        };
-        
-        this.perPage = parseInt(this.pageSizeSelect?.value || '20');
-        console.log('📝 Filtros de viajes actualizados:', this.filters);
-    }
-    
-    /**
-     * Renderiza la tabla con los datos actuales
-     */
-    renderTable() {
-        if (!this.incidentsTableBody) {
-            console.error('❌ Cuerpo de tabla no encontrado');
-            return;
-        }
 
-        console.log('🎨 Renderizando tabla de viajes con', this.currentData.length, 'registros');
-
-        // Limpiar tabla
+    renderTable(data) {
+        if (!this.incidentsTableBody) return;
         this.incidentsTableBody.innerHTML = '';
-
-        if (this.currentData.length === 0) {
-            this.showEmptyState();
+        if (!data || data.length === 0) {
+            this.incidentsTableBody.innerHTML = '<tr><td colspan="9" class="text-center text-muted">No se encontraron viajes.</td></tr>';
             return;
         }
+        data.forEach(travel => {
+            // Badge color según estado
+            let badgeHtml = this.getStatusBadge(travel.status);
 
-        // Generar filas
-        this.currentData.forEach(travel => {
-            const row = this.createTableRow(travel);
+            // Fechas formateadas
+            let formattedStartDate = travel.startDate ? this.formatDate(travel.startDate) : '';
+            let formattedEndDate   = travel.endDate ? this.formatDate(travel.endDate) : '';
+            let formattedCreationDate = travel.creationDate ? this.formatDate(travel.creationDate) : '';
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${travel.id || ''}</td>
+                <td>${travel.citizenName || ''}</td>
+                <td>${travel.driverName || ''}</td>
+                <td title="${travel.origin || ''}">${this.truncateText(travel.origin, 30)}</td>
+                <td title="${travel.destination || ''}">${this.truncateText(travel.destination, 30)}</td>
+                <td>${formattedStartDate}</td>
+                <td>${formattedEndDate}</td>
+                <td>${formattedCreationDate}</td>
+                <td>${badgeHtml}</td>
+            `;
             this.incidentsTableBody.appendChild(row);
         });
-
-        console.log('✅ Tabla de viajes renderizada');
     }
 
-    /**
-     * Crea una fila de tabla para un viaje
-     */
-    createTableRow(travel) {
-        const row = document.createElement('tr');
-        row.className = 'data-row';
-
-        // Formatear fechas
-        const formattedStartDate = this.formatDate(travel.startDate);
-        const formattedEndDate = this.formatDate(travel.endDate);
-        const formattedCreationDate = this.formatDate(travel.creationDate);
-
-        // Formatear estado con badge
-        const statusClass = this.getStatusClass(travel.status);
-
-        row.innerHTML = `
-            <td>${travel.id || ''}</td>
-            <td><strong>${travel.citizenName || 'Sin nombre'}</strong></td>
-            <td><strong>${travel.driverName || 'Sin nombre'}</strong></td>
-            <td title="${travel.origin || 'Sin origen'}">${this.truncateText(travel.origin || 'Sin origen', 30)}</td>
-            <td title="${travel.destination || 'Sin destino'}">${this.truncateText(travel.destination || 'Sin destino', 30)}</td>
-            <td>${formattedStartDate}</td>
-            <td>${formattedEndDate}</td>
-            <td>${formattedCreationDate}</td>
-            <td><span class="status-badge ${statusClass}">${travel.status || 'Sin estado'}</span></td>
-        `;
-
-        return row;
+    updatePaginationUI() {
+        // Info textual de paginación
+        if (this.paginationInfo) {
+            let start = (this.currentPage - 1) * this.perPage + 1;
+            let end = Math.min(this.currentPage * this.perPage, this.totalResults);
+            this.paginationInfo.innerText = (this.totalResults > 0)
+                ? `Mostrando ${start} a ${end} de ${this.totalResults} viajes`
+                : '';
+        }
+        this._renderPaginationButtons();
     }
 
-    /**
-     * Obtiene la clase CSS para el estado del viaje
-     */
-    getStatusClass(status) {
-        if (!status) return 'status-unknown';
-        
-        switch (status.toUpperCase()) {
-            case 'FINALIZADO':
-                return 'status-completed';
-            case 'CANCELADO':
-                return 'status-cancelled';
-            case 'ACEPTADO':
-                return 'status-accepted';
-            case 'RECHAZADO':
-                return 'status-rejected';
-            case 'EN_PROGRESO':
-            case 'EN PROGRESO':
-                return 'status-in-progress';
-            default:
-                return 'status-unknown';
+    _renderPaginationButtons() {
+        if (!this.paginationContainer) return;
+        const ul = this.paginationContainer;
+        ul.innerHTML = '';
+        const totalPages = this.totalPages || 1;
+        const currentPage = this.currentPage || 1;
+        const delta = 2; // Cantidad de botones antes y después
+
+        const makeItem = (html, p, disabled = false, active = false, isDots = false) => {
+            const li = document.createElement('li');
+            li.className = `page-item${disabled ? ' disabled' : ''}${active ? ' active' : ''}${isDots ? ' disabled' : ''}`;
+            if (isDots) {
+                li.innerHTML = `<span class="page-link">…</span>`;
+                return li;
+            }
+            const a = document.createElement('a');
+            a.className = 'page-link';
+            a.href = '#';
+            a.innerHTML = html;
+            if (!disabled && !active) {
+                a.addEventListener('click', e => {
+                    e.preventDefault();
+                    this.currentPage = p;
+                    this.loadReports();
+                });
+            }
+            li.appendChild(a);
+            return li;
+        };
+
+        // Prev arrow
+        ul.appendChild(makeItem('<i class="fas fa-chevron-left"></i>', currentPage - 1, currentPage === 1));
+
+        // Números y puntos suspensivos
+        let start = Math.max(1, currentPage - delta);
+        let end = Math.min(totalPages, currentPage + delta);
+
+        if (start > 1) {
+            ul.appendChild(makeItem('1', 1, false, currentPage === 1));
+            if (start > 2) ul.appendChild(makeItem('', null, false, false, true));
         }
+        for (let p = start; p <= end; p++) {
+            ul.appendChild(makeItem(p, p, false, p === currentPage));
+        }
+        if (end < totalPages) {
+            if (end < totalPages - 1) ul.appendChild(makeItem('', null, false, false, true));
+            ul.appendChild(makeItem(totalPages, totalPages, false, currentPage === totalPages));
+        }
+
+        // Next arrow
+        ul.appendChild(makeItem('<i class="fas fa-chevron-right"></i>', currentPage + 1, currentPage === totalPages));
     }
-    
-    /**
-     * Verifica si hay filtros activos
-     */
-    hasActiveFilters() {
-        return (
-            (this.filters.citizenId && this.filters.citizenId.toString().trim() !== '') ||
-            (this.filters.driverId && this.filters.driverId.toString().trim() !== '') ||
-            (this.filters.statusId && this.filters.statusId.toString().trim() !== '') ||
-            (this.filters.startDate && this.filters.startDate.trim() !== '') ||
-            (this.filters.endDate && this.filters.endDate.trim() !== '') ||
-            (this.filters.origin && this.filters.origin.trim() !== '') ||
-            (this.filters.destination && this.filters.destination.trim() !== '') ||
-            this.filters.sortBy !== 'creationDate' ||
-            this.filters.sortDirection !== 'DESC'
-        );
+
+    // Utilidades de renderizado y formato
+    getStatusBadge(status) {
+    if (!status)
+        return `<span class="badge bg-secondary-lt">
+            <span style="display:inline-block;width:10px;height:10px;background:#adb5bd;border-radius:50%;margin-right:6px;"></span>
+            Sin estado
+        </span>`;
+
+    const st = status.toString().toUpperCase();
+
+    if (st.includes('FINALIZADO') || st.includes('COMPLETADO'))
+        return `<span class="badge bg-success-lt text-success">
+            <span style="display:inline-block;width:10px;height:10px;background:#51cf66;border-radius:50%;margin-right:6px;"></span>
+            Finalizado
+        </span>`;
+
+    if (st.includes('CANCELADO'))
+        return `<span class="badge bg-danger-lt text-danger">
+            <span style="display:inline-block;width:10px;height:10px;background:#ff6b6b;border-radius:50%;margin-right:6px;"></span>
+            Cancelado
+        </span>`;
+
+    if (st.includes('PROGRESO'))
+        return `<span class="badge bg-warning-lt text-warning">
+            <span style="display:inline-block;width:10px;height:10px;background:#ffe066;border-radius:50%;margin-right:6px;"></span>
+            En progreso
+        </span>`;
+
+    if (st.includes('ACEPTADO'))
+        return `<span class="badge bg-info-lt text-info">
+            <span style="display:inline-block;width:10px;height:10px;background:#66d9e8;border-radius:50%;margin-right:6px;"></span>
+            Aceptado
+        </span>`;
+
+    if (st.includes('SOLICITADO'))
+        return `<span class="badge bg-warning-lt text-warning">
+            <span style="display:inline-block;width:10px;height:10px;background:#fcc419;border-radius:50%;margin-right:6px;"></span>
+            Solicitado
+        </span>`;
+
+    if (st.includes('RECHAZADO'))
+        return `<span class="badge bg-danger-lt text-danger">
+            <span style="display:inline-block;width:10px;height:10px;background:#fa5252;border-radius:50%;margin-right:6px;"></span>
+            Rechazado
+        </span>`;
+
+    return `<span class="badge bg-secondary-lt">
+        <span style="display:inline-block;width:10px;height:10px;background:#adb5bd;border-radius:50%;margin-right:6px;"></span>
+        ${status}
+    </span>`;
+}
+
+
+    truncateText(text, max = 40) {
+        if (!text) return '';
+        if (text.length > max) return text.slice(0, max) + '…';
+        return text;
     }
-    
-    /**
-     * Muestra los filtros y headers específicos para viajes
-     */
-    showFiltersAndHeaders() {
-        if (this.filtersSection) {
-            this.filtersSection.style.display = 'block';
-        }
-        
-        if (this.headers) {
-            this.headers.style.display = 'table-row';
-        }
-    }
-    
-    /**
-     * Oculta los filtros y headers específicos para viajes
-     */
-    hideFiltersAndHeaders() {
-        if (this.filtersSection) {
-            this.filtersSection.style.display = 'none';
-        }
-        
-        if (this.headers) {
-            this.headers.style.display = 'none';
-        }
+
+    formatDate(dateStr) {
+        if (!dateStr) return '';
+        // Soporta tanto "2024-06-01 08:00:00" como ISO
+        const dateObj = new Date(dateStr.replace(' ', 'T'));
+        if (isNaN(dateObj.getTime())) return dateStr;
+        return dateObj.toLocaleString('es-PE', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
     }
 }
 
-// Hacer el controlador disponible globalmente
+// Hacer global para debug y para inicialización
 window.TravelReportsController = TravelReportsController;
+
+// Instanciar solo cuando exista la tabla en el DOM
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        if (document.getElementById('incidents-table-body')) {
+            window.travelReportsController = new TravelReportsController();
+        }
+    }, 400);
+});

@@ -319,7 +319,7 @@
                       <th class="w-1 text-center"><i class="fas fa-cogs text-muted"></i></th>
                     </tr>
                   </thead>
-                  <tbody id="colorTableBody">
+                  <tbody id="colorTableBody">                   
                     <tr>
                       <td colspan="4" class="text-center py-4">
                         <div class="spinner-border spinner-border-sm me-2" role="status"></div>
@@ -352,6 +352,7 @@
   <script src="../../assets/js/utils/loading-screen-util.js"></script>
   <script src="../../assets/js/global-initializer.js"></script>
   <script src="../../assets/js/ui/global-toast.js"></script>
+
   <!-- 3. Auth -->
   <script src="../../assets/js/auth/permissions.js"></script>
   <script src="../../assets/js/auth/auth-checker.js"></script>
@@ -363,16 +364,25 @@
   <script src="../../assets/js/api/services/profile-service.js"></script>
   <!-- 5. Component Controllers -->
   <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
-  <!-- Color Create Service (debe ir antes del controlador) -->
-  <script src="../../assets/js/api/services/MasterTables/Color/color-create-service.js"></script>
-  <!-- Color Create Controller -->
-  <script src="../../assets/js/ui/controllers/MasterTables/Color/color-create-controller.js"></script>
-  <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
   <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
   <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
-  <!-- 6. Color Service & Controller -->
+  <script src="../../assets/js/ui/controllers/Components/global-confirmation-modal-controller.js"></script>
+
+  <!-- Color Create Service (debe ir antes del controlador) -->
+  <script src="../../assets/js/api/services/MasterTables/Color/color-create-service.js"></script>
+  <script src="../../assets/js/api/services/MasterTables/Color/color-update-service.js"></script>
   <script src="../../assets/js/api/services/MasterTables/Color/color-service.js"></script>
+  <script src="../../assets/js/api/services/MasterTables/Color/delete-color-service.js"></script>
+
+  
+  <!-- Color Create Controller -->
+  <script src="../../assets/js/ui/controllers/MasterTables/Color/color-create-controller.js"></script>
+  <script src="../../assets/js/ui/controllers/MasterTables/Color/color-edit-controller.js"></script>
   <script src="../../assets/js/ui/controllers/MasterTables/Color/color-list-controller.js"></script>
+  <script src="../../assets/js/ui/controllers/MasterTables/Color/delete-color-controller.js"></script>
+
+  
   <!-- 7. Inicializador -->
   <script src="../../assets/js/ui/initializers/MasterTables/color-initializer.js"></script>
   <!-- 8. Tabler JS -->

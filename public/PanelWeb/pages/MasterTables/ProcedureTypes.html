@@ -50,6 +50,9 @@
     <!-- Service y Controller de creación de tipo de trámite -->
     <script src="../../assets/js/api/services/MasterTables/ProcedureType/procedure-type-create-service.js"></script>
     <script src="../../assets/js/ui/controllers/MasterTables/ProcedureType/procedure-type-create-controller.js"></script>
+    <!-- Service y Controller de edición de tipo de trámite -->
+    <script src="../../assets/js/api/services/MasterTables/ProcedureType/procedure-type-update-service.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/ProcedureType/procedure-type-edit-controller.js"></script>
 </head>
 <body>
     <!-- Loading screen -->
@@ -89,9 +92,6 @@
                                         <p class="text-muted mt-1 mb-0">Administra y consulta los tipos de trámite del sistema.</p>
                                     </div>
                                     <div class="col-auto btn-list">
-                                        <button id="refreshProcedureTypeBtn" class="btn btn-outline-primary" title="Actualizar">
-                                            <i class="fas fa-sync-alt"></i>
-                                        </button>
                                         <button id="refreshProcedureTypeBtn" class="btn btn-outline-primary" title="Actualizar">
                                             <i class="fas fa-sync-alt me-1"></i> Actualizar
                                         </button>
@@ -195,6 +195,7 @@
                             </h3>
                             <button class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#procedureTypeFilters">
                                 <i class="fas fa-sliders-h"></i>
+                                <span class="d-none d-sm-inline">Mostrar/Ocultar</span>
                             </button>
                         </div>
                         <div id="procedureTypeFilters" class="collapse show">
@@ -293,11 +294,12 @@
                                 </table>
                             </div>
                         </div>
-                        <div class="card-footer d-flex align-items-center">
+                        <!-- Footer con rango y paginación, SIEMPRE alineados -->
+                        <div class="card-footer d-flex align-items-center justify-content-between">
                             <p class="m-0 text-muted">
                                 Mostrando <span id="procedureTypesRangeFooter">--</span> de <span id="totalProcedureTypesFooter">--</span> tipos
                             </p>
-                            <ul id="procedureTypePagination" class="pagination m-0 ms-auto"></ul>
+                            <ul id="procedureTypePagination" class="pagination m-0"></ul>
                         </div>
                     </div>
                 </div>

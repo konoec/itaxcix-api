@@ -225,19 +225,19 @@
                                             </button>
                                         </div>
                                     </div>                             
-<div class="col-md-2">
-    <label class="form-label text-muted">
-        <i class="fas fa-list-ol me-1"></i>
-        Por Página
-    </label>
-    <select class="form-select" id="companies-per-page">
-        <option value="5">5</option>
-        <option value="15" selected>15</option>
-        <option value="25">25</option>
-        <option value="50">50</option>
-        <option value="100">100</option>
-    </select>
-</div>
+                                <div class="col-md-2">
+                                    <label class="form-label text-muted">
+                                           <i class="fas fa-list-ol me-1"></i>
+                                               Por Página
+                                    </label>
+                                    <select class="form-select" id="companies-per-page">
+                                         <option value="5">5</option>
+                                         <option value="15" selected>15</option>
+                                         <option value="25">25</option>
+                                         <option value="50">50</option>
+                                         <option value="100">100</option>
+                                    </select>
+                                </div>
 
                                     <div class="col-md-2">
                                         <label class="form-label">Estado</label>
@@ -530,22 +530,7 @@
 
     
 
-    <!-- Verificación de sistema de toast -->
-    <script>
-        // Verificar que el sistema de toast esté disponible
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🔍 Verificando sistema de toast...');
-            console.log('📢 window.showRecoveryToast disponible:', typeof window.showRecoveryToast);
-            console.log('🎯 Elemento recovery-toast encontrado:', !!document.getElementById('recovery-toast'));
-            
-            // Test del toast al cargar la página
-            if (typeof window.showRecoveryToast === 'function') {
-                setTimeout(() => {
-                    window.showRecoveryToast('Sistema de toast cargado correctamente', 'success');
-                }, 2000);
-            }
-        });
-    </script>
+
 
     <!-- Toast notification for profile operations -->
     <div id="recovery-toast" class="recovery-toast">

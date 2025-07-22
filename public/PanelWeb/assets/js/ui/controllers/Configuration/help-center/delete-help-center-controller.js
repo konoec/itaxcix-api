@@ -21,24 +21,17 @@ class DeleteHelpCenterController {
      * Verifica que el modal de confirmación global esté disponible
      */
     ensureConfirmationModal() {
-        // Buscar el controlador de modal de confirmación global de diferentes formas
-        if (window.GlobalConfirmationModalController) {
-            this.confirmationModal = window.GlobalConfirmationModalController;
-            console.log('✅ Modal de confirmación global encontrado (GlobalConfirmationModalController)');
-        } else if (window.globalConfirmationModalController) {
-            this.confirmationModal = window.globalConfirmationModalController;
+        if (window.globalConfirmationModal) {
+            this.confirmationModal = window.globalConfirmationModal;
             console.log('✅ Modal de confirmación global encontrado (instancia global)');
+        } else if (typeof GlobalConfirmationModalController !== 'undefined') {
+            console.log('🔧 Creando instancia de GlobalConfirmationModalController...');
+            window.globalConfirmationModal = new GlobalConfirmationModalController();
+            this.confirmationModal = window.globalConfirmationModal;
+            console.log('✅ Modal de confirmación global creado exitosamente');
         } else {
-            // Intentar crear una instancia si la clase está disponible
-            if (typeof GlobalConfirmationModalController !== 'undefined') {
-                console.log('🔧 Creando instancia de GlobalConfirmationModalController...');
-                window.globalConfirmationModalController = new GlobalConfirmationModalController();
-                this.confirmationModal = window.globalConfirmationModalController;
-                console.log('✅ Modal de confirmación global creado exitosamente');
-            } else {
-                console.warn('⚠️ Modal de confirmación global no encontrado, usando método básico');
-                this.confirmationModal = null;
-            }
+            console.warn('⚠️ Modal de confirmación global no encontrado, usando método básico');
+            this.confirmationModal = null;
         }
     }
 

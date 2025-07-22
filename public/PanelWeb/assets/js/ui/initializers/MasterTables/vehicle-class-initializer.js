@@ -72,9 +72,35 @@ class VehicleClassInitializer {
           ) {
             window.vehicleClassListControllerInstance =
               new VehicleClassListController();
+            window.vehicleClassListController = window.vehicleClassListControllerInstance;
             console.log('🚗 VehicleClassListController inicializado');
           }
           // El controlador de creación de clase de vehículo ya se instancia globalmente en su propio archivo.
+
+          // Inicializar VehicleClassEditController
+          if (!window.vehicleClassEditControllerInstance && typeof VehicleClassEditController !== 'undefined') {
+            window.vehicleClassEditControllerInstance = new VehicleClassEditController();
+            window.vehicleClassEditController = window.vehicleClassEditControllerInstance;
+            console.log('✏️ VehicleClassEditController inicializado');
+          }
+
+          // Inicializar y exponer el controlador de eliminación de clase de vehículo
+          if (!window.deleteVehicleClassControllerInstance) {
+            window.deleteVehicleClassControllerInstance = new DeleteVehicleClassController();
+            window.deleteVehicleClassController = window.deleteVehicleClassControllerInstance;
+            console.log('🗑️ DeleteVehicleClassController inicializado');
+          }
+
+          // Enlazar el evento click de los botones de eliminar clase de vehículo
+          document.body.addEventListener('click', function(e) {
+            const btn = e.target.closest('[data-action="delete-vehicle-class"]');
+            if (btn) {
+              const classId = parseInt(btn.getAttribute('data-vehicle-class-id'), 10);
+              const className = btn.getAttribute('data-vehicle-class-name') || '';
+              const vehicleClassData = { id: classId, name: className };
+              window.deleteVehicleClassController.handleDeleteButtonClick(btn, vehicleClassData);
+            }
+          });
         }, 300);
 
         // Configurar permisos y notificar carga completa

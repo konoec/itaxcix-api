@@ -65,8 +65,8 @@ class UserStatusInitializer {
                                 if (typeof UserStatusListController === 'undefined') {
                                     throw new Error('UserStatusListController no está disponible');
                                 }
-                                window.UserStatusListController = new UserStatusListController();
-                                console.log('🗂️ UserStatusListController inicializado por el inicializador');
+                                window.userStatusListController = new UserStatusListController();
+                                console.log('🗂️ userStatusListController inicializado por el inicializador');
                             } catch (error) {
                                 console.error('❌ Error al inicializar UserStatusListController:', error);
                             }
@@ -84,8 +84,8 @@ class UserStatusInitializer {
                                 'createUserStatusForm',
                                 function(newStatus) {
                                     // Refrescar la lista si existe el controlador de lista
-                                    if (window.UserStatusListController && typeof window.UserStatusListController.load === 'function') {
-                                        window.UserStatusListController.load();
+                                    if (window.userStatusListController && typeof window.userStatusListController.load === 'function') {
+                                        window.userStatusListController.load();
                                     }
                                 }
                             );
@@ -109,8 +109,8 @@ class UserStatusInitializer {
                             window.updateUserStatusController = new UpdateUserStatusController(
                                 function(updatedStatus) {
                                     // Refrescar la lista si existe el controlador de lista
-                                    if (window.UserStatusListController && typeof window.UserStatusListController.load === 'function') {
-                                        window.UserStatusListController.load();
+                                    if (window.userStatusListController && typeof window.userStatusListController.load === 'function') {
+                                        window.userStatusListController.load();
                                     }
                                 }
                             );

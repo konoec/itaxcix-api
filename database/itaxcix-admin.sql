@@ -62,3 +62,25 @@ INSERT INTO tb_perfil_administrador (
              'Administrador General',
              1 -- usua_id
          );
+
+-- 4. Asignar rol de ciudadano
+INSERT INTO tb_rol_usuario (
+    rolu_rol_id,
+    rolu_usuario_id,
+    rolu_activo
+) VALUES (
+             1, -- rol_id = CIUDADANO
+             1, -- usua_id
+             TRUE
+         );
+
+-- 5. Crear perfil de ciudadano
+INSERT INTO tb_perfil_ciudadano (
+    perf_calificacion_promedio,
+    perf_numero_calificaciones,
+    perf_usuario_id
+) VALUES (
+             0,
+             0,
+             1 -- usua_id
+         );

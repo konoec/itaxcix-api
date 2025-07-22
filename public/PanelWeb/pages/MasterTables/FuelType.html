@@ -210,8 +210,7 @@
                                     data-bs-toggle="collapse"
                                     data-bs-target="#advancedFuelTypeFilters"
                                     aria-expanded="true"
-                                    aria-controls="advancedFuelTypeFilters"
-                                >
+                                    aria-controls="advancedFuelTypeFilters">
                                     <i class="fas fa-sliders-h me-1"></i> Mostrar/Ocultar
                                 </button>
                             </div>
@@ -338,7 +337,6 @@
                             </div>
                             
                             <!-- Pagination Footer -->
-                            <!-- Pagination Footer -->
 <div class="card-footer d-flex align-items-center">
     <p class="m-0 text-muted">
         Mostrando 
@@ -384,14 +382,25 @@
     
     <!-- 2. Servicios de API básicos -->
     <script src="../../assets/js/api/services/profile-service.js"></script>
-    <script src="../../assets/js/api/services/MasterTables/FuelType/fuel-type-service.js"></script>
 
-    <!-- 3. Controladores de UI -->
+    <!-- Servicios de FuelType--->
+    <script src="../../assets/js/api/services/MasterTables/FuelType/delete-fuel-type-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/FuelType/fuel-type-create-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/FuelType/fuel-type-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/FuelType/fuel-type-update-service.js"></script>
+
+    <!-- 3. UI component controllers -->
     <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
+
+    <!-- 3. Controladores de UI -->
     <script src="../../assets/js/ui/controllers/MasterTables/FuelType/fuel-type-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/FuelType/fuel-type-create-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/FuelType/fuel-type-edit-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/FuelType/delete-fuel-type-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/global-confirmation-modal-controller.js"></script>
 
     <!-- 4. Inicializador específico de la página -->
     <script src="../../assets/js/ui/initializers/MasterTables/fuel-type-initializer.js"></script>
@@ -406,8 +415,5 @@
             <span id="recovery-toast-message">Operación completada correctamente</span>
         </div>
     </div>
-    <!-- Scripts para controlador y service de creación -->
-    <script src="../../assets/js/api/services/MasterTables/FuelType/fuel-type-create-service.js"></script>
-    <script src="../../assets/js/ui/controllers/MasterTables/FuelType/fuel-type-create-controller.js"></script>
 </body>
 </html>

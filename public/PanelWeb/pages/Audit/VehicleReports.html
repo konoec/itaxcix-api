@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../../assets/Recourse/Logo/1.png">
+    <link rel="shortcut icon" href="../../assets/Recourse/Logo/1.png">
+
+    <title>Auditoría - Reporte de Vehículos</title>
+
+    <!-- Tabler CSS Framework -->
+    <link rel="stylesheet" href="../../assets/tabler/css/tabler.min.css">
+    <link rel="stylesheet" href="../../assets/tabler/css/tabler-vendors.min.css">
+
+    <!-- Global styles -->
+    <link rel="stylesheet" href="../../assets/css/global-toast.css">
+    <link rel="stylesheet" href="../../assets/css/loading-screen.css">
+    <link rel="stylesheet" href="../../assets/css/sidebar.css">
+    <link rel="stylesheet" href="../../assets/css/topbar.css">
+    <link rel="stylesheet" href="../../assets/css/profile.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Configuración dinámica de sección -->
+    <script>
+        window.pageConfig = {
+            activeSection: 'reportes',
+            pageTitle: {
+                icon: 'fas fa-car',
+                text: 'Reporte de Vehículos'
+            }
+        };
+    </script>
+</head>
+<body>
+    <!-- Pantalla de carga global -->
+    <div class="loading-screen d-flex align-items-center justify-content-center position-fixed w-100 h-100"
+         style="top: 0; left: 0; z-index: 9999; background-color: rgba(255,255,255,0.95); backdrop-filter: blur(5px);">
+        <div class="text-center">
+            <div class="mb-4">
+                <img src="../../assets/Recourse/Logo/1.png" alt="Logo" class="mb-3" style="height: 60px;">
+            </div>
+            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <div class="text-secondary">
+                <div class="fw-bold mb-1">Cargando Panel de Vehículos</div>
+                <div class="small text-muted">Preparando la interfaz y cargando componentes...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page">
+        <!-- Sidebar dinámico -->
+        <div id="sidebar-container"></div>
+
+        <div class="page-wrapper">
+            <!-- Topbar dinámico -->
+            <div id="topbar-container"></div>
+
+            <!-- Contenido principal -->
+            <div class="page-body">
+                <div class="container-xl">
+
+                    <!-- Filtros avanzados (modernos con collapse) -->
+                    <div class="card mb-4" id="vehicle-filters">
+                        <div class="card-header d-flex align-items-center justify-content-between pb-2">
+                            <h3 class="card-title mb-0">
+                                <i class="fas fa-filter me-2"></i>
+                                Filtros avanzados de vehículos
+                            </h3>
+                            <div class="card-actions ms-auto">
+                                <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#advancedVehicleFilters" aria-expanded="true" aria-controls="advancedVehicleFilters">
+                                    <i class="fas fa-sliders-h me-1"></i>
+                                    Mostrar/Ocultar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="collapse show" id="advancedVehicleFilters">
+                            <div class="card-body pt-0">
+                                <form class="row g-3 align-items-end">
+                                    <div class="col-md-2">
+                                        <label class="form-label">Placa</label>
+                                        <input type="text" class="form-control" id="filter-license-plate" placeholder="Placa del vehículo">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Marca</label>
+                                        <input type="number" min="1" class="form-control" id="filter-brand-id" placeholder="ID Marca">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Modelo</label>
+                                        <input type="number" min="1" class="form-control" id="filter-model-id" placeholder="ID Modelo">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Color</label>
+                                        <input type="number" min="1" class="form-control" id="filter-color-id" placeholder="ID Color">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Año Desde</label>
+                                        <input type="number" min="1900" class="form-control" id="filter-year-from" placeholder="Año Desde">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Año Hasta</label>
+                                        <input type="number" min="1900" class="form-control" id="filter-year-to" placeholder="Año Hasta">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Asientos</label>
+                                        <input type="number" min="1" class="form-control" id="filter-seat-count" placeholder="Asientos">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Pasajeros</label>
+                                        <input type="number" min="1" class="form-control" id="filter-passenger-count" placeholder="Pasajeros">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Combustible</label>
+                                        <input type="number" min="1" class="form-control" id="filter-fuel-type-id" placeholder="ID Combustible">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Clase</label>
+                                        <input type="number" min="1" class="form-control" id="filter-vehicle-class-id" placeholder="ID Clase">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Categoría</label>
+                                        <input type="number" min="1" class="form-control" id="filter-category-id" placeholder="ID Categoría">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Activo</label>
+                                        <select id="filter-active" class="form-select">
+                                            <option value="">Todos</option>
+                                            <option value="true">Activo</option>
+                                            <option value="false">Inactivo</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Empresa</label>
+                                        <input type="number" min="1" class="form-control" id="filter-company-id" placeholder="ID Empresa">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Distrito</label>
+                                        <input type="number" min="1" class="form-control" id="filter-district-id" placeholder="ID Distrito">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Estado</label>
+                                        <input type="number" min="1" class="form-control" id="filter-status-id" placeholder="ID Estado">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Tipo Procedimiento</label>
+                                        <input type="number" min="1" class="form-control" id="filter-procedure-type-id" placeholder="ID Procedimiento">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Modalidad</label>
+                                        <input type="number" min="1" class="form-control" id="filter-modality-id" placeholder="ID Modalidad">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Ordenar por</label>
+                                        <select id="vehicle-sort-by" class="form-select">
+                                            <option value="licensePlate">Placa</option>
+                                            <option value="brandName">Marca</option>
+                                            <option value="modelName">Modelo</option>
+                                            <option value="colorName">Color</option>
+                                            <option value="manufactureYear">Año</option>
+                                            <option value="active">Activo</option>
+                                            <!-- Agrega más según tus necesidades -->
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Dirección</label>
+                                        <select id="vehicle-sort-direction" class="form-select">
+                                            <option value="ASC">Ascendente</option>
+                                            <option value="DESC">Descendente</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Por página</label>
+                                        <select id="page-size-select" class="form-select">
+                                            <option value="5">5</option>
+                                            <option value="10">10</option>
+                                            <option value="20" selected>20</option>
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 d-flex gap-2">
+                                        <button type="button" class="btn btn-primary w-100" id="apply-filters-btn-vehicles">
+                                            <i class="fas fa-search"></i> Aplicar Filtros
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary w-100" id="clear-filters-btn-vehicles">
+                                            <i class="fas fa-broom"></i> Limpiar
+                                        </button>
+                                        <button type="button" class="btn btn-outline-info w-100" id="refresh-data-btn-vehicles">
+                                            <i class="fas fa-sync-alt"></i> Refrescar
+                                        </button>
+                                    </div>
+                                </form>
+                                <!-- Errores de validación de filtros -->
+                                <div id="validation-errors-vehicles" style="display:none;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tabla principal -->
+                    <div class="card">
+                        <div class="card-header" id="vehicles-headers">
+                            <h3 class="card-title"><i class="fas fa-list me-2"></i>Lista de Vehículos</h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-vcenter">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Placa</th>
+                                        <th>Marca</th>
+                                        <th>Modelo</th>
+                                        <th>Color</th>
+                                        <th>Año</th>
+                                        <th>Asientos</th>
+                                        <th>Pasajeros</th>
+                                        <th>Combustible</th>
+                                        <th>Clase</th>
+                                        <th>Categoría</th>
+                                        <th>Activo</th>
+                                        <th>Empresa</th>
+                                        <th>Distrito</th>
+                                        <th>Estado</th>
+                                        <th>Tipo Procedimiento</th>
+                                        <th>Modalidad</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="vehicles-table-body">
+                                    <!-- Filas dinámicas de la tabla -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer d-flex align-items-center">
+                            <div class="me-auto">
+                                <span id="pagination-info-vehicles"></span>
+                            </div>
+                            <nav>
+                                <ul class="pagination mb-0" id="pagination-container">
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modales globales -->
+    <div id="modal-container"></div>
+
+    <!-- Toast notification para operaciones -->
+    <div id="recovery-toast" class="recovery-toast">
+        <div class="recovery-toast-content">
+            <i class="fas fa-check-circle"></i>
+            <span id="recovery-toast-message">Operación completada correctamente</span>
+        </div>
+    </div>
+
+    <!-- Scripts base y componentes globales -->
+    <script src="../../assets/js/ui/component-loader.js"></script>
+    <script src="../../assets/js/utils/loading-screen-util.js"></script>
+    <script src="../../assets/js/global-initializer.js"></script>
+    <script src="../../assets/js/ui/global-toast.js"></script>
+    <script src="../../assets/js/auth/permissions.js"></script>
+    <script src="../../assets/js/auth/auth-checker.js"></script>
+    <script src="../../assets/js/auth/route-guard.js"></script>
+    <script>
+        window.routeGuard = new RouteGuard("../../index.html");
+    </script>
+    <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Audit/vehicle-reports-controller.js"></script>
+    <script src="../../assets/js/api/services/profile-service.js"></script>
+    <script src="../../assets/js/api/services/Audit/vehicle-reports-service.js"></script>
+    <!-- Inicializador (asegúrate que aquí cargas tu controlador y inicializador final) -->
+    <script src="../../assets/js/ui/initializers/Audit/audit-reports-initializer-vehicles.js"></script>
+    <script src="../../assets/tabler/js/tabler.min.js"></script>
+</body>
+</html>

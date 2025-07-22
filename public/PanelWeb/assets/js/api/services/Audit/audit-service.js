@@ -16,69 +16,76 @@ class AuditService {
      * @returns {Promise<Object>} Respuesta con registros de auditoría y paginación
      */
     async getAuditLogs(filters = {}) {
-        try {
-            const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
-            if (!token) {
-                throw new Error('Token de autenticación no encontrado');
-            }
-
-            let url = `${this.baseUrl}${this.endpoints.audit}`;
-            
-            // Agregar filtros como parámetros de consulta según la documentación de la API
-            const queryParams = new URLSearchParams();
-            
-            // Parámetros de paginación
-            if (filters.page) queryParams.append('page', filters.page);
-            if (filters.limit) queryParams.append('perPage', filters.limit); // API usa 'perPage' no 'limit'
-            
-            // Filtros específicos
-            if (filters.affectedTable || filters.module) {
-                queryParams.append('affectedTable', filters.affectedTable || filters.module);
-            }
-            if (filters.operation || filters.action) {
-                queryParams.append('operation', filters.operation || filters.action);
-            }
-            if (filters.systemUser || filters.userId) {
-                queryParams.append('systemUser', filters.systemUser || filters.userId);
-            }
-            if (filters.dateFrom || filters.startDate) {
-                queryParams.append('dateFrom', filters.dateFrom || filters.startDate);
-            }
-            if (filters.dateTo || filters.endDate) {
-                queryParams.append('dateTo', filters.dateTo || filters.endDate);
-            }
-            
-            // Parámetros de ordenamiento
-            if (filters.sortBy) queryParams.append('sortBy', filters.sortBy);
-            if (filters.sortDirection) queryParams.append('sortDirection', filters.sortDirection);
-
-            if (queryParams.toString()) {
-                url += `?${queryParams.toString()}`;
-            }
-
-            console.log('🌐 Llamando a API de auditoría:', url);
-
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ message: 'Error desconocido' }));
-                throw new Error(errorData.message || `Error ${response.status}`);
-            }
-
-            const data = await response.json();
-            console.log('📊 Respuesta de API de auditoría:', data);
-            return data;
-        } catch (error) {
-            console.error('Error al obtener registros de auditoría:', error);
-            throw error;
-        }
+  try {
+    const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
+    if (!token) {
+      throw new Error('Token de autenticación no encontrado');
     }
+
+    let url = `${this.baseUrl}${this.endpoints.audit}`;
+    const queryParams = new URLSearchParams();
+
+    // Paginación
+    if (filters.page) {
+      queryParams.append('page', filters.page);
+    }
+    if (filters.perPage) {                    // ← aquí cambias limit por perPage
+      queryParams.append('perPage', filters.perPage);
+    }
+
+    // Filtros específicos
+    if (filters.affectedTable) {
+      queryParams.append('affectedTable', filters.affectedTable);
+    }
+    if (filters.operation) {
+      queryParams.append('operation', filters.operation);
+    }
+    if (filters.systemUser) {
+      queryParams.append('systemUser', filters.systemUser);
+    }
+    if (filters.dateFrom) {
+      queryParams.append('dateFrom', filters.dateFrom);
+    }
+    if (filters.dateTo) {
+      queryParams.append('dateTo', filters.dateTo);
+    }
+
+    // Ordenamiento
+    if (filters.sortBy) {
+      queryParams.append('sortBy', filters.sortBy);
+    }
+    if (filters.sortDirection) {
+      queryParams.append('sortDirection', filters.sortDirection);
+    }
+
+    if (queryParams.toString()) {
+      url += `?${queryParams.toString()}`;
+    }
+
+    console.log('🌐 Llamando a API de auditoría:', url);
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: 'Error desconocido' }));
+      throw new Error(errorData.message || `Error ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('📊 Respuesta de API de auditoría:', data);
+    return data;
+
+  } catch (error) {
+    console.error('Error al obtener registros de auditoría:', error);
+    throw error;
+  }
+}
+
 
     /**
      * Obtiene un registro de auditoría específico por ID

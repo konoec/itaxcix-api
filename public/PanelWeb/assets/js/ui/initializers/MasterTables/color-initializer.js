@@ -65,9 +65,9 @@ class ColorInitializer {
 
                 // Inicializar ColorListController
                 setTimeout(() => {
-                    if (!window.colorListControllerInstance &&
+                    if (!window.colorListController &&
                         typeof ColorListController !== 'undefined') {
-                        window.colorListControllerInstance = new ColorListController();
+                        window.colorListController = new ColorListController();
                         console.log('🎨 ColorListController inicializado');
                     }
                     // Inicializar ColorCreateController
@@ -80,6 +80,32 @@ class ColorInitializer {
                     if (createBtn) {
                         createBtn.setAttribute('data-action', 'create-color');
                     }
+                    // Inicializar ColorEditController
+                    if (!window.colorEditControllerInstance && typeof ColorEditController !== 'undefined') {
+                        window.colorEditControllerInstance = new ColorEditController();
+                        console.log('🖌️ ColorEditController inicializado');
+                    }
+            // Inicializar y exponer DeleteColorController
+            if (!window.deleteColorController && typeof DeleteColorController !== 'undefined') {
+                window.deleteColorController = new DeleteColorController();
+                console.log('🗑️ DeleteColorController inicializado');
+            }
+            // Enlazar evento click a los botones de eliminar color en la tabla
+            const tableBody = document.getElementById('colorTableBody');
+            if (tableBody) {
+                tableBody.addEventListener('click', function (e) {
+                    const btn = e.target.closest('[data-action="delete-color"]');
+                    if (btn) {
+                        const colorId = parseInt(btn.getAttribute('data-color-id'), 10);
+                        const colorName = btn.getAttribute('data-color-name') || btn.dataset.colorName || '';
+                        const colorData = { id: colorId, name: colorName };
+                        if (window.deleteColorController) {
+                            window.deleteColorController.handleDeleteButtonClick(btn, colorData);
+                        }
+                    }
+                });
+                console.log('🗑️ Evento de eliminación de color enlazado a la tabla');
+            }
                 }, 300);
 
                 // Configurar permisos y notificar carga completa

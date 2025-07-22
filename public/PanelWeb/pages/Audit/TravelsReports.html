@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../../assets/Recourse/Logo/1.png">
+    <link rel="shortcut icon" href="../../assets/Recourse/Logo/1.png">
+
+    <title>Auditoría - Reporte de Viajes</title>
+
+    <!-- Tabler CSS Framework -->
+    <link rel="stylesheet" href="../../assets/tabler/css/tabler.min.css">
+    <link rel="stylesheet" href="../../assets/tabler/css/tabler-vendors.min.css">
+
+    <!-- Global styles -->
+    <link rel="stylesheet" href="../../assets/css/global-toast.css">
+    <link rel="stylesheet" href="../../assets/css/loading-screen.css">
+    <link rel="stylesheet" href="../../assets/css/sidebar.css">
+    <link rel="stylesheet" href="../../assets/css/topbar.css">
+    <link rel="stylesheet" href="../../assets/css/profile.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Configuración dinámica de sección -->
+    <script>
+        window.pageConfig = {
+            activeSection: 'reportes',
+            pageTitle: {
+                icon: 'fas fa-taxi',
+                text: 'Reporte de Viajes'
+            }
+        };
+    </script>
+</head>
+<body>
+    <!-- Pantalla de carga global -->
+    <div class="loading-screen d-flex align-items-center justify-content-center position-fixed w-100 h-100"
+         style="top: 0; left: 0; z-index: 9999; background-color: rgba(255,255,255,0.95); backdrop-filter: blur(5px);">
+        <div class="text-center">
+            <div class="mb-4">
+                <img src="../../assets/Recourse/Logo/1.png" alt="Logo" class="mb-3" style="height: 60px;">
+            </div>
+            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <div class="text-secondary">
+                <div class="fw-bold mb-1">Cargando Panel de Viajes</div>
+                <div class="small text-muted">Preparando la interfaz y cargando componentes...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page">
+        <!-- Sidebar dinámico -->
+        <div id="sidebar-container"></div>
+
+        <div class="page-wrapper">
+            <!-- Topbar dinámico -->
+            <div id="topbar-container"></div>
+
+            <!-- Contenido principal -->
+            <div class="page-body">
+                <div class="container-xl">
+
+                    <!-- Filtros avanzados -->
+                    <div class="card mb-4" id="travels-filters">
+                        <div class="card-header d-flex align-items-center justify-content-between pb-2">
+                            <h3 class="card-title mb-0">
+                                <i class="fas fa-filter me-2"></i>
+                                Filtros avanzados de viajes
+                            </h3>
+                            <div class="card-actions ms-auto">
+                                <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#advancedTravelsFilters" aria-expanded="true" aria-controls="advancedTravelsFilters">
+                                    <i class="fas fa-sliders-h me-1"></i>
+                                    Mostrar/Ocultar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="collapse show" id="advancedTravelsFilters">
+                            <div class="card-body pt-0">
+                                <form class="row g-3 align-items-end">
+                                    <div class="col-md-2">
+                                        <label class="form-label">ID Ciudadano</label>
+                                        <input type="number" min="1" class="form-control" id="filter-citizen-id" placeholder="ID ciudadano">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">ID Conductor</label>
+                                        <input type="number" min="1" class="form-control" id="filter-driver-id" placeholder="ID conductor">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Estado</label>
+                                        <select class="form-select" id="filter-travel-status-id">
+                                            <option value="">Todos</option>
+                                            <option value="1">Finalizado</option>
+                                            <option value="2">Cancelado</option>
+                                            <option value="3">Aceptado</option>
+                                            <option value="4">Rechazado</option>
+                                            <option value="5">En Progreso</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Origen</label>
+                                        <input type="text" class="form-control" id="filter-origin" placeholder="Origen">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Destino</label>
+                                        <input type="text" class="form-control" id="filter-destination" placeholder="Destino">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Fecha Inicio</label>
+                                        <input type="date" class="form-control" id="filter-start-date" placeholder="Desde">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Fecha Fin</label>
+                                        <input type="date" class="form-control" id="filter-end-date" placeholder="Hasta">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Ordenar por</label>
+                                        <select id="travel-sort-by" class="form-select">
+                                            <option value="creationDate">Fecha de Creación</option>
+                                            <option value="startDate">Fecha de Inicio</option>
+                                            <option value="endDate">Fecha de Fin</option>
+                                            <option value="citizenId">ID Ciudadano</option>
+                                            <option value="driverId">ID Conductor</option>
+                                            <option value="statusId">Estado</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Dirección</label>
+                                        <select id="travel-sort-direction" class="form-select">
+                                            <option value="DESC">Descendente</option>
+                                            <option value="ASC">Ascendente</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Por página</label>
+                                        <select id="page-size-select" class="form-select">
+                                            <option value="5">5</option>
+                                            <option value="10">10</option>
+                                            <option value="20" selected>20</option>
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 d-flex gap-2">
+                                        <button type="button" class="btn btn-primary w-100" id="apply-filters-btn-travels">
+                                            <i class="fas fa-search"></i> Aplicar Filtros
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary w-100" id="clear-filters-btn-travels">
+                                            <i class="fas fa-broom"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-info w-100" id="refresh-data-btn-travels">
+                                            <i class="fas fa-sync-alt"></i> 
+                                        </button>
+                                    </div>
+                                </form>
+                                <!-- Errores de validación de filtros -->
+                                <div id="validation-errors-travels" style="display:none;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla principal -->
+                    <div class="card">
+                        <div class="card-header" id="travels-headers">
+                            <h3 class="card-title"><i class="fas fa-taxi me-2"></i>Lista de Viajes</h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-vcenter">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Ciudadano</th>
+                                        <th>Conductor</th>
+                                        <th>Origen</th>
+                                        <th>Destino</th>
+                                        <th>Fecha Inicio</th>
+                                        <th>Fecha Fin</th>
+                                        <th>Fecha Creación</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="incidents-table-body">
+                                    <!-- Filas dinámicas de la tabla -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer d-flex align-items-center">
+                            <div class="me-auto">
+                                <span id="pagination-info-travels"></span>
+                            </div>
+                            <nav>
+                                <ul class="pagination mb-0" id="pagination-container"></ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modales globales -->
+    <div id="modal-container"></div>
+
+    <!-- Toast notification para operaciones -->
+    <div id="recovery-toast" class="recovery-toast">
+        <div class="recovery-toast-content">
+            <i class="fas fa-check-circle"></i>
+            <span id="recovery-toast-message">Operación completada correctamente</span>
+        </div>
+    </div>
+
+    <!-- Scripts base y componentes globales -->
+    <script src="../../assets/js/ui/component-loader.js"></script>
+    <script src="../../assets/js/utils/loading-screen-util.js"></script>
+    <script src="../../assets/js/global-initializer.js"></script>
+    <script src="../../assets/js/ui/global-toast.js"></script>
+    <script src="../../assets/js/auth/permissions.js"></script>
+    <script src="../../assets/js/auth/auth-checker.js"></script>
+    <script src="../../assets/js/auth/route-guard.js"></script>
+    <script>
+        window.routeGuard = new RouteGuard("../../index.html");
+    </script>
+    <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Audit/travel-reports-controller.js"></script>
+    <script src="../../assets/js/api/services/profile-service.js"></script>
+    <script src="../../assets/js/api/services/Audit/travel-reports-service.js"></script>
+    <!-- Inicializador para viajes -->
+    <script src="../../assets/js/ui/initializers/Audit/audit-reports-initializer-travels.js"></script>
+    <script src="../../assets/tabler/js/tabler.min.js"></script>
+</body>
+</html>

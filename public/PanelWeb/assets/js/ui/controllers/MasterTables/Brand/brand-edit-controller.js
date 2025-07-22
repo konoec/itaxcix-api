@@ -150,11 +150,9 @@ class BrandEditController {
 
             if (resp.success) {
                 window.GlobalToast?.show(resp.message || 'Marca actualizada', 'success');
-
-                // refrescar lista si existe
+                // refrescar lista automáticamente
                 const listCtrl = window.brandListControllerInstance || window.brandListController;
-                if (listCtrl?.refreshData) listCtrl.refreshData();
-
+                if (listCtrl && typeof listCtrl.load === 'function') listCtrl.load();
                 // cerrar modal
                 bootstrap.Modal.getInstance(document.getElementById('editBrandModal'))?.hide();
             } else {

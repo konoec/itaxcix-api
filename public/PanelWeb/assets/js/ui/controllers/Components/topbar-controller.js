@@ -109,6 +109,35 @@ class TopBarController {
             });
         }
 
+        // Event listener para "Cerrar Sesión" en el dropdown del topbar
+        const logoutDropdownBtn = document.getElementById('logout-dropdown-btn');
+        if (logoutDropdownBtn) {
+            logoutDropdownBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🚪 Botón de logout (topbar) clicado');
+                if (typeof window.routeGuard !== 'undefined' && window.routeGuard) {
+                    window.routeGuard.logout();
+                } else if (typeof RouteGuard !== 'undefined') {
+                    const tempGuard = new RouteGuard("../../index.html");
+                    tempGuard.logout();
+                } else {
+                    try {
+                        sessionStorage.clear();
+                        localStorage.clear();
+                        if (typeof window.showRecoveryToast === 'function') {
+                            window.showRecoveryToast('Cerrando sesión...', 'info');
+                        }
+                        setTimeout(() => {
+                            window.location.replace("../../index.html");
+                        }, 500);
+                    } catch (error) {
+                        window.location.href = "../../index.html";
+                    }
+                }
+            });
+        }
+
         // Event listener para cambios de ventana (responsive)
         window.addEventListener('resize', () => {
             this.handleWindowResize();
@@ -369,6 +398,7 @@ if (typeof window !== 'undefined') {
     // El TopBarController debe ser inicializado por el inicializador específico de cada página
     /*
     // Auto-inicializar si el DOM está listo
+    
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             if (!window.topBarControllerInstance) {

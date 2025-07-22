@@ -265,12 +265,15 @@ class TucModalityController {
                     ${modality.active ? 'Activo' : 'Inactivo'}
                 </span>
             </td>
-            <td>
-                <div class="btn-list">
-                    <button class="btn btn-sm btn-outline-blue" title="Ver detalles" onclick="window.tucModalityController.viewDetails(${modality.id})">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                </div>
+            <td class="text-center">
+                <button class="btn btn-outline-warning btn-sm me-1 edit-tuc-modality-btn"
+                        title="Editar" data-id="${modality.id}" data-name="${this.escapeHtml(modality.name)}" data-active="${modality.active}">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-red delete-tuc-modality-btn"
+                        title="Eliminar" data-id="${modality.id}" data-name="${this.escapeHtml(modality.name)}">
+                    <i class="fas fa-trash text-red"></i>
+                </button>
             </td>
         `;
 

@@ -237,27 +237,20 @@ class GlobalConfirmationModalController {
      * Maneja la confirmación
      */
     async handleConfirm() {
-        if (!this.currentCallback) {
-            console.error('❌ No hay callback definido');
-            return;
-        }
-
-        try {
-            this.showLoading(true);
-            
-            // Ejecutar callback
-            await this.currentCallback(this.currentData);
-            
-            // Cerrar modal
-            this.closeModal();
-            
-        } catch (error) {
-            console.error('❌ Error en confirmación:', error);
-            this.showError(error.message || 'Error al procesar la operación');
-        } finally {
-            this.showLoading(false);
-        }
+    // Callback seguro: nunca lanza error si no existe, solo función vacía
+    const cb = (typeof this.currentCallback === 'function') ? this.currentCallback : () => {};
+    try {
+        this.showLoading(true);
+        await cb(this.currentData);
+        this.closeModal();
+    } catch (error) {
+        console.error('❌ Error en confirmación:', error);
+        this.showError(error.message || 'Error al procesar la operación');
+    } finally {
+        this.showLoading(false);
     }
+}
+
 
     /**
      * Muestra/oculta el estado de carga

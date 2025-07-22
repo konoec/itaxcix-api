@@ -66,8 +66,8 @@ class ServiceTypeController {
         this.showingEnd = document.getElementById('showing-end');
         this.totalRecords = document.getElementById('total-records');
         this.currentPageInfo = document.getElementById('current-page-info');
-        this.prevPageBtn = document.getElementById('prev-page-btn');
-        this.nextPageBtn = document.getElementById('next-page-btn');
+        this.paginationContainer = document.getElementById('service-types-pagination');
+
         
         // Estadísticas
         this.totalServiceTypesEl = document.getElementById('total-service-types');
@@ -271,11 +271,16 @@ class ServiceTypeController {
                     </td>
                     <td>${statusBadge}</td>
                     <td>
-                        <div class="btn-list">
-                            <button class="btn btn-sm btn-outline-primary" 
-                                    onclick="serviceTypeController.viewDetails(${serviceType.id})"
-                                    title="Ver detalles">
-                                <i class="fas fa-eye"></i>
+                        <div class="btn-list flex-nowrap">
+                            <button class="btn btn-sm btn-outline-orange" 
+                                    onclick="window.serviceTypeController.editServiceType(${serviceType.id})" 
+                                    title="Editar">
+                                <i class="fas fa-edit text-orange"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-red" 
+                                    onclick="window.serviceTypeDeleteController.handleDeleteServiceType(${serviceType.id}, '${this.escapeHtml(serviceType.name)}')" 
+                                    title="Eliminar">
+                                <i class="fas fa-trash text-red"></i>
                             </button>
                         </div>
                     </td>
@@ -290,23 +295,74 @@ class ServiceTypeController {
      * Actualiza la información de paginación
      */
     updatePagination() {
-        const start = this.currentData.length > 0 ? (this.currentPage - 1) * this.perPage + 1 : 0;
-        const end = Math.min(start + this.currentData.length - 1, this.totalItems);
-        
-        if (this.showingStart) this.showingStart.textContent = start;
-        if (this.showingEnd) this.showingEnd.textContent = end;
-        if (this.totalRecords) this.totalRecords.textContent = this.totalItems;
-        if (this.currentPageInfo) this.currentPageInfo.textContent = `Página ${this.currentPage} de ${this.totalPages}`;
-        
-        // Habilitar/deshabilitar botones de paginación
-        if (this.prevPageBtn) {
-            this.prevPageBtn.disabled = this.currentPage <= 1;
+    const start = this.currentData.length > 0 ? (this.currentPage - 1) * this.perPage + 1 : 0;
+    const end = Math.min(start + this.currentData.length - 1, this.totalItems);
+
+    if (this.showingStart) this.showingStart.textContent = start;
+    if (this.showingEnd) this.showingEnd.textContent = end;
+    if (this.totalRecords) this.totalRecords.textContent = this.totalItems;
+    if (this.currentPageInfo) this.currentPageInfo.textContent = `Página ${this.currentPage} de ${this.totalPages}`;
+
+    this._renderPaginationButtons();
+}
+
+_renderPaginationButtons() {
+    if (!this.paginationContainer) return;
+    const ul = this.paginationContainer;
+    ul.innerHTML = '';
+    const totalPages = this.totalPages || 1;
+    const currentPage = this.currentPage || 1;
+    const delta = 2;
+
+    const makeItem = (html, p, disabled = false, active = false, isDots = false) => {
+        const li = document.createElement('li');
+        li.className = `page-item${disabled ? ' disabled' : ''}${active ? ' active' : ''}${isDots ? ' disabled' : ''}`;
+        if (isDots) {
+            li.innerHTML = `<span class="page-link">…</span>`;
+            return li;
         }
-        
-        if (this.nextPageBtn) {
-            this.nextPageBtn.disabled = this.currentPage >= this.totalPages;
+        const a = document.createElement('a');
+        a.className = 'page-link';
+        a.href = '#';
+        a.innerHTML = html;
+        if (!disabled && !active) {
+            a.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.currentPage = p;
+                this.loadServiceTypes();
+            });
         }
+        li.appendChild(a);
+        return li;
+    };
+
+    // << Primera página
+    ul.appendChild(makeItem('<i class="fas fa-angle-double-left"></i>', 1, currentPage === 1));
+    // < Anterior
+    ul.appendChild(makeItem('<i class="fas fa-angle-left"></i>', currentPage - 1, currentPage === 1));
+
+    // Números con puntos suspensivos
+    let start = Math.max(1, currentPage - delta);
+    let end = Math.min(totalPages, currentPage + delta);
+
+    if (start > 1) {
+        ul.appendChild(makeItem('1', 1, false, currentPage === 1));
+        if (start > 2) ul.appendChild(makeItem('', null, false, false, true));
     }
+    for (let p = start; p <= end; p++) {
+        ul.appendChild(makeItem(p, p, false, p === currentPage));
+    }
+    if (end < totalPages) {
+        if (end < totalPages - 1) ul.appendChild(makeItem('', null, false, false, true));
+        ul.appendChild(makeItem(totalPages, totalPages, false, currentPage === totalPages));
+    }
+
+    // > Siguiente
+    ul.appendChild(makeItem('<i class="fas fa-angle-right"></i>', currentPage + 1, currentPage === totalPages));
+    // >> Última página
+    ul.appendChild(makeItem('<i class="fas fa-angle-double-right"></i>', totalPages, currentPage === totalPages));
+}
+
     
     /**
      * Actualiza las estadísticas
@@ -539,6 +595,26 @@ class ServiceTypeController {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+    
+    /**
+     * Abre el modal de edición para un tipo de servicio
+     * @param {number} id - ID del tipo de servicio
+     */
+    editServiceType(id) {
+        const serviceType = this.currentData.find(item => item.id === id);
+        if (!serviceType) {
+            console.error('❌ Tipo de servicio no encontrado para edición:', id);
+            if (window.showRecoveryToast) {
+                window.showRecoveryToast('Tipo de servicio no encontrado', 'error');
+            }
+            return;
+        }
+        // Disparar evento global para abrir el modal de edición
+        const event = new CustomEvent('openServiceTypeEditModal', {
+            detail: { id, serviceTypeData: serviceType }
+        });
+        document.dispatchEvent(event);
     }
 }
 

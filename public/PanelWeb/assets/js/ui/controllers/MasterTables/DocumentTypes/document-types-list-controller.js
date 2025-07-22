@@ -213,11 +213,13 @@ class DocumentTypesListController {
 
     handleDeleteClick(id, name, button) {
         console.log('🗑️ Eliminando DocumentType con ID:', id, 'Nombre:', name);
-        if (window.documentTypeDeleteController?.showDeleteModal) {
-            window.documentTypeDeleteController.showDeleteModal(+id, name, button);
+        if (window.deleteDocumentTypeController && typeof window.deleteDocumentTypeController.handleDeleteButtonClick === 'function') {
+            window.deleteDocumentTypeController.handleDeleteButtonClick(button, { id: +id, name });
         } else {
-            console.error('❌ documentTypeDeleteController no está disponible');
-            GlobalToast.show('Controlador de eliminación no disponible', 'error');
+            console.error('❌ deleteDocumentTypeController no está disponible');
+            if (window.GlobalToast && typeof window.GlobalToast.show === 'function') {
+                window.GlobalToast.show('Controlador de eliminación no disponible', 'error');
+            }
         }
     }
 

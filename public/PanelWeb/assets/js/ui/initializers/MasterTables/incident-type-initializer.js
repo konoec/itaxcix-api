@@ -70,6 +70,18 @@ class IncidentTypeInitializer {
                         window.incidentTypeListControllerInstance = new IncidentTypeListController();
                         console.log('🚨 IncidentTypeListController inicializado');
                     }
+                    // Inicializar IncidentTypeEditController después de la lista
+                    setTimeout(() => {
+                        if (!window.IncidentTypeEditController) {
+                            if (window.IncidentTypeEditControllerClass) {
+                                window.IncidentTypeEditController = new window.IncidentTypeEditControllerClass();
+                                window.incidentTypeEditController = window.IncidentTypeEditController;
+                                console.log('✏️ IncidentTypeEditController inicializado desde el inicializador');
+                            } else {
+                                console.error('❌ No se encontró la clase IncidentTypeEditControllerClass');
+                            }
+                        }
+                    }, 200);
                 }, 300);
 
 

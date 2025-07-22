@@ -27,6 +27,7 @@ class TucStatusListController {
     this.clearBtn   = document.getElementById('clearTucStatusFiltersBtn');
 
     this.initEvents();
+    this.initEditEvent();
     setTimeout(() => this.load(), 100);
   }
 
@@ -136,13 +137,26 @@ class TucStatusListController {
         </td>
         <td class="text-center">
           <div class="btn-group">
-            <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
-            <button class="btn btn-sm btn-outline-warning"><i class="fas fa-edit"></i></button>
-            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+            <button class="btn btn-sm btn-outline-warning edit-tuc-status-btn" data-id="${item.id}" data-name="${item.name}" data-active="${item.active}"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-sm btn-outline-danger delete-tuc-status-btn" data-id="${item.id}" data-name="${item.name}"><i class="fas fa-trash"></i></button>
           </div>
         </td>
       </tr>
     `).join('');
+  }
+
+  initEditEvent() {
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.edit-tuc-status-btn');
+      if (btn) {
+        const id = btn.getAttribute('data-id');
+        const name = btn.getAttribute('data-name');
+        const active = btn.getAttribute('data-active') === 'true';
+        if (window.TucStatusEditController) {
+          window.TucStatusEditController.openEditModal(id, { id, name, active });
+        }
+      }
+    });
   }
 
   updateStats({ data, pagination }) {

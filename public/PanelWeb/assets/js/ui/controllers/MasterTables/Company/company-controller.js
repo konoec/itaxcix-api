@@ -261,42 +261,49 @@ class CompanyController {
   }
 
   _renderTable() {
-    if (!this.tableBody) return;
-    if (!this.currentData.length) {
-      this.tableBody.innerHTML = `
-        <tr><td colspan="6" class="text-center py-4">
-          <div class="empty">
-            <i class="fas fa-building fa-2x text-secondary mb-2"></i>
-            <p>No se encontraron compañías</p>
-            <button class="btn btn-azure mt-2" onclick="window.companyController.clearFilters()">
-              <i class="fas fa-filter me-1"></i> Limpiar filtros
-            </button>
-          </div>
-        </td></tr>`;
-      return;
-    }
-    this.tableBody.innerHTML = this.currentData.map(c => `
-      <tr>
-        <td>${c.id}</td>
-        <td>${this.escapeHtml(c.name)}</td>
-        <td>${c.ruc || 'Sin RUC'}</td>
-        <td>
-          <span class="badge ${c.active?'bg-success-lt':'bg-danger-lt'}">
-          <i class="fas ${c.active ? 'fa-check-circle ' : 'fa-times-circle'} me-1"></i>
-            ${c.active?'Activo':'Inactivo'}
-          </span>
-        </td>
-        <td>
-          <button class="btn btn-sm btn-outline-warning" onclick="window.companyController.handleEditCompany(${c.id})">
-            <i class="fas fa-edit"></i>
+  if (!this.tableBody) return;
+  if (!this.currentData.length) {
+    this.tableBody.innerHTML = `
+      <tr><td colspan="6" class="text-center py-4">
+        <div class="empty">
+          <i class="fas fa-building fa-2x text-secondary mb-2"></i>
+          <p>No se encontraron compañías</p>
+          <button class="btn btn-azure mt-2" onclick="window.companyController.clearFilters()">
+            <i class="fas fa-filter me-1"></i> Limpiar filtros
           </button>
-          <button class="btn btn-sm btn-outline-danger" onclick="window.companyController.handleDeleteCompany(${c.id},'${this.escapeHtml(c.name)}')">
-            <i class="fas fa-trash"></i>
-          </button>
-        </td>
-      </tr>
-    `).join('');
+        </div>
+      </td></tr>`;
+    return;
   }
+  this.tableBody.innerHTML = this.currentData.map(c => `
+    <tr>
+      <td>${c.id}</td>
+
+      <!-- Nombre con icono azul inyectado -->
+      <td>
+        <i class="fas fa-building text-primary me-2"></i>
+        ${this.escapeHtml(c.name)}
+      </td>
+
+      <td>${c.ruc || 'Sin RUC'}</td>
+      <td>
+        <span class="badge ${c.active ? 'bg-success-lt' : 'bg-danger-lt'}">
+          <i class="fas ${c.active ? 'fa-check-circle' : 'fa-times-circle'} me-1"></i>
+          ${c.active ? 'Activo' : 'Inactivo'}
+        </span>
+      </td>
+      <td>
+        <button class="btn btn-sm btn-outline-warning" onclick="window.companyController.handleEditCompany(${c.id})">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button class="btn btn-sm btn-outline-danger" onclick="window.companyController.handleDeleteCompany(${c.id},'${this.escapeHtml(c.name)}')">
+          <i class="fas fa-trash"></i>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+}
+
 
   _updatePagination({ page, perPage, total, totalPages }) {
     this.currentPage = page;

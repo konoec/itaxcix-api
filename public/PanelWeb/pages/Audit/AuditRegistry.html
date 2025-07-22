@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="../../assets/css/loading-screen.css">
     
     <!-- Component specific styles -->
+
     <link rel="stylesheet" href="../../assets/css/sidebar.css">
     <link rel="stylesheet" href="../../assets/css/topbar.css">
     <link rel="stylesheet" href="../../assets/css/profile.css">
@@ -24,7 +25,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <!-- CSS específico del módulo -->
-    <link rel="stylesheet" href="../../assets/css/audit/audit-registry.css?v=2.3">
+
     
     <!-- Configuración de la página -->
     <script>
@@ -74,71 +75,82 @@
             <!-- Contenido principal de la página -->
             <div class="page-body">
                 <div class="container-xl">
-                    <!-- Filtros de búsqueda -->
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-filter me-2"></i>
-                                Filtros de búsqueda
-                            </h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="row g-2">
-                                <!-- Tabla afectada -->
-                                <div class="col-12 col-md-6 col-lg-3">
-                                    <label class="form-label">Tabla</label>
-                                    <input type="text" class="form-control" id="filter-table" placeholder="Nombre de tabla...">
-                                </div>
 
-                                <!-- Operación -->
-                                <div class="col-12 col-md-6 col-lg-3">
-                                    <label class="form-label">Operación</label>
-                                    <select class="form-select" id="filter-operation">
-                                        <option value="">Todas las operaciones</option>
-                                        <option value="INSERT">INSERT</option>
-                                        <option value="UPDATE">UPDATE</option>
-                                        <option value="DELETE">DELETE</option>
-                                    </select>
-                                </div>
+                    <!-- Filtros avanzados de auditoría (collapse) -->
+<div class="card mb-4" id="audit-filters">
+  <div class="card-header d-flex align-items-center justify-content-between pb-2">
+    <h3 class="card-title mb-0">
+      <i class="fas fa-filter me-2"></i>
+      Filtros avanzados de auditoría
+    </h3>
+    <div class="card-actions ms-auto">
+      <button
+        class="btn btn-sm btn-outline-primary"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#auditFiltersCollapse"
+        aria-expanded="true"
+        aria-controls="auditFiltersCollapse"
+      >
+        <i class="fas fa-sliders-h me-1"></i>
+        Mostrar/Ocultar
+      </button>
+    </div>
+  </div>
+  <div class="collapse show" id="auditFiltersCollapse">
+    <div class="card-body pt-0">
+      <form class="row g-3 align-items-end">
+        <!-- Tabla afectada -->
+        <div class="col-md-3">
+          <label class="form-label">Tabla</label>
+          <input type="text" class="form-control" id="filter-table" placeholder="Nombre de tabla...">
+        </div>
+        <!-- Operación -->
+        <div class="col-md-3">
+          <label class="form-label">Operación</label>
+          <select class="form-select" id="filter-operation">
+            <option value="">Todas</option>
+            <option value="INSERT">INSERT</option>
+            <option value="UPDATE">UPDATE</option>
+            <option value="DELETE">DELETE</option>
+          </select>
+        </div>
+        <!-- Usuario -->
+        <div class="col-md-3">
+          <label class="form-label">Usuario</label>
+          <input type="text" class="form-control" id="filter-user" placeholder="Buscar usuario...">
+        </div>
+        <!-- Fecha desde -->
+        <div class="col-md-3">
+          <label class="form-label">Fecha desde</label>
+          <input type="date" class="form-control" id="filter-date-from">
+        </div>
+        <!-- Fecha hasta -->
+        <div class="col-md-3">
+          <label class="form-label">Fecha hasta</label>
+          <input type="date" class="form-control" id="filter-date-to">
+        </div>
+        <!-- Botones de acción -->
+        <div class="col-md-4 d-flex gap-2">
+          <button type="button" class="btn btn-primary w-100" id="apply-filters-btn">
+            <i class="fas fa-search me-1"></i> Aplicar
+          </button>
+          <button type="button" class="btn btn-outline-secondary w-100" id="clear-filters-btn">
+            <i class="fas fa-broom me-1"></i> Limpiar
+          </button>
+          <button type="button" class="btn btn-outline-info w-100" id="refresh-audit-btn">
+            <i class="fas fa-sync-alt me-1"></i> Refrescar
+          </button>
+          <button type="button" class="btn btn-success w-100" id="download-audit-btn">
+            <i class="fas fa-download me-1"></i> Descargar
+          </button>
+        </div>
+      </form>
+      <div id="validation-errors-audit" style="display:none;"></div>
+    </div>
+  </div>
+</div>
 
-                                <!-- Usuario del sistema -->
-                                <div class="col-12 col-md-6 col-lg-3">
-                                    <label class="form-label">Usuario</label>
-                                    <input type="text" class="form-control" id="filter-user" placeholder="Buscar usuario...">
-                                </div>
-
-                                <!-- Fecha desde -->
-                                <div class="col-12 col-md-6 col-lg-3">
-                                    <label class="form-label">Fecha desde</label>
-                                    <input type="date" class="form-control" id="filter-date-from">
-                                </div>
-
-                                <!-- Fecha hasta -->
-                                <div class="col-12 col-md-6 col-lg-3">
-                                    <label class="form-label">Fecha hasta</label>
-                                    <input type="date" class="form-control" id="filter-date-to">
-                                </div>
-
-                                <!-- Botones de filtro -->
-                                <div class="col-12 col-md-6 col-lg-3 d-flex align-items-end">
-                                    <div class="btn-group w-100" role="group">
-                                        <button class="btn btn-outline-secondary" id="clear-filters-btn" title="Limpiar filtros">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                        <button class="btn btn-primary" id="apply-filters-btn" title="Buscar">
-                                            <i class="fas fa-search"></i>
-                                        </button>
-                                        <button class="btn btn-outline-secondary" id="refresh-audit-btn" title="Actualizar datos">
-                                            <i class="fas fa-sync-alt"></i>
-                                        </button>
-                                        <button class="btn btn-success" id="download-audit-btn" title="Descargar">
-                                            <i class="fas fa-download"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- Tabla de auditoría -->
                     <div class="card">
@@ -159,6 +171,7 @@
                                             <option value="operation">Operación</option>
                                             <option value="systemUser">Usuario</option>
                                         </select>
+                                        <label class="form-label mb-0 me-2">Dirección:</label>
                                         <button class="btn btn-sm btn-outline-secondary ms-1" id="sort-direction" data-direction="DESC">
                                             <i class="fas fa-sort-down"></i>
                                         </button>
@@ -226,41 +239,20 @@
                             </div>
                         </div>
 
-                        <!-- Paginación -->
-                        <div class="card-footer d-flex align-items-center" id="pagination-container">
-                            <p class="m-0 text-muted" id="pagination-info-text">
-                                Página 1 de 1
-                            </p>
-                            <ul class="pagination m-0 ms-auto">
-                                <li class="page-item disabled" id="first-page-btn">
-                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
-                                        <i class="fas fa-angle-double-left"></i>
-                                        <span class="sr-only">Primero</span>
-                                    </a>
-                                </li>
-                                <li class="page-item disabled" id="prev-page-btn">
-                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
-                                        <i class="fas fa-angle-left"></i>
-                                        <span class="sr-only">Anterior</span>
-                                    </a>
-                                </li>
-                                <div class="d-flex" id="pagination-pages">
-                                    <!-- Se generarán dinámicamente -->
-                                </div>
-                                <li class="page-item disabled" id="next-page-btn">
-                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
-                                        <i class="fas fa-angle-right"></i>
-                                        <span class="sr-only">Siguiente</span>
-                                    </a>
-                                </li>
-                                <li class="page-item disabled" id="last-page-btn">
-                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
-                                        <i class="fas fa-angle-double-right"></i>
-                                        <span class="sr-only">Último</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
+                        <!-- ... resto del HTML igual ... -->
+
+<!-- Paginación moderna -->
+<div class="card-footer d-flex align-items-center" id="pagination-container">
+    <p class="m-0 text-muted" id="pagination-info-text">
+        Página 1 de 1
+    </p>
+    <ul class="pagination m-0 ms-auto align-items-center" id="pagination-pages">
+        <!-- Todo el paginador se genera por JS -->
+    </ul>
+</div>
+
+<!-- ... resto del HTML igual ... -->
+
                     </div>
                 </div>
             </div>
@@ -285,77 +277,54 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">
-                        <i class="fas fa-eye me-2"></i>
                         Detalles del Registro de Auditoría
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <!-- Información general -->
-                    <div class="row g-3 mb-4">
-                        <div class="col-12">
-                            <h6 class="text-muted text-uppercase fw-bold">Información General</h6>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">ID:</label>
-                            <div class="form-control-plaintext" id="detail-id">-</div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Fecha y Hora:</label>
-                            <div class="form-control-plaintext" id="detail-date">-</div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Tabla Afectada:</label>
-                            <div class="form-control-plaintext">
-                                <span id="detail-table" class="badge bg-secondary">-</span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Operación:</label>
-                            <div class="form-control-plaintext">
-                                <span id="detail-operation" class="badge">-</span>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label">Usuario del Sistema:</label>
-                            <div class="form-control-plaintext" id="detail-user">-</div>
-                        </div>
-                    </div>
+                <div class="modal-body p-3">
+  <!-- Información General -->
+  <div class="mb-2">
+  <h6 class="text-muted text-uppercase fw-bold xsmall mb-1">Información General</h6>
+  <dl class="row g-1 small mb-0">
+    <dt class="col-4 text-muted mb-0">ID</dt>
+    <dd class="col-8 mb-1" id="detail-id">–</dd>
+    <dt class="col-4 text-muted mb-0">Fecha y Hora</dt>
+    <dd class="col-8 mb-1" id="detail-date">–</dd>
 
-                    <!-- Datos anteriores -->
-                    <div class="mb-4" id="previous-data-section">
-                        <h6 class="text-muted text-uppercase fw-bold">Datos Anteriores</h6>
-                        <div class="card">
-                            <div class="card-body">
-                                <pre class="mb-0" id="previous-data-content">-</pre>
-                            </div>
-                        </div>
-                    </div>
+    <dt class="col-4 text-muted mb-0">Tabla</dt>
+    <dd class="col-8 mb-1">
+      <span id="detail-table" class="badge bg-blue-lt small">–</span>
+    </dd>
 
-                    <!-- Datos nuevos -->
-                    <div class="mb-4" id="new-data-section">
-                        <h6 class="text-muted text-uppercase fw-bold">Datos Nuevos</h6>
-                        <div class="card">
-                            <div class="card-body">
-                                <pre class="mb-0" id="new-data-content">-</pre>
-                            </div>
-                        </div>
-                    </div>
+    <dt class="col-4 text-muted mb-0">Op.</dt>
+    <dd class="col-8 mb-1">
+      <span id="detail-operation" class="badge bg-indigo-lt small">–</span>
+    </dd>
 
-                    <!-- Cambios detectados -->
-                    <div id="changes-section">
-                        <h6 class="text-muted text-uppercase fw-bold">Cambios Detectados</h6>
-                        <div id="changes-container">
-                            <!-- Se generarán dinámicamente -->
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-1"></i>
-                        Cerrar
-                    </button>
-                </div>
+    <dt class="col-4 text-muted mb-0">Usuario</dt>
+    <dd class="col-8 mb-0" id="detail-user">–</dd>
+  </dl>
+</div>
+  <!-- Datos Anteriores & Nuevos en una fila -->
+  <div class="row g-2 mb-3">
+    <div class="col-6" id="previous-data-section">
+      <h6 class="text-muted text-uppercase fw-bold small">Datos Anteriores</h6>
+      <div class="card card-sm">
+        <div class="card-body p-2">
+          <pre id="previous-data-content" class="mb-0 small">–</pre>
+        </div>
+      </div>
+    </div>
+    <div class="col-6" id="new-data-section">
+      <h6 class="text-muted text-uppercase fw-bold small">Datos Nuevos</h6>
+      <div class="card card-sm">
+        <div class="card-body p-2">
+          <pre id="new-data-content" class="mb-0 small">–</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
             </div>
         </div>
     </div>
@@ -406,4 +375,3 @@
     <script src="../../assets/tabler/js/tabler.min.js"></script>
 </body>
 </html>
-

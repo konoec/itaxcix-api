@@ -49,34 +49,45 @@ class DistrictDeleteController {
      */
     async handleDeleteDistrict(districtData) {
         console.log('🗑️ Iniciando proceso de eliminación de distrito:', districtData);
-
         try {
             // Validar servicio
             if (!this.deleteService) {
                 throw new Error('Servicio de eliminación no disponible');
             }
-
             // Validar datos del distrito
             const validation = this.deleteService.validateDeletion(districtData);
             if (!validation.canDelete) {
                 throw new Error(validation.error);
             }
-
             // Guardar datos para el proceso de eliminación
             this.currentDistrictData = districtData;
-
-            // Configurar modal de confirmación
-            const modalConfig = this.buildModalConfig(validation);
-            
-            // Mostrar modal de confirmación global
-            if (window.globalConfirmationModal) {
-                console.log('📋 Mostrando modal de confirmación global...');
-                window.globalConfirmationModal.showConfirmation(modalConfig);
+            // Configurar modal de confirmación al estilo tipos de código de usuario
+            const districtInfo = validation.districtInfo;
+            const formattedUbigeo = districtInfo.ubigeo ? districtInfo.ubigeo.padEnd(6, '0') : 'N/A';
+            const subtitle = `${districtInfo.province} - UBIGEO: ${formattedUbigeo}`;
+            const config = {
+                title: 'Eliminar Distrito',
+                name: districtInfo.name,
+                subtitle: subtitle,
+                avatarColor: 'bg-primary',
+                confirmText: 'Eliminar',
+                loadingText: 'Eliminando distrito...',
+                onConfirm: async () => {
+                    await this.executeDelete();
+                },
+                data: {
+                    id: districtInfo.id,
+                    name: districtInfo.name,
+                    ubigeo: districtInfo.ubigeo,
+                    province: districtInfo.province
+                }
+            };
+            if (window.globalConfirmationModal && typeof window.globalConfirmationModal.showConfirmation === 'function') {
+                window.globalConfirmationModal.showConfirmation(config);
             } else {
                 console.error('❌ Modal de confirmación global no disponible');
                 throw new Error('Sistema de confirmación no disponible');
             }
-
         } catch (error) {
             console.error('💥 Error en handleDeleteDistrict:', error);
             this.showErrorMessage(error.message);
@@ -93,7 +104,7 @@ class DistrictDeleteController {
         
         // SVG de Tabler para distritos (map-pin)
         const districtIconSvg = `
-            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+
                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                 <path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"/>
                 <path d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z"/>

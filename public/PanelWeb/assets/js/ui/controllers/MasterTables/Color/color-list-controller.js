@@ -24,6 +24,7 @@ class ColorListController {
     this.clearBtn = document.getElementById('clearColorFiltersBtn');
 
     this.currentPage = 1;
+    this.colorList = [];            // ← inicializamos el array donde guardaremos los colores
 
     this.initEvents();
     setTimeout(() => this.load(1), 100); // Siempre inicia en página 1
@@ -87,6 +88,9 @@ class ColorListController {
       const items = res.data.data || [];
       const pageInfo = res.data.meta || {};
 
+      // ← Guarda la lista completa para que el controlador de edición la reutilice
+      this.colorList = items;
+
       this.render(items);
       this.updateStats({ data: items, pagination: pageInfo });
       this.renderPagination(pageInfo);
@@ -133,9 +137,12 @@ class ColorListController {
           </td>
           <td class="text-center">
             <div class="btn-group">
-              <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
-              <button class="btn btn-sm btn-outline-warning"><i class="fas fa-edit"></i></button>
-              <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+              <button class="btn btn-sm btn-outline-warning" data-action="edit-color" data-id="${c.id}" title="Editar">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger" data-action="delete-color" data-color-id="${c.id}" data-color-name="${c.name}" title="Eliminar">
+                <i class="fas fa-trash"></i>
+              </button>
             </div>
           </td>
         </tr>
@@ -164,57 +171,84 @@ class ColorListController {
   }
 
   renderPagination(p) {
-    const totalPages = p.lastPage || 1;
-    const currentPage = p.currentPage || 1;
-    if (totalPages <= 1) {
-      this.pagination.innerHTML = '';
-      return;
-    }
-    let html = `
-      <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-        <a class="page-link" href="#" data-page="${currentPage - 1}">
-          <i class="fas fa-chevron-left"></i>
-        </a>
-      </li>`;
-    const pageRange = 2;
-    const startPage = Math.max(1, currentPage - pageRange);
-    const endPage = Math.min(totalPages, currentPage + pageRange);
-
-    if (startPage > 1) {
-      html += `<li class="page-item"><a class="page-link" href="#" data-page="1">1</a></li>`;
-      if (startPage > 2) {
-        html += `<li class="page-item disabled"><span class="page-link">…</span></li>`;
-      }
-    }
-    for (let i = startPage; i <= endPage; i++) {
-      html += `
-        <li class="page-item ${i === currentPage ? 'active' : ''}">
-          <a class="page-link" href="#" data-page="${i}">${i}</a>
-        </li>`;
-    }
-    if (endPage < totalPages) {
-      if (endPage < totalPages - 1) {
-        html += `<li class="page-item disabled"><span class="page-link">…</span></li>`;
-      }
-      html += `<li class="page-item"><a class="page-link" href="#" data-page="${totalPages}">${totalPages}</a></li>`;
-    }
-    html += `
-      <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-        <a class="page-link" href="#" data-page="${currentPage + 1}">
-          <i class="fas fa-chevron-right"></i>
-        </a>
-      </li>`;
-    this.pagination.innerHTML = html;
-    this.pagination.querySelectorAll('a[data-page]').forEach(a => {
-      a.addEventListener('click', e => {
-        e.preventDefault();
-        const pg = parseInt(a.dataset.page);
-        if (!isNaN(pg) && pg >= 1 && pg <= totalPages && pg !== currentPage) {
-          this.load(pg);
-        }
-      });
-    });
+  const totalPages = p.lastPage || p.totalPages || 1;
+  const currentPage = p.currentPage || p.page || 1;
+  const pagination = this.pagination;
+  if (totalPages <= 1) {
+    pagination.innerHTML = '';
+    return;
   }
+  let html = '';
+
+  // Primera página <<
+  html += `
+    <li class="page-item${currentPage === 1 ? ' disabled' : ''}">
+      <a class="page-link" href="#" data-page="1" aria-label="Primera">
+        <i class="fas fa-angle-double-left"></i>
+      </a>
+    </li>`;
+
+  // Anterior <
+  html += `
+    <li class="page-item${currentPage === 1 ? ' disabled' : ''}">
+      <a class="page-link" href="#" data-page="${currentPage - 1}" aria-label="Anterior">
+        <i class="fas fa-angle-left"></i>
+      </a>
+    </li>`;
+
+  // Números con puntos suspensivos
+  const maxVisible = 2;
+  let start = Math.max(1, currentPage - maxVisible);
+  let end = Math.min(totalPages, currentPage + maxVisible);
+
+  if (start > 1) {
+    html += `<li class="page-item"><a class="page-link" href="#" data-page="1">1</a></li>`;
+    if (start > 2) html += `<li class="page-item disabled"><span class="page-link">…</span></li>`;
+  }
+
+  for (let i = start; i <= end; i++) {
+    html += `
+      <li class="page-item${i === currentPage ? ' active' : ''}">
+        <a class="page-link" href="#" data-page="${i}">${i}</a>
+      </li>`;
+  }
+
+  if (end < totalPages) {
+    if (end < totalPages - 1) html += `<li class="page-item disabled"><span class="page-link">…</span></li>`;
+    html += `<li class="page-item"><a class="page-link" href="#" data-page="${totalPages}">${totalPages}</a></li>`;
+  }
+
+  // Siguiente >
+  html += `
+    <li class="page-item${currentPage === totalPages ? ' disabled' : ''}">
+      <a class="page-link" href="#" data-page="${currentPage + 1}" aria-label="Siguiente">
+        <i class="fas fa-angle-right"></i>
+      </a>
+    </li>`;
+
+  // Última página >>
+  html += `
+    <li class="page-item${currentPage === totalPages ? ' disabled' : ''}">
+      <a class="page-link" href="#" data-page="${totalPages}" aria-label="Última">
+        <i class="fas fa-angle-double-right"></i>
+      </a>
+    </li>`;
+
+  pagination.innerHTML = html;
+
+  pagination.querySelectorAll('a[data-page]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const pg = parseInt(a.dataset.page, 10);
+      if (!isNaN(pg) && pg >= 1 && pg <= totalPages && pg !== currentPage) {
+        this.load(pg);
+      }
+    });
+  });
 }
 
+}
+
+// Instancia global
 window.ColorListController = ColorListController;
+

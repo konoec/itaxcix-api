@@ -74,13 +74,24 @@ class TucModalityInitializer {
                                 window.tucModalityController = new TucModalityController();
                                 console.log('✅ TucModalityController inicializado correctamente');
                             }
+
+                            // Inicializar TucModalityEditController después de la lista
+                            if (!window.TucModalityEditController) {
+                                if (window.TucModalityEditControllerClass) {
+                                    window.TucModalityEditController = new window.TucModalityEditControllerClass();
+                                    window.tucModalityEditController = window.TucModalityEditController;
+                                    console.log('✏️ TucModalityEditController inicializado desde el inicializador');
+                                } else {
+                                    console.error('❌ No se encontró la clase TucModalityEditControllerClass');
+                                }
+                            }
                         } catch (error) {
                             console.error('❌ Error inicializando TucModalityController:', error);
                         }
-                        
+
                         // Notificar que el módulo está listo
                         LoadingScreenUtil.notifyModuleLoaded('TucModality');
-                        
+
                         console.log('✅ Modalidades TUC inicializado completamente');
                     }, 400);
                     

@@ -55,6 +55,16 @@ class DriverStatusInitializer {
                                 window.driverStatusListControllerInstance.init();
                                 console.log('📋 DriverStatusListController inicializado');
                             }
+                        // Inicializar DriverStatusEditController después de la lista
+                        if (!window.DriverStatusEditController) {
+                            if (window.DriverStatusEditControllerClass) {
+                                window.DriverStatusEditController = new window.DriverStatusEditControllerClass();
+                                window.driverStatusEditController = window.DriverStatusEditController;
+                                console.log('✏️ DriverStatusEditController inicializado desde el inicializador');
+                            } else {
+                                console.error('❌ No se encontró la clase DriverStatusEditControllerClass');
+                            }
+                        }
                         }, 300);
                     }, 200);
                     

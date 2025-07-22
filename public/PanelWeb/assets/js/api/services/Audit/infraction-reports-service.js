@@ -28,6 +28,8 @@ class InfractionReportsService {
      * @returns {Promise} Promesa con los datos del reporte
      */
     async getInfractionReports(filters = {}) {
+        filters = this.validateFilters(filters);
+
         try {
             const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
             if (!token) {
@@ -254,6 +256,6 @@ class InfractionReportsService {
 }
 
 // Hacer disponible globalmente
-window.InfractionReportsService = InfractionReportsService;
+window.InfractionReportsService = new InfractionReportsService();
 
 console.log('✅ InfractionReportsService cargado correctamente');

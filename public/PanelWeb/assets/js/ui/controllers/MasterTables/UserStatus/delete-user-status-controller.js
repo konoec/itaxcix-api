@@ -2,12 +2,11 @@
  * Delete User Status Controller
  * Controlador para eliminar estados de usuario usando modal de confirmación reutilizable
  */
-
 class DeleteUserStatusController {
     constructor() {
-        this.deleteService = new DeleteUserStatusService();
+        this.deleteService = window.DeleteUserStatusService;
         this.confirmationModal = null;
-        
+
         console.log('🗑️ Inicializando DeleteUserStatusController...');
         this.init();
     }
@@ -16,9 +15,7 @@ class DeleteUserStatusController {
      * Inicializa el controlador
      */
     init() {
-        // Verificar que el modal de confirmación esté disponible
         this.ensureConfirmationModal();
-        
         console.log('✅ DeleteUserStatusController inicializado');
     }
 
@@ -26,19 +23,20 @@ class DeleteUserStatusController {
      * Verifica que el modal de confirmación global esté disponible
      */
     ensureConfirmationModal() {
-        // Buscar el controlador de modal de confirmación global de diferentes formas
-        if (window.GlobalConfirmationModalController) {
+        if (window.globalConfirmationModal) {
+            this.confirmationModal = window.globalConfirmationModal;
+            console.log('✅ Modal de confirmación global encontrado (globalConfirmationModal)');
+        } else if (window.GlobalConfirmationModalController) {
             this.confirmationModal = window.GlobalConfirmationModalController;
             console.log('✅ Modal de confirmación global encontrado (GlobalConfirmationModalController)');
         } else if (window.globalConfirmationModalController) {
             this.confirmationModal = window.globalConfirmationModalController;
             console.log('✅ Modal de confirmación global encontrado (instancia global)');
         } else {
-            // Intentar crear una instancia si la clase está disponible
             if (typeof GlobalConfirmationModalController !== 'undefined') {
                 console.log('🔧 Creando instancia de GlobalConfirmationModalController...');
-                window.globalConfirmationModalController = new GlobalConfirmationModalController();
-                this.confirmationModal = window.globalConfirmationModalController;
+                window.globalConfirmationModal = new GlobalConfirmationModalController();
+                this.confirmationModal = window.globalConfirmationModal;
                 console.log('✅ Modal de confirmación global creado exitosamente');
             } else {
                 console.warn('⚠️ Modal de confirmación global no encontrado, creando uno básico');
@@ -51,7 +49,6 @@ class DeleteUserStatusController {
      * Crea un modal de confirmación básico si no existe el global
      */
     createBasicConfirmationModal() {
-        // Modal básico de confirmación si no existe el global
         const modalHTML = `
             <div class="modal modal-blur fade" id="basic-delete-confirmation-modal" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
@@ -87,43 +84,52 @@ class DeleteUserStatusController {
             </div>
         `;
 
-        // Agregar modal al DOM si no existe
         if (!document.getElementById('basic-delete-confirmation-modal')) {
             document.body.insertAdjacentHTML('beforeend', modalHTML);
         }
 
-        // Crear objeto de control básico
         this.confirmationModal = {
-            showConfirmation: (config, onConfirm) => {
+            showConfirmation: (config) => {
                 const modal = document.getElementById('basic-delete-confirmation-modal');
                 const titleEl = document.getElementById('basic-confirmation-title');
                 const messageEl = document.getElementById('basic-confirmation-message');
                 const confirmBtn = document.getElementById('basic-confirm-delete-btn');
 
-                // Configurar contenido
                 if (titleEl) titleEl.textContent = config.title || 'Confirmar eliminación';
                 if (messageEl) messageEl.textContent = `¿Eliminar "${config.name}"?` || '¿Está seguro?';
 
-                // Configurar evento de confirmación
                 const handleConfirm = async () => {
                     confirmBtn.removeEventListener('click', handleConfirm);
-                    
-                    // Ejecutar callback
-                    if (config.onConfirm) {
-                        await config.onConfirm();
-                    }
-                    
-                    // Cerrar modal
+                    if (config.onConfirm) await config.onConfirm();
                     bootstrap.Modal.getInstance(modal).hide();
                 };
 
                 confirmBtn.addEventListener('click', handleConfirm);
 
-                // Mostrar modal
                 const bsModal = new bootstrap.Modal(modal);
                 bsModal.show();
             }
         };
+    }
+
+    /**
+     * Maneja el click del botón eliminar desde la tabla
+     * @param {HTMLElement} button - Botón que disparó la acción
+     * @param {Object} userStatusData - Datos del estado de usuario
+     */
+    handleDeleteButtonClick(button, userStatusData) {
+        console.log('🎯 Manejando click de eliminación desde botón:', userStatusData);
+
+        const onSuccess = (deletedData) => {
+            console.log('✅ Estado de usuario eliminado, recargando lista...');
+            this.reloadUserStatusList();
+        };
+
+        const onError = (error) => {
+            console.error('❌ Error en eliminación desde botón:', error);
+        };
+
+        this.requestDelete(userStatusData, onSuccess, onError);
     }
 
     /**
@@ -136,7 +142,6 @@ class DeleteUserStatusController {
         try {
             console.log('🗑️ Solicitando eliminación de estado de usuario:', userStatusData);
 
-            // Validar datos
             const validation = this.deleteService.validateDeletion(userStatusData);
             if (!validation.isValid) {
                 const errorMessage = validation.errors.join(', ');
@@ -146,25 +151,21 @@ class DeleteUserStatusController {
                 return;
             }
 
-            // Obtener configuración del modal de confirmación
             const confirmConfig = this.deleteService.getConfirmationConfig(userStatusData);
 
-            // Mostrar modal de confirmación usando el método correcto
+            // SIEMPRE PASAMOS EL CALLBACK DENTRO DEL OBJETO
             this.confirmationModal.showConfirmation({
                 title: confirmConfig.title || 'Confirmar Eliminación',
                 name: userStatusData.name || 'Estado de Usuario',
-                subtitle: confirmConfig.details || 'Esta acción no se puede deshacer y podría afectar a los usuarios que tengan asignado este estado.',
-                confirmText: confirmConfig.confirmText || 'Sí, Eliminar',
-                loadingText: 'Eliminando estado...',
+                // No pasar 'subtitle' para que no se muestre el texto adicional
                 onConfirm: async () => {
                     await this.executeDelete(userStatusData, onSuccess, onError);
-                },
-                data: userStatusData
+                }
             });
 
         } catch (error) {
-            console.error('❌ Error en requestDelete:', error);
-            this.showErrorToast('Error al procesar la solicitud de eliminación');
+            console.error('❌ Error al solicitar eliminación:', error);
+            this.showErrorToast('Error al procesar solicitud de eliminación');
             if (onError) onError(error);
         }
     }
@@ -177,44 +178,25 @@ class DeleteUserStatusController {
      */
     async executeDelete(userStatusData, onSuccess = null, onError = null) {
         try {
-            console.log('⚡ Ejecutando eliminación de estado de usuario...');
+            console.log('⚡ Ejecutando eliminación del estado de usuario:', userStatusData);
 
-            // Mostrar indicador de carga global si está disponible
             this.setGlobalLoading(true);
 
-            // Llamar al servicio de eliminación
-            const result = await this.deleteService.deleteUserStatus(userStatusData.id);
+            const response = await this.deleteService.deleteUserStatus(userStatusData.id);
 
-            if (result.success) {
-                console.log('✅ Estado de usuario eliminado exitosamente');
-                
-                // Mostrar mensaje de éxito
-                this.showSuccessToast(result.message || 'Estado de usuario eliminado correctamente');
-                
-                // Ejecutar callback de éxito
-                if (onSuccess) {
-                    onSuccess(result);
-                } else {
-                    // Comportamiento por defecto: recargar lista
-                    this.reloadUserStatusList();
-                }
-
+            if (response.success) {
+                this.showSuccessToast(`Estado de usuario "${userStatusData.name}" eliminado exitosamente`);
+                if (onSuccess && typeof onSuccess === 'function') onSuccess(response.data);
             } else {
-                // Error en la eliminación
-                console.error('❌ Error al eliminar:', result.message);
-                this.showErrorToast(result.message || 'Error al eliminar el estado de usuario');
-                
-                if (onError) onError(new Error(result.message));
+                this.showErrorToast(response.message || 'Error al eliminar el estado de usuario');
+                if (onError && typeof onError === 'function') onError(new Error(response.message));
             }
 
         } catch (error) {
-            console.error('❌ Error en executeDelete:', error);
-            this.showErrorToast('Error interno al eliminar el estado de usuario');
-            
-            if (onError) onError(error);
-
+            console.error('❌ Error al ejecutar eliminación:', error);
+            this.showErrorToast(error.message || 'Error al eliminar estado de usuario');
+            if (onError && typeof onError === 'function') onError(error);
         } finally {
-            // Ocultar indicador de carga
             this.setGlobalLoading(false);
         }
     }
@@ -224,33 +206,22 @@ class DeleteUserStatusController {
      * @param {boolean} loading - Estado de carga
      */
     setGlobalLoading(loading) {
-        // Intentar usar el sistema de loading global si está disponible
-        if (window.LoadingScreenUtil) {
-            if (loading) {
-                window.LoadingScreenUtil.show('Eliminando estado de usuario...');
-            } else {
-                window.LoadingScreenUtil.hide();
-            }
+        if (window.globalLoadingController) {
+            if (loading) window.globalLoadingController.show();
+            else window.globalLoadingController.hide();
         }
+        console.log(`🔄 Estado de carga global: ${loading ? 'MOSTRADO' : 'OCULTO'}`);
     }
 
     /**
      * Recarga la lista de estados de usuario
      */
     reloadUserStatusList() {
-        // Intentar recargar usando el controlador de lista si está disponible
-        if (window.userStatusListController && typeof window.userStatusListController.loadUserStatuses === 'function') {
-            console.log('🔄 Recargando lista usando controlador...');
-            window.userStatusListController.loadUserStatuses();
-        } else if (window.UserStatusListController && typeof window.UserStatusListController.load === 'function') {
-            console.log('🔄 Recargando lista usando UserStatusListController...');
-            window.UserStatusListController.load();
+        if (window.userStatusListController && typeof window.userStatusListController.load === 'function') {
+            console.log('🔄 Recargando lista de estados de usuario...');
+            window.userStatusListController.load();
         } else {
-            // Si no hay controlador disponible, recargar la página
-            console.log('🔄 Recargando página para mostrar cambios...');
-            setTimeout(() => {
-                window.location.reload();
-            }, 1500);
+            console.warn('⚠️ No se pudo recargar la lista: controlador no encontrado');
         }
     }
 
@@ -265,7 +236,6 @@ class DeleteUserStatusController {
             window.showRecoveryToast(message, 'success');
         } else {
             console.log('✅', message);
-            // Fallback: mostrar alert si no hay sistema de toast
             alert(message);
         }
     }
@@ -281,38 +251,11 @@ class DeleteUserStatusController {
             window.showRecoveryToast(message, 'error');
         } else {
             console.error('❌', message);
-            // Fallback: mostrar alert si no hay sistema de toast
-            alert(`Error: ${message}`);
+            alert('Error: ' + message);
         }
-    }
-
-    /**
-     * Método de conveniencia para eliminar desde un botón
-     * @param {HTMLElement} button - Botón que disparó la acción
-     * @param {Object} userStatusData - Datos del estado de usuario
-     */
-    handleDeleteButtonClick(button, userStatusData) {
-        // Deshabilitar botón temporalmente
-        const originalHTML = button.innerHTML;
-        button.disabled = true;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-
-        // Restaurar botón después de la operación
-        const restoreButton = () => {
-            button.disabled = false;
-            button.innerHTML = originalHTML;
-        };
-
-        // Ejecutar eliminación
-        this.requestDelete(
-            userStatusData,
-            restoreButton, // onSuccess
-            restoreButton  // onError
-        );
     }
 }
 
 // Hacer disponible globalmente
 window.DeleteUserStatusController = DeleteUserStatusController;
-
 console.log('✅ DeleteUserStatusController cargado correctamente');

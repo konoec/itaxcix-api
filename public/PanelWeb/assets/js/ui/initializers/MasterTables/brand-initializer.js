@@ -125,5 +125,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 500);
 });
 
+                        // --- INICIO: Integración DeleteBrandController ---
+                        // Instanciar el controlador de eliminación de marca
+                        window.deleteBrandControllerInstance = new DeleteBrandController();
+                        // Registrar evento global para botones de eliminar marca
+                        document.addEventListener('click', function(e) {
+                            const btn = e.target.closest('[data-action="delete-brand"]');
+                            if (btn) {
+                                const brandId = parseInt(btn.getAttribute('data-brand-id'), 10);
+                                const brandName = btn.getAttribute('data-brand-name') || '';
+                                const brandData = { id: brandId, name: brandName };
+                                window.deleteBrandControllerInstance.handleDeleteButtonClick(btn, brandData);
+                            }
+                        });
+                        window.DeleteBrandController = window.deleteBrandControllerInstance;
+                        console.log('🗑️ DeleteBrandController inicializado y eventos registrados');
+                        // --- FIN: Integración DeleteBrandController ---
 console.log('📝 BrandInitializer definido y configurado');
 

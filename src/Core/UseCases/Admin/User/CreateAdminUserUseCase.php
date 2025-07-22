@@ -4,8 +4,15 @@ namespace itaxcix\Core\UseCases\Admin\User;
 
 use InvalidArgumentException;
 use DateTime;
+use itaxcix\Core\Domain\person\PersonModel;
+use itaxcix\Core\Domain\user\AdminProfileModel;
+use itaxcix\Core\Domain\user\CitizenProfileModel;
+use itaxcix\Core\Domain\user\UserContactModel;
+use itaxcix\Core\Domain\user\UserModel;
+use itaxcix\Core\Domain\user\UserRoleModel;
 use itaxcix\Core\Interfaces\person\PersonRepositoryInterface;
 use itaxcix\Core\Interfaces\person\DocumentTypeRepositoryInterface;
+use itaxcix\Core\Interfaces\user\CitizenProfileRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserStatusRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserContactRepositoryInterface;
@@ -43,6 +50,7 @@ class CreateAdminUserUseCase
     private UserRoleRepositoryInterface $userRoleRepository;
     private RoleRepositoryInterface $roleRepository;
     private AdminProfileRepositoryInterface $adminProfileRepository;
+    private CitizenProfileRepositoryInterface $citizenProfileRepository;
 
     public function __construct(
         PersonRepositoryInterface $personRepository,
@@ -53,7 +61,8 @@ class CreateAdminUserUseCase
         ContactTypeRepositoryInterface $contactTypeRepository,
         UserRoleRepositoryInterface $userRoleRepository,
         RoleRepositoryInterface $roleRepository,
-        AdminProfileRepositoryInterface $adminProfileRepository
+        AdminProfileRepositoryInterface $adminProfileRepository,
+        CitizenProfileRepositoryInterface $citizenProfileRepository
     ) {
         $this->personRepository = $personRepository;
         $this->documentTypeRepository = $documentTypeRepository;
@@ -64,6 +73,7 @@ class CreateAdminUserUseCase
         $this->userRoleRepository = $userRoleRepository;
         $this->roleRepository = $roleRepository;
         $this->adminProfileRepository = $adminProfileRepository;
+        $this->citizenProfileRepository = $citizenProfileRepository;
     }
 
     public function execute(CreateAdminUserRequestDTO $request): array
@@ -104,12 +114,17 @@ class CreateAdminUserUseCase
             throw new InvalidArgumentException("Rol ADMINISTRADOR web no encontrado o no está activo");
         }
 
+        $citizenRole = $this->roleRepository->findRoleByName('CIUDADANO');
+        if (!$citizenRole || !$citizenRole->isWeb() || !$citizenRole->isActive()) {
+            throw new InvalidArgumentException("Rol CIUDADANO web no encontrado o no está activo");
+        }
+
         // 7. Obtener nombre y apellido desde fake API
         $personData = $this->fakeReniecApi($request->document);
 
         // 8. INICIAR CREACIÓN DE ENTIDADES (todo validado)
         // Crear directamente el modelo de dominio PersonModel
-        $personModel = new \itaxcix\Core\Domain\person\PersonModel(
+        $personModel = new PersonModel(
             id: null, // ID será asignado por la base de datos
             name: $personData['name'],
             lastName: $personData['lastName'],
@@ -124,7 +139,7 @@ class CreateAdminUserUseCase
         $savedPersonModel = $this->personRepository->savePerson($personModel);
 
         // Crear directamente el modelo de dominio UserModel
-        $userModel = new \itaxcix\Core\Domain\user\UserModel(
+        $userModel = new UserModel(
             id: null, // ID será asignado por la base de datos
             password: password_hash($request->password, PASSWORD_DEFAULT),
             person: $savedPersonModel,
@@ -135,7 +150,7 @@ class CreateAdminUserUseCase
         $savedUserModel = $this->userRepository->saveUser($userModel);
 
         // Crear directamente el modelo de dominio UserContactModel
-        $contactModel = new \itaxcix\Core\Domain\user\UserContactModel(
+        $contactModel = new UserContactModel(
             id: null, // ID será asignado por la base de datos
             user: $savedUserModel,
             type: $emailContactType,
@@ -147,21 +162,24 @@ class CreateAdminUserUseCase
         // Guardar contacto
         $savedContactModel = $this->userContactRepository->saveUserContact($contactModel);
 
-        // Crear directamente el modelo de dominio UserRoleModel
-        $userRoleModel = new \itaxcix\Core\Domain\user\UserRoleModel(
-            id: null, // ID será asignado por la base de datos
-            role: $adminRole,
-            user: $savedUserModel,
-            active: true
-        );
-
         // Crear directamente el modelo de dominio AdminProfileModel
-        $adminProfileModel = new \itaxcix\Core\Domain\user\AdminProfileModel(
+        $adminProfileModel = new AdminProfileModel(
             id: null, // ID será asignado por la base de datos
             user: $savedUserModel,
             area: $request->area,
             position: $request->position
         );
+
+        $this->userRoleRepository->assignRoleToUser($savedUserModel, $citizenRole);
+
+        $citizenProfileModel = new CitizenProfileModel(
+            id: null,
+            user: $savedUserModel,
+            averageRating: 0,
+            ratingCount: 0
+        );
+
+        $this->citizenProfileRepository->saveCitizenProfile($citizenProfileModel);
 
         // Guardar perfil de administrador
         $savedAdminProfileModel = $this->adminProfileRepository->saveAdminProfile($adminProfileModel);
@@ -174,7 +192,7 @@ class CreateAdminUserUseCase
                 'lastName' => $savedPersonModel->getLastName(),
                 'document' => $savedPersonModel->getDocument(),
                 'email' => $savedContactModel->getValue(),
-                'role' => $adminRole->getName(),
+                'role' => $citizenRole->getName(),
                 'area' => $savedAdminProfileModel->getArea(),
                 'position' => $savedAdminProfileModel->getPosition()
             ]

@@ -8,6 +8,13 @@
     box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05);
     padding: 0;
     margin: 0;
+    overflow-y: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+
+.navbar-vertical::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
 }
 
 .navbar-vertical .container-fluid {
@@ -15,21 +22,28 @@
     margin: 0;
 }
 
+
 .navbar-vertical .navbar-brand {
-    padding: 0 1.5rem 0.25rem 1.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    color: #fff;
-    margin-top: 0;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 32px;
+    margin: 0 !important;
+    background: #fff !important; /* Fondo blanco */
+    width: 100% !important;
+    height: 56px !important; /* Un poco más alto para el padding */
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
 }
 
 .navbar-vertical .navbar-brand img {
-    height: 28px;
-    width: auto;
+    object-fit: contain !important;
+    display: block !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    aspect-ratio: unset !important;
+    max-width: 90% !important;
+    max-height: 90% !important;
+    background: transparent !important;
 }
 
 .navbar-vertical .navbar-nav {
@@ -164,11 +178,16 @@
         background-color: var(--tblr-dark, #1e293b) !important;
         border-right: 1px solid rgba(255, 255, 255, 0.1);
         box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
-        overflow-y: auto;
-        overflow-x: hidden;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        scrollbar-width: none !important; /* Firefox */
+        -ms-overflow-style: none !important; /* IE/Edge */
         /* Eliminar cualquier padding o margin que pueda crear espacio arriba */
         padding: 0 !important;
         margin: 0 !important;
+    }
+    #sidebar.navbar-vertical::-webkit-scrollbar {
+        display: none !important;
     }
     
     /* Container fluid sin padding superior - configurado como flexbox para replicar desktop */
@@ -186,19 +205,18 @@
         top: 0 !important;
         left: 0 !important;
         right: 0 !important;
-        padding: 0.5rem 0.75rem 0.5rem 0.75rem !important;
+        padding: 6px 12px !important; /* Igual que desktop */
         margin: 0 !important;
         text-align: center !important;
         width: 100% !important;
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
-        /* Mantener color consistente */
-        background-color: var(--tblr-dark, #1e293b) !important;
+        background: #fff !important; /* Fondo blanco for responsive */
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        color: #fff !important;
-        height: 48px !important; /* Altura fija */
-        z-index: 100 !important; /* Z-index alto para estar por encima del contenido */
+        color: #222 !important;
+        height: 64px !important; /* Igual que desktop */
+        z-index: 100 !important;
         flex-shrink: 0 !important;
     }
     
@@ -212,10 +230,14 @@
     
     /* Asegurar que el logo no sea afectado por el botón cerrar */
     #sidebar .navbar-brand img {
+        width: 100% !important;
+        height: 100% !important;
         display: block !important;
-        margin: 0 auto !important;
-        max-height: 28px !important;
-        width: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        aspect-ratio: unset !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
     }
     
     #sidebar.navbar-vertical.show {
@@ -387,8 +409,7 @@
     /* Botón cerrar del sidebar en móviles - diseño sutil de Tabler */
     #sidebar-close {
         position: absolute !important;
-        top: 50% !important;
-        right: 1rem !important;
+        right: 0.3rem !important;
         transform: translateY(-50%) !important;
         z-index: 101 !important; /* Por encima del header */
         opacity: 0.6 !important;

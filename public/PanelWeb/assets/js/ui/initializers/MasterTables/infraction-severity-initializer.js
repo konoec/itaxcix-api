@@ -27,8 +27,16 @@ class InfractionSeverityInitializer {
                     pageTitle: window.pageConfig?.pageTitle || { icon: 'fas fa-gavel', text: 'Gestión de Severidad de Infracciones' }
                 });
                 
-                // Cargar profile modal
-                await componentLoader.loadComponent('profile-modal', '#modal-container');
+                // Cargar profile modal en su propio contenedor
+                if (!document.getElementById('profile-modal-container')) {
+                    const modalRoot = document.getElementById('modal-container');
+                    if (modalRoot) {
+                        const profileDiv = document.createElement('div');
+                        profileDiv.id = 'profile-modal-container';
+                        modalRoot.appendChild(profileDiv);
+                    }
+                }
+                await componentLoader.loadComponent('profile-modal', '#profile-modal-container');
                 
                 console.log('✅ Todos los componentes HTML cargados');
                 
@@ -64,6 +72,15 @@ class InfractionSeverityInitializer {
                             window.infractionSeverityListController = new InfractionSeverityListController();
                             window.infractionSeverityController = window.infractionSeverityListController;
                             console.log('⚠️ InfractionSeverityListController inicializado');
+                        }
+                        // Inicializar controlador de edición de severidad de infracción
+                        if (!window.infractionSeverityEditController) {
+                            if (window.InfractionSeverityEditControllerClass) {
+                                window.infractionSeverityEditController = new window.InfractionSeverityEditControllerClass();
+                                console.log('✏️ InfractionSeverityEditController inicializado desde el inicializador');
+                            } else {
+                                console.error('❌ No se encontró la clase InfractionSeverityEditControllerClass');
+                            }
                         }
                     }, 200);
                     

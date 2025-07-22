@@ -288,10 +288,6 @@ class DriverStatusListController {
                             </h3>
                             <div class="card-actions">
                                 <div class="dropdown">
-                                    <button class="btn btn-sm btn-outline-pink dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                        <i class="fas fa-download me-1"></i>
-                                        Exportar
-                                    </button>
                                     <div class="dropdown-menu">
                                         <a class="dropdown-item" href="#" id="exportExcelBtn">
                                             <i class="fas fa-file-excel me-2"></i>

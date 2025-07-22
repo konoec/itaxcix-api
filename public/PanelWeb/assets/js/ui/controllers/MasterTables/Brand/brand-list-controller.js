@@ -200,7 +200,12 @@ class BrandListController {
         <td class="text-center">
           <div class="btn-group">
             <button class="btn btn-sm btn-outline-warning" title="Editar" data-action="edit-brand" data-id="${brand.id}"><i class="fas fa-edit"></i></button>
-            <button class="btn btn-sm btn-outline-danger" title="Eliminar"><i class="fas fa-trash"></i></button>
+            <button class="btn btn-sm btn-outline-danger" title="Eliminar"
+              data-action="delete-brand"
+              data-brand-id="${brand.id}"
+              data-brand-name="${brand.name}">
+              <i class="fas fa-trash"></i>
+            </button>
           </div>
         </td>
       </tr>`;

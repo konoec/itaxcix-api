@@ -207,13 +207,51 @@ class PermissionsService {    constructor() {
                 title: 'Registro de Auditoría',
                 icon: 'fas fa-history'
             },
-            'AUDITORIA - REPORTES': {
+            'REPORTE-INFRACCIONES': {
                 permission: 'AUDITORIA',
-                route: '/pages/Audit/AuditReports.html',
-                menuId: 'menu-auditoria-reportes',
-                title: 'Reportes de Auditoría',
-                icon: 'fas fa-chart-bar'
-            },            'CONFIGURACIÓN': {
+                route: '/pages/Audit/InfractionsReports.html',
+                menuId: 'menu-auditoria-infracciones',
+                title: 'Reporte de Infracciones',
+                icon: 'fas fa-gavel'
+            },
+            'REPORTE-INCIDENTES': {
+                permission: 'AUDITORIA',
+                route: '/pages/Audit/IncidentsReports.html',
+                menuId: 'menu-auditoria-incidentes',
+                title: 'Reporte de Incidentes',
+                icon: 'fas fa-exclamation-triangle'
+            },
+            'REPORTE-VIAJES': {
+                permission: 'AUDITORIA',
+                route: '/pages/Audit/TravelsReports.html',
+                menuId: 'menu-auditoria-viajes',
+                title: 'Reporte de Viajes',
+                icon: 'fas fa-taxi'
+            },
+            'REPORTE-USUARIOS': {
+                permission: 'AUDITORIA',
+                route: '/pages/Audit/UsersReports.html',
+                menuId: 'menu-auditoria-usuarios',
+                title: 'Reporte de Usuarios',
+                icon: 'fas fa-users'
+            },
+            'REPORTE-VEHICULOS': {
+                permission: 'AUDITORIA',
+                route: '/pages/Audit/VehicleReports.html',
+                menuId: 'menu-auditoria-vehiculos',
+                title: 'Reporte de Vehículos',
+                icon: 'fas fa-car'
+            },
+            'REPORTE-CALIFICACIONES': {
+                permission: 'AUDITORIA',
+                route: '/pages/Audit/RatingReports.html',
+                menuId: 'menu-auditoria-calificaciones',
+                title: 'Reporte de Calificaciones',
+                icon: 'fas fa-list-alt'
+            },
+              
+            
+            'CONFIGURACIÓN': {
                 permission: 'CONFIGURACIÓN',
                 route: '/pages/Configuration/Configuration.html',
                 menuId: 'menu-configuracion',

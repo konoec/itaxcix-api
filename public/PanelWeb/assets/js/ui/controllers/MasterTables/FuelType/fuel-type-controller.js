@@ -182,13 +182,19 @@ class FuelTypeController {
                     </td>
                     <td>${statusBadge}</td>
                     <td>
-                        <div class="btn-list">
-                            <button class="btn btn-sm btn-outline-primary" 
-                                    onclick="fuelTypeController.viewDetails(${fuelType.id})"
-                                    title="Ver detalles">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
+                    <div class="btn-list flex-nowrap">
+                        <button class="btn btn-sm btn-outline-primary edit-fuel-type-btn" 
+                                data-id="${fuelType.id}"
+                                title="Editar tipo de combustible">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" 
+                                data-action="delete-fuel-type"
+                                data-fuel-type-id="${fuelType.id}"
+                                title="Eliminar estado">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
                     </td>
                 </tr>
             `;
@@ -384,5 +390,5 @@ renderPagination(meta) {
     }
 }
 
-// Variable global para acceso desde HTML
-let fuelTypeController;
+// Exportar solo la clase, sin crear instancia global aquí
+window.FuelTypeController = FuelTypeController;

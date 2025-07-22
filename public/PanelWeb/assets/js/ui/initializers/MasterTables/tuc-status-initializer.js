@@ -76,6 +76,17 @@ class TucStatusInitializer {
                             window.tucModalityCreateController = new TucModalityCreateController();
                             console.log('📝 TucModalityCreateController inicializado');
                         }
+
+                        // Inicializar TucStatusEditController después de la lista
+                        if (!window.TucStatusEditController) {
+                            if (window.TucStatusEditControllerClass) {
+                                window.TucStatusEditController = new window.TucStatusEditControllerClass();
+                                window.tucStatusEditController = window.TucStatusEditController;
+                                console.log('✏️ TucStatusEditController inicializado desde el inicializador');
+                            } else {
+                                console.error('❌ No se encontró la clase TucStatusEditControllerClass');
+                            }
+                        }
                     }, 300);
 
                     // Configurar permisos DESPUÉS de que los controladores estén listos

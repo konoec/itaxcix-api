@@ -23,7 +23,7 @@ class ProcedureTypeListController {
     this.pagination = document.getElementById('procedureTypePagination');
     this.refreshBtn = document.getElementById('refreshProcedureTypeBtn');
     this.clearBtn = document.getElementById('clearProcedureTypeFiltersBtn');
-
+    this.currentPage = 1;
     this.initEvents();
     setTimeout(() => this.load(), 100);
   }
@@ -62,6 +62,7 @@ class ProcedureTypeListController {
     this.filters.perPage.value = '15';
     this.filters.sortBy.value = 'name';
     this.filters.sortDirection.value = 'ASC';
+    this.currentPage = 1;
     this.load();
   }
 
@@ -109,7 +110,30 @@ class ProcedureTypeListController {
       </td></tr>`;
   }
 
+  /**
+   * Abre el modal de edición para un tipo de trámite
+   * @param {number} id - ID del tipo de trámite
+   */
+  editProcedureType(id) {
+    const procedureType = (this.tableBody && this.lastData)
+      ? this.lastData.find(item => item.id === id)
+      : null;
+    if (!procedureType) {
+      console.error('❌ Tipo de trámite no encontrado para edición:', id);
+      if (window.GlobalToast) {
+        window.GlobalToast.showToast('Tipo de trámite no encontrado', 'error');
+      }
+      return;
+    }
+    // Disparar evento global para abrir el modal de edición
+    const event = new CustomEvent('openProcedureTypeEditModal', {
+      detail: { id, procedureTypeData: procedureType }
+    });
+    document.dispatchEvent(event);
+  }
+
   render(data) {
+    this.lastData = data;
     if (!Array.isArray(data) || data.length === 0) {
       this.tableBody.innerHTML = `
         <tr><td colspan="4" class="text-center py-4 text-muted">
@@ -129,8 +153,7 @@ class ProcedureTypeListController {
         </td>
         <td class="text-center">
           <div class="btn-group">
-            <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
-            <button class="btn btn-sm btn-outline-warning"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-sm btn-outline-warning" onclick="window.procedureTypeListControllerInstance.editProcedureType(${item.id})"><i class="fas fa-edit"></i></button>
             <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
           </div>
         </td>
@@ -150,54 +173,73 @@ class ProcedureTypeListController {
   }
 
   renderPagination(p) {
-    if ((p.total_pages || 1) <= 1) {
-      this.pagination.innerHTML = '';
-      return;
-    }
-    let html = `
-      <li class="page-item ${p.current_page === 1 ? 'disabled' : ''}">
-        <a class="page-link" href="#" data-page="${p.current_page - 1}">
-          <i class="fas fa-chevron-left"></i> Anterior
-        </a>
-      </li>`;
-    const startPage = Math.max(1, p.current_page - 2);
-    const endPage = Math.min(p.total_pages, p.current_page + 2);
-    if (startPage > 1) {
-      html += `<li class="page-item"><a class="page-link" href="#" data-page="1">1</a></li>`;
-      if (startPage > 2) {
-        html += `<li class="page-item disabled"><span class="page-link">…</span></li>`;
-      }
-    }
-    for (let i = startPage; i <= endPage; i++) {
-      html += `
-        <li class="page-item ${i === p.current_page ? 'active' : ''}">
-          <a class="page-link" href="#" data-page="${i}">${i}</a>
-        </li>`;
-    }
-    if (endPage < p.total_pages) {
-      if (endPage < p.total_pages - 1) {
-        html += `<li class="page-item disabled"><span class="page-link">…</span></li>`;
-      }
-      html += `<li class="page-item"><a class="page-link" href="#" data-page="${p.total_pages}">${p.total_pages}</a></li>`;
-    }
-    html += `
-      <li class="page-item ${p.current_page === p.total_pages ? 'disabled' : ''}">
-        <a class="page-link" href="#" data-page="${p.current_page + 1}">
-          Siguiente <i class="fas fa-chevron-right ms-1"></i>
-        </a>
-      </li>`;
-    this.pagination.innerHTML = html;
-    this.pagination.querySelectorAll('a[data-page]').forEach(a => {
-      a.addEventListener('click', e => {
-        e.preventDefault();
-        const pg = parseInt(a.dataset.page);
-        if (!isNaN(pg)) {
-          this.currentPage = pg;
-          this.load();
-        }
-      });
-    });
+  const totalPages = p.total_pages || 1;
+  const currentPage = p.current_page || 1;
+  let html = '';
+
+  // Doble flecha izquierda (Primera página)
+  html += `
+    <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+      <a class="page-link" href="#" data-page="1" title="Primera">
+        <i class="fas fa-angle-double-left"></i>
+      </a>
+    </li>`;
+  // Flecha izquierda (Anterior)
+  html += `
+    <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+      <a class="page-link" href="#" data-page="${currentPage - 1}" title="Anterior">
+        <i class="fas fa-angle-left"></i>
+      </a>
+    </li>`;
+
+  const delta = 2;
+  let startPage = Math.max(1, currentPage - delta);
+  let endPage = Math.min(totalPages, currentPage + delta);
+
+  if (startPage > 1) {
+    html += `<li class="page-item"><a class="page-link" href="#" data-page="1">1</a></li>`;
+    if (startPage > 2) html += `<li class="page-item disabled"><span class="page-link">…</span></li>`;
   }
+
+  for (let i = startPage; i <= endPage; i++) {
+    html += `
+      <li class="page-item ${i === currentPage ? 'active' : ''}">
+        <a class="page-link" href="#" data-page="${i}">${i}</a>
+      </li>`;
+  }
+
+  if (endPage < totalPages) {
+    if (endPage < totalPages - 1) html += `<li class="page-item disabled"><span class="page-link">…</span></li>`;
+    html += `<li class="page-item"><a class="page-link" href="#" data-page="${totalPages}">${totalPages}</a></li>`;
+  }
+
+  // Flecha derecha (Siguiente)
+  html += `
+    <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+      <a class="page-link" href="#" data-page="${currentPage + 1}" title="Siguiente">
+        <i class="fas fa-angle-right"></i>
+      </a>
+    </li>`;
+  // Doble flecha derecha (Última página)
+  html += `
+    <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+      <a class="page-link" href="#" data-page="${totalPages}" title="Última">
+        <i class="fas fa-angle-double-right"></i>
+      </a>
+    </li>`;
+
+  this.pagination.innerHTML = html;
+  this.pagination.querySelectorAll('a[data-page]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const pg = parseInt(a.dataset.page, 10);
+      if (!isNaN(pg) && pg >= 1 && pg <= totalPages && pg !== currentPage) {
+        this.currentPage = pg;
+        this.load();
+      }
+    });
+  });
+}
 }
 
 window.ProcedureTypeListController = ProcedureTypeListController;

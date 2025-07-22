@@ -26,8 +26,7 @@ class AdmissionControlController {
         this.modalTucExpiration = document.getElementById('modal-tuc-expiration');
         this.modalTucModality = document.getElementById('modal-tuc-modality');
         this.modalTucType = document.getElementById('modal-tuc-type');
-        this.modalApproveBtn = document.getElementById('modal-approve-btn');
-        this.modalRejectBtn = document.getElementById('modal-reject-btn');
+        // ...eliminado: referencias a modal-approve-btn y modal-reject-btn...
         
         // Toast de notificación
         this.toast = document.getElementById('toast');
@@ -254,23 +253,7 @@ class AdmissionControlController {
         });
 
         // Eventos para los botones del modal
-        if (this.modalApproveBtn) {
-            this.modalApproveBtn.addEventListener('click', async () => {
-                if (this.currentDriver) {
-                    const nombreConductor = this.currentDriver.getNombreCompleto();
-                    await this.aprobarConductor(this.currentDriver.driverId, nombreConductor);
-                }
-            });
-        }
-
-        if (this.modalRejectBtn) {
-            this.modalRejectBtn.addEventListener('click', async () => {
-                if (this.currentDriver) {
-                    const nombreConductor = this.currentDriver.getNombreCompleto();
-                    await this.rechazarConductor(this.currentDriver.driverId, nombreConductor);
-                }
-            });
-        }
+        // ...eliminado: listeners para modal-approve-btn y modal-reject-btn...
 
         // SIDEBAR TOGGLE - REMOVIDO (ahora manejado por TopBarController)
         // if (this.openSidebarBtn) {

@@ -273,6 +273,7 @@ class SidebarController {    constructor() {
     }
 }
 
+
 // Exponer globalmente el SidebarController
 if (typeof window !== 'undefined') {
     window.SidebarController = SidebarController;
@@ -354,6 +355,7 @@ if (typeof window !== 'undefined') {
     };
 }
 
+
 // Función global de logout para testing y uso manual
 window.forceLogout = function() {
     console.log('🚨 Logout forzado iniciado...');
@@ -379,6 +381,7 @@ window.forceLogout = function() {
     }
 };
 
+
 // Función global para testing del sidebar
 window.testSidebar = function() {
     console.log('🧪 Testing sidebar...');
@@ -397,15 +400,6 @@ window.testSidebar = function() {
     } else {
         console.error('❌ Sidebar not found');
     }
+    
 };
 
-// NOTA: La inicialización automática está comentada para evitar doble inicialización
-// El SidebarController debe ser inicializado por el inicializador específico de cada página
-/*
-// Inicializar cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', () => {
-    if (!window.sidebarControllerInstance) {
-        window.sidebarControllerInstance = new SidebarController();
-    }
-});
-*/

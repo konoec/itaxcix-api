@@ -107,9 +107,6 @@
                       </button>
   <div id="modal-container"></div>
 </body>
-  <!-- Scripts para controlador y service de creación -->
-  <script src="../../assets/js/api/services/MasterTables/Category/category-create-service.js"></script>
-  <script src="../../assets/js/ui/controllers/MasterTables/Category/category-create-controller.js"></script>
                     </div>
                   </div>
                 </div>
@@ -322,19 +319,40 @@
   <!-- Scripts en orden -->
   <script src="../../assets/js/utils/loading-screen-util.js"></script>
   <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
+
+  <!--Utilidades y herramientas base-->
   <script src="../../assets/js/ui/component-loader.js"></script>
   <script src="../../assets/js/global-initializer.js"></script>
   <script src="../../assets/js/ui/global-toast.js"></script>
   <script src="../../assets/js/auth/permissions.js"></script>
   <script src="../../assets/js/auth/auth-checker.js"></script>
   <script src="../../assets/js/auth/route-guard.js"></script>
+
   <script>window.routeGuard = new RouteGuard('../../index.html');</script>
+
+  <!-- Servicio de perfil -->
   <script src="../../assets/js/api/services/profile-service.js"></script>
+
+  <!-- Controladores de componentes -->
   <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
   <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
   <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
+  <script src="../../assets/js/ui/controllers/Components/global-confirmation-modal-controller.js"></script>
+
+
+  <!-- Scripts para controlador y service de creación -->
   <script src="../../assets/js/api/services/MasterTables/Category/category-service.js"></script>
+  <script src="../../assets/js/api/services/MasterTables/Category/category-create-service.js"></script>
+  <script src="../../assets/js/api/services/MasterTables/Category/category-update-service.js"></script>
+  <script src="../../assets/js/api/services/MasterTables/Category/delete-category-service.js"></script>
+
+  <!-- Controladores -->
   <script src="../../assets/js/ui/controllers/MasterTables/Category/category-list-controller.js"></script>
+  <script src="../../assets/js/ui/controllers/MasterTables/Category/category-create-controller.js"></script>
+  <script src="../../assets/js/ui/controllers/MasterTables/Category/category-edit-controller.js"></script>
+  <script src="../../assets/js/ui/controllers/MasterTables/Category/delete-category-controller.js"></script>
+
+  <!-- Inicializadores -->
   <script src="../../assets/js/ui/initializers/MasterTables/category-initializer.js"></script>
   <script src="../../assets/tabler/js/tabler.min.js"></script>
 

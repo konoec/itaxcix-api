@@ -170,7 +170,12 @@ class VehicleModelListController {
                 <td class="text-center">
                     <div class="btn-group" role="group">
                         <button class="btn btn-sm btn-outline-warning" title="Editar"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-sm btn-outline-danger" title="Eliminar"><i class="fas fa-trash"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" title="Eliminar"
+                            data-action="delete-model"
+                            data-model-id="${model.id}"
+                            data-model-name="${model.name}">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </div>
                 </td>
             </tr>`;
@@ -249,4 +254,5 @@ class VehicleModelListController {
     }
 }
 
+// Inicializador para la página de modelos de vehículos
 window.VehicleModelListController = VehicleModelListController;

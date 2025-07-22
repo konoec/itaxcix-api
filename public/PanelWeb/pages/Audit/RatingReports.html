@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../../assets/Recourse/Logo/1.png">
+    <link rel="shortcut icon" href="../../assets/Recourse/Logo/1.png">
+
+    <title>Auditoría - Reporte de Calificaciones</title>
+
+    <!-- Tabler CSS Framework -->
+    <link rel="stylesheet" href="../../assets/tabler/css/tabler.min.css">
+    <link rel="stylesheet" href="../../assets/tabler/css/tabler-vendors.min.css">
+
+    <!-- Global styles -->
+    <link rel="stylesheet" href="../../assets/css/global-toast.css">
+    <link rel="stylesheet" href="../../assets/css/loading-screen.css">
+    <link rel="stylesheet" href="../../assets/css/sidebar.css">
+    <link rel="stylesheet" href="../../assets/css/topbar.css">
+    <link rel="stylesheet" href="../../assets/css/profile.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Configuración dinámica de sección -->
+    <script>
+        window.pageConfig = {
+            activeSection: 'reportes',
+            pageTitle: {
+                icon: 'fas fa-list-alt',
+                text: 'Reporte de Calificaciones'
+            }
+        };
+    </script>
+</head>
+<body>
+    <!-- Pantalla de carga global -->
+    <div class="loading-screen d-flex align-items-center justify-content-center position-fixed w-100 h-100"
+         style="top: 0; left: 0; z-index: 9999; background-color: rgba(255,255,255,0.95); backdrop-filter: blur(5px);">
+        <div class="text-center">
+            <div class="mb-4">
+                <img src="../../assets/Recourse/Logo/1.png" alt="Logo" class="mb-3" style="height: 60px;">
+            </div>
+            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <div class="text-secondary">
+                <div class="fw-bold mb-1">Cargando Panel de Calificaciones</div>
+                <div class="small text-muted">Preparando la interfaz y cargando componentes...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page">
+        <!-- Sidebar dinámico -->
+        <div id="sidebar-container"></div>
+
+        <div class="page-wrapper">
+            <!-- Topbar dinámico -->
+            <div id="topbar-container"></div>
+
+            <!-- Contenido principal -->
+            <div class="page-body">
+                <div class="container-xl">
+
+                    <!-- Filtros avanzados (modernos con collapse) -->
+                    <div class="card mb-4" id="ratings-filters">
+                        <div class="card-header d-flex align-items-center justify-content-between pb-2">
+                            <h3 class="card-title mb-0">
+                                <i class="fas fa-filter me-2"></i>
+                                Filtros avanzados de calificaciones
+                            </h3>
+                            <div class="card-actions ms-auto">
+                                <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#advancedRatingsFilters" aria-expanded="true" aria-controls="advancedRatingsFilters">
+                                    <i class="fas fa-sliders-h me-1"></i>
+                                    Mostrar/Ocultar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="collapse show" id="advancedRatingsFilters">
+                            <div class="card-body pt-0">
+                                <form class="row g-3 align-items-end">
+                                    <div class="col-md-2">
+                                        <label class="form-label">Calificador (ID)</label>
+                                        <input type="number" min="1" class="form-control" id="filter-rater-id" placeholder="ID usuario">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Calificado (ID)</label>
+                                        <input type="number" min="1" class="form-control" id="filter-rated-id" placeholder="ID usuario">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Viaje (ID)</label>
+                                        <input type="number" min="1" class="form-control" id="filter-travel-id" placeholder="ID viaje">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Puntaje Mín.</label>
+                                        <input type="number" min="1" max="5" class="form-control" id="filter-min-score" placeholder="1-5">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Puntaje Máx.</label>
+                                        <input type="number" min="1" max="5" class="form-control" id="filter-max-score" placeholder="1-5">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Comentario</label>
+                                        <input type="text" class="form-control" id="filter-comment" placeholder="Palabra clave">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Ordenar por</label>
+                                        <select id="rating-sort-by" class="form-select">
+                                            <option value="id">ID</option>
+                                            <option value="raterId">Calificador</option>
+                                            <option value="ratedId">Calificado</option>
+                                            <option value="travelId">Viaje</option>
+                                            <option value="score">Puntaje</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Dirección</label>
+                                        <select id="rating-sort-direction" class="form-select">
+                                            <option value="DESC">Descendente</option>
+                                            <option value="ASC">Ascendente</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Por página</label>
+                                        <select id="page-size-select" class="form-select">
+                                            <option value="5">5</option>
+                                            <option value="10">10</option>
+                                            <option value="20" selected>20</option>
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 d-flex gap-2">
+                                        <button type="button" class="btn btn-primary w-100" id="apply-filters-btn-ratings">
+                                            <i class="fas fa-search"></i> Aplicar Filtros
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary w-100" id="clear-filters-btn-ratings">
+                                            <i class="fas fa-broom"></i> Limpiar
+                                        </button>
+                                        <button type="button" class="btn btn-outline-info w-100" id="refresh-data-btn-ratings">
+                                            <i class="fas fa-sync-alt"></i> Refrescar
+                                        </button>
+                                    </div>
+                                </form>
+                                <!-- Errores de validación de filtros -->
+                                <div id="validation-errors-ratings" style="display:none;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tabla principal -->
+                    <div class="card">
+                        <div class="card-header" id="ratings-headers">
+                            <h3 class="card-title"><i class="fas fa-list me-2"></i>Lista de Calificaciones</h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-vcenter">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>ID Calificador</th>
+                                        <th>Nombre Calificador</th>
+                                        <th>ID Calificado</th>
+                                        <th>Nombre Calificado</th>
+                                        <th>ID Viaje</th>
+                                        <th>Puntaje</th>
+                                        <th>Comentario</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="incidents-table-body">
+                                    <!-- Filas dinámicas de la tabla -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer d-flex align-items-center">
+                            <div class="me-auto">
+                                <span id="pagination-info-ratings"></span>
+                            </div>
+                            <nav>
+                                <ul class="pagination mb-0" id="pagination-container">
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modales globales -->
+    <div id="modal-container"></div>
+
+    <!-- Toast notification para operaciones -->
+    <div id="recovery-toast" class="recovery-toast">
+        <div class="recovery-toast-content">
+            <i class="fas fa-check-circle"></i>
+            <span id="recovery-toast-message">Operación completada correctamente</span>
+        </div>
+    </div>
+
+    <!-- Scripts base y componentes globales -->
+    <script src="../../assets/js/ui/component-loader.js"></script>
+    <script src="../../assets/js/utils/loading-screen-util.js"></script>
+    <script src="../../assets/js/global-initializer.js"></script>
+    <script src="../../assets/js/ui/global-toast.js"></script>
+    <script src="../../assets/js/auth/permissions.js"></script>
+    <script src="../../assets/js/auth/auth-checker.js"></script>
+    <script src="../../assets/js/auth/route-guard.js"></script>
+    <script>
+        window.routeGuard = new RouteGuard("../../index.html");
+    </script>
+    <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Audit/rating-reports-controller.js"></script>
+    <script src="../../assets/js/api/services/profile-service.js"></script>
+    <script src="../../assets/js/api/services/Audit/rating-reports-service.js"></script>
+    <!-- Inicializador (asegúrate que aquí cargas tu controlador y inicializador final) -->
+    <script src="../../assets/js/ui/initializers/Audit/audit-reports-initializer-rating.js"></script>
+    <script src="../../assets/tabler/js/tabler.min.js"></script>
+</body>
+</html>

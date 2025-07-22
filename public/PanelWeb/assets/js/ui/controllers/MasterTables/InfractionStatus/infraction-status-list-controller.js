@@ -141,13 +141,24 @@ class InfractionStatusListController {
         </td>
         <td class="text-center">
           <div class="btn-group">
-            <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
-            <button class="btn btn-sm btn-outline-warning"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-sm btn-outline-warning edit-infraction-status-btn" data-id="${item.id}"><i class="fas fa-edit"></i></button>
             <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
           </div>
         </td>
       </tr>
     `).join('');
+    // Evento para el botón de editar
+    this.tableBody.querySelectorAll('.edit-infraction-status-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = btn.getAttribute('data-id');
+        const infractionStatusData = data.find(item => item.id == id);
+        if (window.infractionStatusEditController) {
+          window.infractionStatusEditController.openEditModal(id, infractionStatusData);
+        } else {
+          window.GlobalToast?.showErrorToast('Controlador de edición no disponible');
+        }
+      });
+    });
   }
 
   updateStats({ data, pagination }) {

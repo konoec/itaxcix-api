@@ -50,84 +50,6 @@ class DeleteUserCodeTypeController {
         }
     }
 
-    /**
-     * Crea un modal de confirmación básico si no existe el global
-     */
-    createBasicConfirmationModal() {
-        // Modal básico de confirmación si no existe el global
-        const modalHTML = `
-            <div class="modal modal-blur fade" id="basic-delete-confirmation-modal" tabindex="-1" role="dialog" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header bg-danger text-white">
-                            <h5 class="modal-title">
-                                <i class="fas fa-exclamation-triangle me-2"></i>
-                                Confirmar Eliminación
-                            </h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="text-center">
-                                <div class="mb-3">
-                                    <i class="fas fa-trash-alt text-danger" style="font-size: 3rem;"></i>
-                                </div>
-                                <h4 id="basic-confirmation-title">¿Eliminar tipo de código de usuario?</h4>
-                                <p id="basic-confirmation-message" class="text-muted">Esta acción no se puede deshacer.</p>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                                <i class="fas fa-times me-1"></i>
-                                Cancelar
-                            </button>
-                            <button type="button" class="btn btn-danger" id="basic-confirm-delete-btn">
-                                <i class="fas fa-trash-alt me-1"></i>
-                                Eliminar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        // Agregar modal al DOM si no existe
-        if (!document.getElementById('basic-delete-confirmation-modal')) {
-            document.body.insertAdjacentHTML('beforeend', modalHTML);
-        }
-
-        // Crear objeto de control básico
-        this.confirmationModal = {
-            showConfirmation: (config, onConfirm) => {
-                const modal = document.getElementById('basic-delete-confirmation-modal');
-                const titleEl = document.getElementById('basic-confirmation-title');
-                const messageEl = document.getElementById('basic-confirmation-message');
-                const confirmBtn = document.getElementById('basic-confirm-delete-btn');
-
-                // Configurar contenido
-                if (titleEl) titleEl.textContent = config.title || 'Confirmar eliminación';
-                if (messageEl) messageEl.textContent = `¿Eliminar "${config.name}"?` || '¿Está seguro?';
-
-                // Configurar evento de confirmación
-                const handleConfirm = async () => {
-                    confirmBtn.removeEventListener('click', handleConfirm);
-                    
-                    // Ejecutar callback
-                    if (config.onConfirm) {
-                        await config.onConfirm();
-                    }
-                    
-                    // Cerrar modal
-                    bootstrap.Modal.getInstance(modal).hide();
-                };
-
-                confirmBtn.addEventListener('click', handleConfirm);
-
-                // Mostrar modal
-                const bsModal = new bootstrap.Modal(modal);
-                bsModal.show();
-            }
-        };
-    }
 
     /**
      * Maneja el click del botón eliminar desde la tabla
@@ -142,8 +64,8 @@ class DeleteUserCodeTypeController {
             console.log('✅ Tipo de código de usuario eliminado, recargando lista...');
             
             // Recargar la lista si el controlador está disponible
-            if (window.userCodeTypeListController && typeof window.userCodeTypeListController.load === 'function') {
-                window.userCodeTypeListController.load();
+            if (window.UserCodeTypeListController && typeof window.UserCodeTypeListController.load === 'function') {
+                window.UserCodeTypeListController.load();
             }
         };
 

@@ -1,3 +1,11 @@
+/* Compactar modal de detalles */
+.modal .mb-4 {
+    margin-bottom: 0 !important;
+}
+.modal .g-3,
+.modal .gy-3 {
+    --tblr-gutter-y: 0 !important;
+}
 /* ===========================================
    ESTILOS PARA MÓDULO DE AUDITORÍA - SHADCN
    ==========================================.btn-refresh {

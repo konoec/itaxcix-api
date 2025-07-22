@@ -37,6 +37,15 @@ class InfractionStatusInitializer {
                                 window.infractionStatusListControllerInstance.init();
                                 console.log('📋 InfractionStatusListController inicializado');
                             }
+                            // Inicializar controlador de edición de estado de infracción
+                            if (!window.infractionStatusEditController) {
+                                if (window.InfractionStatusEditControllerClass) {
+                                    window.infractionStatusEditController = new window.InfractionStatusEditControllerClass();
+                                    console.log('✏️ InfractionStatusEditController inicializado desde el inicializador');
+                                } else {
+                                    console.error('❌ No se encontró la clase InfractionStatusEditControllerClass');
+                                }
+                            }
                         }, 300);
                     }, 200);
                     if (!window.profileControllerInstance) {

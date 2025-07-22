@@ -1,309 +1,341 @@
 /**
- * Controlador para reportes de infracciones
- * Extiende BaseReportsController para manejar reportes de infracciones específicamente
+ * Controlador para reportes de infracciones con filtros y paginación.
  */
-class InfractionReportsController extends BaseReportsController {
-    constructor() {
-        super();
-        console.log('⚠️ Inicializando InfractionReportsController...');
-        
-        // Filtros específicos para infracciones
-        this.filters = {
-            userId: '',
-            severityId: '',
-            statusId: '',
-            dateFrom: '',
-            dateTo: '',
-            description: '',
-            sortBy: 'id',
-            sortDirection: 'DESC'
-        };
-        
-        // Servicio de datos
-        this.service = window.infractionReportsService;
-        
-        // Elementos específicos del DOM
-        this.initializeInfractionElements();
-        
-        // Event listeners específicos
-        this.initializeInfractionEventListeners();
-    }
-    
-    /**
-     * Inicializa los elementos específicos para infracciones
-     */
-    initializeInfractionElements() {
-        // Sección de filtros específica
-        this.filtersSection = document.getElementById('infractions-filters');
-        this.headers = document.getElementById('infractions-headers');
-        
-        // Filtros específicos
-        this.filterInfractionUserId = document.getElementById('filter-infraction-user-id');
-        this.filterSeverityId = document.getElementById('filter-severity-id');
-        this.filterInfractionStatusId = document.getElementById('filter-infraction-status-id');
-        this.filterDateFrom = document.getElementById('filter-date-from');
-        this.filterDateTo = document.getElementById('filter-date-to');
-        this.filterInfractionDescription = document.getElementById('filter-infraction-description');
-        this.infractionSortBy = document.getElementById('infraction-sort-by');
-        this.infractionSortDirection = document.getElementById('infraction-sort-direction');
-        
-        // Botones de acción específicos
-        this.applyFiltersBtn = document.getElementById('apply-filters-btn-infractions');
-        this.clearFiltersBtn = document.getElementById('clear-filters-btn-infractions');
-        this.refreshDataBtn = document.getElementById('refresh-data-btn-infractions');
-        
-        console.log('✅ Elementos específicos de infracciones inicializados');
-    }
-    
-    /**
-     * Inicializa los event listeners específicos para infracciones
-     */
-    initializeInfractionEventListeners() {
-        // Botones de acción
-        if (this.applyFiltersBtn) {
-            this.applyFiltersBtn.addEventListener('click', () => this.applyFilters());
-        }
-        
-        if (this.clearFiltersBtn) {
-            this.clearFiltersBtn.addEventListener('click', () => this.clearFilters());
-        }
-        
-        if (this.refreshDataBtn) {
-            this.refreshDataBtn.addEventListener('click', () => this.refreshData());
-        }
-        
-        // Enter en campos de texto
-        [this.filterInfractionUserId, this.filterSeverityId, this.filterInfractionStatusId, this.filterInfractionDescription].forEach(input => {
-            if (input) {
-                input.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        this.applyFilters();
-                    }
-                });
-            }
-        });
-        
-        console.log('✅ Event listeners específicos de infracciones inicializados');
-    }
-    
-    /**
-     * Carga reportes de infracciones
-     */
-    async loadReports() {
-        if (!this.service) {
-            console.error('❌ Servicio de infracciones no disponible');
-            this.showErrorState('Servicio de infracciones no disponible');
-            return;
-        }
+console.log('📢 infraction-reports-controller.js cargado y ejecutándose');
 
-        try {
-            this.showLoadingState();
-            
-            const requestFilters = {
-                page: this.currentPage,
-                perPage: this.perPage,
-                ...this.filters
-            };
-            
-            console.log('🔄 Cargando reportes de infracciones con filtros:', requestFilters);
-            
-            const response = await this.service.getInfractionReports(requestFilters);
-            
-            if (response && response.success && response.data) {
-                this.currentData = response.data.data || [];
-                
-                // Extraer información de paginación
-                const pagination = response.data.pagination;
-                if (pagination) {
-                    this.totalResults = pagination.total_items || 0;
-                    this.totalPages = pagination.total_pages || 1;
-                    this.currentPage = pagination.current_page || 1;
-                    this.perPage = pagination.per_page || 20;
-                } else {
-                    this.totalResults = this.currentData.length;
-                    this.totalPages = 1;
-                    this.currentPage = 1;
-                    this.perPage = 20;
-                }
-                
-                this.renderTable();
-                this.updatePagination();
-                this.showTableState();
-                
-                console.log('✅ Reportes de infracciones cargados exitosamente');
-            } else {
-                throw new Error('Respuesta inválida del servidor');
-            }
-            
-        } catch (error) {
-            console.error('❌ Error al cargar reportes de infracciones:', error);
-            this.showErrorState(error.message || 'Error al cargar los reportes de infracciones');
-        }
-    }
-    
-    /**
-     * Aplica los filtros actuales
-     */
-    applyFilters() {
-        this.updateFiltersFromForm();
+class InfractionReportsController {
+  constructor() {
+    console.log('⚠️ Inicializando InfractionReportsController...');
+
+    // Filtros y paginación por defecto
+    this.filters = {
+      sortBy: 'id',
+      sortDirection: 'DESC',
+    };
+    this.currentPage = 1;
+    this.perPage = 20;
+    this.totalPages = 1;
+    this.totalResults = 0;
+
+    // Servicio de datos (global)
+    this.service = window.InfractionReportsService;
+
+    // Elementos del DOM
+    this.infractionsTableBody = document.getElementById('infractions-table-body');
+    this.pageSizeSelect = document.getElementById('page-size-select');
+    this.paginationInfo = document.getElementById('pagination-info-infractions');
+    this.paginationContainer = document.getElementById('pagination-container');
+
+    this.filterUserId = document.getElementById('filter-infraction-user-id');
+    this.filterSeverityId = document.getElementById('filter-severity-id');
+    this.filterStatusId = document.getElementById('filter-infraction-status-id');
+    this.filterDateFrom = document.getElementById('filter-date-from');
+    this.filterDateTo = document.getElementById('filter-date-to');
+    this.filterDescription = document.getElementById('filter-infraction-description');
+    this.sortBySelect = document.getElementById('infraction-sort-by');
+    this.sortDirectionSelect = document.getElementById('infraction-sort-direction');
+
+    this.applyFiltersBtn = document.getElementById('apply-filters-btn-infractions');
+    this.clearFiltersBtn = document.getElementById('clear-filters-btn-infractions');
+    this.refreshDataBtn = document.getElementById('refresh-data-btn-infractions');
+
+    // Estados visuales opcionales para carga y error (agrega si tienes en el HTML)
+    this.loadingRow = `<tr><td colspan="9" class="text-center">Cargando...</td></tr>`;
+    this.errorRow = (msg) => `<tr><td colspan="9" class="text-center text-danger">Error: ${msg}</td></tr>`;
+    this.emptyRow = `<tr><td colspan="9" class="text-center text-muted">No se encontraron infracciones.</td></tr>`;
+
+    // Ligar eventos
+    this._bindEvents();
+
+    // Cargar datos inicial
+    this.loadReports();
+  }
+
+  _bindEvents() {
+    if (this.pageSizeSelect) {
+      this.pageSizeSelect.addEventListener('change', (e) => {
+        this.perPage = parseInt(e.target.value);
+        console.log(`🔢 Cambió elementos por página: ${this.perPage}`);
         this.currentPage = 1;
         this.loadReports();
+      });
     }
-    
-    /**
-     * Limpia todos los filtros
-     */
-    clearFilters() {
-        // Limpiar formulario
-        if (this.filterInfractionUserId) this.filterInfractionUserId.value = '';
-        if (this.filterSeverityId) this.filterSeverityId.value = '';
-        if (this.filterInfractionStatusId) this.filterInfractionStatusId.value = '';
-        if (this.filterDateFrom) this.filterDateFrom.value = '';
-        if (this.filterDateTo) this.filterDateTo.value = '';
-        if (this.filterInfractionDescription) this.filterInfractionDescription.value = '';
-        if (this.infractionSortBy) this.infractionSortBy.value = 'id';
-        if (this.infractionSortDirection) this.infractionSortDirection.value = 'DESC';
-        if (this.pageSizeSelect) this.pageSizeSelect.value = '20';
-        
-        // Resetear filtros
-        this.filters = {
-            userId: '',
-            severityId: '',
-            statusId: '',
-            dateFrom: '',
-            dateTo: '',
-            description: '',
-            sortBy: 'id',
-            sortDirection: 'DESC'
-        };
-        
-        this.perPage = 20;
-        this.currentPage = 1;
-        
-        this.loadReports();
+    if (this.applyFiltersBtn) {
+      this.applyFiltersBtn.addEventListener('click', () => this.applyFilters());
     }
-    
-    /**
-     * Refresca los datos
-     */
-    refreshData() {
-        this.loadReports();
+    if (this.clearFiltersBtn) {
+      this.clearFiltersBtn.addEventListener('click', () => this.clearFilters());
     }
-    
-    /**
-     * Actualiza los filtros desde el formulario
-     */
-    updateFiltersFromForm() {
-        this.filters = {
-            userId: this.filterInfractionUserId?.value || '',
-            severityId: this.filterSeverityId?.value || '',
-            statusId: this.filterInfractionStatusId?.value || '',
-            dateFrom: this.filterDateFrom?.value || '',
-            dateTo: this.filterDateTo?.value || '',
-            description: this.filterInfractionDescription?.value || '',
-            sortBy: this.infractionSortBy?.value || 'id',
-            sortDirection: this.infractionSortDirection?.value || 'DESC'
-        };
-        
-        this.perPage = parseInt(this.pageSizeSelect?.value || '20');
-        console.log('📝 Filtros de infracciones actualizados:', this.filters);
+    if (this.refreshDataBtn) {
+      this.refreshDataBtn.addEventListener('click', () => this.loadReports());
     }
-    
-    /**
-     * Renderiza la tabla con los datos actuales
-     */
-    renderTable() {
-        if (!this.incidentsTableBody) {
-            console.error('❌ Cuerpo de tabla no encontrado');
-            return;
-        }
 
-        console.log('🎨 Renderizando tabla de infracciones con', this.currentData.length, 'registros');
-
-        // Limpiar tabla
-        this.incidentsTableBody.innerHTML = '';
-
-        if (this.currentData.length === 0) {
-            this.showEmptyState();
-            return;
-        }
-
-        // Generar filas
-        this.currentData.forEach(infraction => {
-            const row = this.createTableRow(infraction);
-            this.incidentsTableBody.appendChild(row);
+    [
+      this.filterUserId,
+      this.filterSeverityId,
+      this.filterStatusId,
+      this.filterDateFrom,
+      this.filterDateTo,
+      this.filterDescription,
+    ].forEach((input) => {
+      if (input) {
+        input.addEventListener('change', () => this.applyFilters());
+        input.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') this.applyFilters();
         });
+      }
+    });
 
-        console.log('✅ Tabla de infracciones renderizada');
+    if (this.sortBySelect) {
+      this.sortBySelect.addEventListener('change', () => this.applyFilters());
+    }
+    if (this.sortDirectionSelect) {
+      this.sortDirectionSelect.addEventListener('change', () => this.applyFilters());
+    }
+  }
+
+  applyFilters() {
+    this.filters = {
+      sortBy: this.sortBySelect?.value || 'id',
+      sortDirection: this.sortDirectionSelect?.value || 'DESC',
+    };
+
+    const userId = this.filterUserId?.value;
+    if (userId && userId.trim() !== '') {
+      this.filters.userId = parseInt(userId);
+    } else {
+      delete this.filters.userId;
     }
 
-    /**
-     * Crea una fila de tabla para una infracción
-     */
-    createTableRow(infraction) {
-        const row = document.createElement('tr');
-        row.className = 'data-row';
+    const severityId = this.filterSeverityId?.value;
+    if (severityId && severityId.trim() !== '') {
+      this.filters.severityId = parseInt(severityId);
+    } else {
+      delete this.filters.severityId;
+    }
 
-        // Formatear fecha
-        const formattedDate = this.formatDate(infraction.date);
+    const statusId = this.filterStatusId?.value;
+    if (statusId && statusId.trim() !== '') {
+      this.filters.statusId = parseInt(statusId);
+    } else {
+      delete this.filters.statusId;
+    }
 
-        row.innerHTML = `
-            <td>${infraction.id || ''}</td>
-            <td>${infraction.userId || ''}</td>
-            <td><strong>${infraction.userName || 'Sin nombre'}</strong></td>
-            <td>${infraction.severityId || ''}</td>
-            <td><span class="severity-badge severity-${infraction.severityId || 'unknown'}">${infraction.severityName || 'Sin severidad'}</span></td>
-            <td>${infraction.statusId || ''}</td>
-            <td><span class="status-badge status-${infraction.statusId || 'unknown'}">${infraction.statusName || 'Sin estado'}</span></td>
-            <td>${formattedDate}</td>
-            <td title="${infraction.description || 'Sin descripción'}">${this.truncateText(infraction.description || 'Sin descripción', 50)}</td>
-        `;
+    const dateFrom = this.filterDateFrom?.value;
+    if (dateFrom && dateFrom.trim() !== '') {
+      this.filters.dateFrom = dateFrom;
+    } else {
+      delete this.filters.dateFrom;
+    }
 
-        return row;
+    const dateTo = this.filterDateTo?.value;
+    if (dateTo && dateTo.trim() !== '') {
+      this.filters.dateTo = dateTo;
+    } else {
+      delete this.filters.dateTo;
     }
-    
-    /**
-     * Verifica si hay filtros activos
-     */
-    hasActiveFilters() {
-        return (
-            (this.filters.userId && this.filters.userId.toString().trim() !== '') ||
-            (this.filters.severityId && this.filters.severityId.toString().trim() !== '') ||
-            (this.filters.statusId && this.filters.statusId.toString().trim() !== '') ||
-            (this.filters.dateFrom && this.filters.dateFrom.trim() !== '') ||
-            (this.filters.dateTo && this.filters.dateTo.trim() !== '') ||
-            (this.filters.description && this.filters.description.trim() !== '') ||
-            this.filters.sortBy !== 'id' ||
-            this.filters.sortDirection !== 'DESC'
-        );
+
+    const description = this.filterDescription?.value;
+    if (description && description.trim() !== '') {
+      this.filters.description = description.trim();
+    } else {
+      delete this.filters.description;
     }
-    
-    /**
-     * Muestra los filtros y headers específicos para infracciones
-     */
-    showFiltersAndHeaders() {
-        if (this.filtersSection) {
-            this.filtersSection.style.display = 'block';
-        }
-        
-        if (this.headers) {
-            this.headers.style.display = 'table-row';
-        }
+
+    this.currentPage = 1;
+
+    console.log('📋 Aplicando filtros:', this.filters);
+    this.loadReports();
+  }
+
+  clearFilters() {
+    if (this.filterUserId) this.filterUserId.value = '';
+    if (this.filterSeverityId) this.filterSeverityId.value = '';
+    if (this.filterStatusId) this.filterStatusId.value = '';
+    if (this.filterDateFrom) this.filterDateFrom.value = '';
+    if (this.filterDateTo) this.filterDateTo.value = '';
+    if (this.filterDescription) this.filterDescription.value = '';
+    if (this.sortBySelect) this.sortBySelect.value = 'id';
+    if (this.sortDirectionSelect) this.sortDirectionSelect.value = 'DESC';
+    if (this.pageSizeSelect) this.pageSizeSelect.value = '20';
+
+    this.filters = {
+      sortBy: 'id',
+      sortDirection: 'DESC',
+    };
+    this.perPage = 20;
+    this.currentPage = 1;
+
+    console.log('🧹 Filtros limpiados, recargando datos...');
+    this.loadReports();
+  }
+
+  async loadReports() {
+    if (!this.service) {
+      console.warn('⚠️ Servicio no disponible, no se cargarán datos');
+      this.renderTable([]);
+      return;
     }
-    
-    /**
-     * Oculta los filtros y headers específicos para infracciones
-     */
-    hideFiltersAndHeaders() {
-        if (this.filtersSection) {
-            this.filtersSection.style.display = 'none';
-        }
-        
-        if (this.headers) {
-            this.headers.style.display = 'none';
-        }
+    try {
+      if (this.infractionsTableBody)
+        this.infractionsTableBody.innerHTML = this.loadingRow;
+
+      const params = {
+        page: this.currentPage,
+        perPage: this.perPage,
+        ...this.filters,
+      };
+
+      console.log('🚀 Cargando reportes con parámetros:', params);
+      const response = await this.service.getInfractionReports(params);
+      console.log('🟢 Respuesta API:', response);
+
+      let data = [];
+      if (response && response.success && response.data && Array.isArray(response.data.data)) {
+        data = response.data.data;
+
+        const pagination = response.data.pagination || {};
+        this.totalPages = pagination.total_pages || 1;
+        this.currentPage = pagination.current_page || 1;
+        this.perPage = pagination.per_page || this.perPage;
+        this.totalResults = pagination.total_items || data.length;
+      } else {
+        this.totalPages = 1;
+        this.currentPage = 1;
+        this.totalResults = 0;
+      }
+      this.renderTable(data);
+      this.updatePaginationUI();
+    } catch (error) {
+      console.error('❌ Error en loadReports:', error);
+      if (this.infractionsTableBody)
+        this.infractionsTableBody.innerHTML = this.errorRow(error.message);
+      if (this.paginationInfo) this.paginationInfo.innerText = '';
     }
+  }
+
+  renderTable(data) {
+    if (!this.infractionsTableBody) return;
+    this.infractionsTableBody.innerHTML = '';
+
+    if (!data || data.length === 0) {
+      this.infractionsTableBody.innerHTML = this.emptyRow;
+      return;
+    }
+
+    data.forEach((infraction) => {
+      const severityBadge = `<span class="badge bg-${this.getSeverityColor(infraction.severityName)}-lt">${infraction.severityName || 'Sin severidad'}</span>`;
+      const statusBadge = `<span class="badge bg-${this.getStatusColor(infraction.statusName)}-lt">${infraction.statusName || 'Sin estado'}</span>`;
+
+      const formattedDate = infraction.date ? new Date(infraction.date).toLocaleString('es-PE') : 'N/A';
+
+      const row = document.createElement('tr');
+      row.innerHTML = `
+                <td>${infraction.id || ''}</td>
+                <td>${infraction.userId || ''}</td>
+                <td>${infraction.userName || 'Sin nombre'}</td>
+                <td>${infraction.severityId || ''}</td>
+                <td>${severityBadge}</td>
+                <td>${infraction.statusId || ''}</td>
+                <td>${statusBadge}</td>
+                <td>${formattedDate}</td>
+                <td title="${infraction.description || ''}">
+                    ${(infraction.description && infraction.description.length > 60)
+          ? infraction.description.slice(0, 60) + '...'
+          : infraction.description || 'Sin descripción'}
+                </td>
+            `;
+      this.infractionsTableBody.appendChild(row);
+    });
+  }
+
+  getSeverityColor(severity) {
+    if (!severity) return 'secondary';
+    const s = severity.toLowerCase();
+    if (s.includes('leve')) return 'success';
+    if (s.includes('moderada')) return 'warning';
+    if (s.includes('grave')) return 'danger';
+    return 'secondary';
+  }
+
+  getStatusColor(status) {
+    if (!status) return 'secondary';
+    const s = status.toLowerCase();
+    if (s.includes('pendiente')) return 'warning';
+    if (s.includes('resuelta') || s.includes('finalizada')) return 'success';
+    if (s.includes('anulada')) return 'danger';
+    return 'secondary';
+  }
+
+  updatePaginationUI() {
+    if (this.paginationInfo) {
+      let start = (this.currentPage - 1) * this.perPage + 1;
+      let end = Math.min(this.currentPage * this.perPage, this.totalResults);
+      this.paginationInfo.innerText = this.totalResults > 0
+        ? `Mostrando ${start} a ${end} de ${this.totalResults} infracciones`
+        : '';
+    }
+    this._renderPaginationButtons();
+  }
+
+  _renderPaginationButtons() {
+  if (!this.paginationContainer) return;
+  const ul = this.paginationContainer;
+  ul.innerHTML = '';
+  const totalPages = this.totalPages || 1;
+  const currentPage = this.currentPage || 1;
+  const delta = 2;
+
+  const makeItem = (html, p, disabled = false, active = false, isDots = false) => {
+    const li = document.createElement('li');
+    li.className = `page-item${disabled ? ' disabled' : ''}${active ? ' active' : ''}${isDots ? ' disabled' : ''}`;
+    if (isDots) {
+      li.innerHTML = `<span class="page-link">…</span>`;
+      return li;
+    }
+    const a = document.createElement('a');
+    a.className = 'page-link';
+    a.href = '#';
+    a.innerHTML = html;
+    if (!disabled && !active) {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.currentPage = p;
+        this.loadReports();
+      });
+    }
+    li.appendChild(a);
+    return li;
+  };
+
+  // << Primera página
+  ul.appendChild(makeItem('<i class="fas fa-angle-double-left"></i>', 1, currentPage === 1));
+  // < Anterior
+  ul.appendChild(makeItem('<i class="fas fa-angle-left"></i>', currentPage - 1, currentPage === 1));
+
+  // Números
+  let start = Math.max(1, currentPage - delta);
+  let end = Math.min(totalPages, currentPage + delta);
+
+  if (start > 1) {
+    ul.appendChild(makeItem('1', 1, false, currentPage === 1));
+    if (start > 2) ul.appendChild(makeItem('', null, false, false, true));
+  }
+  for (let p = start; p <= end; p++) {
+    ul.appendChild(makeItem(p, p, false, p === currentPage));
+  }
+  if (end < totalPages) {
+    if (end < totalPages - 1) ul.appendChild(makeItem('', null, false, false, true));
+    ul.appendChild(makeItem(totalPages, totalPages, false, currentPage === totalPages));
+  }
+
+  // > Siguiente
+  ul.appendChild(makeItem('<i class="fas fa-angle-right"></i>', currentPage + 1, currentPage === totalPages));
+  // >> Última página
+  ul.appendChild(makeItem('<i class="fas fa-angle-double-right"></i>', totalPages, currentPage === totalPages));
 }
 
-// Hacer el controlador disponible globalmente
-window.InfractionReportsController = InfractionReportsController;
+}
+
+// Hacer global para debug e inicialización
+window.InfractionReportsController = new InfractionReportsController();

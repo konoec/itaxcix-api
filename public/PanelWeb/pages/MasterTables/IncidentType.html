@@ -162,7 +162,7 @@
                         <div class="card-header bg-primary-lt d-flex justify-content-between">
                             <h3 class="card-title"><i class="fas fa-filter me-2 text-primary"></i> Filtros Avanzados</h3>
                             <button class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#incidentTypeFilters">
-                                <i class="fas fa-sliders-h"></i>
+                                <i class="fas fa-sliders-h me-1"></i> Mostrar/Ocultar
                             </button>
                         </div>
                         <div id="incidentTypeFilters" class="collapse show">
@@ -252,6 +252,8 @@
                             <ul id="incidentTypePagination" class="pagination m-0 ms-auto"></ul>
                         </div>
                     </div>
+                    <!-- Contenedor para el modal de edición de tipo de incidencia -->
+                    <div id="incidentTypeEditModalContainer"></div>
                 </div>
             </div>
         </div>
@@ -310,6 +312,7 @@
     <!-- 3. Servicios de API -->
     <script src="../../assets/js/api/services/profile-service.js"></script>
     <script src="../../assets/js/api/services/MasterTables/IncidentType/incident-type-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/IncidentType/incident-type-update-service.js"></script>
 
     <!-- 4. Controladores de UI -->
     <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
@@ -322,6 +325,9 @@
     <!-- 5. Controlador específico -->
     <script src="../../assets/js/ui/controllers/MasterTables/IncidentType/incident-type-list-controller.js"></script>
     <script src="../../assets/js/ui/controllers/MasterTables/IncidentType/create-incident-type-controller.js"></script>
+
+    <!-- Controlador de edición de tipo de incidencia -->
+    <script src="../../assets/js/ui/controllers/MasterTables/IncidentType/incident-type-edit-controller.js"></script>
 
     <!-- 6. Inicializador específico de la página -->
     <script src="../../assets/js/ui/initializers/MasterTables/incident-type-initializer.js"></script>

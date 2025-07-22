@@ -167,12 +167,13 @@ class ContactTypeEditController {
             const response = await window.ContactTypeUpdateService.updateContactType(this.currentContactTypeId, data);
             if (response.success) {
                 if (window.GlobalToast) window.GlobalToast.show('Tipo de contacto actualizado correctamente', 'success');
-                // Cerrar modal y refrescar lista
+                // Cerrar modal y refrescar lista automáticamente
                 const modal = bootstrap.Modal.getInstance(document.getElementById('editContactTypeModal'));
                 if (modal) modal.hide();
-                setTimeout(() => {
-                    if (window.contactTypeListController) window.contactTypeListController.load();
-                }, 300);
+                const listController = window.contactTypeListController || window.contactTypeListControllerInstance;
+                if (listController && typeof listController.load === 'function') {
+                    listController.load();
+                }
             } else {
                 this.showValidationErrors([response.message || 'Error desconocido']);
             }

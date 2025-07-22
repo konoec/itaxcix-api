@@ -1,3 +1,7 @@
+    <!-- Servicio para editar estado de infracción -->
+    <script src="../../assets/js/api/services/MasterTables/InfractionStatus/infraction-status-update-service.js"></script>
+    <!-- Controlador de edición de estado de infracción -->
+    <script src="../../assets/js/ui/controllers/MasterTables/InfractionStatus/infraction-status-edit-controller.js"></script>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -326,7 +330,9 @@
       </div>
     </div>
 
-    <!-- Contenedor del modal - se carga dinámicamente -->
+    <!-- Contenedor de edición de estado de infracción (debe estar antes de los scripts) -->
+    <div id="edit-modal-container"></div>
+    <!-- Contenedor de modales: perfil -->
     <div id="modal-container"></div>
 
     <!-- 1. Component Loader -->

@@ -87,6 +87,37 @@ class ContactTypesInitializer {
                         }
                         console.log('➕ CreateContactTypeController inicializado');
                     }
+
+                    // 6.1️⃣ Inicializar controlador de eliminación de tipo de contacto
+                    // Inicializar DeleteContactTypeController solo cuando el modal global esté disponible
+                    if (typeof DeleteContactTypeController !== 'undefined' && !window.deleteContactTypeController) {
+                        if (window.globalConfirmationModal) {
+                            window.deleteContactTypeController = new DeleteContactTypeController();
+                            console.log('🗑️ DeleteContactTypeController inicializado');
+                        } else {
+                            // Esperar a que el modal global esté disponible
+                            const observer = new MutationObserver(() => {
+                                if (window.globalConfirmationModal) {
+                                    window.deleteContactTypeController = new DeleteContactTypeController();
+                                    console.log('🗑️ DeleteContactTypeController inicializado (diferido)');
+                                    observer.disconnect();
+                                }
+                            });
+                            observer.observe(document.body, { childList: true, subtree: true });
+                        }
+                    }
+
+                    // 6.2️⃣ Delegación de eventos para los botones de eliminar
+                    document.body.addEventListener('click', function(e) {
+                        const btn = e.target.closest('[data-action="delete-contact-type"]');
+                        if (btn) {
+                            const id = Number(btn.getAttribute('data-contact-type-id'));
+                            const name = btn.getAttribute('data-contact-type-name') || '';
+                            if (id > 0 && window.deleteContactTypeController) {
+                                window.deleteContactTypeController.handleDeleteButtonClick(btn, { id, name });
+                            }
+                        }
+                    });
                 }, 400);
                 
                 // 7️⃣ Permisos y fin de carga
