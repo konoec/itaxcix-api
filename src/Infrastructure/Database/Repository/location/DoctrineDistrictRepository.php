@@ -284,5 +284,17 @@ class DoctrineDistrictRepository implements DistrictRepositoryInterface
             ->getQuery()
             ->getSingleScalarResult();
     }
+
+    public function findByProvinceId(int $provinceId): array
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('d')
+            ->from(DistrictEntity::class, 'd')
+            ->where('d.province = :provinceId')
+            ->setParameter('provinceId', $provinceId);
+
+        $entities = $qb->getQuery()->getResult();
+        return array_map([$this, 'toDomain'], $entities);
+    }
 }
 

@@ -33,4 +33,5 @@ interface DistrictRepositoryInterface
     public function existsByUbigeo(string $ubigeo, ?int $excludeId = null): bool;
 
     public function countByProvince(int $provinceId): int;
+    public function findByProvinceId(int $provinceId): array;
 }
