@@ -267,9 +267,9 @@ class DepartmentController extends AbstractController
             $result = $this->deleteHandler->handle($id);
 
             if ($result) {
-                return $this->ok(null, "Departamento eliminado correctamente.");
+                return $this->ok("Departamento eliminado correctamente.");
             } else {
-                return $this->error("No se pudo eliminar el departamento", 500);
+                return $this->error("No se pudo eliminar el departamento", 404);
             }
         } catch (InvalidArgumentException $e) {
             return $this->error($e->getMessage(), 404);
