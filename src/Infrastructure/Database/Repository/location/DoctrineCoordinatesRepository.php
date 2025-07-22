@@ -63,7 +63,7 @@ class DoctrineCoordinatesRepository implements CoordinatesRepositoryInterface
         return $this->toDomain($entity);
     }
 
-    public function findByDistrictId(int $districtId): ?CoordinatesModel
+    public function findByDistrictId(int $districtId): ?array
     {
         $query = $this->entityManager->createQueryBuilder()
             ->select('c')
@@ -72,8 +72,12 @@ class DoctrineCoordinatesRepository implements CoordinatesRepositoryInterface
             ->setParameter('districtId', $districtId)
             ->getQuery();
 
-        $entity = $query->getOneOrNullResult();
+        $entities = $query->getResult();
 
-        return $entity ? $this->toDomain($entity) : null;
+        if (empty($entities)) {
+            return null;
+        }
+
+        return array_map([$this, 'toDomain'], $entities);
     }
 }

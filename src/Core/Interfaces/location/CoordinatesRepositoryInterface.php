@@ -7,5 +7,5 @@ use itaxcix\Core\Domain\location\CoordinatesModel;
 interface CoordinatesRepositoryInterface
 {
     public function saveCoordinates(CoordinatesModel $coordinatesModel): CoordinatesModel;
-    public function findByDistrictId(int $districtId): ?CoordinatesModel;
+    public function findByDistrictId(int $districtId): ?array;
 }
