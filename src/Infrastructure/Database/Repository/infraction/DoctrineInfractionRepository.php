@@ -129,7 +129,6 @@ class DoctrineInfractionRepository implements InfractionRepositoryInterface
             ->from(InfractionEntity::class, 'i')
             ->join('i.severity', 's')
             ->where('s.id = :severityId')
-            ->andWhere('i.active = true')
             ->setParameter('severityId', $severityId);
 
         return $qb->getQuery()->getResult();
