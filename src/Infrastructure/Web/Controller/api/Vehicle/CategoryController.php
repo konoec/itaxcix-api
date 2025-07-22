@@ -258,7 +258,7 @@ class CategoryController extends AbstractController
             $result = $this->deleteHandler->handle($id);
 
             if (!$result) {
-                return $this->error('No se pudo eliminar la categoría de vehículo', 500);
+                return $this->error('No se pudo eliminar la categoría de vehículo');
             }
 
             return $this->ok([

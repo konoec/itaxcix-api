@@ -445,4 +445,36 @@ class DoctrineVehicleRepository implements VehicleRepositoryInterface {
 
         return array_map([$this, 'toDomain'], $entities);
     }
+
+    public function findActiveByCategoryId(int $categoryId): array
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('v')
+            ->from(VehicleEntity::class, 'v')
+            ->where('v.category = :categoryId')
+            ->andWhere('v.active = :active')
+            ->setParameter('categoryId', $categoryId)
+            ->setParameter('active', true)
+            ->getQuery();
+
+        $entities = $query->getResult();
+
+        return array_map([$this, 'toDomain'], $entities);
+    }
+
+    public function findActiveByVehicleClassId(int $vehicleClassId): array
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('v')
+            ->from(VehicleEntity::class, 'v')
+            ->where('v.vehicleClass = :vehicleClassId')
+            ->andWhere('v.active = :active')
+            ->setParameter('vehicleClassId', $vehicleClassId)
+            ->setParameter('active', true)
+            ->getQuery();
+
+        $entities = $query->getResult();
+
+        return array_map([$this, 'toDomain'], $entities);
+    }
 }

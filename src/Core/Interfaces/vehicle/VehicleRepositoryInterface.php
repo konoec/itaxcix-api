@@ -17,4 +17,6 @@ interface VehicleRepositoryInterface
     public function countReport(VehicleReportRequestDTO $dto): int;
     public function findActiveByColorId(int $colorId): array;
     public function findActiveByFuelTypeId(int $fuelTypeId): array;
+    public function findActiveByCategoryId(int $categoryId): array;
+    public function findActiveByVehicleClassId(int $vehicleClassId): array;
 }
