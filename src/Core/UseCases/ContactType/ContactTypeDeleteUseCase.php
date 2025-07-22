@@ -13,6 +13,7 @@ class ContactTypeDeleteUseCase
     public function __construct(ContactTypeRepositoryInterface $contactTypeRepository, UserContactRepositoryInterface $userContactRepository)
     {
         $this->contactTypeRepository = $contactTypeRepository;
+        $this->userContactRepository = $userContactRepository;
     }
 
     public function execute(int $id): bool

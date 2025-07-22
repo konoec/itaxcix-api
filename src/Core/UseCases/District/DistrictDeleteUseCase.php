@@ -2,14 +2,16 @@
 
 namespace itaxcix\Core\UseCases\District;
 
+use itaxcix\Core\Interfaces\location\CoordinatesRepositoryInterface;
 use itaxcix\Core\Interfaces\location\DistrictRepositoryInterface;
 use RuntimeException;
 
 class DistrictDeleteUseCase
 {
     private DistrictRepositoryInterface $districtRepository;
+    private CoordinatesRepositoryInterface $coordinatesRepository;
 
-    public function __construct(DistrictRepositoryInterface $districtRepository)
+    public function __construct(DistrictRepositoryInterface $districtRepository, CoordinatesRepositoryInterface $coordinatesRepository)
     {
         $this->districtRepository = $districtRepository;
     }
@@ -19,7 +21,13 @@ class DistrictDeleteUseCase
         // Verificar que el distrito existe
         $district = $this->districtRepository->findById($id);
         if (!$district) {
-            throw new RuntimeException("District with ID {$id} not found");
+            throw new RuntimeException("Distrito con ID {$id} no encontrado.");
+        }
+
+        // Verificar si el distrito está asociado a alguna coordenada
+        $coordinates = $this->coordinatesRepository->findByDistrictId($id);
+        if ($coordinates) {
+            throw new RuntimeException('No se puede eliminar el distrito porque está asociado a una o más coordenadas.');
         }
 
         // Eliminar del repositorio

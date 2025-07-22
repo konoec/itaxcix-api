@@ -62,4 +62,18 @@ class DoctrineCoordinatesRepository implements CoordinatesRepositoryInterface
 
         return $this->toDomain($entity);
     }
+
+    public function findByDistrictId(int $districtId): ?CoordinatesModel
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('c')
+            ->from(CoordinatesEntity::class, 'c')
+            ->where('c.district = :districtId')
+            ->setParameter('districtId', $districtId)
+            ->getQuery();
+
+        $entity = $query->getOneOrNullResult();
+
+        return $entity ? $this->toDomain($entity) : null;
+    }
 }

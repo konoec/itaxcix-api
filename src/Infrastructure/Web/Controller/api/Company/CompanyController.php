@@ -286,7 +286,7 @@ class CompanyController extends AbstractController
 
         try {
             $this->deleteUseCase->execute($id);
-            return $this->ok(null, 'Empresa eliminada exitosamente');
+            return $this->ok('Empresa eliminada exitosamente');
 
         } catch (InvalidArgumentException $e) {
             return $this->error($e->getMessage(), 404);

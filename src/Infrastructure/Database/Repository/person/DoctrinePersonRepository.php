@@ -117,6 +117,7 @@ class DoctrinePersonRepository implements PersonRepositoryInterface
             ->select('p')
             ->from(PersonEntity::class, 'p')
             ->where('p.documentType = :documentTypeId')
+            ->andWhere('p.active = true')
             ->setParameter('documentTypeId', $documentTypeId)
             ->getQuery();
 
