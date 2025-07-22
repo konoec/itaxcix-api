@@ -267,7 +267,7 @@ class ServiceTypeController extends AbstractController
             $result = $this->deleteHandler->handle($id);
 
             if (!$result) {
-                return $this->error('No se pudo eliminar el tipo de servicio', 400);
+                return $this->error('No se pudo eliminar el tipo de servicio. Verifique si tiene rutas activas relacionadas.', 400);
             }
 
             return $this->ok('Tipo de servicio eliminado exitosamente');

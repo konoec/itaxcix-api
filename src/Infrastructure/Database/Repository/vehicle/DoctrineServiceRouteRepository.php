@@ -66,4 +66,22 @@ class DoctrineServiceRouteRepository implements ServiceRouteRepositoryInterface 
 
         return $this->toDomain($entity);
     }
+
+    public function findByServiceTypeId(int $serviceTypeId): ?array
+    {
+        $query = $this->entityManager->createQuery(
+            'SELECT sr FROM itaxcix\Infrastructure\Database\Entity\vehicle\ServiceRouteEntity sr
+             JOIN sr.serviceType st
+             WHERE st.id = :serviceTypeId AND sr.active = true'
+        );
+        $query->setParameter('serviceTypeId', $serviceTypeId);
+
+        $results = $query->getResult();
+
+        if (empty($results)) {
+            return null;
+        }
+
+        return array_map([$this, 'toDomain'], $results);
+    }
 }
