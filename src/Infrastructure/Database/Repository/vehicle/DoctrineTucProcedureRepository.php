@@ -188,4 +188,19 @@ class DoctrineTucProcedureRepository implements TucProcedureRepositoryInterface 
 
         return array_map([$this, 'toDomain'], $results);
     }
+
+    public function findByCompanyId(int $companyId): array
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('tp')
+            ->from(TucProcedureEntity::class, 'tp')
+            ->join('tp.company', 'c')
+            ->where('c.id = :companyId')
+            ->setParameter('companyId', $companyId)
+            ->orderBy('tp.expirationDate', 'DESC');
+
+        $results = $qb->getQuery()->getResult();
+
+        return array_map([$this, 'toDomain'], $results);
+    }
 }
