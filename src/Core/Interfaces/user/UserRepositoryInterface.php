@@ -39,4 +39,5 @@ interface UserRepositoryInterface {
     // Métodos para reporte administrativo de usuarios
     public function findReport(UserReportRequestDTO $dto): array;
     public function countReport(UserReportRequestDTO $dto): int;
+    public function findByStatusId(int $statusId): bool;
 }

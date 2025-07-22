@@ -274,11 +274,11 @@ class UserStatusController extends AbstractController
         response: 200,
         description: "Estado de usuario eliminado exitosamente",
         content: new OA\JsonContent(
-            type: "object",
             properties: [
                 "success" => new OA\Property(property: "success", type: "boolean", example: true),
                 "message" => new OA\Property(property: "message", type: "string", example: "Estado de usuario eliminado exitosamente")
-            ]
+            ],
+            type: "object"
         )
     )]
     public function delete(ServerRequestInterface $request): ResponseInterface

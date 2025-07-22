@@ -591,4 +591,19 @@ class DoctrineUserRepository implements UserRepositoryInterface {
         }
         return null;
     }
+
+    public function findByStatusId(int $statusId): bool
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('u')
+            ->from(UserEntity::class, 'u')
+            ->innerJoin('u.status', 's')
+            ->where('s.id = :statusId')
+            ->setParameter('statusId', $statusId)
+            ->getQuery();
+
+        $entity = $query->getOneOrNullResult();
+
+        return $entity ? true : false;
+    }
 }
