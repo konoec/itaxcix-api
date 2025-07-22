@@ -136,7 +136,7 @@ class DoctrineUserStatusRepository implements UserStatusRepositoryInterface
             return false;
         }
 
-        $this->entityManager->remove($entity);
+        $entity->setActive(false);
         $this->entityManager->flush();
         return true;
     }
@@ -181,40 +181,5 @@ class DoctrineUserStatusRepository implements UserStatusRepositoryInterface
         }
 
         return (int) $qb->getQuery()->getSingleScalarResult();
-    }
-
-    private function createQueryBuilder(UserStatusPaginationRequestDTO $request): QueryBuilder
-    {
-        $qb = $this->entityManager->createQueryBuilder()
-            ->select('us')
-            ->from(UserStatusEntity::class, 'us');
-
-        // Filtro por búsqueda global
-        if ($request->getSearch()) {
-            $qb->andWhere('us.name LIKE :search')
-               ->setParameter('search', '%' . $request->getSearch() . '%');
-        }
-
-        // Filtro por nombre
-        if ($request->getName()) {
-            $qb->andWhere('us.name LIKE :name')
-               ->setParameter('name', '%' . $request->getName() . '%');
-        }
-
-        // Filtro por estado activo
-        if ($request->getActive() !== null) {
-            $qb->andWhere('us.active = :active')
-               ->setParameter('active', $request->getActive());
-        }
-
-        // Ordenamiento
-        if ($request->getSortBy()) {
-            $direction = $request->getSortDirection() === 'desc' ? 'DESC' : 'ASC';
-            $qb->orderBy('us.' . $request->getSortBy(), $direction);
-        } else {
-            $qb->orderBy('us.id', 'DESC');
-        }
-
-        return $qb;
     }
 }
