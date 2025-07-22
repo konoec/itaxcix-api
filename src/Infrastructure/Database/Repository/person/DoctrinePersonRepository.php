@@ -110,4 +110,18 @@ class DoctrinePersonRepository implements PersonRepositoryInterface
 
         return $entity ? $this->toDomain($entity) : null;
     }
+
+    public function findByDocumentTypeId(int $documentTypeId): bool
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('p')
+            ->from(PersonEntity::class, 'p')
+            ->where('p.documentType = :documentTypeId')
+            ->setParameter('documentTypeId', $documentTypeId)
+            ->getQuery();
+
+        $entity = $query->getOneOrNullResult();
+
+        return $entity ? true : false;
+    }
 }

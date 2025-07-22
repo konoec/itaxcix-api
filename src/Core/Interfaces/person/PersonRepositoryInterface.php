@@ -10,4 +10,5 @@ interface PersonRepositoryInterface
     public function findPersonById(int $personId): ?PersonModel;
     public function findAllPersonById(int $personId): ?PersonModel;
     public function savePerson(PersonModel $personModel): PersonModel;
+    public function findByDocumentTypeId(int $documentTypeId): bool;
 }
