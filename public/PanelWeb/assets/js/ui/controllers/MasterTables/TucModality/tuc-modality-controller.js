@@ -141,6 +141,22 @@ class TucModalityController {
             this.exportPdfBtn.addEventListener('click', () => this.exportToPdf());
         }
 
+        // Delegación para eliminar modalidad TUC
+        if (this.tableBody) {
+            this.tableBody.addEventListener('click', (event) => {
+                const deleteBtn = event.target.closest('.delete-tuc-modality-btn');
+                if (deleteBtn) {
+                    const id = deleteBtn.getAttribute('data-id');
+                    const name = deleteBtn.getAttribute('data-name');
+                    if (window.deleteTucModalityController && typeof window.deleteTucModalityController.handleDelete === 'function') {
+                        window.deleteTucModalityController.handleDelete({ id, name });
+                    } else {
+                        console.error('❌ No se encontró el controlador global de eliminación o el método handleDelete');
+                    }
+                }
+            });
+        }
+
         console.log('✅ Event listeners inicializados');
     }
 

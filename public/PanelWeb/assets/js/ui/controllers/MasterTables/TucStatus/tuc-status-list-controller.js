@@ -28,6 +28,7 @@ class TucStatusListController {
 
     this.initEvents();
     this.initEditEvent();
+    this.initDeleteEvent();
     setTimeout(() => this.load(), 100);
   }
 
@@ -154,6 +155,26 @@ class TucStatusListController {
         const active = btn.getAttribute('data-active') === 'true';
         if (window.TucStatusEditController) {
           window.TucStatusEditController.openEditModal(id, { id, name, active });
+        }
+      }
+    });
+  }
+
+  initDeleteEvent() {
+    this.tableBody.addEventListener('click', (e) => {
+      const btn = e.target.closest('.delete-tuc-status-btn');
+      if (btn) {
+        const id = btn.getAttribute('data-id');
+        const name = btn.getAttribute('data-name');
+        const tucStatusData = { id: parseInt(id, 10), name };
+        if (window.TucStatusDeleteController) {
+          window.TucStatusDeleteController.handleDeleteButtonClick(btn, tucStatusData);
+        } else if (window.DeleteTucStatusController) {
+          window.TucStatusDeleteController = new window.DeleteTucStatusController();
+          window.TucStatusDeleteController.handleDeleteButtonClick(btn, tucStatusData);
+        } else {
+          console.error('❌ Controlador de eliminación de Estado TUC no disponible');
+          window.GlobalToast?.show('Error: Funcionalidad de eliminación no disponible', 'error');
         }
       }
     });

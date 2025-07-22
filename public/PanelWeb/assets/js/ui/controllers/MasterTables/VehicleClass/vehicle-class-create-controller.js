@@ -110,12 +110,24 @@ class VehicleClassCreateController {
                 if (window.vehicleClassListController && typeof window.vehicleClassListController.loadVehicleClasses === 'function') {
                     await window.vehicleClassListController.loadVehicleClasses();
                 }
+            } else {
+                // Si la respuesta no es exitosa, mostrar el mensaje de error
+                if (window.GlobalToast) {
+                    // Priorizar el mensaje de error de la API si existe
+                    const apiErrorMsg = (response.error && response.error.message) ? response.error.message : response.message;
+                    window.GlobalToast.show(
+                        apiErrorMsg || 'Error al crear la clase de vehículo',
+                        'error'
+                    );
+                }
             }
         } catch (error) {
             console.error('Error al crear clase de vehículo:', error);
             if (window.GlobalToast) {
+                // Priorizar el mensaje de error de la API si existe
+                const apiErrorMsg = (error && error.error && error.error.message) ? error.error.message : error.message;
                 window.GlobalToast.show(
-                    error.message || 'Error al crear la clase de vehículo',
+                    apiErrorMsg || 'Error al crear la clase de vehículo',
                     'error'
                 );
             }

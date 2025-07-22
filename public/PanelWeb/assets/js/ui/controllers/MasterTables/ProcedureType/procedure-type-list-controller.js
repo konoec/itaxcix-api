@@ -154,7 +154,7 @@ class ProcedureTypeListController {
         <td class="text-center">
           <div class="btn-group">
             <button class="btn btn-sm btn-outline-warning" onclick="window.procedureTypeListControllerInstance.editProcedureType(${item.id})"><i class="fas fa-edit"></i></button>
-            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+            <button class="btn btn-sm btn-outline-danger" data-action="delete-procedure-type" data-procedure-type-id="${item.id}" data-procedure-type-name="${item.name}"><i class="fas fa-trash"></i></button>
           </div>
         </td>
       </tr>`).join('');

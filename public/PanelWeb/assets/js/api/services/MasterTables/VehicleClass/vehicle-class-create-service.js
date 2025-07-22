@@ -31,7 +31,19 @@ class VehicleClassCreateService {
             });
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || `Error HTTP: ${response.status}`);
+                let errorMsg = '';
+                if (errorData && typeof errorData === 'object') {
+                    if (errorData.error && typeof errorData.error === 'object' && errorData.error.message) {
+                        errorMsg = errorData.error.message;
+                    } else if (errorData.message) {
+                        errorMsg = errorData.message;
+                    } else {
+                        errorMsg = `Error HTTP: ${response.status}`;
+                    }
+                } else {
+                    errorMsg = `Error HTTP: ${response.status}`;
+                }
+                throw new Error(errorMsg);
             }
             const result = await response.json();
             if (!result.message || result.message.trim().toUpperCase() === 'OK') {
@@ -40,7 +52,12 @@ class VehicleClassCreateService {
             return result;
         } catch (error) {
             console.error('Error al crear clase de vehículo:', error);
-            throw error;
+            // Si el error tiene un mensaje, mostrarlo siempre
+            if (error && error.message) {
+                throw new Error(error.message);
+            }
+            // Error de conexión genérico solo si no hay mensaje
+            throw new Error('Error de conexión. Intente nuevamente más tarde.');
         }
     }
 

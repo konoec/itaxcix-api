@@ -108,6 +108,26 @@ class IncidentTypeInitializer {
                 };
                 tryInitCreateIncidentTypeModalController();
 
+                // --- INICIO: Integración DeleteIncidentTypeController ---
+                // Instanciar el controlador de eliminación de tipo de incidencia
+                window.deleteIncidentTypeControllerInstance = new DeleteIncidentTypeController();
+
+                // Registrar evento global para botones de eliminar tipo de incidencia
+                document.addEventListener('click', function(e) {
+                    const btn = e.target.closest('[data-action="delete-incident-type"]');
+                    if (btn) {
+                        const incidentTypeId = parseInt(btn.getAttribute('data-incident-type-id'), 10);
+                        const incidentTypeName = btn.getAttribute('data-incident-type-name') || '';
+                        const incidentTypeData = { id: incidentTypeId, name: incidentTypeName };
+                        window.deleteIncidentTypeControllerInstance.handleDeleteButtonClick(btn, incidentTypeData);
+                    }
+                });
+
+                // Exponer el controlador globalmente si se requiere en otros módulos
+                window.DeleteIncidentTypeController = window.deleteIncidentTypeControllerInstance;
+                console.log('🗑️ DeleteIncidentTypeController inicializado y eventos registrados');
+                // --- FIN: Integración DeleteIncidentTypeController ---
+
                 // Configurar permisos y notificar que el módulo está listo
                 setTimeout(() => {
                     if (window.PermissionsService) {

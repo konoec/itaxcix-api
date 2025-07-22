@@ -48,11 +48,6 @@
         };
     </script>
     <!-- Service y Controller de creación de tipo de trámite -->
-    <script src="../../assets/js/api/services/MasterTables/ProcedureType/procedure-type-create-service.js"></script>
-    <script src="../../assets/js/ui/controllers/MasterTables/ProcedureType/procedure-type-create-controller.js"></script>
-    <!-- Service y Controller de edición de tipo de trámite -->
-    <script src="../../assets/js/api/services/MasterTables/ProcedureType/procedure-type-update-service.js"></script>
-    <script src="../../assets/js/ui/controllers/MasterTables/ProcedureType/procedure-type-edit-controller.js"></script>
 </head>
 <body>
     <!-- Loading screen -->
@@ -323,16 +318,27 @@
 
     <!-- 2. Servicios de API básicos -->
     <script src="../../assets/js/api/services/profile-service.js"></script>
+
+    <!-- 3. Servicios específicos del módulo -->
     <script src="../../assets/js/api/services/MasterTables/ProcedureType/procedure-type-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/ProcedureType/procedure-type-update-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/ProcedureType/procedure-type-create-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/ProcedureType/delete-procedure-type-service.js"></script>
 
    <!-- 3. Controladores de UI base (modal global primero) -->
     <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/global-confirmation-modal-controller.js"></script>
 
     <!-- 4. Controladores específicos de tipos de procedimientos -->
     <script src="../../assets/js/ui/controllers/MasterTables/ProcedureType/procedure-type-list-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/ProcedureType/procedure-type-create-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/ProcedureType/procedure-type-edit-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/ProcedureType/delete-procedure-type-controller.js"></script>
+
+
 
     <!-- 5. Inicializador específico de la página -->
     <script src="../../assets/js/ui/initializers/MasterTables/procedure-types-initializer.js"></script>

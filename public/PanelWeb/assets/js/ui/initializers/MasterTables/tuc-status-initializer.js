@@ -89,6 +89,25 @@ class TucStatusInitializer {
                         }
                     }, 300);
 
+                    // --- INICIO: Integración DeleteTucStatusController ---
+            if (window.DeleteTucStatusController) {
+                window.TucStatusDeleteController = new window.DeleteTucStatusController();
+            }
+                    window.deleteTucStatusService = window.DeleteTucStatusService; // Ya instanciado como singleton
+                    window.deleteTucStatusController = new window.DeleteTucStatusController();
+                    document.addEventListener('click', function(e) {
+                        const btn = e.target.closest('[data-action="delete-tuc-status"]');
+                        if (btn) {
+                            const tucStatusId = parseInt(btn.getAttribute('data-tuc-status-id'), 10);
+                            const tucStatusName = btn.getAttribute('data-tuc-status-name') || '';
+                            const tucStatusData = { id: tucStatusId, name: tucStatusName };
+                            window.deleteTucStatusController.handleDeleteButtonClick(btn, tucStatusData);
+                        }
+                    });
+                    window.DeleteTucStatusController = window.deleteTucStatusController;
+                    console.log('🗑️ DeleteTucStatusController inicializado y eventos registrados');
+                    // --- FIN: Integración DeleteTucStatusController ---
+
                     // Configurar permisos DESPUÉS de que los controladores estén listos
                     setTimeout(() => {
                         if (window.PermissionsService) {

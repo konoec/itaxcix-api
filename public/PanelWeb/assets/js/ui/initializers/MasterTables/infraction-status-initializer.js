@@ -46,6 +46,22 @@ class InfractionStatusInitializer {
                                     console.error('❌ No se encontró la clase InfractionStatusEditControllerClass');
                                 }
                             }
+
+                            // --- INICIO: Integración DeleteInfractionStatusController ---
+                            window.deleteInfractionStatusServiceInstance = window.DeleteInfractionStatusService;
+                            window.deleteInfractionStatusControllerInstance = new window.DeleteInfractionStatusController();
+                            window.DeleteInfractionStatusController = window.deleteInfractionStatusControllerInstance;
+                            document.addEventListener('click', function(e) {
+                                const btn = e.target.closest('[data-action="delete-infraction-status"]');
+                                if (btn) {
+                                    const infractionStatusId = parseInt(btn.getAttribute('data-infraction-status-id'), 10);
+                                    const infractionStatusName = btn.getAttribute('data-infraction-status-name') || '';
+                                    const infractionStatusData = { id: infractionStatusId, name: infractionStatusName };
+                                    window.deleteInfractionStatusControllerInstance.handleDeleteButtonClick(btn, infractionStatusData);
+                                }
+                            });
+                            console.log('🗑️ DeleteInfractionStatusController inicializado y eventos registrados');
+                            // --- FIN: Integración DeleteInfractionStatusController ---
                         }, 300);
                     }, 200);
                     if (!window.profileControllerInstance) {

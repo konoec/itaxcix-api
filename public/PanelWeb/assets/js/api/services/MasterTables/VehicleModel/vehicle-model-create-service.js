@@ -22,7 +22,8 @@ class VehicleModelCreateService {
             });
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || `Error HTTP: ${response.status}`);
+                let errorMsg = errorData?.error?.message || errorData.message || `Error HTTP: ${response.status}`;
+                throw new Error(errorMsg);
             }
             const result = await response.json();
             if (!result.message || result.message.trim().toUpperCase() === 'OK') {

@@ -73,9 +73,9 @@ class UpdateUserStatusService {
             // Verificar respuesta
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                const errorMessage = this.getErrorMessage(response.status, errorData);
-                console.error('❌ Error en actualización:', errorMessage);
-                throw new Error(errorMessage);
+                let errorMsg = errorData?.error?.message || errorData.message || this.getErrorMessage(response.status, errorData);
+                console.error('❌ Error en actualización:', errorMsg);
+                throw new Error(errorMsg);
             }
 
             // Procesar respuesta exitosa

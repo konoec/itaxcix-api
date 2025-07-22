@@ -85,6 +85,16 @@ class TucModalityInitializer {
                                     console.error('❌ No se encontró la clase TucModalityEditControllerClass');
                                 }
                             }
+
+                            // Inicializar y exponer el controlador de eliminación de Modalidad TUC
+                            if (!window.deleteTucModalityController) {
+                                if (window.DeleteTucModalityController) {
+                                    window.deleteTucModalityController = new window.DeleteTucModalityController();
+                                    console.log('🗑️ DeleteTucModalityController inicializado y expuesto globalmente');
+                                } else {
+                                    console.error('❌ No se encontró la clase DeleteTucModalityController');
+                                }
+                            }
                         } catch (error) {
                             console.error('❌ Error inicializando TucModalityController:', error);
                         }

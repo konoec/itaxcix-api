@@ -81,7 +81,7 @@ class InfractionSeverityListController {
                 this.handleEditClick(id);
             } else if (e.target.closest('.delete-infraction-severity-btn')) {
                 const btn = e.target.closest('.delete-infraction-severity-btn');
-                const id = btn.getAttribute('data-id');
+                const id = Number(btn.getAttribute('data-id'));
                 const name = btn.getAttribute('data-name');
                 this.handleDeleteClick(id, name, btn);
             }
@@ -224,9 +224,11 @@ class InfractionSeverityListController {
 
     handleDeleteClick(id, name, button) {
         console.log('🗑️ Eliminando InfractionSeverity con ID:', id, 'Nombre:', name);
-        
         if (window.deleteInfractionSeverityController) {
-            window.deleteInfractionSeverityController.showDeleteModal(id, name, button);
+            window.deleteInfractionSeverityController.handleDeleteButtonClick(
+                button,
+                { id, name }
+            );
         } else {
             console.error('❌ deleteInfractionSeverityController no está disponible');
             GlobalToast.show('Error: Controlador de eliminación no disponible', 'error');

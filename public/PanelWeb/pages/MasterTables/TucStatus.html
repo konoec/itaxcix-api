@@ -35,13 +35,6 @@
     <!-- TucStatus specific styles -->
     <link rel="stylesheet" href="../../assets/css/mastertables/companies.css">
 
-    <!-- Service y Controller de creación de estado TUC -->
-    <script src="../../assets/js/api/services/MasterTables/TucStatus/tuc-status-create-service.js"></script>
-    <script src="../../assets/js/ui/controllers/MasterTables/TucStatus/tuc-status-create-controller.js"></script>
-
-    <!-- Service y Controller de edición de estado TUC -->
-    <script src="../../assets/js/api/services/MasterTables/TucStatus/tuc-status-update-service.js"></script>
-    <script src="../../assets/js/ui/controllers/MasterTables/TucStatus/tuc-status-edit-controller.js"></script>
     
     <!-- Font Awesome para iconografía -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -94,13 +87,13 @@
                                     </div>
                                     <div class="col-auto btn-list">
                                         <button id="refreshTucStatusBtn" class="btn btn-outline-primary" title="Actualizar">
-                                            <i class="fas fa-sync-alt me-1"></i> Actualizar
+                                            <i class="fas fa-sync-alt me-1"></i>
                                         </button>
                                         <button id="clearTucStatusFiltersBtn" class="btn btn-outline-secondary" title="Limpiar">
-                                            <i class="fas fa-broom me-1"></i> Limpiar
+                                            <i class="fas fa-broom me-1"></i>
                                         </button>
                                         <button id="createTucStatusBtn" class="btn btn-outline-success" title="Crear estado TUC">
-                                            <i class="fas fa-plus me-1"></i> Crear Estado
+                                            <i class="fas fa-plus me-1"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -305,18 +298,38 @@
     <script src="../../assets/js/auth/permissions.js"></script>
     <script src="../../assets/js/auth/auth-checker.js"></script>
     <script src="../../assets/js/auth/route-guard.js"></script>
+
+
     <script>window.routeGuard = new RouteGuard("../../index.html");</script>
+
     <!-- Controladores de componentes: deben ir antes del inicializador -->
     <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/global-confirmation-modal-controller.js"></script>
 
-    <!-- Servicios y controladores específicos -->
-     <script src="../../assets/js/api/services/profile-service.js"></script>
+
+    <!-- Servicio de perfil  -->
+    <script src="../../assets/js/api/services/profile-service.js"></script>
+
+    <!-- Servicios de Estados TUC -->
     <script src="../../assets/js/api/services/MasterTables/TucStatus/tuc-status-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/TucStatus/tuc-status-create-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/TucStatus/tuc-status-update-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/TucStatus/delete-tuc-status-service.js"></script>
+
+
+    <!-- Service y Controller de edición de estado TUC -->
     <script src="../../assets/js/ui/controllers/MasterTables/TucStatus/tuc-status-list-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/TucStatus/tuc-status-create-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/TucStatus/tuc-status-edit-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/TucStatus/delete-tuc-status-controller.js"></script>
+    
+
+        <!-- Inicializador de la página -->
     <script src="../../assets/js/ui/initializers/MasterTables/tuc-status-initializer.js"></script>
+    <!-- Scripts de Tabler para funcionalidad completa -->
     <script src="../../assets/tabler/js/tabler.min.js"></script>
 
     <!-- Toast notification -->

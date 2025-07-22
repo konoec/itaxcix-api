@@ -1,14 +1,14 @@
-// Archivo: DeleteModelService.js
-// Ubicación: assets/js/api/services/MasterTables/VehicleModel/delete-model-service.js
+// Archivo: DeleteIncidentTypeService.js
+// Ubicación: assets/js/api/services/MasterTables/IncidentType/delete-incident-type-service.js
 
 /**
- * Servicio para eliminar modelos de vehículo
- * Maneja la comunicación con la API para eliminación de modelos
+ * Servicio para eliminar tipos de incidencia
+ * Maneja la comunicación con la API para eliminación de tipos
  */
-class DeleteModelService {
+class DeleteIncidentTypeService {
     constructor() {
         this.baseUrl = 'https://149.130.161.148/api/v1';
-        this.endpoint = '/admin/models';
+        this.endpoint = '/admin/incident-types';
     }
 
     /**
@@ -20,14 +20,14 @@ class DeleteModelService {
     }
 
     /**
-     * Elimina un modelo de vehículo
-     * @param {number} id - ID del modelo
+     * Elimina un tipo de incidencia
+     * @param {number} id - ID del tipo de incidencia
      * @returns {Promise<Object>} Respuesta de la API
      */
-    async deleteModel(id) {
+    async deleteIncidentType(id) {
         try {
             if (!id || typeof id !== 'number' || id <= 0) {
-                throw new Error('ID del modelo es requerido y debe ser un número válido');
+                throw new Error('ID del tipo de incidencia es requerido y debe ser un número válido');
             }
 
             const token = this.getAuthToken();
@@ -59,16 +59,16 @@ class DeleteModelService {
 
             const responseData = await response.json();
             if (!responseData.success) {
-                throw new Error(responseData.message || 'Error al eliminar modelo de vehículo');
+                throw new Error(responseData.message || 'Error al eliminar tipo de incidencia');
             }
 
             return responseData;
         } catch (error) {
-            console.error('❌ Error en deleteModel:', error);
+            console.error('❌ Error en deleteIncidentType:', error);
             throw error;
         }
     }
 }
 
 // Exportar como instancia singleton
-window.DeleteModelService = new DeleteModelService();
+window.DeleteIncidentTypeService = new DeleteIncidentTypeService();

@@ -142,7 +142,7 @@ class InfractionStatusListController {
         <td class="text-center">
           <div class="btn-group">
             <button class="btn btn-sm btn-outline-warning edit-infraction-status-btn" data-id="${item.id}"><i class="fas fa-edit"></i></button>
-            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+            <button class="btn btn-sm btn-outline-danger" data-action="delete-infraction-status" data-infraction-status-id="${item.id}" data-infraction-status-name="${item.name}"><i class="fas fa-trash"></i></button>
           </div>
         </td>
       </tr>

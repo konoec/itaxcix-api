@@ -216,7 +216,12 @@ class TravelStatusListController {
         
         if (window.updateTravelStatusController) {
             // Pasar tanto el ID como los datos para evitar llamada a la API
-            window.updateTravelStatusController.showEditModal(id, travelStatusData);
+            if (typeof window.updateTravelStatusController.openEditModal === 'function') {
+                window.updateTravelStatusController.openEditModal(id, travelStatusData);
+            } else {
+                console.error('❌ updateTravelStatusController no tiene el método openEditModal');
+                GlobalToast.show('Error: El controlador de edición no tiene el método correcto', 'error');
+            }
         } else {
             console.error('❌ updateTravelStatusController no está disponible');
             GlobalToast.show('Error: Controlador de edición no disponible', 'error');
@@ -225,12 +230,21 @@ class TravelStatusListController {
 
     handleDeleteClick(id, name, button) {
         console.log('🗑️ Eliminando TravelStatus con ID:', id, 'Nombre:', name);
-        
+        // Crear datos del estado de viaje para el controlador de eliminación
+        const travelStatusData = {
+            id: parseInt(id, 10),
+            name: name
+        };
+        // Verificar que el controlador de eliminación esté disponible
         if (window.deleteTravelStatusController) {
-            window.deleteTravelStatusController.showDeleteModal(id, name, button);
+            window.deleteTravelStatusController.handleDeleteButtonClick(button, travelStatusData);
+        } else if (window.DeleteTravelStatusController) {
+            // Crear instancia si no existe
+            window.deleteTravelStatusController = new window.DeleteTravelStatusController();
+            window.deleteTravelStatusController.handleDeleteButtonClick(button, travelStatusData);
         } else {
-            console.error('❌ deleteTravelStatusController no está disponible');
-            GlobalToast.show('Error: Controlador de eliminación no disponible', 'error');
+            console.error('❌ Controlador de eliminación no disponible');
+            GlobalToast.show('Error: Funcionalidad de eliminación no disponible', 'error');
         }
     }
 

@@ -1,14 +1,14 @@
-// Archivo: DeleteModelService.js
-// Ubicación: assets/js/api/services/MasterTables/VehicleModel/delete-model-service.js
+// Archivo: delete-infraction-status-service.js
+// Ubicación: assets/js/api/services/MasterTables/InfractionStatus/delete-infraction-status-service.js
 
 /**
- * Servicio para eliminar modelos de vehículo
- * Maneja la comunicación con la API para eliminación de modelos
+ * Servicio para eliminar estados de infracción
+ * Maneja la comunicación con la API para eliminación de estados
  */
-class DeleteModelService {
+class DeleteInfractionStatusService {
     constructor() {
         this.baseUrl = 'https://149.130.161.148/api/v1';
-        this.endpoint = '/admin/models';
+        this.endpoint = '/admin/infraction-statuses';
     }
 
     /**
@@ -20,14 +20,14 @@ class DeleteModelService {
     }
 
     /**
-     * Elimina un modelo de vehículo
-     * @param {number} id - ID del modelo
+     * Elimina un estado de infracción
+     * @param {number} id - ID del estado de infracción
      * @returns {Promise<Object>} Respuesta de la API
      */
-    async deleteModel(id) {
+    async deleteInfractionStatus(id) {
         try {
             if (!id || typeof id !== 'number' || id <= 0) {
-                throw new Error('ID del modelo es requerido y debe ser un número válido');
+                throw new Error('ID del estado de infracción es requerido y debe ser un número válido');
             }
 
             const token = this.getAuthToken();
@@ -48,9 +48,7 @@ class DeleteModelService {
                 let errorMessage = `Error HTTP ${response.status}: ${response.statusText}`;
                 try {
                     const errorData = await response.json();
-                    if (errorData.error && errorData.error.message) {
-                        errorMessage = errorData.error.message;
-                    } else if (errorData.message) {
+                    if (errorData.message) {
                         errorMessage = errorData.message;
                     }
                 } catch (e) {}
@@ -59,16 +57,16 @@ class DeleteModelService {
 
             const responseData = await response.json();
             if (!responseData.success) {
-                throw new Error(responseData.message || 'Error al eliminar modelo de vehículo');
+                throw new Error(responseData.message || 'Error al eliminar estado de infracción');
             }
 
             return responseData;
         } catch (error) {
-            console.error('❌ Error en deleteModel:', error);
+            console.error('❌ Error en deleteInfractionStatus:', error);
             throw error;
         }
     }
 }
 
 // Exportar como instancia singleton
-window.DeleteModelService = new DeleteModelService();
+window.DeleteInfractionStatusService = new DeleteInfractionStatusService();

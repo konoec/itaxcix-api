@@ -82,6 +82,24 @@ class InfractionSeverityInitializer {
                                 console.error('❌ No se encontró la clase InfractionSeverityEditControllerClass');
                             }
                         }
+                        // --- INTEGRACIÓN ELIMINACIÓN ---
+                        // Instanciar el service y el controller de eliminación si no existen
+                        if (!window.DeleteInfractionSeverityService) {
+                            window.DeleteInfractionSeverityService = new DeleteInfractionSeverityService();
+                        }
+                        window.deleteInfractionSeverityController = new DeleteInfractionSeverityController();
+
+                        // Enlazar evento a los botones de eliminar
+                        document.body.addEventListener('click', function(e) {
+                            const btn = e.target.closest('[data-action="delete-infraction-severity"]');
+                            if (btn) {
+                                const id = Number(btn.getAttribute('data-infraction-severity-id'));
+                                const name = btn.getAttribute('data-infraction-severity-name') || '';
+                                const infractionSeverityData = { id, name };
+                                window.deleteInfractionSeverityController.handleDeleteButtonClick(btn, infractionSeverityData);
+                            }
+                        });
+                        // --- FIN INTEGRACIÓN ELIMINACIÓN ---
                     }, 200);
                     
                     // Configurar permisos DESPUÉS de que los controladores estén listos

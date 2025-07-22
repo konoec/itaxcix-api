@@ -309,25 +309,30 @@
     <script src="../../assets/js/auth/route-guard.js"></script>
     <script>window.routeGuard = new RouteGuard("../../index.html");</script>
 
-    <!-- 3. Servicios de API -->
+    <!-- 3. Servicio de perfil -->
     <script src="../../assets/js/api/services/profile-service.js"></script>
+
+    <!-- 4. Servicios específicos del módulo -->    
     <script src="../../assets/js/api/services/MasterTables/IncidentType/incident-type-service.js"></script>
     <script src="../../assets/js/api/services/MasterTables/IncidentType/incident-type-update-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/IncidentType/delete-incident-type-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/IncidentType/create-incident-type-service.js"></script>
+    
 
     <!-- 4. Controladores de UI -->
     <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/global-confirmation-modal-controller.js"></script>
 
     <!-- 5. Controlador específico -->
 
     <!-- 5. Controlador específico -->
     <script src="../../assets/js/ui/controllers/MasterTables/IncidentType/incident-type-list-controller.js"></script>
     <script src="../../assets/js/ui/controllers/MasterTables/IncidentType/create-incident-type-controller.js"></script>
-
-    <!-- Controlador de edición de tipo de incidencia -->
     <script src="../../assets/js/ui/controllers/MasterTables/IncidentType/incident-type-edit-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/IncidentType/delete-incident-type-controller.js"></script>
 
     <!-- 6. Inicializador específico de la página -->
     <script src="../../assets/js/ui/initializers/MasterTables/incident-type-initializer.js"></script>

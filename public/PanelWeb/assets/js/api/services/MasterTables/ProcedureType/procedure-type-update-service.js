@@ -67,9 +67,10 @@ class ProcedureTypeUpdateService {
             console.log('📋 Datos de respuesta:', result);
 
             if (!response.ok) {
+                let errorMsg = result?.error?.message || result.message || `Error del servidor (${response.status})`;
                 // Manejar diferentes tipos de errores
                 if (response.status === 400) {
-                    throw new Error(result.message || 'Datos inválidos. Verifique la información ingresada.');
+                    throw new Error(errorMsg || 'Datos inválidos. Verifique la información ingresada.');
                 } else if (response.status === 401) {
                     throw new Error('Sesión expirada. Inicie sesión nuevamente.');
                 } else if (response.status === 404) {
@@ -79,7 +80,7 @@ class ProcedureTypeUpdateService {
                 } else if (response.status === 422) {
                     throw new Error('Datos de validación incorrectos. Verifique los campos.');
                 } else {
-                    throw new Error(result.message || `Error del servidor (${response.status})`);
+                    throw new Error(errorMsg);
                 }
             }
 

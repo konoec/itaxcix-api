@@ -69,6 +69,31 @@ class TravelStatusInitializer {
                             window.travelStatusCreateController = new TravelStatusCreateController();
                             console.log('📝 TravelStatusCreateController inicializado');
                         }
+                        // Inicializar y exponer controlador de eliminación modular
+                        if (!window.deleteTravelStatusController && typeof DeleteTravelStatusController !== 'undefined') {
+                            window.deleteTravelStatusController = new DeleteTravelStatusController();
+                            console.log('🗑️ DeleteTravelStatusController inicializado');
+                        }
+                        // Inicializar controlador de edición de TravelStatus
+                        if (!window.updateTravelStatusController && typeof TravelStatusEditController !== 'undefined') {
+                            window.updateTravelStatusController = new TravelStatusEditController();
+                            console.log('✏️ TravelStatusEditController inicializado');
+                        }
+
+                        // Delegar evento de eliminación en la tabla usando el controlador modular
+                        const tableBody = document.getElementById('travelStatusTableBody');
+                        if (tableBody && window.deleteTravelStatusController) {
+                            tableBody.addEventListener('click', function(e) {
+                                const btn = e.target.closest('[data-action="delete-travel-status"]');
+                                if (btn) {
+                                    const id = parseInt(btn.getAttribute('data-travel-status-id'));
+                                    const name = btn.getAttribute('data-travel-status-name') || btn.getAttribute('data-name');
+                                    if (!isNaN(id)) {
+                                        window.deleteTravelStatusController.handleDeleteButtonClick(btn, { id, name });
+                                    }
+                                }
+                            });
+                        }
                     }, 200);
                     
                     // Configurar permisos DESPUÉS de que los controladores estén listos

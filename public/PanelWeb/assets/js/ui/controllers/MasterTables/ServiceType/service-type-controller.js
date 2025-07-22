@@ -255,7 +255,6 @@ class ServiceTypeController {
             const statusBadge = serviceType.active 
                 ? `<span class="badge bg-success-lt"><i class="fas fa-check-circle me-1"></i>Activo</span>`
                 : `<span class="badge bg-danger-lt"><i class="fas fa-times-circle me-1"></i>Inactivo</span>`;
-            
             return `
                 <tr>
                     <td class="text-muted">${rowNumber}</td>
@@ -277,9 +276,11 @@ class ServiceTypeController {
                                     title="Editar">
                                 <i class="fas fa-edit text-orange"></i>
                             </button>
-                            <button class="btn btn-sm btn-outline-red" 
-                                    onclick="window.serviceTypeDeleteController.handleDeleteServiceType(${serviceType.id}, '${this.escapeHtml(serviceType.name)}')" 
-                                    title="Eliminar">
+                            <button class="btn btn-sm btn-outline-danger"
+                                data-action="delete-service-type"
+                                data-service-type-id="${serviceType.id}"
+                                data-service-type-name="${this.escapeHtml(serviceType.name)}"
+                                title="Eliminar tipo de servicio">
                                 <i class="fas fa-trash text-red"></i>
                             </button>
                         </div>
@@ -619,4 +620,4 @@ _renderPaginationButtons() {
 }
 
 // Variable global para acceso desde HTML
-window.serviceTypeController = new ServiceTypeController();
+window.ServiceTypeController = ServiceTypeController;

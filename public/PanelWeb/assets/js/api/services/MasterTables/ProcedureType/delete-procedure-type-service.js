@@ -1,14 +1,14 @@
-// Archivo: DeleteModelService.js
-// Ubicación: assets/js/api/services/MasterTables/VehicleModel/delete-model-service.js
+// Archivo: DeleteProcedureTypeService.js
+// Ubicación: assets/js/api/services/MasterTables/ProcedureType/delete-procedure-type-service.js
 
 /**
- * Servicio para eliminar modelos de vehículo
- * Maneja la comunicación con la API para eliminación de modelos
+ * Servicio para eliminar tipos de trámite
+ * Maneja la comunicación con la API para eliminación de tipos de trámite
  */
-class DeleteModelService {
+class DeleteProcedureTypeService {
     constructor() {
         this.baseUrl = 'https://149.130.161.148/api/v1';
-        this.endpoint = '/admin/models';
+        this.endpoint = '/admin/procedure-types';
     }
 
     /**
@@ -20,14 +20,14 @@ class DeleteModelService {
     }
 
     /**
-     * Elimina un modelo de vehículo
-     * @param {number} id - ID del modelo
+     * Elimina un tipo de trámite
+     * @param {number} id - ID del tipo de trámite
      * @returns {Promise<Object>} Respuesta de la API
      */
-    async deleteModel(id) {
+    async deleteProcedureType(id) {
         try {
             if (!id || typeof id !== 'number' || id <= 0) {
-                throw new Error('ID del modelo es requerido y debe ser un número válido');
+                throw new Error('ID del tipo de trámite es requerido y debe ser un número válido');
             }
 
             const token = this.getAuthToken();
@@ -48,9 +48,7 @@ class DeleteModelService {
                 let errorMessage = `Error HTTP ${response.status}: ${response.statusText}`;
                 try {
                     const errorData = await response.json();
-                    if (errorData.error && errorData.error.message) {
-                        errorMessage = errorData.error.message;
-                    } else if (errorData.message) {
+                    if (errorData.message) {
                         errorMessage = errorData.message;
                     }
                 } catch (e) {}
@@ -59,16 +57,16 @@ class DeleteModelService {
 
             const responseData = await response.json();
             if (!responseData.success) {
-                throw new Error(responseData.message || 'Error al eliminar modelo de vehículo');
+                throw new Error(responseData.message || 'Error al eliminar tipo de trámite');
             }
 
             return responseData;
         } catch (error) {
-            console.error('❌ Error en deleteModel:', error);
+            console.error('❌ Error en deleteProcedureType:', error);
             throw error;
         }
     }
 }
 
 // Exportar como instancia singleton
-window.DeleteModelService = new DeleteModelService();
+window.DeleteProcedureTypeService = new DeleteProcedureTypeService();

@@ -57,7 +57,8 @@ class VehicleClassUpdateService {
             }
 
             if (!response.ok) {
-                throw new Error(result.message || 'Error al actualizar la clase de vehículo');
+                let errorMsg = result?.error?.message || result.message || 'Error al actualizar la clase de vehículo';
+                throw new Error(errorMsg);
             }
 
             // Si la respuesta es simplemente 'ok' o el mensaje es 'OK', adaptar el mensaje

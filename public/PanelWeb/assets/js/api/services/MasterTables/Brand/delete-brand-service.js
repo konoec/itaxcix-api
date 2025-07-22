@@ -48,7 +48,9 @@ class DeleteBrandService {
                 let errorMessage = `Error HTTP ${response.status}: ${response.statusText}`;
                 try {
                     const errorData = await response.json();
-                    if (errorData.message) {
+                    if (errorData.error && errorData.error.message) {
+                        errorMessage = errorData.error.message;
+                    } else if (errorData.message) {
                         errorMessage = errorData.message;
                     }
                 } catch (e) {}

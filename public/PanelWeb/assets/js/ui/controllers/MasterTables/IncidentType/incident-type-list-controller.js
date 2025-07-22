@@ -157,11 +157,48 @@ class IncidentTypeListController {
         <td class="text-center">
           <div class="btn-group">
             <button class="btn btn-sm btn-outline-warning"><i class="fas fa-edit"></i></button>
-            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+            <button class="btn btn-sm btn-outline-danger" data-action="delete-incident-type" data-incident-type-id="${item.id}" data-incident-type-name="${item.name}"><i class="fas fa-trash"></i></button>
           </div>
         </td>
       </tr>
     `).join('');
+  }
+  // Delegar el evento de eliminación en el tbody
+  initEvents() {
+    const dLoad = this.debounce(() => this.load());
+    this.filters.search?.addEventListener('input', dLoad);
+    this.filters.name?.addEventListener('input', dLoad);
+    ['active','perPage','sortBy','sortDirection'].forEach(key => {
+      this.filters[key]?.addEventListener('change', () => this.load());
+    });
+    this.refreshBtn?.addEventListener('click', () => this.load());
+    this.clearBtn?.addEventListener('click', () => this.clearFilters());
+    document.getElementById('clearIncidentTypeSearchBtn')
+      ?.addEventListener('click', () => {
+        this.filters.search.value = '';
+        this.load();
+      });
+
+    // Abrir modal de creación al hacer click en el botón
+    this.createBtn?.addEventListener('click', () => {
+      const modal = document.getElementById('incidentTypeCreateModal');
+      if (!window.bootstrap) {
+        console.error('window.bootstrap no está disponible. ¿Tabler JS se está cargando correctamente?');
+        alert('Error: Bootstrap JS no está disponible. Verifica la carga de Tabler.');
+        return;
+      }
+      if (modal) {
+        const modalInstance = window.bootstrap.Modal.getOrCreateInstance(modal);
+        // Limpiar el formulario antes de mostrar
+        const form = modal.querySelector('form');
+        if (form) form.reset();
+        modalInstance.show();
+      } else {
+        console.error('No se encontró el modal de creación.');
+      }
+    });
+
+    // ...existing code...
   }
 
   updateStats({ data, pagination }) {

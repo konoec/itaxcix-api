@@ -43,7 +43,11 @@ class VehicleClassService {
       );
       const result = await res.json();
       if (!res.ok) {
-        throw new Error(result.message || 'Error al crear la clase de vehículo');
+        // Lanzar el error con el mensaje específico de la API si existe
+        const apiErrorMsg = (result.error && result.error.message) ? result.error.message : result.message;
+        const error = new Error(apiErrorMsg || 'Error al crear la clase de vehículo');
+        error.error = result.error || null;
+        throw error;
       }
       return {
         success: true,
@@ -53,7 +57,8 @@ class VehicleClassService {
     } catch (e) {
       return {
         success: false,
-        message: e.message || 'Error al crear la clase de vehículo'
+        message: e.message || 'Error al crear la clase de vehículo',
+        error: e.error || null
       };
     }
   }

@@ -63,7 +63,7 @@ class ServiceTypeInitializer {
                             window.PermissionsService.initializePermissions();
                         }
                         
-                        // *** FALTABA ESTO: Inicializar ServiceTypeController ***
+                        // Inicializar ServiceTypeController
                         console.log('🚕 Inicializando ServiceTypeController...');
                         try {
                             if (!window.serviceTypeController) {
@@ -73,6 +73,32 @@ class ServiceTypeInitializer {
                         } catch (error) {
                             console.error('❌ Error inicializando ServiceTypeController:', error);
                         }
+
+                        // Inicializar DeleteServiceTypeService y DeleteServiceTypeController
+                        try {
+                            if (!window.DeleteServiceTypeService) {
+                                window.DeleteServiceTypeService = new DeleteServiceTypeService();
+                            }
+                            if (!window.deleteServiceTypeController) {
+                                window.deleteServiceTypeController = new DeleteServiceTypeController();
+                                console.log('🗑️ DeleteServiceTypeController inicializado');
+                            }
+                        } catch (error) {
+                            console.error('❌ Error inicializando DeleteServiceTypeController:', error);
+                        }
+
+                        // Evento delegado para eliminar tipo de servicio
+                        const tableBody = document.getElementById('service-types-table-body');
+                        tableBody?.addEventListener('click', (e) => {
+                            const btn = e.target.closest('button[data-action="delete-service-type"]');
+                            if (btn) {
+                                const id = parseInt(btn.getAttribute('data-service-type-id'));
+                                const name = btn.getAttribute('data-service-type-name') || '';
+                                if (window.DeleteServiceTypeController && window.deleteServiceTypeController) {
+                                    window.deleteServiceTypeController.handleDeleteButtonClick(btn, { id, name });
+                                }
+                            }
+                        });
                         // Inicializar ServiceTypeEditController después de la lista
                         if (!window.ServiceTypeEditController) {
                             if (window.ServiceTypeEditControllerClass) {

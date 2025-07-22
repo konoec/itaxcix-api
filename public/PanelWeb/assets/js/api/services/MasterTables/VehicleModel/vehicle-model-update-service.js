@@ -66,13 +66,14 @@ class ModelUpdateService {
 
       // Manejo de errores HTTP
       if (!response.ok) {
+        let errorMsg = result?.error?.message || result.message || `Error del servidor (${response.status})`;
         switch (response.status) {
-          case 400: throw new Error(result.message || 'Datos inválidos. Verifique los campos.');
+          case 400: throw new Error(errorMsg || 'Datos inválidos. Verifique los campos.');
           case 401: throw new Error('Sesión expirada. Inicie sesión nuevamente.');
           case 404: throw new Error('Modelo no encontrado.');
           case 409: throw new Error('Conflicto: datos duplicados.');
           case 422: throw new Error('Validación fallida. Revise los datos.');
-          default:  throw new Error(result.message || `Error del servidor (${response.status})`);
+          default:  throw new Error(errorMsg);
         }
       }
 
@@ -91,17 +92,29 @@ class ModelUpdateService {
           data:    result.data
         };
       } else {
-        throw new Error(result.message || 'Error desconocido al actualizar el modelo');
+        // Priorizar el mensaje exacto de la API
+        let errorMsg = '';
+        if (result && typeof result === 'object') {
+          if (result.error && typeof result.error === 'object' && result.error.message) {
+            errorMsg = result.error.message;
+          } else if (result.message) {
+            errorMsg = result.message;
+          } else {
+            errorMsg = 'Error desconocido al actualizar el modelo';
+          }
+        } else {
+          errorMsg = 'Error desconocido al actualizar el modelo';
+        }
+        throw new Error(errorMsg);
       }
 
     } catch (err) {
       console.error('❌ Error en updateModel:', err);
-      // Re-lanzar errores de negocio
-      const known = ['Token', 'Sesión', 'encontrado', 'duplicado', 'Validación'];
-      if (known.some(k => err.message.includes(k))) {
-        throw err;
+      // Si el error tiene un mensaje, mostrarlo siempre
+      if (err && err.message) {
+        throw new Error(err.message);
       }
-      // Error de conexión genérico
+      // Error de conexión genérico solo si no hay mensaje
       throw new Error('Error de conexión. Intente nuevamente más tarde.');
     }
   }

@@ -35,14 +35,6 @@
     <!-- TucModality specific styles -->
     <link rel="stylesheet" href="../../assets/css/mastertables/companies.css">
 
-    <!-- Service y Controller de creación de modalidad TUC -->
-    <script src="../../assets/js/api/services/MasterTables/TucModality/tuc-modality-create-service.js"></script>
-    <script src="../../assets/js/ui/controllers/MasterTables/TucModality/tuc-modality-create-controller.js"></script>
-
-    <!-- Service y Controller de edición de modalidad TUC -->
-    <script src="../../assets/js/api/services/MasterTables/TucModality/tuc-modality-update-service.js"></script>
-    <script src="../../assets/js/ui/controllers/MasterTables/TucModality/tuc-modality-edit-controller.js"></script>
-    
     <!-- Font Awesome para iconografía -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
@@ -115,13 +107,13 @@
                             <div class="col-auto ms-auto d-print-none">
                                 <div class="btn-list">
                                     <button class="btn btn-outline-cyan" id="refresh-tuc-modalities-btn" title="Actualizar datos">
-                                        <i class="fas fa-sync-alt me-1"></i> Actualizar
+                                        <i class="fas fa-sync-alt me-1"></i>
                                     </button>
                                     <button class="btn btn-outline-secondary" id="clear-filters-btn" title="Limpiar filtros">
-                                        <i class="fas fa-broom me-1"></i> Limpiar
+                                        <i class="fas fa-broom me-1"></i>
                                     </button>
                                     <button class="btn btn-outline-success" id="createTucModalityBtn" title="Crear modalidad TUC">
-                                        <i class="fas fa-plus me-1"></i> Crear Modalidad
+                                        <i class="fas fa-plus me-1"></i>
                                     </button>
                                 </div>
                             </div>
@@ -377,14 +369,26 @@
     
     <!-- 2. Servicios de API básicos -->
     <script src="../../assets/js/api/services/profile-service.js"></script>
-    <script src="../../assets/js/api/services/MasterTables/TucModality/tuc-modality-service.js"></script>
 
+    <!-- 3. Servicios específicos de modalidades TUC -->
+    <script src="../../assets/js/api/services/MasterTables/TucModality/tuc-modality-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/TucModality/tuc-modality-create-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/TucModality/tuc-modality-update-service.js"></script>
+    <script src="../../assets/js/api/services/MasterTables/TucModality/delete-tuc-modality-service.js"></script>
+
+    
     <!-- 3. Controladores de UI -->
     <script src="../../assets/js/ui/controllers/Components/loading-screen-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/sidebar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/topbar-controller.js"></script>
     <script src="../../assets/js/ui/controllers/Components/profile-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/Components/global-confirmation-modal-controller.js"></script>
+
+    <!-- Servicios de API para Modalidades TUC -->
     <script src="../../assets/js/ui/controllers/MasterTables/TucModality/tuc-modality-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/TucModality/tuc-modality-create-controller.js"></script>
+    <script src="../../assets/js/ui/controllers/MasterTables/TucModality/tuc-modality-edit-controller.js"></script> 
+    <script src="../../assets/js/ui/controllers/MasterTables/TucModality/delete-tuc-modality-controller.js"></script>
 
     <!-- 4. Inicializador específico de la página -->
     <script src="../../assets/js/ui/initializers/MasterTables/tuc-modality-initializer.js"></script>

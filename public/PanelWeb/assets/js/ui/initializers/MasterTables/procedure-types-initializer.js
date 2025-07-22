@@ -80,6 +80,26 @@ class ProcedureTypesInitializer {
                     }
                 }, 300);
 
+                // --- INICIO: Integración DeleteProcedureTypeController ---
+                // Instanciar el service y el controller de eliminación de tipo de trámite
+                window.DeleteProcedureTypeService = new DeleteProcedureTypeService();
+                window.deleteProcedureTypeControllerInstance = new DeleteProcedureTypeController();
+
+                // Registrar evento global para botones de eliminar tipo de trámite
+                document.addEventListener('click', function(e) {
+                    const btn = e.target.closest('[data-action="delete-procedure-type"]');
+                    if (btn) {
+                        const procedureTypeId = parseInt(btn.getAttribute('data-procedure-type-id'), 10);
+                        const procedureTypeName = btn.getAttribute('data-procedure-type-name') || '';
+                        const procedureTypeData = { id: procedureTypeId, name: procedureTypeName };
+                        window.deleteProcedureTypeControllerInstance.handleDeleteButtonClick(btn, procedureTypeData);
+                    }
+                });
+                // Exponer el controller globalmente si lo necesitas en otros módulos
+                window.DeleteProcedureTypeController = window.deleteProcedureTypeControllerInstance;
+                console.log('🗑️ DeleteProcedureTypeController inicializado y eventos registrados');
+                // --- FIN: Integración DeleteProcedureTypeController ---
+
                 // Configurar permisos y notificar que el módulo está listo
                 setTimeout(() => {
                     if (window.PermissionsService) {

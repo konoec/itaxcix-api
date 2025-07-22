@@ -1,14 +1,14 @@
-// Archivo: DeleteModelService.js
-// Ubicación: assets/js/api/services/MasterTables/VehicleModel/delete-model-service.js
+// Archivo: DeleteInfractionSeverityService.js
+// Ubicación: assets/js/api/services/MasterTables/InfractionSeverity/delete-infraction-severity-service.js
 
 /**
- * Servicio para eliminar modelos de vehículo
- * Maneja la comunicación con la API para eliminación de modelos
+ * Servicio para eliminar severidades de infracción
+ * Maneja la comunicación con la API para eliminación de severidades
  */
-class DeleteModelService {
+class DeleteInfractionSeverityService {
     constructor() {
         this.baseUrl = 'https://149.130.161.148/api/v1';
-        this.endpoint = '/admin/models';
+        this.endpoint = '/admin/infraction-severities';
     }
 
     /**
@@ -20,14 +20,14 @@ class DeleteModelService {
     }
 
     /**
-     * Elimina un modelo de vehículo
-     * @param {number} id - ID del modelo
+     * Elimina una severidad de infracción
+     * @param {number} id - ID de la severidad
      * @returns {Promise<Object>} Respuesta de la API
      */
-    async deleteModel(id) {
+    async deleteInfractionSeverity(id) {
         try {
             if (!id || typeof id !== 'number' || id <= 0) {
-                throw new Error('ID del modelo es requerido y debe ser un número válido');
+                throw new Error('ID de la severidad es requerido y debe ser un número válido');
             }
 
             const token = this.getAuthToken();
@@ -59,16 +59,16 @@ class DeleteModelService {
 
             const responseData = await response.json();
             if (!responseData.success) {
-                throw new Error(responseData.message || 'Error al eliminar modelo de vehículo');
+                throw new Error(responseData.message || 'Error al eliminar severidad de infracción');
             }
 
             return responseData;
         } catch (error) {
-            console.error('❌ Error en deleteModel:', error);
+            console.error('❌ Error en deleteInfractionSeverity:', error);
             throw error;
         }
     }
 }
 
 // Exportar como instancia singleton
-window.DeleteModelService = new DeleteModelService();
+window.DeleteInfractionSeverityService = new DeleteInfractionSeverityService();
