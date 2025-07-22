@@ -267,7 +267,7 @@ class ProcedureTypeController extends AbstractController
             $result = $this->deleteHandler->handle($id);
 
             if (!$result) {
-                return $this->error('No se pudo eliminar el tipo de trámite', 400);
+                return $this->error('No se pudo eliminar el tipo de trámite. Revise las relaciones con las TUCs.', 400);
             }
 
             return $this->ok('Tipo de trámite eliminado exitosamente');

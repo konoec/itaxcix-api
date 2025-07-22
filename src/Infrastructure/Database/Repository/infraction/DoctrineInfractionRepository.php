@@ -5,6 +5,7 @@ namespace itaxcix\Infrastructure\Database\Repository\infraction;
 use Doctrine\ORM\EntityManagerInterface;
 use itaxcix\Core\Interfaces\infraction\InfractionRepositoryInterface;
 use itaxcix\Infrastructure\Database\Entity\infraction\InfractionEntity;
+use itaxcix\Shared\DTO\useCases\InfractionReport\InfractionReportRequestDTO;
 
 class DoctrineInfractionRepository implements InfractionRepositoryInterface
 {
@@ -15,7 +16,7 @@ class DoctrineInfractionRepository implements InfractionRepositoryInterface
         $this->entityManager = $entityManager;
     }
 
-    public function findReport(\itaxcix\Shared\DTO\useCases\InfractionReport\InfractionReportRequestDTO $dto): array
+    public function findReport(InfractionReportRequestDTO $dto): array
     {
         $qb = $this->entityManager->createQueryBuilder()
             ->select('i, u, p, s, sev')
@@ -86,7 +87,7 @@ class DoctrineInfractionRepository implements InfractionRepositoryInterface
         return $result;
     }
 
-    public function countReport(\itaxcix\Shared\DTO\useCases\InfractionReport\InfractionReportRequestDTO $dto): int
+    public function countReport(InfractionReportRequestDTO $dto): int
     {
         $qb = $this->entityManager->createQueryBuilder()
             ->select('COUNT(i.id)')
@@ -119,5 +120,31 @@ class DoctrineInfractionRepository implements InfractionRepositoryInterface
                 ->setParameter('description', '%' . $dto->description . '%');
         }
         return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    public function findActivesBySeverityId(int $severityId): array
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('i')
+            ->from(InfractionEntity::class, 'i')
+            ->join('i.severity', 's')
+            ->where('s.id = :severityId')
+            ->andWhere('i.active = true')
+            ->setParameter('severityId', $severityId);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function findActivesByStatusId(int $statusId): array
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('i')
+            ->from(InfractionEntity::class, 'i')
+            ->join('i.status', 's')
+            ->where('s.id = :statusId')
+            ->andWhere('i.active = true')
+            ->setParameter('statusId', $statusId);
+
+        return $qb->getQuery()->getResult();
     }
 }

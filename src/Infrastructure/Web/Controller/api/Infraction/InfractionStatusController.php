@@ -267,7 +267,7 @@ class InfractionStatusController extends AbstractController
             $result = $this->deleteHandler->handle($id);
 
             if (!$result) {
-                return $this->error('No se pudo eliminar el estado de infracción', 400);
+                return $this->error('No se pudo eliminar el estado de infracción. Verifique infracciones activas relacionadas.', 400);
             }
 
             return $this->ok('Estado de infracción eliminado exitosamente');

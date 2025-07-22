@@ -118,4 +118,18 @@ class DoctrineUserCodeRepository implements UserCodeRepositoryInterface
         $entity = $query->getOneOrNullResult();
         return $entity ? $this->toDomain($entity) : null;
     }
+
+    public function findActivesByUserCodeTypeId(int $userCodeTypeId): array
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('uc')
+            ->from(UserCodeEntity::class, 'uc')
+            ->join('uc.type', 't')
+            ->where('t.id = :userCodeTypeId')
+            ->setParameter('userCodeTypeId', $userCodeTypeId)
+            ->getQuery();
+
+        $entities = $query->getResult();
+        return array_map([$this, 'toDomain'], $entities);
+    }
 }

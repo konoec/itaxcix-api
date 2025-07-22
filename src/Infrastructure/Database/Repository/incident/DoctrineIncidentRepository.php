@@ -258,4 +258,25 @@ class DoctrineIncidentRepository implements IncidentRepositoryInterface {
 
         return (int) $qb->getQuery()->getSingleScalarResult();
     }
+
+    public function findActivesByIncidentTypeId(int $incidentTypeId): array
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('i')
+            ->from(IncidentEntity::class, 'i')
+            ->leftJoin('i.type', 't')
+            ->where('i.active = true')
+            ->andWhere('t.id = :incidentTypeId')
+            ->setParameter('incidentTypeId', $incidentTypeId);
+
+        $entities = $qb->getQuery()->getResult();
+        $result = [];
+        foreach ($entities as $entity) {
+            if ($entity instanceof IncidentEntity) {
+                $result[] = $this->toDomain($entity);
+            }
+        }
+        return $result;
+    }
+
 }

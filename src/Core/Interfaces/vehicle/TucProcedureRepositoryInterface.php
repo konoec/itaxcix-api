@@ -13,4 +13,7 @@ interface TucProcedureRepositoryInterface
     public function findTucProcedureWithMaxExpirationDateByVehicleId(int $vehicleId): ?TucProcedureModel;
     public function findByCompanyId(int $companyId): array;
     public function findByDistrictId(int $districtId): array;
+    public function findByTucModalityId(int $tucModalityId): array;
+    public function findByTucStatusId(int $tucStatusId): array;
+    public function findByProcedureTypeId(int $procedureTypeId): array;
 }

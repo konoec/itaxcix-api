@@ -218,4 +218,49 @@ class DoctrineTucProcedureRepository implements TucProcedureRepositoryInterface 
 
         return array_map([$this, 'toDomain'], $results);
     }
+
+    public function findByTucModalityId(int $tucModalityId): array
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('tp')
+            ->from(TucProcedureEntity::class, 'tp')
+            ->join('tp.modality', 'm')
+            ->where('m.id = :tucModalityId')
+            ->setParameter('tucModalityId', $tucModalityId)
+            ->orderBy('tp.expirationDate', 'DESC');
+
+        $results = $qb->getQuery()->getResult();
+
+        return array_map([$this, 'toDomain'], $results);
+    }
+
+    public function findByTucStatusId(int $tucStatusId): array
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('tp')
+            ->from(TucProcedureEntity::class, 'tp')
+            ->join('tp.status', 's')
+            ->where('s.id = :tucStatusId')
+            ->setParameter('tucStatusId', $tucStatusId)
+            ->orderBy('tp.expirationDate', 'DESC');
+
+        $results = $qb->getQuery()->getResult();
+
+        return array_map([$this, 'toDomain'], $results);
+    }
+
+    public function findByProcedureTypeId(int $procedureTypeId): array
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('tp')
+            ->from(TucProcedureEntity::class, 'tp')
+            ->join('tp.type', 't')
+            ->where('t.id = :procedureTypeId')
+            ->setParameter('procedureTypeId', $procedureTypeId)
+            ->orderBy('tp.expirationDate', 'DESC');
+
+        $results = $qb->getQuery()->getResult();
+
+        return array_map([$this, 'toDomain'], $results);
+    }
 }

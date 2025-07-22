@@ -267,7 +267,7 @@ class TucModalityController extends AbstractController
             $result = $this->deleteHandler->handle($id);
 
             if (!$result) {
-                return $this->error('No se pudo eliminar la modalidad TUC', 400);
+                return $this->error('No se pudo eliminar la modalidad TUC. Verifique relaciones existentes con TUCs.', 400);
             }
 
             return $this->ok('Modalidad TUC eliminada exitosamente');

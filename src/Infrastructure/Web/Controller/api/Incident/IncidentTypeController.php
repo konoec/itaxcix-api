@@ -267,7 +267,7 @@ class IncidentTypeController extends AbstractController
             $result = $this->deleteHandler->handle($id);
 
             if (!$result) {
-                return $this->error('No se pudo eliminar el tipo de incidencia', 400);
+                return $this->error('No se pudo eliminar el tipo de incidencia. Verifique relaciones activas en incidentes.', 400);
             }
 
             return $this->ok('Tipo de incidencia eliminado exitosamente');

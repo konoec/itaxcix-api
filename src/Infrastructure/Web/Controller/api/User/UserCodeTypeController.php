@@ -271,7 +271,7 @@ class UserCodeTypeController extends AbstractController
             $result = $this->deleteHandler->execute($id);
 
             if (!$result) {
-                return $this->error('No se pudo eliminar el tipo de código de usuario', 400);
+                return $this->error('No se pudo eliminar el tipo de código de usuario. Verifique las relaciones existentes.', 400);
             }
 
             return $this->ok('Tipo de código de usuario eliminado exitosamente');

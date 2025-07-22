@@ -288,4 +288,18 @@ class DoctrineTravelRepository implements TravelRepositoryInterface
 
         return (int) $qb->getQuery()->getSingleScalarResult();
     }
+
+    public function findActivesByTravelStatusId(int $travelStatusId): array
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('t')
+            ->from(TravelEntity::class, 't')
+            ->where('t.status = :travelStatusId')
+            ->setParameter('travelStatusId', $travelStatusId)
+            ->getQuery();
+
+        $entities = $query->getResult();
+
+        return array_map([$this, 'toDomain'], $entities);
+    }
 }

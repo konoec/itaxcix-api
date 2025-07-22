@@ -10,4 +10,5 @@ interface UserCodeRepositoryInterface
     public function findLatestUnusedCodeByContact(int $contactId): ?UserCodeModel;
     public function saveUserCode(UserCodeModel $code): UserCodeModel;
     public function findUserCodeByUserIdAndTypeId(int $userId, int $typeId): ?UserCodeModel;
+    public function findActivesByUserCodeTypeId(int $userCodeTypeId): array;
 }

@@ -267,7 +267,7 @@ class InfractionSeverityController extends AbstractController
             $result = $this->deleteHandler->handle($id);
 
             if (!$result) {
-                return $this->error('No se pudo eliminar la gravedad de infracción', 400);
+                return $this->error('No se pudo eliminar la gravedad de infracción. Verifique infracciones activas relacionadas.', 400);
             }
 
             return $this->ok(

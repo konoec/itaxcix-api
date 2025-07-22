@@ -665,7 +665,7 @@ class TravelStatusController extends AbstractController
             $result = $this->deleteHandler->handle($id);
 
             if (!$result) {
-                return $this->error('No se pudo eliminar el estado de viaje', 400);
+                return $this->error('No se pudo eliminar el estado de viaje. Verifique viajes relacionados.', 400);
             }
 
             return $this->ok('Estado de viaje eliminado exitosamente');
