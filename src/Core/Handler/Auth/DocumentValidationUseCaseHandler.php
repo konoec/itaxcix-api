@@ -6,6 +6,7 @@ use InvalidArgumentException;
 use itaxcix\Core\Domain\person\PersonModel;
 use itaxcix\Core\Interfaces\person\DocumentTypeRepositoryInterface;
 use itaxcix\Core\Interfaces\person\PersonRepositoryInterface;
+use itaxcix\Core\Interfaces\user\AdminProfileRepositoryInterface;
 use itaxcix\Core\Interfaces\user\UserRepositoryInterface;
 use itaxcix\Core\UseCases\Auth\DocumentValidationUseCase;
 use itaxcix\Shared\DTO\useCases\Auth\DocumentValidationRequestDTO;
@@ -15,12 +16,14 @@ class DocumentValidationUseCaseHandler implements DocumentValidationUseCase
     private PersonRepositoryInterface $personRepository;
     private DocumentTypeRepositoryInterface $documentTypeRepository;
     private UserRepositoryInterface $userRepository;
+    private AdminProfileRepositoryInterface $adminProfileRepository;
 
-    public function __construct(PersonRepositoryInterface $personRepository, DocumentTypeRepositoryInterface $documentTypeRepository, UserRepositoryInterface $userRepository)
+    public function __construct(PersonRepositoryInterface $personRepository, DocumentTypeRepositoryInterface $documentTypeRepository, UserRepositoryInterface $userRepository, AdminProfileRepositoryInterface $adminProfileRepository)
     {
         $this->personRepository = $personRepository;
         $this->documentTypeRepository = $documentTypeRepository;
         $this->userRepository = $userRepository;
+        $this->adminProfileRepository = $adminProfileRepository;
     }
 
     public function execute(DocumentValidationRequestDTO $dto): ?array
@@ -44,6 +47,14 @@ class DocumentValidationUseCaseHandler implements DocumentValidationUseCase
             }
 
             $user = $this->userRepository->findAllUserByPersonDocument($person->getDocument());
+
+            $adminProfile = $this->adminProfileRepository->findAdminProfileByUserId($user?->getId());
+
+            if ($adminProfile !== null) {
+                return [
+                    'personId' => $person->getId()
+                ];
+            }
 
             if ($user !== null) {
                 throw new InvalidArgumentException('Ya existe un usuario con ese documento.');
