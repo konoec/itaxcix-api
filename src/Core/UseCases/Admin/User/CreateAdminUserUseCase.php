@@ -115,7 +115,7 @@ class CreateAdminUserUseCase
         }
 
         $citizenRole = $this->roleRepository->findRoleByName('CIUDADANO');
-        if (!$citizenRole || !$citizenRole->isWeb() || !$citizenRole->isActive()) {
+        if (!$citizenRole || !$citizenRole->isActive()) {
             throw new InvalidArgumentException("Rol CIUDADANO web no encontrado o no está activo");
         }
 
