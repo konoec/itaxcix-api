@@ -22,6 +22,11 @@ class ContactTypeDeleteUseCase
             return false;
         }
 
+        // Verificar si el tipo de contacto es uno de los tipos especiales
+        if (in_array($existingContactType->getName(), ['CORREO ELECTRÓNICO', 'TELÉFONO MÓVIL'])) {
+            throw new \InvalidArgumentException('No se puede eliminar el tipo de contacto: ' . $existingContactType->getName());
+        }
+
         // Verificar si el tipo de contacto está asociado a algún usuario
         $usersWithContactType = $this->userContactRepository->findByContactTypeId($id);
         if ($usersWithContactType) {
