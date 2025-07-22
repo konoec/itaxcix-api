@@ -413,4 +413,20 @@ class DoctrineVehicleRepository implements VehicleRepositoryInterface {
             'modalityName' => null
         ];
     }
+
+    public function findActiveByColorId(int $colorId): array
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('v')
+            ->from(VehicleEntity::class, 'v')
+            ->where('v.color = :colorId')
+            ->andWhere('v.active = :active')
+            ->setParameter('colorId', $colorId)
+            ->setParameter('active', true)
+            ->getQuery();
+
+        $entities = $query->getResult();
+
+        return array_map([$this, 'toDomain'], $entities);
+    }
 }

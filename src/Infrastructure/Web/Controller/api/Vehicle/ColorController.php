@@ -56,7 +56,6 @@ class ColorController extends AbstractController
         response: 200,
         description: "Lista de colores con paginación",
         content: new OA\JsonContent(
-            type: "object",
             properties: [
                 new OA\Property(property: "success", type: "boolean", example: true),
                 new OA\Property(property: "message", type: "string", example: "Colores obtenidos exitosamente"),
@@ -90,7 +89,8 @@ class ColorController extends AbstractController
                         )
                     ]
                 )
-            ]
+            ],
+            type: "object"
         )
     )]
     public function list(ServerRequestInterface $request): ResponseInterface
@@ -118,12 +118,12 @@ class ColorController extends AbstractController
     #[OA\RequestBody(
         required: true,
         content: new OA\JsonContent(
-            type: "object",
             required: ["name"],
             properties: [
                 new OA\Property(property: "name", type: "string", example: "Verde", description: "Nombre del color"),
                 new OA\Property(property: "active", type: "boolean", example: true, description: "Estado activo del color")
-            ]
+            ],
+            type: "object"
         )
     )]
     #[OA\Response(
@@ -258,7 +258,7 @@ class ColorController extends AbstractController
             $result = $this->deleteHandler->handle($id);
 
             if (!$result) {
-                return $this->error('No se pudo eliminar el color', 500);
+                return $this->error('No se pudo eliminar el color');
             }
 
             return $this->ok([

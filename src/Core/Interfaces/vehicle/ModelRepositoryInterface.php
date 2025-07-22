@@ -19,4 +19,5 @@ interface ModelRepositoryInterface
     public function existsByNameAndBrand(string $name, int $brandId, ?int $excludeId = null): bool;
     public function findByBrandId(int $brandId): array;
     public function countTotal(array $filters = []): int;
+    public function findActiveByBrandId(int $brandId): array;
 }

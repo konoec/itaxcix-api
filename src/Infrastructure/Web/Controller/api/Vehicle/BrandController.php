@@ -256,7 +256,7 @@ class BrandController extends AbstractController
 
         try {
             $this->deleteHandler->handle($id);
-            return $this->ok(null, 'Marca eliminada exitosamente');
+            return $this->ok('Marca eliminada exitosamente');
         } catch (InvalidArgumentException $e) {
             return $this->error($e->getMessage(), 404);
         }

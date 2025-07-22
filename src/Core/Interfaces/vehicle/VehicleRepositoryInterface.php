@@ -3,6 +3,7 @@
 namespace itaxcix\Core\Interfaces\vehicle;
 
 use itaxcix\Core\Domain\vehicle\VehicleModel;
+use itaxcix\Shared\DTO\useCases\VehicleReport\VehicleReportRequestDTO;
 
 interface VehicleRepositoryInterface
 {
@@ -12,6 +13,7 @@ interface VehicleRepositoryInterface
     public function saveVehicle(VehicleModel $vehicleModel): VehicleModel;
 
     // Métodos para reporte administrativo de vehículos
-    public function findReport(\itaxcix\Shared\DTO\useCases\VehicleReport\VehicleReportRequestDTO $dto): array;
-    public function countReport(\itaxcix\Shared\DTO\useCases\VehicleReport\VehicleReportRequestDTO $dto): int;
+    public function findReport(VehicleReportRequestDTO $dto): array;
+    public function countReport(VehicleReportRequestDTO $dto): int;
+    public function findActiveByColorId(int $colorId): array;
 }

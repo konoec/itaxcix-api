@@ -215,4 +215,19 @@ class DoctrineModelRepository implements ModelRepositoryInterface {
 
         return (int)$queryBuilder->getQuery()->getSingleScalarResult();
     }
+
+    public function findActiveByBrandId(int $brandId): array
+    {
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select('m')
+            ->from(ModelEntity::class, 'm')
+            ->where('m.brand = :brandId')
+            ->andWhere('m.active = true')
+            ->setParameter('brandId', $brandId)
+            ->orderBy('m.name', 'ASC');
+
+        $entities = $queryBuilder->getQuery()->getResult();
+
+        return array_map([$this, 'toDomain'], $entities);
+    }
 }
