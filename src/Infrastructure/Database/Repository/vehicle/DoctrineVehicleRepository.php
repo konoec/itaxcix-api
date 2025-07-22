@@ -429,4 +429,20 @@ class DoctrineVehicleRepository implements VehicleRepositoryInterface {
 
         return array_map([$this, 'toDomain'], $entities);
     }
+
+    public function findActiveByFuelTypeId(int $fuelTypeId): array
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('v')
+            ->from(VehicleEntity::class, 'v')
+            ->where('v.fuelType = :fuelTypeId')
+            ->andWhere('v.active = :active')
+            ->setParameter('fuelTypeId', $fuelTypeId)
+            ->setParameter('active', true)
+            ->getQuery();
+
+        $entities = $query->getResult();
+
+        return array_map([$this, 'toDomain'], $entities);
+    }
 }
