@@ -203,4 +203,19 @@ class DoctrineTucProcedureRepository implements TucProcedureRepositoryInterface 
 
         return array_map([$this, 'toDomain'], $results);
     }
+
+    public function findByDistrictId(int $districtId): array
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('tp')
+            ->from(TucProcedureEntity::class, 'tp')
+            ->join('tp.district', 'd')
+            ->where('d.id = :districtId')
+            ->setParameter('districtId', $districtId)
+            ->orderBy('tp.expirationDate', 'DESC');
+
+        $results = $qb->getQuery()->getResult();
+
+        return array_map([$this, 'toDomain'], $results);
+    }
 }
